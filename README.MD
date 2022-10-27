@@ -63,5 +63,18 @@ Dev Containers: Reopen in Container
 
 5. Enjoy
 
+## Eventuali problemi con git
+
+### git@ssh.dev.azure.com: Permission denied (password,publickey)
+L'agente SSH non è configurato oppure la chiave SSH per Azure DevOps non è stata aggiunta all'agente.
+La soluzione è [qui](https://code.visualstudio.com/docs/remote/troubleshooting#_setting-up-the-ssh-agent)
+
+### git detected dubious ownership
+Esegui questo comando su un terminale (Powershell\Bash) dell'**Host**
+```
+git config --global --add safe.directory *
+```
+e riavvia VS Code
+
 [devcontainer]: https://containers.dev/
 [marketplace]: https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers
