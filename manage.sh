@@ -1,1 +1,0 @@
-python src/manage.py "${@:1}"

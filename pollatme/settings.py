@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
-from typing import Any, List
 from os import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-8s_o=(uldme@&hybp7isko8573_8co&#1e)5=5^@j82tp9rc$6"
+SECRET_KEY = "django-insecure-tw(*s1_&$8oa)19y(fu)uyc^)yzs6h4^7fz*ny0ezbp@bker@d"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS: List[Any] = []
+ALLOWED_HOSTS: list[str] = []
 
 
 # Application definition
@@ -77,11 +76,11 @@ WSGI_APPLICATION = "pollatme.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": f"django.db.backends.{environ['DB_ENGINE']}",
-        "NAME": environ['DB_NAME'],
-        "USER": environ['DB_USER'],
-        "PASSWORD": environ['DB_PASSWORD'],
-        "HOST": environ['DB_HOST']
+        "ENGINE": f"django.db.backends.{environ.get('DB_ENGINE')}",
+        "NAME": environ.get('DB_NAME'),
+        "USER": environ.get('DB_USER'),
+        "PASSWORD": environ.get('DB_PASSWORD'),
+        "HOST": environ.get('DB_HOST')
     }
 }
 
@@ -110,11 +109,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = environ['TIME_ZONE']
+TIME_ZONE = environ.get('TIME_ZONE', "UTC")
 
 USE_I18N = True
 
-USE_TZ = bool(environ['USE_TZ'])
+USE_TZ = bool(environ.get('USE_TZ', True))
 
 
 # Static files (CSS, JavaScript, Images)
