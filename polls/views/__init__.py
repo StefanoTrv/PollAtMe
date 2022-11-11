@@ -1,1 +1,1 @@
-from .vote_view import AnswerView
+from .vote_view import VoteView

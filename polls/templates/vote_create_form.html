@@ -3,10 +3,15 @@
 {% block title %}Sondaggio{% endblock title %}
 
 {% block body %}
-<p>{{ question_text }}</p>
+{% if question %}
+<p>{{ question.question_text }}</p>
 <form method="post">
     {% csrf_token %}
     {{ form.as_table }}
     <input type="submit" value="Save">
 </form>
+{% else %}
+<p>Il sondaggio ricercato non esiste</p>
+{% endif %}
+
 {% endblock body %}
