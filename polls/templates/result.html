@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Poll@Me | placeholder</title>
+</head>
+<body>
+    Risultato:
+    {%for risultato in risultati%}
+    <li>la scelta {%Choice.objects.get(risultato.choice)%} ha ottenuto {{risultato.count}} voti</li>
+    {% endfor %}
+    <br>
+</body>
+</html>
