@@ -6,6 +6,7 @@ from django.http import HttpRequest, HttpResponse
 from django.urls import reverse
 from django.views.generic.edit import CreateView
 from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import render
 
 from polls.models import Vote, Choice, Question
 
@@ -47,10 +48,11 @@ class VoteView(CreateView):
 
     def form_valid(self, form: forms.BaseModelForm) -> HttpResponse:
         form.instance.question = self.question
-        return super().form_valid(form)
+        form.save()
+        return render(self.request, 'vote_success.html', {'question_id': self.question.id})
 
     def get_success_url(self) -> str:
-        return reverse('polls:vote', kwargs={'id': self.question.id})
+        return reverse('polls:successfull_vote_insertion')
 
     #metodo per recuperare la domanda dal database, gli passo l'id della domanda
     def __getQuestion(self, question_id):

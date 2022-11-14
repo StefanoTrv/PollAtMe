@@ -1,7 +1,6 @@
 from django.urls import path
 
 from . import views
-from .views.result_view import displayResult
 
 
 app_name = 'polls'
@@ -12,5 +11,5 @@ urlpatterns = [
                                                                     #as_view fa un dipatch tra metodo della richiesta e metodo della view:
                                                                     #  1) se ricevo un GET, quindi la prima volta che si chiama la pagina, viene chiamata la funzione get(...)
                                                                     #  2) se ricevo un POST, viene chiamata la funzione post(...)
-    path('result/<int:id>/', displayResult, name = "result")
+    path('result/<int:id>/', views.displayResult, name = "result")
 ]
