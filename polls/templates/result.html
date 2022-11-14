@@ -1,13 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Poll@Me | placeholder</title>
-</head>
-<body>
-    Risultato:
-    {%for risultato in risultati%}
-    <li>la scelta {{risultato.choice}} ha ottenuto {{risultato.count}} voti</li>
-    {% endfor %}
-    <br>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Risultati{% endblock title %}
+
+{% block body %}
+Risultato:
+{%for risultato in risultati%}
+  <li>la scelta {{risultato.choice}} ha ottenuto {{ count.count }} voti</li>
+{% endfor %}
+<br>
+{% endblock body %}
