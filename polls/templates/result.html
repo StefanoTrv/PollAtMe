@@ -6,7 +6,7 @@
 <body>
     Risultato:
     {%for risultato in risultati%}
-    <li>la scelta {%Choice.objects.get(risultato.choice)%} ha ottenuto {{risultato.count}} voti</li>
+    <li>la scelta {{risultato.choice}} ha ottenuto {{risultato.count}} voti</li>
     {% endfor %}
     <br>
 </body>
