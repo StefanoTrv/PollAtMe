@@ -39,7 +39,7 @@ class VoteView(CreateView):
     #viene automaticamente chiamata dal get_context, facciamo l'override perchè dobbiamo generare il form dal database
     def get_form(self, form_class: Type[forms.BaseModelForm] = None):
         form = super().get_form(form_class)                            #prendiamo la classe Form usata nella view (dovrebbe essere vuoto)
-        form.fields['choice'] = forms.ModelChoiceField(                #aggiungiamo un campo "choice" e gli asseggnamo come valore un form di tipo checkbox generato dal database
+        form.fields['choice'] = forms.ModelChoiceField(                #ridefiniamo "choice" e gli asseggnamo come valore un form di tipo checkbox generato dal database
             queryset=Choice.objects.filter(question=self.question),    
             widget=forms.RadioSelect                                   #specifichiamo che vogliamo un radio button
         )
@@ -55,7 +55,7 @@ class VoteView(CreateView):
     #metodo per recuperare la domanda dal database, gli passo l'id della domanda
     def __getQuestion(self, question_id):
         try:
-            self.question = Question.objects.get(id=question_id) #il campo question diventa l'oggetto Question del database con id = qustion_id
+            self.question = Question.objects.get(id=question_id) #il campo question diventa l'oggetto Question del database con id = question_id
             if  self.question.choice_set.count() == 0:           #controllo per vedere se la domanda ha risposte associate, se non ne ha tratto la domanda come se non esistesse
                 self.question = None                             #setto a None
         except ObjectDoesNotExist:
