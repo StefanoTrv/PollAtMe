@@ -11,6 +11,6 @@ urlpatterns = [
                                                                     #as_view fa un dipatch tra metodo della richiesta e metodo della view:
                                                                     #  1) se ricevo un GET, quindi la prima volta che si chiama la pagina, viene chiamata la funzione get(...)
                                                                     #  2) se ricevo un POST, viene chiamata la funzione post(...)
-    path('result/<int:id>/', views.display_result, name = "result"),
+    path('result/<int:id>/', views.SinglePreferenceListView.as_view(), name = "result"),
     path('', views.IndexView.as_view(), name='index')
 ]

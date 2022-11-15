@@ -4,8 +4,8 @@
 
 {% block body %}
 Risultato:
-{%for risultato in risultati%}
-  <li>la scelta {{risultato.choice}} ha ottenuto {{ count.count }} voti</li>
+{%for voto in votes%}
+  <li>la scelta {{ voto.choice }} ha ottenuto {{ voto.count }} voti</li>
 {% endfor %}
 <br>
 {% endblock body %}
