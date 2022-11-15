@@ -1,4 +1,4 @@
-from typing import *
+from typing import Any, Type
 
 from django import forms
 from django.db import models
@@ -42,7 +42,8 @@ class VoteView(CreateView):
         form = super().get_form(form_class)                            #prendiamo la classe Form usata nella view (dovrebbe essere vuoto)
         form.fields['choice'] = forms.ModelChoiceField(                #ridefiniamo "choice" e gli asseggnamo come valore un form di tipo checkbox generato dal database
             queryset=Choice.objects.filter(question=self.question),    
-            widget=forms.RadioSelect                                   #specifichiamo che vogliamo un radio button
+            widget=forms.RadioSelect,
+            label="Opzioni"                                   #specifichiamo che vogliamo un radio button
         )
         return form
 

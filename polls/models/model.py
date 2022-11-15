@@ -3,6 +3,10 @@ from django.db import models
 class Question(models.Model):
     question_text = models.TextField()
 
+    def __str__(self) -> str:
+        return self.question_text[:20]
+    
+
 class Choice(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     choice_text = models.CharField(max_length=50)
