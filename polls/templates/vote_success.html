@@ -5,4 +5,6 @@
 {% block body %}
 <h1>Grazie! La tua risposta è stata registrata!</h1>
 <a href={% url 'polls:vote' id=question_id %}>Torna al questionario</a>
+<br>
+<a href={% url 'polls:result' id=question_id %}>Visualizza i risultati del sondaggio</a>
 {% endblock body %}

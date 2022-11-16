@@ -1,11 +1,10 @@
-from django.views.generic.list import ListView
+from django.db import models
 from django.db.models import Count
 from django.db.models.query import QuerySet
-from django.http import HttpResponse
-from django.shortcuts import render
-from django.db import models
+from django.views.generic.list import ListView
 
-from polls.models import Vote, Choice
+from polls.models import Choice, Vote
+
 
 class SinglePreferenceListView(ListView):
 
@@ -14,8 +13,7 @@ class SinglePreferenceListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        votes = self.__getVotes(self.kwargs['id'])
-        context["votes"] = votes
+        context["votes"] = self.__getVotes(self.kwargs['id'])
         return context
 
     #privato, deve costruire gli oggetti da ritornare
@@ -25,14 +23,14 @@ class SinglePreferenceListView(ListView):
         all_choices: QuerySet[Choice]= Choice.objects.filter(question = question_id) #tutti le sceltte possibili
         context = []
 
-        for choiceKey in all_choices.values_list('pk',flat=True):
+        for choice_key in all_choices.values_list('pk',flat=True):
             count = 0
             #se la scelta è stata votata allora aggiorniamo il conto
             #se è stata votata è in voti
-            if choiceKey in voti.values_list('choice', flat=True):
-                count = voti.get(choice = choiceKey)['count']
+            if choice_key in voti.values_list('choice', flat=True):
+                count = voti.get(choice = choice_key)['count']
 
-            text = Choice.objects.get(id = choiceKey) # all_choices.get(choiceKey)['choice_text']
+            text = Choice.objects.get(id = choice_key) # all_choices.get(choiceKey)['choice_text']
             text = text.choice_text
             context.append({'choice' : text, 'count' : count})
                  
