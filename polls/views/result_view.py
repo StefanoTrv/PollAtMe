@@ -7,7 +7,6 @@ from django.db import models
 
 from polls.models import Vote, Choice
 
-
 class SinglePreferenceListView(ListView):
 
     model: type[models.Model] = Vote
@@ -22,14 +21,19 @@ class SinglePreferenceListView(ListView):
     #privato, deve costruire gli oggetti da ritornare
     def __getVotes(self, question_id):
         #prendiamo i voti dal database e facciamo l'aggregazione
-        voti: QuerySet[Vote] = Vote.objects.filter(question = question_id).values("choice").annotate(count = Count('choice')).order_by('-count')
-        #creiamo le coppie
+        voti: QuerySet[Vote] = Vote.objects.filter(question = question_id).values("choice").annotate(count = Count('choice')).order_by('-count') #voti per la scelta
+        all_choices: QuerySet[Choice]= Choice.objects.filter(question = question_id) #tutti le sceltte possibili
         context = []
-        for voto in voti:
-            choice = voto['choice']
-            testoRisposta = Choice.objects.get(id = choice)
-            context.append({'choice' : testoRisposta.choice_text, 'count' : voto['count']})
-        return context
 
+        for choiceKey in all_choices.values_list('pk',flat=True):
+            count = 0
+            #se la scelta è stata votata allora aggiorniamo il conto
+            #se è stata votata è in voti
+            if choiceKey in voti.values_list('choice', flat=True):
+                count = voti.get(choice = choiceKey)['count']
 
-
+            text = Choice.objects.get(id = choiceKey) # all_choices.get(choiceKey)['choice_text']
+            text = text.choice_text
+            context.append({'choice' : text, 'count' : count})
+                 
+        return sorted(context, key=lambda d: d['count'], reverse=True)
