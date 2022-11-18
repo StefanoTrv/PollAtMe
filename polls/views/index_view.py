@@ -1,13 +1,14 @@
 from typing import Optional, Type
 
-from polls.models import Question
-from django.db.models import Model, QuerySet, Count
+from django.db.models import Model, QuerySet
+from polls.models import Poll
 from django.views.generic.list import ListView
+from polls.services import ActivePollsService
 
 class IndexView(ListView):
-    model: Optional[Type[Model]] = Question
+    model: Optional[Type[Model]] = Poll
     paginate_by: int = 20
     template_name: str = "question_list.html"
 
-    def get_queryset(self) -> QuerySet[Question]:
-        return Question.objects.annotate(num_choices=Count('choice')).filter(num_choices__gt=0).order_by('question_text')
+    def get_queryset(self) -> QuerySet[Poll]:
+        return ActivePollsService().get_queryset()

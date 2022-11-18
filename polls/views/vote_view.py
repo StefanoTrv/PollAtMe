@@ -8,7 +8,7 @@ from django.views.generic.edit import CreateView
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 
-from polls.models import Vote, Choice, Question
+from polls.models import Vote, Choice, Poll
 
 #Classe per la view del voto, estende la classe CreateView che è pensata per la creazione di oggetti (elementi del database)
 class VoteView(CreateView):
@@ -17,7 +17,7 @@ class VoteView(CreateView):
     template_name: str = 'vote_create_form.html'    #setto il campo template_name al template che voglio ritornare, facendo questo viene ritornato il template corretto
                                                     #dai metodi della superclasse
 
-    question: Question = Question()
+    poll: Poll = Poll()
 
     def get(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:  #ritorno un http response(?)
         self.__getQuestion(question_id=kwargs['id'])      #Carico la domanda nel campo question, in caso di errori sarà nullo 
@@ -58,7 +58,7 @@ class VoteView(CreateView):
     #metodo per recuperare la domanda dal database, gli passo l'id della domanda
     def __getQuestion(self, question_id):
         try:
-            self.question = Question.objects.get(id=question_id) #il campo question diventa l'oggetto Question del database con id = question_id
+            self.question = Poll.objects.get(id=question_id) #il campo question diventa l'oggetto Question del database con id = question_id
             if  self.question.choice_set.count() == 0:           #controllo per vedere se la domanda ha risposte associate, se non ne ha tratto la domanda come se non esistesse
                 self.question = None                             #setto a None
         except ObjectDoesNotExist:
