@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block title %}Grazie per la risposta!{% endblock title %}
+
+{% block body %}
+<h1>Grazie! La tua risposta è stata registrata!</h1>
+<a href={% url 'polls:vote' id=poll_id %}>Torna al questionario</a>
+<br>
+<a href={% url 'polls:result' id=poll_id %}>Visualizza i risultati del sondaggio</a>
+{% endblock body %}
