@@ -10,4 +10,7 @@ Risultato:
 {% endfor %}
 </ul>
 <br>
+<a href={% url 'polls:vote' id=poll_id %}>Torna al questionario</a>
+<br>
+<a href={% url 'polls:index' %}>Torna alla home</a>
 {% endblock body %}

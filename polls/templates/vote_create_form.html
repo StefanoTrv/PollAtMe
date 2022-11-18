@@ -3,17 +3,17 @@
 {% block title %}Sondaggio{% endblock title %}
 
 {% block body %}
-{% if question %}
-<p>{{ question.question_text }}</p>
+{% if poll %}
+<p>{{ poll.text }}</p>
 <form method="post">
     {% csrf_token %}
     {{ form.as_table }}
-    <input type="submit" value="Save">
+    <input type="submit" value="Salva">
 </form>
+<br>
+<a href={% url 'polls:result' id=poll.id %}>Visualizza i risultati del sondaggio</a>
 {% else %}
-<p>Il sondaggio ricercato non esiste.</p>
+<p>{{ error }}</p>
 <p>Torna alla <a href="{% url 'polls:index' %}">home</a></p>
 {% endif %}
-<br>
-<a href={% url 'polls:result' id=question.id %}>Visualizza i risultati del sondaggio</a>
 {% endblock body %}

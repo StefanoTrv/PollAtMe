@@ -5,8 +5,8 @@
 {% block body %}
 <h1>Sondaggi attivi</h1>
 <ul>
-    {% for question in object_list %}
-        <li><a href={% url 'polls:vote' id=question.id %}>{{ question }}</a></li>
+    {% for poll in object_list %}
+        <li><a href={% url 'polls:vote' id=poll.id %}>{{ poll }}</a></li>
     {% empty %}
         <li>Non ci sono polls attive</li>
     {% endfor %}
