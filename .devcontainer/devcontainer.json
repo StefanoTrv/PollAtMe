@@ -34,7 +34,8 @@
 				"ms-python.vscode-pylance",
 				"matangover.mypy",
 				"VisualStudioExptTeam.vscodeintellicode",
-				"batisteo.vscode-django"
+				"batisteo.vscode-django",
+				"SonarSource.sonarlint-vscode"
 			]
 		}
 	},
