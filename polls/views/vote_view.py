@@ -12,6 +12,7 @@ from polls.models import Vote, Choice, Poll
 
 #Classe per la view del voto, estende la classe CreateView che è pensata per la creazione di oggetti (elementi del database)
 class VoteView(CreateView):
+    
     model: type[models.Model] = Vote                #il modello che vogliamo creare, vogliamo creare un voto
     fields: list[str] = ['choice']                  
     template_name: str = 'vote_create_form.html'    #setto il campo template_name al template che voglio ritornare, facendo questo viene ritornato il template corretto
@@ -43,7 +44,7 @@ class VoteView(CreateView):
         form.fields['choice'] = forms.ModelChoiceField(                #ridefiniamo "choice" e gli asseggnamo come valore un form di tipo checkbox generato dal database
             queryset=Choice.objects.filter(question=self.question),    
             widget=forms.RadioSelect,                                  #specifichiamo che vogliamo un radio button
-            label="Opzioni"
+            label='Opzioni'
         )
         return form
 

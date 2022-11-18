@@ -8,7 +8,7 @@ from polls.services import ActivePollsService
 class IndexView(ListView):
     model: Optional[Type[Model]] = Poll
     paginate_by: int = 20
-    template_name: str = "question_list.html"
+    template_name: str = 'question_list.html'
 
     def get_queryset(self) -> QuerySet[Poll]:
         return ActivePollsService().get_queryset()

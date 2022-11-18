@@ -13,13 +13,13 @@ class SinglePreferenceListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["results"] = self.__getResults(self.kwargs['id'])
+        context['results'] = self.__getResults(self.kwargs['id'])
         return context
 
     #privato, deve costruire gli oggetti da ritornare
     def __getResults(self, question_id):
         #prendiamo i voti dal database e facciamo l'aggregazione
-        voti: QuerySet[Vote] = Vote.objects.filter(question = question_id).values("choice").annotate(count = Count('choice')).order_by('-count') #voti per la scelta
+        voti: QuerySet[Vote] = Vote.objects.filter(question = question_id).values('choice').annotate(count = Count('choice')).order_by('-count') #voti per la scelta
         all_choices: QuerySet[Choice]= Choice.objects.filter(question = question_id) #tutte le scelte possibili
         context = []
 
