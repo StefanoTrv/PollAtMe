@@ -1,4 +1,4 @@
-from typing import Optional, Type
+from typing import Optional, Type, Any
 
 from django.db.models import Model, QuerySet
 from polls.models import Poll
@@ -10,5 +10,9 @@ class IndexView(ListView):
     paginate_by: int = 20
     template_name: str = 'poll_list.html'
 
+    def __init__(self, **kwargs: Any) -> None:
+        self.__active_poll_service = ActivePollsService()
+        super().__init__(**kwargs)
+
     def get_queryset(self) -> QuerySet[Poll]:
-        return ActivePollsService().get_queryset()
+        return self.__active_poll_service.get_ordered_queryset()
