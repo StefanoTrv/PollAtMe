@@ -10,7 +10,7 @@ class TestPollResultsService(TestCase):
         self.__poll = Poll(text="Domanda di prova")
         self.__poll.save()
         self.__c1 = self.__poll.choice_set.create(choice_text="Risposta 1")
-        self.__c2 = self.__poll.choice_set.create(choice_text="Risposta 2")
+        self.__poll.choice_set.create(choice_text="Risposta 2")
         Vote(poll=self.__poll, choice=self.__c1).save()
         self.__service = PollResultsService().search_by_poll_id(self.__poll.id)
     
@@ -25,3 +25,4 @@ class TestPollResultsService(TestCase):
     def test_if_error(self):
         self.__service = PollResultsService()
         assert_that(self.__service.as_list).raises(AttributeError).when_called_with(True)
+        assert_that(self.__service.as_list).raises(AttributeError).when_called_with(False)
