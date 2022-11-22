@@ -1,11 +1,15 @@
+from __future__ import annotations
 from typing import Any
+
 from polls.models import Poll, Choice, Vote
-from django.db.models import QuerySet, Count, Model
+from django.db.models import QuerySet, Count
 
 class PollResultsService():
-    def __init__(self, poll_id) -> None:
-        self.__poll = Poll.objects.get(id = poll_id)
     
+    def search_by_poll_id(self, poll_id: int) -> PollResultsService:
+        self.__poll = Poll.objects.get(id = poll_id)
+        return self
+
     def as_list(self, reverse = True) -> list[Any]:
         context = self.__get_results()
         return sorted(context, key=lambda d: d['count'], reverse=reverse)
