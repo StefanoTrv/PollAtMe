@@ -42,9 +42,14 @@ steps:
   displayName: 'Install prerequisites'
 
 - script: |
-    pushd '$(projectRoot)'
-    python manage.py test --testrunner xmlrunner.extra.djangotestrunner.XMLTestRunner --no-input
-  displayName: 'Run tests'
+    pushd $(projectRoot)
+    mypy
+  displayName: 'Run mypy lint'
+
+#- script: |
+#    pushd '$(projectRoot)'
+#    python manage.py test --testrunner xmlrunner.extra.djangotestrunner.XMLTestRunner --no-input
+#  displayName: 'Run tests'
 
 - task: PublishTestResults@2
   inputs:
