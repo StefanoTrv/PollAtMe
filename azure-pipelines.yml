@@ -65,7 +65,7 @@ steps:
       print('Found Django project in', project_location)
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
 
-- script: echo ##vso[task.prependpath]/home/vsts_azpcontainer/.local/bin
+- script: echo "##vso[task.prependpath]$HOME/.local/bin"
 
 - script: |
     python -m pip install --upgrade pip setuptools wheel
@@ -80,7 +80,6 @@ steps:
   displayName: 'Run mypy lint'
 
 - script: |
-    export PATH=$PATH:/home/vsts_azpcontainer/.local/bin 
     pushd '$(projectRoot)'
     pytest --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml
   displayName: 'Run tests'
