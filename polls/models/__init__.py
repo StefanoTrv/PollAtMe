@@ -1,3 +1,3 @@
 from .model import Poll
-from .model import Choice
-from .model import Vote
+from .model import Alternative
+from .model import Preference

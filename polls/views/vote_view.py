@@ -7,19 +7,19 @@ from django.urls import reverse
 from django.views.generic.edit import CreateView
 from django.shortcuts import render
 
-from polls.models import Vote, Choice, Poll
+from polls.models import Preference, Alternative, Poll
 from polls.services import SearchPollService
-from polls.exceptions import PollWithoutChoicesException
+from polls.exceptions import PollWithoutAlternativesException
 from django.core.exceptions import ObjectDoesNotExist
 
 #Classe per la view del voto, estende la classe CreateView che è pensata per la creazione di oggetti (elementi del database)
 class VoteView(CreateView):
     
     POLL_DOES_NOT_EXISTS_MSG = "Il sondaggio ricercato non esiste"
-    NO_CHOICES_POLL_MSG = "Il sondaggio ricercato non ha opzioni di risposta"
+    NO_ALTERNATIVES_POLL_MSG = "Il sondaggio ricercato non ha opzioni di risposta"
 
-    model: type[models.Model] = Vote                #il modello che vogliamo creare, vogliamo creare un voto
-    fields: list[str] = ['choice']                  
+    model: type[models.Model] = Preference                #il modello che vogliamo creare, vogliamo creare una preferenza
+    fields: list[str] = ['alternative']                  
     template_name: str = 'vote_create_form.html'    #setto il campo template_name al template che voglio ritornare, facendo questo viene ritornato il template corretto
                                                     #dai metodi della superclasse
 
@@ -51,8 +51,8 @@ class VoteView(CreateView):
     #viene automaticamente chiamata dal get_context, facciamo l'override perchè dobbiamo generare il form dal database
     def get_form(self, form_class: Type[forms.BaseModelForm] = None):
         form = super().get_form(form_class)                            #prendiamo la classe Form usata nella view (dovrebbe essere vuoto)
-        form.fields['choice'] = forms.ModelChoiceField(                #ridefiniamo "choice" e gli asseggnamo come valore un form di tipo checkbox generato dal database
-            queryset=Choice.objects.filter(poll=self.__poll),    
+        form.fields['alternative'] = forms.ModelChoiceField(                #ridefiniamo "alternative" e gli assegnamo come valore un form di tipo checkbox generato dal database
+            queryset=Alternative.objects.filter(poll=self.__poll),    
             widget=forms.RadioSelect,                                  #specifichiamo che vogliamo un radio button
             label='Opzioni'
         )
@@ -73,7 +73,7 @@ class VoteView(CreateView):
             self.__error = self.POLL_DOES_NOT_EXISTS_MSG
             self.__poll = None
         except PollWithoutChoicesException:
-            self.__error = self.NO_CHOICES_POLL_MSG
+            self.__error = self.NO_ALTERNATIVES_POLL_MSG
             self.__poll = None
         else:
             self.__error = None

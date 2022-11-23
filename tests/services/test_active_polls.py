@@ -1,7 +1,7 @@
 from django.test import TestCase
 from polls.services import ActivePollsService, SearchPollService
 from django.core.exceptions import ObjectDoesNotExist
-from polls.exceptions import PollWithoutChoicesException
+from polls.exceptions import PollWithoutAlternativesException
 from polls.models import Poll
 from assertpy import assert_that #type: ignore
 
@@ -28,8 +28,8 @@ class TestSearchPollService(TestCase):
         expected_poll = Poll.objects.get(id=1)
         poll = SearchPollService().search_by_id(1)
         assert_that(poll).is_equal_to(expected_poll)
-        assert_that(poll.choice_set).is_equal_to(expected_poll.choice_set)
+        assert_that(poll.alternative_set).is_equal_to(expected_poll.alternative_set)
     
     def test_search_by_error(self):
         assert_that(SearchPollService().search_by_id).raises(ObjectDoesNotExist).when_called_with(4)
-        assert_that(SearchPollService().search_by_id).raises(PollWithoutChoicesException).when_called_with(3)
+        assert_that(SearchPollService().search_by_id).raises(PollWithoutAlternativesException).when_called_with(3)

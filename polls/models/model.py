@@ -1,21 +1,22 @@
 from django.db import models
 
 class Poll(models.Model):
+    title = models.CharField(max_length=50)
     text = models.TextField()
 
     def __str__(self) -> str:
-        return self.text[:20]
+        return self.title+" - "+self.text
     
-class Choice(models.Model):
+class Alternative(models.Model):
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
-    choice_text = models.CharField(max_length=50)
+    text = models.CharField(max_length=50)
 
     def __str__(self) -> str:
-        return self.choice_text
+        return self.text
 
-class Vote(models.Model):
+class Preference(models.Model):
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
-    choice = models.ForeignKey(Choice, on_delete=models.CASCADE)
+    alternative = models.ForeignKey(Alternative, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
-        return f"({self.poll.id}, {self.choice.id})"
+        return f"({self.poll.id}, {self.alternative.id})"

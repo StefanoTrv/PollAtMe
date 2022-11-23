@@ -8,15 +8,16 @@ class IndexViewTest(TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.poll = Poll(text = "Sondaggio di prova")
+        self.poll = Poll(title="Titolo test", text = "Sondaggio di prova")
         self.poll.save()
 
     def test_sondaggi_attivi(self):
 
-        self.poll.choice_set.create(choice_text = "Prova")
+        self.poll.alternative_set.create(text = "Prova")
 
         resp = self.client.get(self.url)
         self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, self.poll.title)
         self.assertContains(resp, self.poll.text)
     
     def test_sondaggio_senza_scelte(self):

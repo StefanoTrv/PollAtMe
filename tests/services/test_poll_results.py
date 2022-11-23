@@ -1,5 +1,5 @@
 from django.test import TestCase
-from polls.models import Poll, Vote
+from polls.models import Poll, Preference
 from polls.services import PollResultsService
 from assertpy import assert_that #type: ignore
 
@@ -7,11 +7,11 @@ from assertpy import assert_that #type: ignore
 class TestPollResultsService(TestCase):
 
     def setUp(self) -> None:
-        self.__poll = Poll(text="Domanda di prova")
+        self.__poll = Poll(title="Prova", text="Domanda di prova")
         self.__poll.save()
-        self.__c1 = self.__poll.choice_set.create(choice_text="Risposta 1")
-        self.__poll.choice_set.create(choice_text="Risposta 2")
-        Vote(poll=self.__poll, choice=self.__c1).save()
+        self.__a1 = self.__poll.alternative_set.create(text="Risposta 1")
+        self.__poll.alternative_set.create(text="Risposta 2")
+        Preference(poll=self.__poll, alternative=self.__a1).save()
         self.__service = PollResultsService().search_by_poll_id(self.__poll.id)
     
     def test_ascendant(self):

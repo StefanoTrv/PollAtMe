@@ -3,13 +3,13 @@ from typing import Any
 from django.db import models
 from django.views.generic.list import ListView
 
-from polls.models import Vote
+from polls.models import Preference
 from polls.services import PollResultsService
 
 
 class SinglePreferenceListView(ListView):
 
-    model: type[models.Model] = Vote
+    model: type[models.Model] = Preference
     template_name: str = 'result.html'
 
     def __init__(self, **kwargs: Any) -> None:
