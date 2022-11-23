@@ -43,7 +43,7 @@ steps:
 
 - script: |
     pushd $(projectRoot)
-    mypy
+    mypy .
   displayName: 'Run mypy lint'
 
 #- script: |
