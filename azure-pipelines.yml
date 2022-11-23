@@ -61,6 +61,9 @@ steps:
 
 - script: |
     pushd $(projectRoot)
+    echo $DB_ENGINE
+    echo $DB_NAME
+    echo $DB_USER
     mypy .
   displayName: 'Run mypy lint'
   env:
@@ -73,29 +76,27 @@ steps:
     TIME_ZONE: $(TIME_ZONE)
     USE_TZ: $(USE_TZ)
 
-- script: |
-    pushd '$(projectRoot)'
-    echo $DB_ENGINE
-    echo $DB_PASSWORD
-    pytest --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml
-  displayName: 'Run tests'
-  env:
-    DB_ENGINE: $(DB_ENGINE)
-    DB_NAME: $(DB_NAME)
-    DB_USER: $(DB_USER)
-    DB_PASSWORD: $(DB_PASSWORD)
-    DB_HOST: $(DB_HOST)
-    DB_PORT: $(DB_PORT)
-    TIME_ZONE: $(TIME_ZONE)
-    USE_TZ: $(USE_TZ)
-
-- task: PublishTestResults@2
-  inputs:
-    testResultsFiles: '**/test-*.xml'
-    testRunTitle: 'Publish test results'
-  condition: succeededOrFailed()
-
-- task: PublishCodeCoverageResults@1
-  inputs:
-    codeCoverageTool: Cobertura
-    summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
+#- script: |
+#    pushd '$(projectRoot)'
+#    pytest --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml
+#  displayName: 'Run tests'
+#  env:
+#    DB_ENGINE: $(DB_ENGINE)
+#    DB_NAME: $(DB_NAME)
+#    DB_USER: $(DB_USER)
+#    DB_PASSWORD: $(DB_PASSWORD)
+#    DB_HOST: $(DB_HOST)
+#    DB_PORT: $(DB_PORT)
+#    TIME_ZONE: $(TIME_ZONE)
+#    USE_TZ: $(USE_TZ)
+#
+#- task: PublishTestResults@2
+#  inputs:
+#    testResultsFiles: '**/test-*.xml'
+#    testRunTitle: 'Publish test results'
+#  condition: succeededOrFailed()
+#
+#- task: PublishCodeCoverageResults@1
+#  inputs:
+#    codeCoverageTool: Cobertura
+#    summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
