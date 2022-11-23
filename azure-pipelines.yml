@@ -45,6 +45,10 @@ services:
   db: postgres
 
 steps:
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    
 - task: PythonScript@0
   displayName: 'Export project path'
   inputs:
@@ -61,8 +65,9 @@ steps:
       print('Found Django project in', project_location)
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
 
+- script: echo ##vso[task.prependpath]/home/vsts_azpcontainer/.local/bin
+
 - script: |
-    export PATH=$PATH:/home/vsts_azpcontainer/.local/bin 
     python -m pip install --upgrade pip setuptools wheel
     pip install -r requirements/dev.txt
     pip install pytest-azurepipelines
@@ -70,7 +75,6 @@ steps:
   displayName: 'Install prerequisites'
 
 - script: |
-    export PATH=$PATH:/home/vsts_azpcontainer/.local/bin
     pushd $(projectRoot)
     mypy .
   displayName: 'Run mypy lint'
@@ -90,4 +94,4 @@ steps:
 - task: PublishCodeCoverageResults@1
   inputs:
     codeCoverageTool: Cobertura
-    summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
+    summaryFileLocation: 'coverage.xml'
