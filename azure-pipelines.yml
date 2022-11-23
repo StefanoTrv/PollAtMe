@@ -8,16 +8,13 @@ trigger:
   - fix/*
   - feature/*
 
-pool:
-  vmImage: ubuntu-latest
 variables:
   PYTHON_VERSION: '3.10'
   DB_ENGINE: 'postgresql'
-  DB_NAME: 'pollatme-azure'
-  DB_USER: 'pollatme-azure'
-  DB_PASSWORD: 'pollatme-azure'
-  DB_HOST: 'localhost'
-  DB_PORT: 5432
+  DB_NAME: 'postgres'
+  DB_USER: 'postgres'
+  DB_PASSWORD: 'postgres'
+  DB_HOST: 'db'
   TIME_ZONE: 'Europe/Rome'
   USE_TZ: 1
 
@@ -26,19 +23,28 @@ resources:
   containers:
     - container: postgres
       image: postgres:15-alpine
+      volumes:
+          - '/data/db:/var/lib/postgresql/data'
       env:
         POSTGRES_USER: $(DB_USER)
         POSTGRES_DB: $(DB_NAME)
         POSTGRES_PASSWORD: $(DB_PASSWORD)
+    
+    - container: web
+      image: python:3.10-bullseye
+      volumes:
+        - '/code'
       ports:
-        - 5432:5432
+        - '8000:8000'
+
+pool:
+  vmImage: ubuntu-latest
+
+container: web
+services:
+  db: db
 
 steps:
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '$(PYTHON_VERSION)'
-    architecture: 'x64'
-
 - task: PythonScript@0
   displayName: 'Export project path'
   inputs:
