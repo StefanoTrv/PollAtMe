@@ -42,7 +42,7 @@ pool:
 
 container: web
 services:
-  db: db
+  db: postgres
 
 steps:
 - task: PythonScript@0
