@@ -1,5 +1,5 @@
 from django.test import TestCase
-from polls.models.model import Alternative, Poll, Preference
+from polls.models import Alternative, SinglePreferencePoll, SinglePreference, Poll, Preference
 
 class Modeltest(TestCase):
 
@@ -7,13 +7,13 @@ class Modeltest(TestCase):
     poll_text = "Quanti anni hai?"
 
     def setUp(self):
-        poll = Poll(title=self.poll_title, text=self.poll_text)
+        poll = SinglePreferencePoll(title=self.poll_title, text=self.poll_text)
         poll.save()
         alternative1 = Alternative(poll = poll, text = "32")
         alternative1.save()
         alternative2 = Alternative(poll = poll, text = "50")
         alternative2.save()
-        preference1 = Preference(poll = poll, alternative = alternative1)
+        preference1 = SinglePreference(poll = poll, alternative = alternative1)
         preference1.save()
 
     def test_poll(self):
@@ -40,6 +40,6 @@ class Modeltest(TestCase):
     def test_vote_samefk(self):
         q1 = Poll.objects.get(title=self.poll_title)
         a1 = Alternative.objects.get(text='32')
-        p1 = Preference.objects.get(poll = q1, alternative = a1)
+        p1 = SinglePreference.objects.get(poll = q1, alternative = a1)
         self.assertEqual(p1.poll.id, q1.id)
         self.assertEqual(p1.alternative.id, a1.id)

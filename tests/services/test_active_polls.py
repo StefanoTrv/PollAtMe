@@ -9,12 +9,12 @@ class TestActivePollsService(TestCase):
     
     fixtures: list[str] = ['polls.json']
 
-    def test_get_ordered_queryset_ascendant(self):
+    def test_sondaggi_ordine_crescente(self):
         queryset = ActivePollsService().get_ordered_queryset(asc=False)
         excluded = Poll.objects.get(id=3)
         assert_that(queryset).does_not_contain(excluded).is_sorted(lambda x: x.text, reverse=True)
     
-    def test_get_ordered_queryset_descendant(self):
+    def test_sondaggi_ordine_decrescente(self):
         queryset = ActivePollsService().get_ordered_queryset(asc=True)
         excluded = Poll.objects.get(id=3)
         assert_that(queryset).does_not_contain(excluded).is_sorted(lambda x: x.text, reverse=False)

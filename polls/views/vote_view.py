@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.views.generic.edit import CreateView
 from django.shortcuts import render
 
-from polls.models import Preference, Alternative, Poll
+from polls.models import SinglePreference, Alternative, Poll
 from polls.services import SearchPollService
 from polls.exceptions import PollWithoutAlternativesException
 from django.core.exceptions import ObjectDoesNotExist
@@ -18,7 +18,7 @@ class VoteView(CreateView):
     POLL_DOES_NOT_EXISTS_MSG = "Il sondaggio ricercato non esiste"
     NO_ALTERNATIVES_POLL_MSG = "Il sondaggio ricercato non ha opzioni di risposta"
 
-    model: type[models.Model] = Preference                #il modello che vogliamo creare, vogliamo creare una preferenza
+    model: type[models.Model] = SinglePreference                #il modello che vogliamo creare, vogliamo creare una preferenza
     fields: list[str] = ['alternative']                  
     template_name: str = 'vote_create_form.html'    #setto il campo template_name al template che voglio ritornare, facendo questo viene ritornato il template corretto
                                                     #dai metodi della superclasse
@@ -72,7 +72,7 @@ class VoteView(CreateView):
         except ObjectDoesNotExist:
             self.__error = self.POLL_DOES_NOT_EXISTS_MSG
             self.__poll = None
-        except PollWithoutChoicesException:
+        except PollWithoutAlternativesException:
             self.__error = self.NO_ALTERNATIVES_POLL_MSG
             self.__poll = None
         else:

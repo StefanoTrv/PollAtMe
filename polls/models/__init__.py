@@ -1,3 +1,3 @@
-from .model import Poll
-from .model import Alternative
-from .model import Preference
+from .poll import Poll, MajorityOpinionPoll, SinglePreferencePoll
+from .alternative import Alternative
+from .preference import Preference, SinglePreference, MajorityPreference, MajorityOpinionJudgement
