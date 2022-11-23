@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Any
 
-from polls.models import Poll, Alternative, Preference
+from polls.models import Poll, Alternative, SinglePreference
 from django.db.models import QuerySet, Count
 
 class PollResultsService():
@@ -17,7 +17,7 @@ class PollResultsService():
     #privato, deve costruire gli oggetti da ritornare
     def __get_results(self):
         #prendiamo le preferenze dal database e facciamo l'aggregazione
-        preferences: QuerySet[Preference] = Preference.objects.filter(poll = self.__poll.id).values('alternative').annotate(count = Count('alternative')).order_by('-count') #preferenze per la scelta
+        preferences: QuerySet[SinglePreference] = SinglePreference.objects.filter(poll = self.__poll.id).values('alternative').annotate(count = Count('alternative')).order_by('-count') #preferenze per la scelta
         all_alternatives: QuerySet[Alternative]= Alternative.objects.filter(poll = self.__poll.id) #tutte le scelte possibili
         context = []
 
