@@ -75,6 +75,8 @@ steps:
 
 - script: |
     pushd '$(projectRoot)'
+    echo $DB_ENGINE
+    echo $DB_PASSWORD
     pytest --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml
   displayName: 'Run tests'
   env:
