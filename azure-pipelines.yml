@@ -24,9 +24,9 @@ resources:
     - container: postgres
       image: postgres:15-alpine
       env:
-        POSTGRES_USER: $(DB_USER)
-        POSTGRES_DB: $(DB_NAME)
-        POSTGRES_PASSWORD: $(DB_PASSWORD)
+        POSTGRES_USER: $(databaseUser)
+        POSTGRES_DB: $(database)
+        POSTGRES_PASSWORD: $(databasePassword)
       ports:
         - 5432:5432
 
@@ -64,34 +64,28 @@ steps:
     echo $DB_ENGINE
     echo $DB_NAME
     echo $DB_USER
-    echo $DB_PASSWORD
+    echo $(DATABASE)
     mypy .
   displayName: 'Run mypy lint'
+  env:
+    DB_USER: $(databaseUser)
+    DB_PASSWORD: $(databasePassword)
+
+- script: |
+    pushd '$(projectRoot)'
+    pytest --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml
+  displayName: 'Run tests'
   env:
     DB_USER: $(DB_USER)
     DB_PASSWORD: $(DB_PASSWORD)
 
-#- script: |
-#    pushd '$(projectRoot)'
-#    pytest --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml
-#  displayName: 'Run tests'
-#  env:
-#    DB_ENGINE: $(DB_ENGINE)
-#    DB_NAME: $(DB_NAME)
-#    DB_USER: $(DB_USER)
-#    DB_PASSWORD: $(DB_PASSWORD)
-#    DB_HOST: $(DB_HOST)
-#    DB_PORT: $(DB_PORT)
-#    TIME_ZONE: $(TIME_ZONE)
-#    USE_TZ: $(USE_TZ)
-#
-#- task: PublishTestResults@2
-#  inputs:
-#    testResultsFiles: '**/test-*.xml'
-#    testRunTitle: 'Publish test results'
-#  condition: succeededOrFailed()
-#
-#- task: PublishCodeCoverageResults@1
-#  inputs:
-#    codeCoverageTool: Cobertura
-#    summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
+- task: PublishTestResults@2
+  inputs:
+    testResultsFiles: '**/test-*.xml'
+    testRunTitle: 'Publish test results'
+  condition: succeededOrFailed()
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: Cobertura
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
