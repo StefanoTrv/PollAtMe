@@ -62,10 +62,10 @@ steps:
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
 
 - script: |
-    python -m pip install --upgrade pip setuptools wheel
-    pip install -r requirements/dev.txt
-    pip install pytest-azurepipelines
-    pip install pytest-cov
+    sudo python -m pip install --upgrade pip setuptools wheel
+    sudo pip install -r requirements/dev.txt
+    sudo pip install pytest-azurepipelines
+    sudo pip install pytest-cov
   displayName: 'Install prerequisites'
 
 - script: |
