@@ -1,10 +1,10 @@
-#test della classe grade
 from unittest import TestCase
 from polls.services.giudizio_maggioritario import Grade
 from polls.services.giudizio_maggioritario import VoteTuple
 
 class GiudizioMaggioritarioTest(TestCase):
 
+    #test della classe grade
     def test_grade_ordering(self):
         #creiamo un po'di grade
         grade_one = Grade(3, True) #voto 3+
@@ -23,7 +23,7 @@ class GiudizioMaggioritarioTest(TestCase):
 
         self.assertNotEqual(grade_one,grade_two)
 
-
+    #test della classe VoteTuple
     def test_tuple_ordering(self):
 
         #creiamo un po'di tuple, per esempio quelle nell'esempio del prof
@@ -63,6 +63,3 @@ class GiudizioMaggioritarioTest(TestCase):
         self.assertEqual(listaTuple[0], tuple_two)
         self.assertEqual(listaTuple[1], tuple_three)
         self.assertEqual(listaTuple[2], tuple_one)
-
-
-        

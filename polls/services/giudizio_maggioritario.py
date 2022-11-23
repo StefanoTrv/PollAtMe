@@ -43,7 +43,7 @@ class Grade:
 
 ##rappresentazione delle tuple
 class VoteTuple:
-    def __init__(self, choice_id, giuduzi_migliori, grade, giudizi_peggiori) -> None:
+    def __init__(self, choice_id: int, giuduzi_migliori: int, grade: Grade, giudizi_peggiori: int) -> None:
         self._choice_id = choice_id
         self._giudizi_migliori = giuduzi_migliori
         self._grade = grade
@@ -109,39 +109,27 @@ class VoteTuple:
     
     
 
-#prototipo classe per il giudizio maggioritario, solo a fine prototyping, probabilmente la classe non ha senso
-class giudizioMaggioritario: 
+#classe che incapsula la logica per il calcolo del risultato del giudizio maggioritario
+class GiudizioMaggioritario:
+
     ##istanziatore della classe 
     def __init__(self, id:int) -> None:
-        self.question_id = id
+        self._question_id = id
 
-    ##ritorna il vincitore del sistema a giudizio maggioritario
-    #def get_winner(self) -> int:
-        ##prima cosa query dei voti
-        #voti = self.__get_voti()
-        #voto_max = self.__get_voto_max()
-        #vote_array = self.__produce_vote_array(voti, voto_max)
-        #vote_tuples = self.__produce_array_tuples(vote_array)
-        #return self.__extract_winner(vote_tuples)
-
+    def question_id(self) -> int:
+        return self._question_id
     
-    ##ritorna una lista di valori nel seguente formato: <{choice_id_1 : "voto",...,{choice_id_n : "voto"}, {...}, {...}>
-    def __get_voti(self) -> list:
-        raise NotImplementedError("yet to be implemented")
-        return None
+    ##ritorna l'id del vincitore secondo il giudizio maggioritario
+    def get_winner(self) -> int:
+        result_query = self.__get_result_list()
+        vote_tuple_list = self.__produce_vote_tuple_list(result_query)
+        vote_tuple_list.sort(reverse = True)
+        return vote_tuple_list[0].choice_id()
 
-    def __get_voto_max(self) -> list:
-        raise NotImplementedError("yet to be implemented")
-        return None
-
-    def __produce_voto_array(self, voti, voto_max):
+    def __get_result_list(self) -> list:
         raise NotImplementedError("yet to be implemented")
         return None
     
-    def __produce_array_tuples(self, vote_array):
-        raise NotImplementedError("yet to be implemented")
-        return None
-
-    def __extract_winner(self, vote_tuples):
+    def __produce_vote_tuple_list(self, result_query: list) -> list:
         raise NotImplementedError("yet to be implemented")
         return None
