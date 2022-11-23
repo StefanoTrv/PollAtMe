@@ -13,10 +13,13 @@ pool:
 variables:
   PYTHON_VERSION: '3.10'
   DB_ENGINE: 'postgresql'
-  TIME_ZONE: 'Europe/Rome'
-  USE_TZ: 1
+  DB_NAME: 'pollatme-azure'
+  DB_USER: 'pollatme-azure'
+  DB_PASSWORD: 'pollatme-azure'
   DB_HOST: 'localhost'
   DB_PORT: 5432
+  TIME_ZONE: 'Europe/Rome'
+  USE_TZ: 1
 
 
 resources:
@@ -24,9 +27,9 @@ resources:
     - container: postgres
       image: postgres:15-alpine
       env:
-        POSTGRES_USER: $(databaseUser)
-        POSTGRES_DB: $(database)
-        POSTGRES_PASSWORD: $(databasePassword)
+        POSTGRES_USER: $(DB_USER)
+        POSTGRES_DB: $(DB_NAME)
+        POSTGRES_PASSWORD: $(DB_PASSWORD)
       ports:
         - 5432:5432
 
@@ -61,23 +64,13 @@ steps:
 
 - script: |
     pushd $(projectRoot)
-    echo $DB_ENGINE
-    echo $DB_NAME
-    echo $DB_USER
-    echo $(DATABASE)
     mypy .
   displayName: 'Run mypy lint'
-  env:
-    DB_USER: $(databaseUser)
-    DB_PASSWORD: $(databasePassword)
 
 - script: |
     pushd '$(projectRoot)'
     pytest --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml
   displayName: 'Run tests'
-  env:
-    DB_USER: $(DB_USER)
-    DB_PASSWORD: $(DB_PASSWORD)
 
 - task: PublishTestResults@2
   inputs:
