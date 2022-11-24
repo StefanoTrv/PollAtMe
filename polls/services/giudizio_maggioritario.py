@@ -1,3 +1,8 @@
+from polls.models import Poll, Alternative, SinglePreference
+from polls.models.preference import MajorityOpinionJudgement
+import math
+from django.db.models import QuerySet, Count
+
 #classe per la rappresentazione del voto, classe contenitore
 #voto maggiore => giudizio peggiore
 class Grade:
@@ -24,7 +29,7 @@ class Grade:
     def __lt__(self, __o) -> bool:
         if self.vote() == __o.vote():
             return self.positive() and (not __o.positive())
-        return self.vote() < __o.vote()
+        return self.vote() > __o.vote()
     
     #self => __o allora o sono uguali o self > __o
     def __ge__(self, __o) -> bool:
@@ -36,7 +41,7 @@ class Grade:
     def __gt__(self, __o) -> bool:
         if self.vote() == __o.vote():
             return __o.positive() and (not self.positive())
-        return self.vote() > __o.vote()
+        return self.vote() < __o.vote()
 
     def __eq__(self, __o) -> bool:
         return (self.vote() == __o.vote()) and (self.positive() == __o.positive())
@@ -125,11 +130,62 @@ class GiudizioMaggioritario:
         vote_tuple_list = self.__produce_vote_tuple_list(result_query)
         vote_tuple_list.sort(reverse = True)
         return vote_tuple_list[0].choice_id()
+    
 
+    ##ritorna una lista di dictionary nella forma {'choice_id': id, 'voti': <1,4,2,...,4,1>
+    ##voti più alti corrispondono a voti migliori!
     def __get_result_list(self) -> list:
-        raise NotImplementedError("yet to be implemented")
-        return None
+        
+        result_list = []
+        #dobbiamo prendiamo tutte le alternative per la domanda corrente
+        alternative : QuerySet[Alternative] = Alternative.objects.filter(poll = self.question_id())
+        for alternativa in alternative:
+            #dobbiamo andare a prendere i giudizi
+            giudizi = MajorityOpinionJudgement.objects.filter(id = alternativa.id)
+            #abbiamo i giudizi per questa alternativa, dobbiamo costruire la lista
+            lista_giudizi = []
+            for giudizio in giudizi:
+                lista_giudizi.append(giudizio.grade)
+
+            #alla lista associamo l'id dell'alternativa
+            result_list.append({'choice_id': alternativa.id, 'voti': lista_giudizi})
+
+        return result_list
     
     def __produce_vote_tuple_list(self, result_query: list) -> list:
-        raise NotImplementedError("yet to be implemented")
-        return None
+        
+        result_list = []
+        #data la lista con i voti per ogni scelta generiamo le tuple
+        for element in result_query:
+            
+            #logica di generazione della tupla
+            #calcolo del voto mediano
+            #ordiniamo in ordine decrescente la lista di voti
+            lista_voti = element['voti']
+            lista_voti.sort(reverse = True)
+            giudizio_mediano = None
+            if len(lista_voti) % 2 == 0:
+                giudizio_mediano = lista_voti[len(lista_voti) / 2]
+            else:
+                giudizio_mediano = lista_voti[math.ceil(len(lista_voti) / 2)]
+            
+            ##calcolo del numero di giudizi (strettamente) migliori
+            giudizi_peggiori = 0
+            giudizi_migliori = 0
+            for voto in lista_voti: #probabilmente ottimizzabile
+                if voto > giudizio_mediano:
+                    giudizi_migliori += 1
+                if voto < giudizio_mediano:
+                    giudizi_peggiori += 1   
+            
+            positive = (giudizi_migliori > giudizi_peggiori)
+
+            grade = Grade(giudizio_mediano, positive)
+            tupla = VoteTuple(lista_voti['choice_id'],
+                giuduzi_migliori = giudizi_migliori,
+                giudizi_peggiori = giudizi_peggiori,
+                grade=grade)
+            
+            result_list.append(tupla)
+
+        return result_list
