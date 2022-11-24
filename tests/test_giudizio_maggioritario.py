@@ -2,6 +2,8 @@ from unittest import TestCase
 from polls.services.giudizio_maggioritario import Grade
 from polls.services.giudizio_maggioritario import VoteTuple
 from polls.services.giudizio_maggioritario import GiudizioMaggioritario
+from polls.services.giudizio_maggioritario import produce_vote_tuple_list
+
 
 class GiudizioMaggioritarioTest(TestCase):
 
@@ -64,3 +66,33 @@ class GiudizioMaggioritarioTest(TestCase):
         self.assertEqual(listaTuple[0], tuple_two)
         self.assertEqual(listaTuple[1], tuple_three)
         self.assertEqual(listaTuple[2], tuple_one)
+
+    def test_tuple_generation(self):
+
+        #costruiamo la lista in input
+        lista_voti = []
+        #1
+        choice_id = 1
+        voti = [5]*33+[4]*10+[3]*17+[2]*10+[1]*12
+        lista_voti.append({'choice_id':choice_id, 'voti':voti})
+
+        choice_id = 2
+        voti = [5]*25+[4]*30+[3]*10+[2]*10+[1]*15
+        lista_voti.append({'choice_id':choice_id, 'voti':voti})
+
+        
+        choice_id = 3
+        voti = [5]*27+[4]*25+[3]*5+[2]*6+[1]*10
+        lista_voti.append({'choice_id':choice_id, 'voti':voti})
+
+        lista_tuple = produce_vote_tuple_list(lista_voti)
+        lista_tuple.sort(reverse = True)
+
+        #l'ordine risultante dovrebbe essere 3>2>1
+
+        tuple_one =  VoteTuple(1, 33, Grade(4, False), 39)
+        self.assertEqual(lista_tuple[2], tuple_one)
+        tuple_three =  VoteTuple(3, 27, Grade(4, True), 21)
+        self.assertEqual(lista_tuple[0], tuple_three)
+        tuple_two =  VoteTuple(2, 25, Grade(4, False), 35)
+        self.assertEqual(lista_tuple[1], tuple_two)

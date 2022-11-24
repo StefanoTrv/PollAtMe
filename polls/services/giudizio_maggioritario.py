@@ -127,7 +127,7 @@ class GiudizioMaggioritario:
     ##ritorna l'id del vincitore secondo il giudizio maggioritario
     def get_winner(self) -> int:
         result_query = self.__get_result_list()
-        vote_tuple_list = self.__produce_vote_tuple_list(result_query)
+        vote_tuple_list = produce_vote_tuple_list(result_query)
         vote_tuple_list.sort(reverse = True)
         return vote_tuple_list[0].choice_id()
     
@@ -152,40 +152,42 @@ class GiudizioMaggioritario:
 
         return result_list
     
-    def __produce_vote_tuple_list(self, result_query: list) -> list:
+##non dipende dall'istanza della classe quindi lo facciamo statico, così può essere testato
+def produce_vote_tuple_list(result_query: list) -> list:
         
-        result_list = []
-        #data la lista con i voti per ogni scelta generiamo le tuple
-        for element in result_query:
+    result_list = []
+    #data la lista con i voti per ogni scelta generiamo le tuple
+    for element in result_query:
             
-            #logica di generazione della tupla
-            #calcolo del voto mediano
-            #ordiniamo in ordine decrescente la lista di voti
-            lista_voti = element['voti']
-            lista_voti.sort(reverse = True)
-            giudizio_mediano = None
-            if len(lista_voti) % 2 == 0:
-                giudizio_mediano = lista_voti[len(lista_voti) / 2]
-            else:
-                giudizio_mediano = lista_voti[math.ceil(len(lista_voti) / 2)]
+         #logica di generazione della tupla
+        #calcolo del voto mediano
+        #ordiniamo in ordine decrescente la lista di voti
+        lista_voti = element['voti']
+        lista_voti.sort(reverse = True)
+        giudizio_mediano = None
+        if len(lista_voti) % 2 == 0:
+            giudizio_mediano = lista_voti[int(len(lista_voti) / 2)]
+        else:
+            giudizio_mediano = lista_voti[math.ceil(len(lista_voti) / 2)]
             
-            ##calcolo del numero di giudizi (strettamente) migliori
-            giudizi_peggiori = 0
-            giudizi_migliori = 0
-            for voto in lista_voti: #probabilmente ottimizzabile
-                if voto > giudizio_mediano:
-                    giudizi_migliori += 1
-                if voto < giudizio_mediano:
-                    giudizi_peggiori += 1   
+        ##calcolo del numero di giudizi (strettamente) migliori
+        giudizi_peggiori = 0
+        giudizi_migliori = 0
+        for voto in lista_voti: #probabilmente ottimizzabile
+            if voto > giudizio_mediano:
+                giudizi_migliori += 1
+            if voto < giudizio_mediano:
+                giudizi_peggiori += 1   
             
-            positive = (giudizi_migliori > giudizi_peggiori)
+        positive = (giudizi_migliori > giudizi_peggiori)
 
-            grade = Grade(giudizio_mediano, positive)
-            tupla = VoteTuple(lista_voti['choice_id'],
-                giuduzi_migliori = giudizi_migliori,
-                giudizi_peggiori = giudizi_peggiori,
-                grade=grade)
-            
-            result_list.append(tupla)
+        grade = Grade(giudizio_mediano, positive)
+        tupla = VoteTuple(element['choice_id'],
+            giuduzi_migliori = giudizi_migliori,
+            giudizi_peggiori = giudizi_peggiori,
+            grade=grade)
+        
+        result_list.append(tupla)
 
-        return result_list
+    result_list.sort(reverse=True)
+    return result_list
