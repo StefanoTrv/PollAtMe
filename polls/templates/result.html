@@ -1,13 +1,14 @@
-{% extends 'base.html' %}
+{% extends 'layouts/base.html' %}
 
-{% block title %}Risultati{% endblock title %}
+{% block title %} {{block.super}} | Risultati {% endblock title %}
 
 {% block body %}
+
 Risultato:
 <ul>
-{%for result in results%}
-  <li>la scelta {{ result.choice }} ha ottenuto {{ result.count }} voti</li>
-{% endfor %}
+  {%for result in results%}
+    <li>la scelta {{ result.choice }} ha ottenuto {{ result.count }} voti</li>
+  {% endfor %}
 </ul>
 <br>
 <a href={% url 'polls:vote' id=poll_id %}>Torna al questionario</a>

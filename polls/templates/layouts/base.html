@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="it">
+{% load static %}
+<head>
+    
+    <title> {% block title %} Poll@Me {% endblock title %} </title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="description" content="" />
+    <meta name="keywords" content="">
+    <meta name="author" content="Codedthemes, AppSeed" />
+
+    <!-- Sovrascriviamo/modifichiamo i contenuti scaricati con il nostro css -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+
+    {% block stylesheets %}{% endblock stylesheets %}
+</head>
+<body class="">
+
+    {% include 'includes/sidebar.html' %} 
+    {% include 'includes/navigation.html' %}
+    {% block content %}{% endblock content %}
+    {% include 'includes/scripts.html' %} 
+
+    {% block javascripts %}{% endblock javascripts %}
+</body>
+</html>

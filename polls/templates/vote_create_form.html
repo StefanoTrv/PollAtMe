@@ -1,6 +1,6 @@
-{% extends 'base.html' %}
+{% extends 'layouts/base.html' %}
 
-{% block title %}Sondaggio{% endblock title %}
+{% block title %} {{block.super}} | Sondaggio {% endblock title %}
 
 {% block body %}
 {% if poll %}

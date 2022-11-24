@@ -1,6 +1,6 @@
-{% extends 'base.html' %}
+{% extends 'layouts/base.html' %}
 
-{% block title %}Grazie per la risposta!{% endblock title %}
+{% block title %} {{block.super}} | Grazie per la risposta! {% endblock title %}
 
 {% block body %}
 <h1>Grazie! La tua risposta è stata registrata!</h1>
