@@ -1,1 +1,1 @@
-from .poll_no_choice import PollWithoutChoicesException
+from .poll_no_alternative import PollWithoutAlternativesException
