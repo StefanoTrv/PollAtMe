@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Any
 
-from polls.models import Poll, Choice, Vote
+from polls.models import Poll, Alternative, SinglePreference
 from django.db.models import QuerySet, Count
 
 class PollResultsService():
@@ -16,20 +16,19 @@ class PollResultsService():
 
     #privato, deve costruire gli oggetti da ritornare
     def __get_results(self):
-        #prendiamo i voti dal database e facciamo l'aggregazione
-        voti: QuerySet[Vote] = Vote.objects.filter(poll = self.__poll.id).values('choice').annotate(count = Count('choice')).order_by('-count') #voti per la scelta
-        all_choices: QuerySet[Choice]= Choice.objects.filter(poll = self.__poll.id) #tutte le scelte possibili
+        #prendiamo le preferenze dal database e facciamo l'aggregazione
+        preferences: QuerySet[SinglePreference] = SinglePreference.objects.filter(poll = self.__poll.id).values('alternative').annotate(count = Count('alternative')).order_by('-count') #preferenze per la scelta
+        all_alternatives: QuerySet[Alternative]= Alternative.objects.filter(poll = self.__poll.id) #tutte le scelte possibili
         context = []
 
-        for choice_key in all_choices.values_list('pk',flat=True):
+        for alternative_key in all_alternatives.values_list('pk',flat=True):
             count = 0
-            #se la scelta è stata votata allora aggiorniamo il conto
-            #se è stata votata è in voti
-            if choice_key in voti.values_list('choice', flat=True):
-                count = voti.get(choice = choice_key)['count']
+            #se l'alternativa è stata votata allora aggiorniamo il conto
+            #se è stata votata è in preferences
+            if alternative_key in preferences.values_list('alternative', flat=True):
+                count = preferences.get(alternative = alternative_key)['count']
 
-            text = Choice.objects.get(id = choice_key) # all_choices.get(choiceKey)['choice_text']
-            text = text.choice_text
-            context.append({'choice' : text, 'count' : count})
+            text = Alternative.objects.get(id = alternative_key).text
+            context.append({'alternative' : text, 'count' : count})
                  
         return context

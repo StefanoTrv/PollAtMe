@@ -6,9 +6,15 @@
 
 Risultato:
 <ul>
+<<<<<<< HEAD
   {%for result in results%}
     <li>la scelta {{ result.choice }} ha ottenuto {{ result.count }} voti</li>
   {% endfor %}
+=======
+  {%for result in results%}
+    <li>la scelta {{ result.alternative }} ha ottenuto {{ result.count }} voti</li>
+  {% endfor %}
+>>>>>>> origin/dev
 </ul>
 <br>
 <a href={% url 'polls:vote' id=poll_id %}>Torna al questionario</a>

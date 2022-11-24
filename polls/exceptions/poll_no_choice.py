@@ -1,2 +1,0 @@
-class PollWithoutChoicesException(Exception):
-    pass

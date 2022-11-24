@@ -1,12 +1,12 @@
 from polls.models import Poll
 from django.db.models import Count
-from polls.exceptions import PollWithoutChoicesException
+from polls.exceptions import PollWithoutAlternativesException
 
 class ActivePollsService:
     """Service for get all active polls from database"""
 
     def __init__(self) -> None:
-        self.__queryset = Poll.objects.annotate(num_choices=Count('choice')).filter(num_choices__gt=0)
+        self.__queryset = Poll.objects.annotate(num_alternatives=Count('alternative')).filter(num_alternatives__gt=0)
 
     def get_ordered_queryset(self, by_field: str = 'text', asc: bool = False):
         """
@@ -22,6 +22,6 @@ class SearchPollService:
     
     def search_by_id(self, id: int) -> Poll:
         poll = Poll.objects.get(id = id)
-        if  poll.choice_set.count() == 0:
-            raise PollWithoutChoicesException
+        if  poll.alternative_set.count() == 0:
+            raise PollWithoutAlternativesException
         return poll
