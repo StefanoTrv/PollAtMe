@@ -125,11 +125,25 @@ class GiudizioMaggioritario:
         return self._question_id
     
     ##ritorna l'id del vincitore secondo il giudizio maggioritario
-    def get_winner(self) -> int:
+    def get_winner_id(self) -> int:
         result_query = self.__get_result_list()
         vote_tuple_list = produce_vote_tuple_list(result_query)
         vote_tuple_list.sort(reverse = True)
         return vote_tuple_list[0].choice_id()
+    
+    ##ritorna l'id del vincitore secondo il giudizio maggioritario
+    def get_winner_tuple(self) -> VoteTuple:
+        result_query = self.__get_result_list()
+        vote_tuple_list = produce_vote_tuple_list(result_query)
+        vote_tuple_list.sort(reverse = True)
+        return vote_tuple_list[0]
+    
+    ##ritorna l'id del vincitore secondo il giudizio maggioritario
+    def get_tuple_list(self) -> list:
+        result_query = self.__get_result_list()
+        vote_tuple_list = produce_vote_tuple_list(result_query)
+        vote_tuple_list.sort(reverse = True)
+        return vote_tuple_list
     
 
     ##ritorna una lista di dictionary nella forma {'choice_id': id, 'voti': <1,4,2,...,4,1>
@@ -138,17 +152,17 @@ class GiudizioMaggioritario:
         
         result_list = []
         #dobbiamo prendiamo tutte le alternative per la domanda corrente
-        alternative : QuerySet[Alternative] = Alternative.objects.filter(poll = self.question_id())
-        for alternativa in alternative:
+        alternative_all : QuerySet[Alternative] = Alternative.objects.filter(poll = self.question_id())
+        for alternative_key in alternative_all.values_list('pk', flat=True):
             #dobbiamo andare a prendere i giudizi
-            giudizi = MajorityOpinionJudgement.objects.filter(id = alternativa.id)
+            giudizi = MajorityOpinionJudgement.objects.filter(alternative = alternative_key)
             #abbiamo i giudizi per questa alternativa, dobbiamo costruire la lista
             lista_giudizi = []
             for giudizio in giudizi:
                 lista_giudizi.append(giudizio.grade)
 
             #alla lista associamo l'id dell'alternativa
-            result_list.append({'choice_id': alternativa.id, 'voti': lista_giudizi})
+            result_list.append({'choice_id': alternative_key, 'voti': lista_giudizi})
 
         return result_list
     

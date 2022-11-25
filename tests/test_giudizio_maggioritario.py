@@ -1,11 +1,12 @@
-from unittest import TestCase
+from django.test import TestCase
 from polls.services.giudizio_maggioritario import Grade
 from polls.services.giudizio_maggioritario import VoteTuple
 from polls.services.giudizio_maggioritario import GiudizioMaggioritario
 from polls.services.giudizio_maggioritario import produce_vote_tuple_list
 
-
 class GiudizioMaggioritarioTest(TestCase):
+
+    fixtures: list[str] = ['test_giudizio_maggioritario.json']
 
     #test della classe grade
     def test_grade_ordering(self):
@@ -60,12 +61,12 @@ class GiudizioMaggioritarioTest(TestCase):
         tuple_two = VoteTuple(2, 25, Grade(4, False), 45) #voto (25, MB-, 45)
         tuple_three = VoteTuple(3, 27, Grade(4, False), 48) #voto (27, MB-, 48)
 
-        listaTuple = [tuple_one, tuple_two, tuple_three]
-        listaTuple.sort(reverse=True)
+        lista_tuple = [tuple_one, tuple_two, tuple_three]
+        lista_tuple.sort(reverse=True)
 
-        self.assertEqual(listaTuple[0], tuple_two)
-        self.assertEqual(listaTuple[1], tuple_three)
-        self.assertEqual(listaTuple[2], tuple_one)
+        self.assertEqual(lista_tuple[0], tuple_two)
+        self.assertEqual(lista_tuple[1], tuple_three)
+        self.assertEqual(lista_tuple[2], tuple_one)
 
     def test_tuple_generation(self):
 
@@ -96,3 +97,9 @@ class GiudizioMaggioritarioTest(TestCase):
         self.assertEqual(lista_tuple[0], tuple_three)
         tuple_two =  VoteTuple(2, 25, Grade(4, False), 35)
         self.assertEqual(lista_tuple[1], tuple_two)
+
+    def test_calculation_from_database(self):
+        giudizio_maggioritario = GiudizioMaggioritario(1)
+        winner = giudizio_maggioritario.get_winner_tuple()
+        expected_winner = VoteTuple(3, 2, Grade(3, True), 1)
+        self.assertEqual(winner, expected_winner)
