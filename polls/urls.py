@@ -9,3 +9,7 @@ urlpatterns = [
     path('result/<int:id>/', views.SinglePreferenceListView.as_view(), name = 'result'),
     path('', views.IndexView.as_view(), name='index')
 ]
+
+handler403 = 'polls.views.error_pages.error_403'
+handler404 = 'polls.views.error_pages.error_404'
+handler500 = 'polls.views.error_pages.error_500'
