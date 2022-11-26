@@ -1,0 +1,8 @@
+<h1>{{poll.title}}</h1>
+<p> {{ poll.text }}</p>
+<form method="post">
+    {% for form, form_label in formset %}
+    <strong> {{ form_label }} </strong>
+    {{ form.as_p }}
+    {% endfor %}
+</form>
