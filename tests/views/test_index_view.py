@@ -21,10 +21,10 @@ class IndexViewTest(TestCase):
     def test_sondaggio_senza_scelte(self):
         resp = self.client.get(self.url)
         self.assertEqual(resp.status_code, 200)
-        self.assertContains(resp, "Non ci sono polls attive")
+        self.assertContains(resp, "Non ci sono sondaggi attivi al momento")
     
     def test_nessun_sondaggio(self):
         self.poll.delete()
         resp = self.client.get(self.url)
         self.assertEqual(resp.status_code, 200)
-        self.assertContains(resp, "Non ci sono polls attive")
+        self.assertContains(resp, "Non ci sono sondaggi attivi al momento")

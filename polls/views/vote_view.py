@@ -18,7 +18,7 @@ class VoteView(CreateView):
     POLL_DOES_NOT_EXISTS_MSG = "Il sondaggio ricercato non esiste"
     NO_ALTERNATIVES_POLL_MSG = "Il sondaggio ricercato non ha opzioni di risposta"
 
-    model: type[models.Model] = SinglePreference                #il modello che vogliamo creare, vogliamo creare una preferenza
+    model: type[models.Model] = SinglePreference    #il modello che vogliamo creare, vogliamo creare una preferenza
     fields: list[str] = ['alternative']                  
     template_name: str = 'vote_create_form.html'    #setto il campo template_name al template che voglio ritornare, facendo questo viene ritornato il template corretto
                                                     #dai metodi della superclasse
@@ -44,14 +44,14 @@ class VoteView(CreateView):
     #override del metodo get_context_data della classe base, questo ci permette di ritornare anche la domanda al template!
     def get_context_data(self, **kwargs: Any):
         context = super().get_context_data(**kwargs)    #prendiamo il contesto della view, a noi però serve anche la domanda!
-        context['poll'] = self.__poll                     #aggiungiamo la domanda
+        context['poll'] = self.__poll                   #aggiungiamo la domanda
         context['error'] = self.__error
         return context                                  #nel contesto (dizionario) abbiamo il form e la domanda
 
     #viene automaticamente chiamata dal get_context, facciamo l'override perchè dobbiamo generare il form dal database
     def get_form(self, form_class: Type[forms.BaseModelForm] = None):
         form = super().get_form(form_class)                            #prendiamo la classe Form usata nella view (dovrebbe essere vuoto)
-        form.fields['alternative'] = forms.ModelChoiceField(                #ridefiniamo "alternative" e gli assegnamo come valore un form di tipo checkbox generato dal database
+        form.fields['alternative'] = forms.ModelChoiceField(           #ridefiniamo "alternative" e gli assegnamo come valore un form di tipo checkbox generato dal database
             queryset=Alternative.objects.filter(poll=self.__poll),    
             widget=forms.RadioSelect,                                  #specifichiamo che vogliamo un radio button
             label='Opzioni'
