@@ -1,0 +1,14 @@
+{% extends 'layouts/base_old.html' %}
+
+{% block title %} {{block.super}} | Crea nuovo sondaggio {% endblock title %}
+
+{% block body %}
+<p>{{ poll.text }}</p>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_table }}
+    <input type="submit" value="Salva">
+</form>
+<br>
+<p><a href="{% url 'polls:index' %}">Annulla e torna alla home</a></p>
+{% endblock body %}

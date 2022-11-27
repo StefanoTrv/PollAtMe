@@ -7,7 +7,8 @@ app_name = 'polls'
 urlpatterns = [
     path('vote/<int:id>/', views.VoteView.as_view(), name = 'vote'),
     path('result/<int:id>/', views.SinglePreferenceListView.as_view(), name = 'result'),
-    path('', views.IndexView.as_view(), name='index')
+    path('', views.IndexView.as_view(), name='index'),
+    path('create_poll/', views.create_poll, name='create_poll')
 ]
 
 handler403 = 'polls.views.error_pages.error_403'

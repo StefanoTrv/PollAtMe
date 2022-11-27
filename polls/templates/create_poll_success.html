@@ -1,0 +1,8 @@
+{% extends 'layouts/base_old.html' %}
+
+{% block title %} {{block.super}} | Sondaggio creato! {% endblock title %}
+
+{% block body %}
+<h1>Perfetto! Il tuo sondaggio è stato creato.</h1>
+<a href={% url 'polls:index' %}>Torna alla home</a>
+{% endblock body %}
