@@ -6,7 +6,7 @@
 <p>{{ poll.text }}</p>
 <form method="post">
     {% csrf_token %}
-    {{ form.as_table }}
+    {{ form.as_p }}
     <input type="submit" value="Salva">
 </form>
 <br>

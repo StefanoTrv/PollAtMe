@@ -1,7 +1,7 @@
 from django.db import models
 
 class Poll(models.Model):
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=100)
     text = models.TextField()
 
     def __str__(self) -> str:
