@@ -31,5 +31,6 @@ class TestSearchPollService(TestCase):
         assert_that(poll.alternative_set).is_equal_to(expected_poll.alternative_set)
     
     def test_search_by_error(self):
-        assert_that(SearchPollService().search_by_id).raises(ObjectDoesNotExist).when_called_with(4)
+        last_id = Poll.objects.all().order_by('-id').first().id
+        assert_that(SearchPollService().search_by_id).raises(ObjectDoesNotExist).when_called_with(last_id+1)
         assert_that(SearchPollService().search_by_id).raises(PollWithoutAlternativesException).when_called_with(3)

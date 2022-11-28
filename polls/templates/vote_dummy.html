@@ -1,0 +1,10 @@
+<h1>{{poll.title}}</h1>
+<p>{{ poll.text }}</p>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_table }}
+    <input type="submit" value="Salva">
+</form>
+<br>
+<a href={% url 'polls:result' id=poll.id %}>Visualizza i risultati del sondaggio</a>
+<p>Torna alla <a href="{% url 'polls:index' %}">home</a></p>
