@@ -1,2 +1,3 @@
 from .single_preference_form import SinglePreferenceForm
-from .single_preference_form import MajorityOpinionForm
+
+from .majority_preference_form import MajorityOpinionForm, MajorityPreferenceFormSet

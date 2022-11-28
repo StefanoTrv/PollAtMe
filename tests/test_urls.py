@@ -8,7 +8,7 @@ class UrlsTest(SimpleTestCase): #usiamo SimpleTestCase perchè non facciamo rife
         url = reverse('polls:index')
         self.assertEqual(resolve(url).func.view_class, IndexView)
 
-    def test_vote_resolves(self):
+    def test_vote_resolves_vote(self):
         url = reverse('polls:vote', args = [1])
         self.assertEqual(resolve(url).func.view_class, VotingView)
 

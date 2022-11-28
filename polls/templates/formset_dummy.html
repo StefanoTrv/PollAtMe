@@ -1,8 +1,14 @@
 <h1>{{poll.title}}</h1>
 <p> {{ poll.text }}</p>
 <form method="post">
-    {% for form, form_label in formset %}
-    <strong> {{ form_label }} </strong>
-    {{ form.as_p }}
+    {% csrf_token %}
+    {{ form.management_form }}
+    {% for f in form %}
+    {{ f.as_p }}
     {% endfor %}
+    <input type="submit" value="Salva">
+</form>
+<br>
+<a href={% url 'polls:result' id=poll.id %}>Visualizza i risultati del sondaggio</a>
+<p>Torna alla <a href="{% url 'polls:index' %}">home</a></p>
 </form>
