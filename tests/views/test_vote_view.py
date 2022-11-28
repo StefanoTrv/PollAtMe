@@ -4,7 +4,9 @@ from django.urls import reverse
 
 from polls import forms as pollforms
 from polls import models
+from polls.views import VotingView
 
+URL = 'polls:vote'
 
 class TestCreateSinglePreferenceView(TestCase):
     fixtures = ['polls.json']
@@ -13,27 +15,39 @@ class TestCreateSinglePreferenceView(TestCase):
     def setUp(self) -> None:
         self.poll = models.SinglePreferencePoll.objects.first()
         if self.poll is not None:
-            self.url = reverse('polls:vote', args=[self.poll.pk])
+            self.url = reverse(URL, args=[self.poll.pk])
             self.form = pollforms.SinglePreferenceForm(poll=self.poll)
         return super().setUp()
 
     def test_if_show_single_preference_poll_form(self):
         res = self.client.get(self.url)
         assert_that(res.context['form']).is_instance_of(pollforms.SinglePreferenceForm)
-        self.assertContains(
-            response=res,
-            text=str(self.form),
-            status_code=200
-        )
-        self.assertContains(
-            response=res,
-            text=self.poll.title
-        )
+        
+        #self.assertContains(
+        #    response=res,
+        #    text=self.poll.title
+        #)
         self.assertContains(
             response=res,
             text=self.poll.text
         )
+        for alternative in models.Alternative.objects.filter(poll = self.poll.id):
+            self.assertContains(res, alternative.text)
     
+    def test_404_sondaggio_inesistente(self):
+        url = reverse(URL, args=[100])
+        resp = self.client.get(url)
+        assert_that(resp.status_code).is_equal_to(404)        
+
+    def test_sondaggio_senza_scelte(self):
+        empty_poll = models.SinglePreferencePoll()
+        empty_poll.title = 'Title'
+        empty_poll.text = 'Text'
+        empty_poll.save()
+        url = reverse(URL, args=[empty_poll.id])
+        resp = self.client.get(url)
+        assert_that(resp.status_code).is_equal_to(400)
+
     def test_if_submit_and_save_in_db(self):
         last_vote_before = models.SinglePreference.objects.last()
         res = self.client.post(self.url, {
@@ -57,7 +71,7 @@ class TestCreateMajorityPreferenceView(TestCase):
     def setUp(self) -> None:
         self.poll = models.MajorityOpinionPoll.objects.first()
         if self.poll is not None:
-            self.url = reverse('polls:vote', args=[self.poll.pk])
+            self.url = reverse(URL, args=[self.poll.pk])
             self.res = self.client.get(self.url)
             self.formset_class = pollforms.MajorityPreferenceFormSet.get_formset_class(
                 self.poll.alternative_set.count())
@@ -110,5 +124,5 @@ class TestCreateMajorityPreferenceView(TestCase):
         assert_that(last_vote.id).is_not_equal_to(last_vote_before.id)
 
         judge: models.MajorityOpinionJudgement
-        for judge in last_vote.responses.through.all():
+        for judge in last_vote.majorityopinionjudgement_set.all():
             assert_that(judge.grade).is_equal_to(1)
