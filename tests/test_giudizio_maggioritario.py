@@ -81,7 +81,6 @@ class GiudizioMaggioritarioTest(TestCase):
         voti = [5]*25+[4]*30+[3]*10+[2]*10+[1]*15
         lista_voti.append({'choice_id':choice_id, 'voti':voti})
 
-        
         choice_id = 3
         voti = [5]*27+[4]*25+[3]*5+[2]*6+[1]*10
         lista_voti.append({'choice_id':choice_id, 'voti':voti})
@@ -103,3 +102,12 @@ class GiudizioMaggioritarioTest(TestCase):
         winner = giudizio_maggioritario.get_winner_tuple()
         expected_winner = VoteTuple(3, 2, Grade(3, True), 1)
         self.assertEqual(winner, expected_winner)
+
+    def test_classifica(self):
+        #la classifica per il poll 1 dovrebbe essere {'C' : 1, 'B' : 3 'A' : 2}
+        giudizio_maggioritario = GiudizioMaggioritario(1)
+        classifica = giudizio_maggioritario.get_classifica()
+        expected_classifica = [{'alternative' : 'C', 'place' : 1},{'alternative' : 'A', 'place' : 2},{'alternative' : 'B', 'place' : 3}]
+        self.assertEqual(classifica, expected_classifica)
+
+        
