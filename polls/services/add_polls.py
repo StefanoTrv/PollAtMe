@@ -1,4 +1,4 @@
-from polls.models import *
+from polls.models import Poll, SinglePreferencePoll, Alternative
 
 def add_single_preference_poll(title : str, text : str, alternatives : list) -> None:
     __add_generic_poll(SinglePreferencePoll(),title,text,alternatives)
