@@ -4,6 +4,7 @@ from django.urls import reverse
 
 from polls import forms as pollforms
 from polls import models
+from polls.views import VotingView
 
 URL = 'polls:vote'
 
@@ -36,8 +37,7 @@ class TestCreateSinglePreferenceView(TestCase):
     def test_404_sondaggio_inesistente(self):
         url = reverse(URL, args=[100])
         resp = self.client.get(url)
-        self.assertEqual(resp.status_code, 200)
-        self.assertContains(resp, 'Il sondaggio ricercato non esiste')        
+        assert_that(resp.status_code).is_equal_to(404)        
 
     def test_sondaggio_senza_scelte(self):
         empty_poll = models.SinglePreferencePoll()
@@ -46,8 +46,7 @@ class TestCreateSinglePreferenceView(TestCase):
         empty_poll.save()
         url = reverse(URL, args=[empty_poll.id])
         resp = self.client.get(url)
-        self.assertEqual(resp.status_code, 200)
-        self.assertContains(resp, 'Il sondaggio ricercato non ha opzioni di risposta')    
+        assert_that(resp.status_code).is_equal_to(400)
 
     def test_if_submit_and_save_in_db(self):
         last_vote_before = models.SinglePreference.objects.last()
@@ -125,5 +124,5 @@ class TestCreateMajorityPreferenceView(TestCase):
         assert_that(last_vote.id).is_not_equal_to(last_vote_before.id)
 
         judge: models.MajorityOpinionJudgement
-        for judge in last_vote.responses.through.all():
+        for judge in last_vote.majorityopinionjudgement_set.all():
             assert_that(judge.grade).is_equal_to(1)
