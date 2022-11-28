@@ -113,6 +113,13 @@ class VoteTuple:
             self.giudizi_peggiori() == __o.giudizi_peggiori()
         )
     
+    def sameScore(self, __o) -> bool:
+        return (
+            self.giuduzi_migliori() == __o.giuduzi_migliori() and
+            self.grade() == __o.grade() and
+            self.giudizi_peggiori() == __o.giudizi_peggiori()
+        )
+    
     
 
 #classe che incapsula la logica per il calcolo del risultato del giudizio maggioritario
@@ -154,6 +161,25 @@ class GiudizioMaggioritario:
         winner = Alternative.objects.get(id = self.get_winner_id())
         return winner.text
     
+    def get_classifica(self) -> list:
+        
+        ordered_tuple_list = self.__calculate_tuple_list()
+        
+        classifica = []
+
+        place = 1
+        index = 0
+        length = len(ordered_tuple_list)
+        while index < length:
+            if index != 0:
+                if not ordered_tuple_list[index].sameScore(ordered_tuple_list[index-1]):
+                    place += 1
+            
+            current_alternative_name = Alternative.objects.get(id = ordered_tuple_list[index].choice_id()).text
+            classifica.append({'alternative' : current_alternative_name, 'place' : place})                 
+            index += 1
+
+        return classifica    
 
     ##ritorna una lista di dictionary nella forma {'choice_id': id, 'voti': <1,4,2,...,4,1>
     ##voti più alti corrispondono a voti migliori!
@@ -224,13 +250,13 @@ class MajorityJudgementService:
         self.__poll = Poll.objects.get(id = poll_id)
         return self
     
-    def get_winner(self) -> list[Any]:
+    def get_classifica(self) -> list[Any]:
         context = self.__get_results()
         return context
 
     def __get_results(self):
         self.giudizio_maggioritario = GiudizioMaggioritario(self.__poll.id)
-        winner = self.giudizio_maggioritario.get_winner_name()
-        context = [{'alternative' : winner}]                
+        classifica = self.giudizio_maggioritario.get_classifica()
+        context = {'classifica' : classifica}            
         return context
     

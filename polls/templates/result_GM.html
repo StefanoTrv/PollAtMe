@@ -6,8 +6,8 @@
 <body>
     Risultato:
 <ul>
-{%for result in results%}
-  <li>la scelta {{ result.alternative }} ha vinto!</li>
+{%for element in result.classifica%}
+  <li>la scelta {{ element.alternative }} è arrivata in posizione {{ element.place }}</li>
 {% endfor %}
 </ul>
 <br>

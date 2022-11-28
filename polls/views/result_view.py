@@ -35,6 +35,6 @@ class MajorityJudgementListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['results'] = self.__poll_results_service.search_by_poll_id(self.kwargs['id']).get_winner()
+        context['result'] = self.__poll_results_service.search_by_poll_id(self.kwargs['id']).get_classifica()
         context['poll_id'] = self.kwargs['id']
         return context
