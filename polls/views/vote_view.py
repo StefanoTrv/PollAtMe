@@ -26,6 +26,7 @@ class VotingView(View):
         Questo metodo viene invocato quando viene fatta una richiesta
         HTTP (di qualunque tipo).
         Il dispatching avviene verificando gli attributi della poll
+        (non funziona il polimorfismo)
         """
         try:
             poll = SearchPollService().search_by_id(kwargs['id'])
@@ -48,7 +49,7 @@ class VotingView(View):
 class CreateSinglePreferenceView(CreateView):
 
     form_class: Optional[Type[forms.BaseForm]] = SinglePreferenceForm
-    template_name: str = 'vote_dummy.html'
+    template_name: str = 'vote_create_form.html'
     poll: Poll = Poll()
 
     def dispatch(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.response.HttpResponseBase:
