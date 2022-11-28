@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Poll@Me | Risultati</title>
+</head>
+<body>
+    Risultato:
+<ul>
+{%for element in result.classifica%}
+  <li>la scelta {{ element.alternative }} è arrivata in posizione {{ element.place }}</li>
+{% endfor %}
+</ul>
+<br>
+<a href={% url 'polls:vote' id=poll_id %}>Torna al questionario</a>
+<br>
+<a href={% url 'polls:index' %}>Torna alla home</a>
+</body>
+</html>

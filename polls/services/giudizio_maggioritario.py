@@ -2,6 +2,7 @@ from polls.models import Poll, Alternative, SinglePreference
 from polls.models.preference import MajorityOpinionJudgement
 import math
 from django.db.models import QuerySet, Count
+from typing import Any
 
 #classe per la rappresentazione del voto, classe contenitore
 #voto maggiore => giudizio peggiore
@@ -112,6 +113,13 @@ class VoteTuple:
             self.giudizi_peggiori() == __o.giudizi_peggiori()
         )
     
+    def sameScore(self, __o) -> bool:
+        return (
+            self.giuduzi_migliori() == __o.giuduzi_migliori() and
+            self.grade() == __o.grade() and
+            self.giudizi_peggiori() == __o.giudizi_peggiori()
+        )
+    
     
 
 #classe che incapsula la logica per il calcolo del risultato del giudizio maggioritario
@@ -119,6 +127,7 @@ class GiudizioMaggioritario:
 
     ##istanziatore della classe 
     def __init__(self, id:int) -> None:
+        self.tuple_list  = None
         self._question_id = id
 
     def question_id(self) -> int:
@@ -126,25 +135,51 @@ class GiudizioMaggioritario:
     
     ##ritorna l'id del vincitore secondo il giudizio maggioritario
     def get_winner_id(self) -> int:
-        result_query = self.__get_result_list()
-        vote_tuple_list = produce_vote_tuple_list(result_query)
-        vote_tuple_list.sort(reverse = True)
+        vote_tuple_list = self.__calculate_tuple_list()
         return vote_tuple_list[0].choice_id()
     
-    ##ritorna l'id del vincitore secondo il giudizio maggioritario
+    ##ritorna la tupla del vincitore secondo il giudizio maggioritario
     def get_winner_tuple(self) -> VoteTuple:
-        result_query = self.__get_result_list()
-        vote_tuple_list = produce_vote_tuple_list(result_query)
-        vote_tuple_list.sort(reverse = True)
+        vote_tuple_list = self.__calculate_tuple_list()
         return vote_tuple_list[0]
     
-    ##ritorna l'id del vincitore secondo il giudizio maggioritario
+    ##ritorna la lista ordinata secondo il giudizio maggioritario
     def get_tuple_list(self) -> list:
-        result_query = self.__get_result_list()
-        vote_tuple_list = produce_vote_tuple_list(result_query)
-        vote_tuple_list.sort(reverse = True)
+        vote_tuple_list = self.__calculate_tuple_list()
         return vote_tuple_list
     
+    def __calculate_tuple_list(self):
+        if self.tuple_list is None:  ##evitiamo di rieseguire le query!
+            result_query = self.__get_result_list()
+            vote_tuple_list = produce_vote_tuple_list(result_query)
+            vote_tuple_list.sort(reverse = True)
+            self.tuple_list = vote_tuple_list
+        return self.tuple_list
+    
+    ##ritorna il nome dell'alternativa vincitrice
+    def get_winner_name(self) -> str:
+        winner = Alternative.objects.get(id = self.get_winner_id())
+        return winner.text
+    
+    def get_classifica(self) -> list:
+        
+        ordered_tuple_list = self.__calculate_tuple_list()
+        
+        classifica = []
+
+        place = 1
+        index = 0
+        length = len(ordered_tuple_list)
+        while index < length:
+            if index != 0:
+                if not ordered_tuple_list[index].sameScore(ordered_tuple_list[index-1]):
+                    place += 1
+            
+            current_alternative_name = Alternative.objects.get(id = ordered_tuple_list[index].choice_id()).text
+            classifica.append({'alternative' : current_alternative_name, 'place' : place})                 
+            index += 1
+
+        return classifica    
 
     ##ritorna una lista di dictionary nella forma {'choice_id': id, 'voti': <1,4,2,...,4,1>
     ##voti più alti corrispondono a voti migliori!
@@ -165,7 +200,8 @@ class GiudizioMaggioritario:
             result_list.append({'choice_id': alternative_key, 'voti': lista_giudizi})
 
         return result_list
-    
+
+        
 ##non dipende dall'istanza della classe quindi lo facciamo statico, così può essere testato
 def produce_vote_tuple_list(result_query: list) -> list:
         
@@ -205,3 +241,22 @@ def produce_vote_tuple_list(result_query: list) -> list:
 
     result_list.sort(reverse=True)
     return result_list
+
+
+##Servizio per ottenere il risultato dei giudizi maggioritari, per coerenza con il servizio a scelta singola
+class MajorityJudgementService:
+
+    def search_by_poll_id(self, poll_id: int) -> Any:
+        self.__poll = Poll.objects.get(id = poll_id)
+        return self
+    
+    def get_classifica(self) -> list[Any]:
+        context = self.__get_results()
+        return context
+
+    def __get_results(self):
+        self.giudizio_maggioritario = GiudizioMaggioritario(self.__poll.id)
+        classifica = self.giudizio_maggioritario.get_classifica()
+        context = {'classifica' : classifica}            
+        return context
+    
