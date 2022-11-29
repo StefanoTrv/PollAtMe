@@ -82,11 +82,13 @@ steps:
   displayName: 'Run tests'
 
 - task: UseDotNet@2
-- task: UseDotNet@2
   inputs:
     packageType: 'runtime'
     version: 
     installationPath: 'dotnet/'
+
+- bash: |
+    dotnet --version
 
 - task: PublishTestResults@2
   inputs:
