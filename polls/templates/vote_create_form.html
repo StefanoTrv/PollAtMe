@@ -1,16 +1,35 @@
-{% extends 'layouts/base.html' %}
+{% extends 'layouts/base_form.html' %}
 
-{% block title %} {{block.super}} | Sondaggio {% endblock title %}
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="#!">{{ poll.title }}</a></li>
+{% endblock breadcrumb %}
 
-{% block content %}
-<h1>{{poll.title}}</p>
-<p>{{ poll.text }}</p>
-<form method="post">
+{% block poll_name %}{{ poll.title }}{% endblock poll_name %}
+
+{% block title %} {{block.super}} | {{ poll.title }} {% endblock title %}
+
+{% block form_card %}
+<div class="card">
+    <div class="card-body">
+        {{ poll.text }}
+    </div>
+</div>
+<form method="post" needs-validation>
     {% csrf_token %}
-    {{ form.as_table }}
-    <input type="submit" value="Salva">
+    <div class="card">
+        <div class="card-body">
+        {% for radio in form.alternative %}
+            <div class="form-check">
+                {{ radio.tag }}
+                <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label}}</label>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <button type="submit" class="btn btn-primary">Salva</button>
+        </div>
+    </div>
 </form>
-<br>
-<a href={% url 'polls:result' id=poll.id %}>Visualizza i risultati del sondaggio</a>
-<p>Torna alla <a href="{% url 'polls:index' %}">home</a></p>
-{% endblock content %}
+{% endblock form_card %}

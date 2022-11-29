@@ -2,7 +2,6 @@ from django import forms
 from django.db import models
 
 from polls.models import SinglePreference, SinglePreferencePoll
-from polls.services import SearchPollService
 
 
 class SinglePreferenceForm(forms.ModelForm):
@@ -18,6 +17,8 @@ class SinglePreferenceForm(forms.ModelForm):
         if instance is None:
             self.fields['alternative'] = forms.ModelChoiceField(
                 queryset=poll.alternative_set.all(),
-                widget=forms.RadioSelect,  # specifichiamo che vogliamo un radio button
-                label='Opzioni'
+                widget=forms.RadioSelect(attrs={
+                    'class': 'form-check-input'
+                }),  # specifichiamo che vogliamo un radio button
+                label=''
             )

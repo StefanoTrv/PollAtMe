@@ -1,82 +1,50 @@
-{% extends 'layouts/base.html' %}
+{% extends 'layouts/base_form.html' %}
 
-{% block title %} {{block.super}} | {{ poll.title }} {% endblock title %}  
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="#!">{{ poll.title }}</a></li>
+{% endblock breadcrumb %}
 
-{% block content %}
-<div class="pcoded-main-container">
-    <div class="pcoded-content">
-        <!-- [ breadcrumb ] start -->
-        <div class="page-header">
-            <div class="page-block">
-                <div class="row align-items-center">
-                    <div class="col-md-12">
-                        <div class="page-header-title">
-                            <h5 class="m-b-10">Sample Page</h5>
-                        </div>
-                        <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="index.html"><em class="feather icon-home"></em></a></li>
-                            <li class="breadcrumb-item"><a href="#!">{{ poll.title }}</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- [ breadcrumb ] end -->
-        <!-- [ Main Content ] start -->
-        <div class="row">
-            <!-- [ sample-page ] start -->
-            <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>{{ poll.title }}</h3>
-                    </div>
-                    <div class="card-body">
-                        <p>{{ poll.text }}</p>
-                        <form class="needs-validation" method="post" novalidate=>
-                            {% csrf_token %}
-                            {{ form.management_form }}
-                            {% for f in form %}
-                                {% for error in f.grade.errors %}
-                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                    <div>{{ error }}</div>
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
-                                {% endfor %}
-                                <legend>{{ f.grade.label }}</legend>
-                                {% for radio in f.grade %}
-                                <div class="form-check form-check-inline">
-                                    {{ radio.tag }}
-                                    <label 
-                                        class="{% if f.errors %}btn btn-outline-danger is-invalid{% else %}btn btn-outline-secondary{% endif %}" 
-                                        for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
-                                </div>
-                                {% endfor %}
-                                <hr>
-                            {% endfor %}
-                            <button type="submit" class="btn  btn-primary">Salva</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <!-- [ sample-page ] end -->
-        </div>
-        <!-- [ Main Content ] end -->
+{% block poll_name %}{{ poll.title }}{% endblock poll_name %}
+
+{% block title %} {{block.super}} | {{ poll.title }} {% endblock title %}
+
+{% block form_card %}
+<div class="card">
+    <div class="card-body">
+        {{ poll.text }}
     </div>
 </div>
-{% endblock content %}
 
-
-{% comment %} <h1>{{poll.title}}</h1>
-<p> {{ poll.text }}</p>
-<form method="post">
+<form class="needs-validation" method="post" novalidate>
     {% csrf_token %}
     {{ form.management_form }}
     {% for f in form %}
-    
+    <div class="card">
+        <div class="card-body">
+            {% for error in f.grade.errors %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <div>{{ error }}</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+            <legend>{{ f.grade.label }}</legend>
+            {% for radio in f.grade %}
+            <div class="form-check form-check-inline">
+                {{ radio.tag }}
+                <label
+                    class="{% if f.errors %}btn btn-outline-danger is-invalid{% else %}btn btn-outline-secondary{% endif %}"
+                    for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
     {% endfor %}
-    <input type="submit" value="Salva">
+    <div class="card">
+        <div class="card-body">
+            <button type="submit" class="btn btn-primary">Salva</button>
+            <button type="reset" class="btn btn-secondary">Cancella</button>
+        </div>
+    </div>
 </form>
-<br>
-<a href={% url 'polls:result' id=poll.id %}>Visualizza i risultati del sondaggio</a>
-<p>Torna alla <a href="{% url 'polls:index' %}">home</a></p>
-</form> {% endcomment %}
+
+{% endblock form_card %}
