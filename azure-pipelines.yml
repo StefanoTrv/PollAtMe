@@ -49,12 +49,13 @@ steps:
 - script: |
     wget https://dot.net/v1/dotnet-install.sh
     chmod +x ./dotnet-install.sh
-    ./dotnet-install.sh --runtime aspnetcore
+    ./dotnet-install.sh
+    dotnet --info
     echo "##vso[task.setvariable variable=DOTNET_ROOT]echo $DOTNET_ROOT"
     echo "##vso[task.prependpath]echo $DOTNET_ROOT"
 
 - bash: |
-    dotnet --version
+    dotnet --info
 - task: PythonScript@0
   displayName: 'Export project path'
   inputs:
