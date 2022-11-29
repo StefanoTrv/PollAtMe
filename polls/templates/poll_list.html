@@ -10,29 +10,24 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h3 class="m-b-10">Sondaggi attivi</h5>
+                            <h2 class="m-b-10">Sondaggi attivi</h2>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-12 col-md-4">
-                <h5>Preferenza singola</h5>
+            <div class="col-md-6 col-xl-4">
+                <h4>Preferenza singola</h4>
                 <hr>
                 {% for poll in object_list %}
                     <div class = "row">
-                        <div class="col-sm-12 col-md-4">
-                            <h5> {{ poll.title }} </h5>
-                            <hr>
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <a href={% url 'polls:vote' id=poll.id %}>{{ poll }}</a>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="card mb-3" style="text-align:center">
+                            <img class="img-fluid card-img-top" src="https://appsrv1-147a1.kxcdn.com/gradient/images/slider/img-slide-3.jpg" alt="Card Image cap">
+                            <div class="card-body">
+                                <h6 class="card-
+                                title"> {{ poll.title }} </h6>
+                                <a class="btn btn-block btn-primary mb-4" href={% url 'polls:vote' id=poll.id %}>Vai</a>
                             </div>
                         </div>
                     </div>
