@@ -4,6 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
 trigger:
+  - master
   - dev
   - fix/*
   - feature/*
@@ -45,6 +46,14 @@ services:
   db: postgres
 
 steps:
+- script: |
+    wget https://dot.net/v1/dotnet-install.sh
+    chmod +x ./dotnet-install.sh
+    ./dotnet-install.sh 
+    echo "##vso[task.prependpath]$HOME/.dotnet"
+
+- bash: |
+    dotnet --info
 - task: PythonScript@0
   displayName: 'Export project path'
   inputs:
@@ -77,7 +86,7 @@ steps:
 
 - script: |
     pushd '$(projectRoot)'
-    pytest --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml --cov-report=html
+    pytest --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml --no-coverage-upload --cov-branch
   displayName: 'Run tests'
 
 - task: PublishTestResults@2
