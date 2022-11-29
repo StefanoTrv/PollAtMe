@@ -49,10 +49,8 @@ steps:
 - script: |
     wget https://dot.net/v1/dotnet-install.sh
     chmod +x ./dotnet-install.sh
-    ./dotnet-install.sh
-    dotnet --info
-    echo "##vso[task.setvariable variable=DOTNET_ROOT]echo $DOTNET_ROOT"
-    echo "##vso[task.prependpath]echo $DOTNET_ROOT"
+    ./dotnet-install.sh 
+    echo "##vso[task.prependpath]$HOME/.dotnet"
 
 - bash: |
     dotnet --info
