@@ -46,6 +46,15 @@ services:
   db: postgres
 
 steps:
+- script: |
+    wget https://dot.net/v1/dotnet-install.sh
+    chmod +x ./dotnet-install.sh
+    ./dotnet-install.sh --runtime aspnetcore
+    echo "##vso[task.setvariable variable=DOTNET_ROOT]echo $DOTNET_ROOT"
+    echo "##vso[task.prependpath]$DOTNET_ROOT"
+
+- bash: |
+    dotnet --version
 - task: PythonScript@0
   displayName: 'Export project path'
   inputs:
@@ -80,15 +89,6 @@ steps:
     pushd '$(projectRoot)'
     pytest --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml --no-coverage-upload --cov-branch
   displayName: 'Run tests'
-
-- task: UseDotNet@2
-  inputs:
-    packageType: 'runtime'
-    version: 
-    installationPath: 'dotnet/'
-
-- bash: |
-    dotnet --version
 
 - task: PublishTestResults@2
   inputs:
