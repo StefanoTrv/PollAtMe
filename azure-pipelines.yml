@@ -81,10 +81,7 @@ steps:
     pytest --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml --no-coverage-upload --cov-branch
   displayName: 'Run tests'
 
-#- bash: |
-#    wget https://dot.net/v1/dotnet-install.sh
-#    chmod +x ./dotnet-install.sh
-#    ./dotnet-install.sh --version latest --runtime aspnetcore
+- task: UseDotNet@2
 
 - task: PublishTestResults@2
   inputs:
@@ -94,5 +91,5 @@ steps:
 
 - task: PublishCodeCoverageResults@1
   inputs:
-    codeCoverageTool: JaCoCo
+    codeCoverageTool: Cobertura
     summaryFileLocation: 'coverage.xml'
