@@ -3,10 +3,10 @@
 {% block title %} {{block.super}} | Crea nuovo sondaggio {% endblock title %}
 
 {% block body %}
-<p>{{ poll.text }}</p>
+<p>Inserisci titolo e domanda del sondaggio</p>
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    {{ form.as_div }}
     <input type="submit" value="Salva">
 </form>
 <br>
