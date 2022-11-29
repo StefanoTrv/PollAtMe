@@ -81,6 +81,11 @@ steps:
     pytest --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml --cov-report=html --no-coverage-upload --cov-branch
   displayName: 'Run tests'
 
+- bash: |
+    wget https://dot.net/v1/dotnet-install.sh
+    chmod +x ./dotnet-install.sh
+    ./dotnet-install.sh --version latest --runtime aspnetcore
+
 - task: PublishTestResults@2
   inputs:
     testResultsFiles: '**/test-*.xml'
