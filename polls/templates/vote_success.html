@@ -1,8 +1,10 @@
-{% extends 'layouts/base_old.html' %}
+{% extends 'layouts/base.html' %}
 
 {% block title %} {{block.super}} | Grazie per la risposta! {% endblock title %}
 
 {% block content %}
+
+
 <h1>Grazie! La tua risposta è stata registrata!</h1>
 <a href={% url 'polls:vote' id=poll_id %}>Torna al questionario</a>
 <br>
