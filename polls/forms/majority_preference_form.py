@@ -39,15 +39,23 @@ class MajorityOpinionForm(forms.ModelForm):
         model: type[models.Model] = MajorityOpinionJudgement
         fields: list[str] = ['grade']
         widgets: dict = {
-            'grade': forms.RadioSelect(choices=MajorityOpinionJudgement.JudgeType.choices, attrs={
+            'grade': forms.RadioSelect(attrs={
                 'class': 'btn-check',
             })
+        }
+        error_messages = {
+            'grade': {
+                'required': 'Dai un giudizio su questa opzione'
+            }
         }
 
     def __init__(self, *args, **kwargs):
         self.alternative: Alternative = kwargs.pop('alternative', None)
         super().__init__(*args, **kwargs)
         self.fields['grade'].label = self.alternative.text
+        self.fields['grade'].blank = False
+        self.fields['grade'].choices = self.fields['grade'].choices[1:]
+
 
     def save(self, commit: bool = ...) -> Any:  # type: ignore
         self.instance.alternative = self.alternative
