@@ -14,5 +14,5 @@ class IndexView(ListView):
         self.__active_poll_service = ActivePollsService()
         super().__init__(**kwargs)
 
-    def get_queryset(self) -> QuerySet[Poll]:
+    def get_queryset(self) -> list[QuerySet[Poll]]:
         return self.__active_poll_service.get_ordered_queryset()

@@ -10,45 +10,85 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h2 class="m-b-10">Sondaggi attivi</h2>
+                            <h3 class="m-b-10">Sondaggi attivi</h3>
                         </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                            <!--<li class="breadcrumb-item"><a href="#">Sondaggi attivi</a></li>-->
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-md-6 col-xl-4">
-                <h4>Preferenza singola</h4>
+                <h5>Preferenza singola</h5>
                 <hr>
-                {% for poll in object_list %}
-                    <div class = "row">
-                        <div class="card mb-3" style="text-align:center">
-                            <img class="img-fluid card-img-top" src="https://appsrv1-147a1.kxcdn.com/gradient/images/slider/img-slide-3.jpg" alt="Card Image cap">
-                            <div class="card-body">
-                                <h6 class="card-
-                                title"> {{ poll.title }} </h6>
-                                <a class="btn btn-block btn-primary mb-4" href={% url 'polls:vote' id=poll.id %}>Vai</a>
-                            </div>
+                {% for poll in object_list.0 %}
+                    <div class="card mb-3" style="text-align:center">
+                        <img class="img-fluid card-img-top" src="https://appsrv1-147a1.kxcdn.com/gradient/images/slider/img-slide-3.jpg" alt="Card Image cap">
+                        <div class="card-body">
+                            <h6 class="card-title"> {{ poll.title }} </h6>
+                            <a class="btn btn-block btn-primary mb-4" href={% url 'polls:vote' id=poll.id %}>Vai</a>
                         </div>
                     </div>
                 {% empty %}
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5>Non ci sono sondaggi a preferenza singola attivi al momento</h5>
-                            </div>
-                        </div>
+                <div class="card mb-3" style="text-align:center">
+                    <div class="card-header">
+                        <img class="img-fluid card-img-top" src="/static/img/absent.jpg" alt="Card Image cap">
+                    </div>    
+                    <div class="card-body">
+                        <h6 class="card-title"> Non ci sono sondaggi attivi al momento </h6>
+                        <a class="btn btn-block btn-primary mb-4" >Creane uno</a>
                     </div>
+                </div>
                 {% endfor %}
             </div>
             <div class="col-sm-12 col-md-4">
                 <h5>Giudizio maggioritario</h5>
                 <hr>
+                {% for poll in object_list.1 %}
+                    <div class="card mb-3" style="text-align:center">
+                        <img class="img-fluid card-img-top" src="https://appsrv1-147a1.kxcdn.com/gradient/images/slider/img-slide-3.jpg" alt="Card Image cap">
+                        <div class="card-body">
+                            <h6 class="card-title"> {{ poll.title }} </h6>
+                            <a class="btn btn-block btn-primary mb-4" href={% url 'polls:vote' id=poll.id %}>Vai</a>
+                        </div>
+                    </div>
+                {% empty %}
+                <div class="card mb-3" style="text-align:center">
+                    <div class="card-header">
+                        <img class="img-fluid card-img-top" src="/static/img/absent.jpg" alt="Card Image cap">
+                    </div>    
+                    <div class="card-body">
+                        <h6 class="card-title"> Non ci sono sondaggi attivi al momento </h6>
+                        <a class="btn btn-block btn-primary mb-4" >Creane uno</a>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
             <div class="col-sm-12 col-md-4">
                 <h5>Schulze</h5>
                 <hr>
+                {% for poll in object_list.2 %}
+                    <div class="card mb-3" style="text-align:center">
+                        <img class="img-fluid card-img-top" src="https://appsrv1-147a1.kxcdn.com/gradient/images/slider/img-slide-3.jpg" alt="Card Image cap">
+                        <div class="card-body">
+                            <h6 class="card-title"> {{ poll.title }} </h6>
+                            <a class="btn btn-block btn-primary mb-4" href={% url 'polls:vote' id=poll.id %}>Vai</a>
+                        </div>
+                    </div>
+                {% empty %}
+                <div class="card mb-3" style="text-align:center">
+                    <div class="card-header">
+                        <img class="img-fluid card-img-top" src="/static/img/absent.jpg" alt="Card Image cap">
+                    </div>    
+                    <div class="card-body">
+                        <h6 class="card-title"> Non ci sono sondaggi attivi al momento </h6>
+                        <a class="btn btn-block btn-primary mb-4" >Creane uno</a>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>

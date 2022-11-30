@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %} {{block.super}} | Risultati {% endblock title %}
+{% block title %} {{block.super}} | Risultati SP {% endblock title %}
 
 {% block content %}
 <div class="pcoded-main-container">
@@ -10,7 +10,7 @@
               <div class="row align-items-center">
                   <div class="col-md-12">
                       <div class="page-header-title">
-                          <h5 class="m-b-10"> Risultato: </h5>
+                          <h3 class="m-b-10"> Risultato: </h3>
                           <ul>
                             {%for result in results%}
                               <li>la scelta {{ result.alternative }} ha ottenuto {{ result.count }} voti</li>
@@ -18,9 +18,6 @@
                           </ul>
                           <a href={% url 'polls:vote' id=poll_id %}>
                               <button class="btn btn-block btn-primary mb-4"> Torna al questionario </button>
-                          </a>
-                          <a href={% url 'polls:index' %}>
-                            <button class="btn btn-block btn-primary mb-4"> Torna alla home </button>
                           </a>
                       </div>
                   </div>
