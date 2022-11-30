@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from polls.forms import CreatePollFormStep1, CreatePollFormStep2, CreatePollFormStep3
-from polls.services import add_single_preference_poll
+from polls.services import add_single_preference_poll, add_majority_judgment_poll
 
 def create_poll_step1(request):
     # if this is a POST request we need to process the form data
@@ -53,6 +53,8 @@ def create_poll_step3(request):
         if form.is_valid():
             if form.cleaned_data['poll_type']=='Preferenza singola':
                 add_single_preference_poll(request.session['new_poll_title'],request.session['new_poll_text'],request.session['new_poll_alternatives'])
+            elif form.cleaned_data['poll_type']=='Giudizio maggioritario':
+                add_majority_judgment_poll(request.session['new_poll_title'],request.session['new_poll_text'],request.session['new_poll_alternatives'])
             return render(request, 'create_poll_success.html')
 
     # if a GET (or any other method) we'll create a blank form

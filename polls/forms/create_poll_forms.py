@@ -16,5 +16,6 @@ class CreatePollFormStep2(forms.Form):
 
 class CreatePollFormStep3(forms.Form):
     poll_type = forms.ChoiceField(choices=[
+        ('Giudizio maggioritario', 'Giudizio maggioritario'),
         ('Preferenza singola', 'Preferenza singola'),
     ])
