@@ -5,7 +5,18 @@ from django.urls import reverse
 from polls.forms import CreatePollFormStep1, CreatePollFormStep2, CreatePollFormStep3
 from polls.services import add_single_preference_poll, add_majority_judgment_poll
 
-def create_poll_step1(request):
+def create_poll(request):
+    if 'new_poll_page_index' not in request.session:
+        request.session['new_poll_page_index']=1
+    if request.session['new_poll_page_index']==1:
+        return _create_poll_step1(request)
+    elif request.session['new_poll_page_index']==2:
+        return _create_poll_step2(request)
+    else:
+        return _create_poll_step3(request)
+
+
+def _create_poll_step1(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
@@ -15,7 +26,8 @@ def create_poll_step1(request):
             request.session['new_poll_title']=form.cleaned_data['poll_title']
             request.session['new_poll_text']=form.cleaned_data['poll_text']
             request.session['new_poll_alternative_count']=form.cleaned_data['alternative_count']
-            return HttpResponseRedirect(reverse('polls:create_poll_step_2'))
+            request.session['new_poll_page_index']=2
+            return HttpResponseRedirect(reverse('polls:create_poll')) #redirect alla stessa pagina per forzare il caricamento della prossima schermata
 
     # if a GET (or any other method) we'll create a blank form
     else:
@@ -23,7 +35,7 @@ def create_poll_step1(request):
 
     return render(request, 'create_poll/step1.html', {'form': form})
 
-def create_poll_step2(request):
+def _create_poll_step2(request):
     alternative_count : int = request.session['new_poll_alternative_count']
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
@@ -36,7 +48,8 @@ def create_poll_step2(request):
                 if form.cleaned_data['alternative'+str(i)].strip()!='':
                     alternatives.append(form.cleaned_data['alternative'+str(i)].strip())
             request.session['new_poll_alternatives']=alternatives
-            return HttpResponseRedirect(reverse('polls:create_poll_step_3'))
+            request.session['new_poll_page_index']=3
+            return HttpResponseRedirect(reverse('polls:create_poll')) #redirect alla stessa pagina per forzare il caricamento della prossima schermata
 
     # if a GET (or any other method) we'll create a blank form
     else:
@@ -44,7 +57,7 @@ def create_poll_step2(request):
 
     return render(request, 'create_poll/step2.html', {'form': form, 'count': alternative_count})
 
-def create_poll_step3(request):
+def _create_poll_step3(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:

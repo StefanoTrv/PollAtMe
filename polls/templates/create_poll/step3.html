@@ -8,7 +8,7 @@
 <form method="post">
     {% csrf_token %}
     {{ form.as_div }}
-    <input type="submit" value="Salva">
+    <input type="submit" value="Crea il sondaggio">
 </form>
 <br>
 <p><a href="{% url 'polls:index' %}">Annulla e torna alla home</a></p>
