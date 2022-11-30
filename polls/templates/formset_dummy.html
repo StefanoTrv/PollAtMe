@@ -1,0 +1,50 @@
+{% extends 'layouts/base_form.html' %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="#!">{{ poll.title }}</a></li>
+{% endblock breadcrumb %}
+
+{% block poll_name %}{{ poll.title }}{% endblock poll_name %}
+
+{% block title %} {{block.super}} | {{ poll.title }} {% endblock title %}
+
+{% block form_card %}
+<div class="card">
+    <div class="card-body">
+        {{ poll.text }}
+    </div>
+</div>
+
+<form class="needs-validation" method="post" novalidate>
+    {% csrf_token %}
+    {{ form.management_form }}
+    {% for f in form %}
+    <div class="card">
+        <div class="card-body">
+            {% for error in f.grade.errors %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <div>{{ error }}</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+            <legend>{{ f.grade.label }}</legend>
+            {% for radio in f.grade %}
+            <div class="form-check form-check-inline">
+                {{ radio.tag }}
+                <label
+                    class="{% if f.errors %}btn btn-outline-danger is-invalid{% else %}btn btn-outline-secondary{% endif %}"
+                    for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+    <div class="card">
+        <div class="card-body">
+            <button type="submit" class="btn btn-primary">Salva</button>
+            <button type="reset" class="btn btn-secondary">Cancella</button>
+        </div>
+    </div>
+</form>
+
+{% endblock form_card %}

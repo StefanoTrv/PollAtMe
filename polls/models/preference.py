@@ -1,6 +1,8 @@
 from django.db import models
+
 from .alternative import Alternative
 from .poll import Poll
+
 
 class Preference(models.Model):
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
