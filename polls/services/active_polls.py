@@ -1,4 +1,4 @@
-from polls.models import Poll, Alternative
+from polls.models import Poll, SinglePreferencePoll, MajorityOpinionPoll, Alternative
 from django.db.models import Count
 from polls.exceptions import PollWithoutAlternativesException
 from django.db.models import QuerySet
@@ -7,7 +7,9 @@ class ActivePollsService:
     """Service for get all active polls from database"""
 
     def __init__(self) -> None:
-        self.__queryset = Poll.objects.annotate(num_alternatives=Count('alternative')).filter(num_alternatives__gt=0)
+        self.__single_preference_polls = SinglePreferencePoll.objects.annotate(num_alternatives=Count('alternative')).filter(num_alternatives__gt=0)
+        self.__majority_opinion_polls = MajorityOpinionPoll.objects.annotate(num_alternatives=Count('alternative')).filter(num_alternatives__gt=0)
+        self.__queryset = [self.__single_preference_polls, self.__majority_opinion_polls]
 
     def get_ordered_queryset(self, by_field: str = 'text', asc: bool = False):
         """
@@ -15,9 +17,9 @@ class ActivePollsService:
         Default: descendending order by poll text
         """
         if asc:
-            return self.__queryset.order_by(by_field)
+            return [self.__queryset[0].order_by(by_field), self.__queryset[1].order_by(by_field)]
         else:
-            return self.__queryset.order_by(f'-{by_field}')
+            return [self.__queryset[0].order_by(f'-{by_field}'), self.__queryset[1].order_by(f'-{by_field}')]
             
 class SearchPollService:
     def search_by_id(self, id: int) -> Poll:

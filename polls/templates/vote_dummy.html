@@ -1,3 +1,8 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} {{block.super}} | Vota {% endblock title %}
+
+{% block content %}
 <h1>{{poll.title}}</h1>
 <p>{{ poll.text }}</p>
 <form method="post">
@@ -6,5 +11,9 @@
     <input type="submit" value="Salva">
 </form>
 <br>
-<a href={% url 'polls:result' id=poll.id %}>Visualizza i risultati del sondaggio</a>
-<p>Torna alla <a href="{% url 'polls:index' %}">home</a></p>
+<a href={% url 'polls:result' id=poll.id %}>
+    <button class="btn btn-block btn-primary mb-4"> Visualizza i risultati del sondaggio </button>
+</a>
+<a href={% url 'polls:index' %}>
+    <button class="btn btn-block btn-primary mb-4"> Torna alla home </button>
+</a>
