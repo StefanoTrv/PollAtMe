@@ -1,0 +1,15 @@
+{% extends 'layouts/base_old.html' %}
+
+{% block title %} {{block.super}} | Scegli metodo di voto {% endblock title %}
+
+{% block body %}
+<p>Scegli il metodo di voto per</p>
+<h1>{{ title }}</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_div }}
+    <input type="submit" value="Crea il sondaggio">
+</form>
+<br>
+<p><a href="{% url 'polls:index' %}">Annulla e torna alla home</a></p>
+{% endblock body %}
