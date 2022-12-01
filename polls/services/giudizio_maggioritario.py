@@ -208,35 +208,45 @@ def produce_vote_tuple_list(result_query: list) -> list:
     result_list = []
     #data la lista con i voti per ogni scelta generiamo le tuple
     for element in result_query:
-            
-         #logica di generazione della tupla
+        #logica di generazione della tupla
         #calcolo del voto mediano
         #ordiniamo in ordine decrescente la lista di voti
         lista_voti = element['voti']
-        lista_voti.sort(reverse = True)
-        giudizio_mediano = None
-        if len(lista_voti) % 2 == 0:
-            giudizio_mediano = lista_voti[int(len(lista_voti) / 2)]
-        else:
-            giudizio_mediano = lista_voti[math.ceil(len(lista_voti) / 2)]
-            
-        ##calcolo del numero di giudizi (strettamente) migliori
-        giudizi_peggiori = 0
-        giudizi_migliori = 0
-        for voto in lista_voti: #probabilmente ottimizzabile
-            if voto > giudizio_mediano:
-                giudizi_migliori += 1
-            if voto < giudizio_mediano:
-                giudizi_peggiori += 1   
-            
-        positive = (giudizi_migliori > giudizi_peggiori)
 
-        grade = Grade(giudizio_mediano, positive)
-        tupla = VoteTuple(element['choice_id'],
-            giuduzi_migliori = giudizi_migliori,
-            giudizi_peggiori = giudizi_peggiori,
-            grade=grade)
-        
+        tupla = None
+
+        ##se la lista è vuota si crea una tupla nulla
+        if len(lista_voti) == 0:
+            tupla = VoteTuple(element['choice_id'],
+                giuduzi_migliori = 0,
+                giudizi_peggiori = 0,
+                grade=Grade(vote=1, positive=False))
+        else:
+            lista_voti.sort(reverse = True)
+            giudizio_mediano = None
+
+            if len(lista_voti) % 2 == 0 or len(lista_voti):
+                giudizio_mediano = lista_voti[int(len(lista_voti) / 2)]
+            else:
+                giudizio_mediano = lista_voti[math.ceil(len(lista_voti) / 2)]
+                
+            ##calcolo del numero di giudizi (strettamente) migliori
+            giudizi_peggiori = 0
+            giudizi_migliori = 0
+            for voto in lista_voti: #probabilmente ottimizzabile
+                if voto > giudizio_mediano:
+                    giudizi_migliori += 1
+                if voto < giudizio_mediano:
+                    giudizi_peggiori += 1   
+                
+            positive = (giudizi_migliori > giudizi_peggiori)
+
+            grade = Grade(giudizio_mediano, positive)
+            tupla = VoteTuple(element['choice_id'],
+                giuduzi_migliori = giudizi_migliori,
+                giudizi_peggiori = giudizi_peggiori,
+                grade=grade)
+            
         result_list.append(tupla)
 
     result_list.sort(reverse=True)

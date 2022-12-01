@@ -110,4 +110,10 @@ class GiudizioMaggioritarioTest(TestCase):
         expected_classifica = [{'alternative' : 'C', 'place' : 1},{'alternative' : 'A', 'place' : 2},{'alternative' : 'B', 'place' : 3}]
         self.assertEqual(classifica, expected_classifica)
 
-        
+    ##testiamo che per il sondaggio numero 2 venga ritornata la classifica corretta anche se votata solamente da una persona
+    def test_one_preference(self):
+        giudizio_maggioritario = GiudizioMaggioritario(2)
+        classifica = giudizio_maggioritario.get_classifica()
+        expected_classifica = [{'alternative' : 'Bella', 'place' : 1},{'alternative' : 'Meno bella', 'place' : 2},{'alternative' : 'Ancora meno bella', 'place' : 3},{'alternative' : 'Brutta', 'place' : 4}]
+        self.assertEqual(classifica, expected_classifica)
+

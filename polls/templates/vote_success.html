@@ -1,10 +1,28 @@
-{% extends 'layouts/base_old.html' %}
+{% extends 'layouts/base.html' %}
 
 {% block title %} {{block.super}} | Grazie per la risposta! {% endblock title %}
 
 {% block content %}
-<h1>Grazie! La tua risposta è stata registrata!</h1>
-<a href={% url 'polls:vote' id=poll_id %}>Torna al questionario</a>
-<br>
-<a href={% url 'polls:result' id=poll_id %}>Visualizza i risultati del sondaggio</a>
+    <div class="pcoded-main-container">
+        <div class="pcoded-content">
+            <div class="card">
+                <div class="row align-items-center text-center">
+                    <div class="col-md-12">
+                        <div class="card-body">
+                            <h1>Grazie!</h1>
+                            <br>
+                            <h5>La tua risposta è stata registrata!</h5>
+                            <br>
+                            <form action="/">
+                                <button class="btn btn-block btn-primary mb-4"> HOME </button>
+                            </form>
+                            <form action={% url 'polls:result' id=poll_id %}>
+                                <button class="btn btn-block btn-primary mb-4"> Risultato sondaggio </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock content %}
