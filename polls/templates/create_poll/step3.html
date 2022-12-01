@@ -1,15 +1,62 @@
-{% extends 'layouts/base_old.html' %}
+{% extends 'layouts/base.html' %}
 
 {% block title %} {{block.super}} | Scegli metodo di voto {% endblock title %}
 
-{% block body %}
-<p>Scegli il metodo di voto per</p>
-<h1>{{ title }}</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_div }}
-    <input type="submit" value="Crea il sondaggio">
-</form>
-<br>
-<p><a href="{% url 'polls:index' %}">Annulla e torna alla home</a></p>
-{% endblock body %}
+{% block content %}
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h3 class="m-b-10"> Scegli il metodo di voto </h3>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                            <li class="breadcrumb-item"><a> Crea un sondaggio </a></li>
+                            <li class="breadcrumb-item"><a> Inserisci le alternative </a></li>
+                            <li class="breadcrumb-item"><a> Scegli metodo di voto </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page-block">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5> Scegli il metodo di voto per {{ title }} </h5>
+                        <br>
+                        <form method="post">
+                            <div class="form-group">
+                                {% csrf_token %}
+                                <table>
+                                    <tbody>
+                                    {% for field in form %}
+                                        <tr>
+                                            <td>
+                                            <label for="{{ field.label }}" style="display:inline-block;vertical-align:middle">{{ field.label_tag }}</label>
+                                            </td>
+                                            <td>
+                                            {{ field }}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody> 
+                                </table>
+                                <br>                         
+                                <button type="submit" class="btn btn-primary"> Prossimo</button>
+                            </div>
+                        </form>
+                        <br>
+                        <a href="{% url 'polls:index' %}"> 
+                            <button class="btn btn-block btn-secondary"> Annulla e torna alla home </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
