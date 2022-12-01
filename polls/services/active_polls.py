@@ -7,9 +7,9 @@ class ActivePollsService:
     """Service for get all active polls from database"""
 
     def __init__(self) -> None:
-        single_preference_polls = SinglePreferencePoll.objects.annotate(num_alternatives=Count('alternative')).filter(num_alternatives__gt=0)
-        majority_opinion_polls = MajorityOpinionPoll.objects.annotate(num_alternatives=Count('alternative')).filter(num_alternatives__gt=0)
-        self.__queryset = [single_preference_polls, majority_opinion_polls]
+        self.__single_preference_polls = SinglePreferencePoll.objects.annotate(num_alternatives=Count('alternative')).filter(num_alternatives__gt=0)
+        self.__majority_opinion_polls = MajorityOpinionPoll.objects.annotate(num_alternatives=Count('alternative')).filter(num_alternatives__gt=0)
+        self.__queryset = [self.__single_preference_polls, self.__majority_opinion_polls]
 
     def get_ordered_queryset(self, by_field: str = 'text', asc: bool = False):
         """
