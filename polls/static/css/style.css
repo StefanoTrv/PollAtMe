@@ -29410,3 +29410,15 @@ div.dtk-focus-alt table.dataTable tbody th.focus {
 }
 
 /**====== Icon layouts css end ======**/
+
+/** Custom CSS */
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+}
+
+.card-img-top {
+    width: 100%;
+    border-top-left-radius: calc(5px - 0px);
+    border-top-right-radius: calc(5px - 0px);
+}
