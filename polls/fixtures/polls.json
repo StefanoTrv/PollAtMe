@@ -1,0 +1,509 @@
+[
+{
+  "model": "polls.poll",
+  "pk": 1,
+  "fields": {
+    "title": "Qual è il tuo colore preferito?",
+    "text": "Scegli tra"
+  }
+},
+{
+  "model": "polls.poll",
+  "pk": 2,
+  "fields": {
+    "title": "Qual è il tuo animale preferito?",
+    "text": "Scegli tra"
+  }
+},
+{
+  "model": "polls.poll",
+  "pk": 3,
+  "fields": {
+    "title": "Qual è il tuo posto preferito?",
+    "text": "Scegli tra"
+  }
+},
+{
+  "model": "polls.poll",
+  "pk": 4,
+  "fields": {
+    "title": "Dai la tua opinione",
+    "text": "Dimmi la tua opinione a questi partiti"
+  }
+},
+{
+  "model": "polls.singlepreferencepoll",
+  "pk": 1,
+  "fields": {}
+},
+{
+  "model": "polls.singlepreferencepoll",
+  "pk": 2,
+  "fields": {}
+},
+{
+  "model": "polls.singlepreferencepoll",
+  "pk": 3,
+  "fields": {}
+},
+{
+  "model": "polls.majorityopinionpoll",
+  "pk": 4,
+  "fields": {}
+},
+{
+  "model": "polls.alternative",
+  "pk": 1,
+  "fields": {
+    "poll": 1,
+    "text": "blu"
+  }
+},
+{
+  "model": "polls.alternative",
+  "pk": 2,
+  "fields": {
+    "poll": 1,
+    "text": "rosso"
+  }
+},
+{
+  "model": "polls.alternative",
+  "pk": 3,
+  "fields": {
+    "poll": 1,
+    "text": "verde"
+  }
+},
+{
+  "model": "polls.alternative",
+  "pk": 4,
+  "fields": {
+    "poll": 2,
+    "text": "cane"
+  }
+},
+{
+  "model": "polls.alternative",
+  "pk": 5,
+  "fields": {
+    "poll": 2,
+    "text": "gatto"
+  }
+},
+{
+  "model": "polls.alternative",
+  "pk": 6,
+  "fields": {
+    "poll": 2,
+    "text": "cavallo"
+  }
+},
+{
+  "model": "polls.alternative",
+  "pk": 7,
+  "fields": {
+    "poll": 4,
+    "text": "PD"
+  }
+},
+{
+  "model": "polls.alternative",
+  "pk": 8,
+  "fields": {
+    "poll": 4,
+    "text": "Lega"
+  }
+},
+{
+  "model": "polls.alternative",
+  "pk": 9,
+  "fields": {
+    "poll": 4,
+    "text": "M5S"
+  }
+},
+{
+  "model": "polls.alternative",
+  "pk": 10,
+  "fields": {
+    "poll": 4,
+    "text": "FDI"
+  }
+},
+{
+  "model": "polls.alternative",
+  "pk": 11,
+  "fields": {
+    "poll": 4,
+    "text": "Terzo Polo"
+  }
+},
+{
+  "model": "polls.preference",
+  "pk": 1,
+  "fields": {
+    "poll": 1
+  }
+},
+{
+  "model": "polls.preference",
+  "pk": 2,
+  "fields": {
+    "poll": 1
+  }
+},
+{
+  "model": "polls.preference",
+  "pk": 3,
+  "fields": {
+    "poll": 1
+  }
+},
+{
+  "model": "polls.preference",
+  "pk": 4,
+  "fields": {
+    "poll": 1
+  }
+},
+{
+  "model": "polls.preference",
+  "pk": 5,
+  "fields": {
+    "poll": 1
+  }
+},
+{
+  "model": "polls.preference",
+  "pk": 6,
+  "fields": {
+    "poll": 1
+  }
+},
+{
+  "model": "polls.preference",
+  "pk": 7,
+  "fields": {
+    "poll": 1
+  }
+},
+{
+  "model": "polls.preference",
+  "pk": 8,
+  "fields": {
+    "poll": 2
+  }
+},
+{
+  "model": "polls.preference",
+  "pk": 9,
+  "fields": {
+    "poll": 2
+  }
+},
+{
+  "model": "polls.preference",
+  "pk": 10,
+  "fields": {
+    "poll": 2
+  }
+},
+{
+  "model": "polls.preference",
+  "pk": 11,
+  "fields": {
+    "poll": 2
+  }
+},
+{
+  "model": "polls.preference",
+  "pk": 12,
+  "fields": {
+    "poll": 2
+  }
+},
+{
+  "model": "polls.preference",
+  "pk": 13,
+  "fields": {
+    "poll": 1
+  }
+},
+{
+  "model": "polls.preference",
+  "pk": 14,
+  "fields": {
+    "poll": 1
+  }
+},
+{
+  "model": "polls.preference",
+  "pk": 19,
+  "fields": {
+    "poll": 4
+  }
+},
+{
+  "model": "polls.preference",
+  "pk": 20,
+  "fields": {
+    "poll": 4
+  }
+},
+{
+  "model": "polls.preference",
+  "pk": 21,
+  "fields": {
+    "poll": 4
+  }
+},
+{
+  "model": "polls.singlepreference",
+  "pk": 1,
+  "fields": {
+    "alternative": 1
+  }
+},
+{
+  "model": "polls.singlepreference",
+  "pk": 2,
+  "fields": {
+    "alternative": 3
+  }
+},
+{
+  "model": "polls.singlepreference",
+  "pk": 3,
+  "fields": {
+    "alternative": 2
+  }
+},
+{
+  "model": "polls.singlepreference",
+  "pk": 4,
+  "fields": {
+    "alternative": 1
+  }
+},
+{
+  "model": "polls.singlepreference",
+  "pk": 5,
+  "fields": {
+    "alternative": 3
+  }
+},
+{
+  "model": "polls.singlepreference",
+  "pk": 6,
+  "fields": {
+    "alternative": 1
+  }
+},
+{
+  "model": "polls.singlepreference",
+  "pk": 7,
+  "fields": {
+    "alternative": 3
+  }
+},
+{
+  "model": "polls.singlepreference",
+  "pk": 8,
+  "fields": {
+    "alternative": 4
+  }
+},
+{
+  "model": "polls.singlepreference",
+  "pk": 9,
+  "fields": {
+    "alternative": 5
+  }
+},
+{
+  "model": "polls.singlepreference",
+  "pk": 10,
+  "fields": {
+    "alternative": 5
+  }
+},
+{
+  "model": "polls.singlepreference",
+  "pk": 11,
+  "fields": {
+    "alternative": 6
+  }
+},
+{
+  "model": "polls.singlepreference",
+  "pk": 12,
+  "fields": {
+    "alternative": 6
+  }
+},
+{
+  "model": "polls.singlepreference",
+  "pk": 13,
+  "fields": {
+    "alternative": 1
+  }
+},
+{
+  "model": "polls.singlepreference",
+  "pk": 14,
+  "fields": {
+    "alternative": 3
+  }
+},
+{
+  "model": "polls.majoritypreference",
+  "pk": 19,
+  "fields": {}
+},
+{
+  "model": "polls.majoritypreference",
+  "pk": 20,
+  "fields": {}
+},
+{
+  "model": "polls.majoritypreference",
+  "pk": 21,
+  "fields": {}
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 3,
+  "fields": {
+    "grade": 5,
+    "alternative": 7,
+    "preference": 19
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 4,
+  "fields": {
+    "grade": 3,
+    "alternative": 8,
+    "preference": 19
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 5,
+  "fields": {
+    "grade": 5,
+    "alternative": 9,
+    "preference": 19
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 6,
+  "fields": {
+    "grade": 2,
+    "alternative": 10,
+    "preference": 19
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 7,
+  "fields": {
+    "grade": 2,
+    "alternative": 11,
+    "preference": 19
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 8,
+  "fields": {
+    "grade": 5,
+    "alternative": 7,
+    "preference": 20
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 9,
+  "fields": {
+    "grade": 2,
+    "alternative": 8,
+    "preference": 20
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 10,
+  "fields": {
+    "grade": 2,
+    "alternative": 9,
+    "preference": 20
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 11,
+  "fields": {
+    "grade": 4,
+    "alternative": 10,
+    "preference": 20
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 12,
+  "fields": {
+    "grade": 2,
+    "alternative": 11,
+    "preference": 20
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 13,
+  "fields": {
+    "grade": 3,
+    "alternative": 7,
+    "preference": 21
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 14,
+  "fields": {
+    "grade": 4,
+    "alternative": 8,
+    "preference": 21
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 15,
+  "fields": {
+    "grade": 3,
+    "alternative": 9,
+    "preference": 21
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 16,
+  "fields": {
+    "grade": 2,
+    "alternative": 10,
+    "preference": 21
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 17,
+  "fields": {
+    "grade": 3,
+    "alternative": 11,
+    "preference": 21
+  }
+}
+]

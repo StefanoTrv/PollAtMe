@@ -1,16 +1,30 @@
-{% extends 'base.html' %}
+{% extends 'layouts/base.html' %}
 
-{% block title %}Risultati{% endblock title %}
+{% block title %} {{block.super}} | Risultati SP {% endblock title %}
 
-{% block body %}
-Risultato:
-<ul>
-{%for result in results%}
-  <li>la scelta {{ result.choice }} ha ottenuto {{ result.count }} voti</li>
-{% endfor %}
-</ul>
-<br>
-<a href={% url 'polls:vote' id=poll_id %}>Torna al questionario</a>
-<br>
-<a href={% url 'polls:index' %}>Torna alla home</a>
-{% endblock body %}
+{% block content %}
+<div class="pcoded-main-container">
+  <div class="pcoded-content">
+      <div class="page-header">
+          <div class="page-block">
+              <div class="row align-items-center">
+                  <div class="col-md-12">
+                      <div class="page-header-title">
+                          <h3 class="m-b-10"> Risultato: </h3>
+                          <ul>
+                            {%for result in results%}
+                              <li>la scelta {{ result.alternative }} ha ottenuto {{ result.count }} voti</li>
+                            {% endfor %}
+                          </ul>
+                          <a href={% url 'polls:vote' id=poll_id %}>
+                              <button class="btn btn-block btn-primary mb-4"> Torna al questionario </button>
+                          </a>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
