@@ -9,7 +9,6 @@ class ActivePollsService:
     def __init__(self) -> None:
         self.__single_preference_polls = SinglePreferencePoll.objects.annotate(num_alternatives=Count('alternative')).filter(num_alternatives__gt=0)
         self.__majority_opinion_polls = MajorityOpinionPoll.objects.annotate(num_alternatives=Count('alternative')).filter(num_alternatives__gt=0)
-        self.__queryset = [self.__single_preference_polls, self.__majority_opinion_polls]
 
     def get_ordered_queryset(self, by_field: str = 'text', asc: bool = False):
         """
@@ -17,9 +16,17 @@ class ActivePollsService:
         Default: descendending order by poll text
         """
         if asc:
-            return [self.__queryset[0].order_by(by_field), self.__queryset[1].order_by(by_field)]
+            ordered_single_preference_polls = self.__single_preference_polls.order_by(by_field)
+            ordered_majority_preference_polls = self.__majority_opinion_polls.order_by(by_field)
         else:
-            return [self.__queryset[0].order_by(f'-{by_field}'), self.__queryset[1].order_by(f'-{by_field}')]
+            ordered_single_preference_polls = self.__single_preference_polls.order_by(f'-{by_field}')
+            ordered_majority_preference_polls = self.__majority_opinion_polls.order_by(f'-{by_field}')
+        
+        return [
+            ordered_single_preference_polls,
+            ordered_majority_preference_polls,
+            []
+        ]
             
 class SearchPollService:
     def search_by_id(self, id: int) -> Poll:
