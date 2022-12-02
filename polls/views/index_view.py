@@ -14,5 +14,14 @@ class IndexView(ListView):
         self.__active_poll_service = ActivePollsService()
         super().__init__(**kwargs)
 
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context['object_list'] = zip([
+            'Preferenza singola',
+            'Giudizio maggioritario',
+            'Metodo Shultze'
+        ], context['object_list'])
+        return context
+
     def get_queryset(self) -> list[QuerySet[Poll]]:
         return self.__active_poll_service.get_ordered_queryset()
