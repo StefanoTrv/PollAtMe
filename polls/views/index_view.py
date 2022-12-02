@@ -7,7 +7,7 @@ from polls.services import ActivePollsService
 
 class IndexView(ListView):
     model: Optional[Type[Model]] = Poll
-    paginate_by: int = 1
+    paginate_by: int = 50
     template_name: str = 'poll_list.html'
 
     def __init__(self, **kwargs: Any) -> None:
