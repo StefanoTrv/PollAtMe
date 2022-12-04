@@ -1,3 +1,4 @@
+#Pulisce la sessione quando l'utente esce dalla pagina di creazione di un nuovo sondaggio
 class NewPollSessionCleaner:
     def __init__(self, get_response):
         self.get_response = get_response
