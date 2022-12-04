@@ -24,5 +24,5 @@ class TestPollResultsService(TestCase):
 
     def test_if_error(self):
         self.__service = PollResultsService()
-        assert_that(self.__service.as_list).raises(AttributeError).when_called_with(True)
-        assert_that(self.__service.as_list).raises(AttributeError).when_called_with(False)
+        self.assertRaises(AttributeError,self.__service.as_list,True)
+        self.assertRaises(AttributeError,self.__service.as_list,False)

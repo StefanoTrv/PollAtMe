@@ -12,12 +12,12 @@ class TestMajorityOpinionForm(TestCase):
         poll = MajorityOpinionPoll.objects.all()[0]
         alternative: Alternative = poll.alternative_set.all()[0]
         form = MajorityOpinionForm(alternative=alternative)
-        assert_that(form.fields).contains('grade')
-        assert_that(form.fields['grade'].label).is_equal_to(alternative.text)
-        assert_that(form.fields['grade'].widget).is_instance_of(forms.RadioSelect)
+        self.assertIn('grade',form.fields)
+        self.assertEqual(form.fields['grade'].label,alternative.text)
+        self.assertIsInstance(form.fields['grade'].widget,forms.RadioSelect)
 
         for option in MajorityOpinionJudgement.JudgeType.choices:
-            assert_that(form.fields['grade'].choices).contains(option)
+            self.assertIn(option,form.fields['grade'].choices)
         
     
 class TestMajorityPreferenceForm(TestCase):
@@ -29,4 +29,4 @@ class TestMajorityPreferenceForm(TestCase):
         formset_class = MajorityPreferenceFormSet.get_formset_class(alternatives.count())
         formset: MajorityPreferenceFormSet = formset_class(queryset = alternatives)
         
-        assert_that(formset.forms).is_length(alternatives.count())
+        self.assertEqual(len(formset.forms),alternatives.count())
