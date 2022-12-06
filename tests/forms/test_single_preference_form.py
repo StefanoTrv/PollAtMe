@@ -12,12 +12,12 @@ class TestSinglePreferenceForm(TestCase):
     def test_empty_form(self):
         poll = Poll.objects.get(pk=1)
         form = SinglePreferenceForm(poll=poll)
-        assert_that(form.fields).contains('alternative')
-        assert_that(form.fields['alternative'].widget).is_instance_of(forms.RadioSelect)
-        assert_that(form.fields['alternative'].choices).is_length(poll.alternative_set.count())
+        self.assertIn('alternative',form.fields)
+        self.assertIsInstance(form.fields['alternative'].widget,forms.RadioSelect)
+        self.assertEqual(len(form.fields['alternative'].choices),poll.alternative_set.count())
         
         for alternative in poll.alternative_set.all():
-            assert_that(form.fields['alternative'].choices.queryset).contains(alternative)
+            self.assertIn(alternative,form.fields['alternative'].choices.queryset)
     
     def test_insertion(self):
         request = HttpRequest()
@@ -32,6 +32,6 @@ class TestSinglePreferenceForm(TestCase):
         instance.poll = poll
         instance.save()
         
-        assert_that(instance.pk).is_not_none()
-        assert_that(instance.alternative.id).is_equal_to(2)
+        self.assertIsNotNone(instance.pk)
+        self.assertEqual(instance.alternative.id,2)
     
