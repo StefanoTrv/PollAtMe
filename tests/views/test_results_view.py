@@ -1,4 +1,5 @@
-from django.test import Client, TestCase
+from django.test import TestCase
+from assertpy import assert_that #type: ignore
 from polls.models import SinglePreferencePoll, MajorityOpinionPoll, Alternative
 from django.urls import reverse
 from polls.services.preferenza_singola import SinglePreferencePollResultsService
@@ -15,7 +16,7 @@ class ResultsViewTest(TestCase):
         for item in SinglePreferencePollResultsService().set_poll(poll).as_list():
             results[item['alternative']]=item['count']
         resp = self.client.get(url)
-        self.assertEqual(resp.status_code, 200)
+        assert_that(resp.status_code).is_equal_to(200)
         for alternative in Alternative.objects.filter(poll = poll.id):
             self.assertContains(resp, alternative.text)
             self.assertContains(resp, results[alternative.text])
@@ -27,6 +28,6 @@ class ResultsViewTest(TestCase):
             results[item['alternative']]=item['place']
         poll = MajorityOpinionPoll.objects.get(id = 4)
         resp = self.client.get(url)
-        self.assertEqual(resp.status_code, 200)
+        assert_that(resp.status_code).is_equal_to(200)
         for alternative in Alternative.objects.filter(poll = poll.id):
             self.assertContains(resp, 'la scelta '+alternative.text+' è arrivata in posizione '+str(results[alternative.text]))
