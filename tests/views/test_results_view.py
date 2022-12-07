@@ -11,13 +11,14 @@ class ResultsViewTest(TestCase):
     def test_preferenza_singola_mostra_alternative_con_voti_totali(self):
         url = reverse('polls:result', args=[1])
         results = {}
-        for item in SinglePreferencePollResultsService().search_by_poll_id(1).as_list():
-            results[item['alternative']]=item['count']
         poll = SinglePreferencePoll.objects.get(id = 1)
+        for item in SinglePreferencePollResultsService().set_poll(poll).as_list():
+            results[item['alternative']]=item['count']
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
         for alternative in Alternative.objects.filter(poll = poll.id):
-            self.assertContains(resp, 'la scelta '+alternative.text+' ha ottenuto '+str(results[alternative.text])+' voti')
+            self.assertContains(resp, alternative.text)
+            self.assertContains(resp, results[alternative.text])
 
     def test_giudizio_maggioritario_mostra_alternative_in_classifica(self):
         url = reverse('polls:result', args=[4])
