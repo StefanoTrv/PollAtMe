@@ -1,9 +1,13 @@
 from __future__ import annotations
-from typing import Any
+from enum import Enum
 
 from polls.models import SinglePreferencePoll, Alternative, SinglePreference
 from django.db.models import QuerySet, Count
 
+class WinnerType(Enum):
+    WINNER = 1
+    DRAW = 2
+    LOSE = 3
 
 class SinglePreferencePollResultsService():
     """
@@ -59,8 +63,16 @@ class SinglePreferencePollResultsService():
 
             text = Alternative.objects.get(id=alternative_key).text
             context.append(
-                {'alternative': text, 'count': count, 'winner': False})
+                {'alternative': text, 'count': count, 'winner': 3})
 
         context = sorted(context, key=lambda d: d['count'], reverse=True)
-        context[0]['winner'] = context[0]['count'] > context[1]['count']
+        if context[0]['count'] > context[1]['count']:
+            context[0]['winner'] = 1
+        else:
+            context[0]['winner'] = 2
+            i = 1
+            while context[i]['count'] == context[i-1]['count']:
+                context[i]['winner'] = 2
+                i += 1
+
         return context

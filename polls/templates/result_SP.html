@@ -72,14 +72,25 @@
       <h5>Numero di preferenze per alternativa</h5>
       <hr>
       {% for vote in results %}
-      {% if vote.winner %}
+      {% if vote.winner == 1 %}
       <div class="col-sm-12">
         <div class="card bg-success text-white">
-          <div class="card-header">VINCITORE!</div>
+          <div class="card-header"><h2 class="text-white">1° posizione</div></div>
           <div class="card-body">
             <h5 class="text-white">{{ vote.alternative }}</h5>
             <hr>
             <h2 class="text-end text-white"><span>{{ vote.count }}</span></h2>
+          </div>
+        </div>
+      </div>
+      {% elif vote.winner == 2 %}
+      <div class="col-md-6 col-xl-3">
+        <div class="card bg-warning">
+          <div class="card-header"><h3>1° posizione</h3></div>
+          <div class="card-body">
+            <h5>{{ vote.alternative }}</h5>
+            <hr>
+            <h2 class="text-end"><span>{{ vote.count }}</span></h2>
           </div>
         </div>
       </div>

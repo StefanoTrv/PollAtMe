@@ -72,7 +72,7 @@ class ShultzePreferenceListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        ##TODO
+        # TODO
         return context
     
 
