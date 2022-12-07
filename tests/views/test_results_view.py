@@ -1,7 +1,7 @@
 from django.test import Client, TestCase
 from polls.models import SinglePreferencePoll, MajorityOpinionPoll, Alternative
 from django.urls import reverse
-from polls.services.poll_results import PollResultsService
+from polls.services.preferenza_singola import SinglePreferencePollResultsService
 from polls.services.giudizio_maggioritario import MajorityJudgementService
 
 class ResultsViewTest(TestCase):
@@ -11,7 +11,7 @@ class ResultsViewTest(TestCase):
     def test_preferenza_singola_mostra_alternative_con_voti_totali(self):
         url = reverse('polls:result', args=[1])
         results = {}
-        for item in PollResultsService().search_by_poll_id(1).as_list():
+        for item in SinglePreferencePollResultsService().search_by_poll_id(1).as_list():
             results[item['alternative']]=item['count']
         poll = SinglePreferencePoll.objects.get(id = 1)
         resp = self.client.get(url)

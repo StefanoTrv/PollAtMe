@@ -1,0 +1,207 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} {{block.super}} | Risultati SP {% endblock title %}
+
+{% block content %}
+<!-- [ Main Content ] start -->
+<div class="pcoded-main-container">
+  <div class="pcoded-content">
+    <!-- [ breadcrumb ] start -->
+    <div class="page-header">
+      <div class="page-block">
+        <div class="row align-items-center">
+          <div class="col-md-12">
+            <div class="page-header-title">
+              <h5 class="m-b-10">Risultati sondaggio</h5>
+            </div>
+            <ul class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/"><em class="feather icon-home"></em></a></li>
+              <li class="breadcrumb-item">Risultati</li>
+              <li class="breadcrumb-item"><strong>{{ poll_title }}</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- [ breadcrumb ] end -->
+    <!-- [ Main Content ] start -->
+    <div class="row">
+      <h5>Riepilogo</h5>
+      <hr>
+      <div class="col-md-6 col-xl-3">
+        <div class="card bg-c-blue order-card">
+          <div class="card-body">
+            <h6 class="text-white">Data di apertura del sondaggio:</h6>
+            <h2 class="text-end text-white"><em class="feather icon-calendar float-start"></em><span>{% now "SHORT_DATE_FORMAT" %}</span>
+            </h2>
+            <p class="m-b-0">Data di chiusura<span class="float-end">{% now "SHORT_DATE_FORMAT" %}</span></p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-xl-3">
+        <div class="card bg-c-green order-card">
+          <div class="card-body">
+            <h6 class="text-white">Sondaggio creato da:</h6>
+            <h2 class="text-end text-white"><em class="feather icon-user float-start"></em><span>User</span>
+            </h2>
+            <p class="m-b-0">Sondaggio creato il giorno<span class="float-end">{% now "SHORT_DATE_FORMAT" %}</span></p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-xl-3">
+        <div class="card bg-c-yellow order-card">
+          <div class="card-body">
+            <h6 class="text-white">Tipo di sondaggio</h6>
+            <h2 class="text-end text-white"><em class="feather icon-lock float-start"></em><span>Pubblico</span></h2>
+            <p class="m-b-0">Tipo di risposte<span class="float-end">anonime</span></p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-xl-3">
+        <div class="card bg-c-red order-card">
+          <div class="card-body">
+            <h6 class="text-white">Numero di risposte</h6>
+            <h2 class="text-end text-white"><em class="feather icon-edit float-start"></em><span>{{ tot_votes }}</span></h2>
+            <p class="m-b-0">Numero di alternative<span class="float-end">{{ results|length }}</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <h5>Numero di preferenze per alternativa</h5>
+      <hr>
+      {% for vote in results %}
+      {% if vote.winner %}
+      <div class="col-sm-12">
+        <div class="card bg-success text-white">
+          <div class="card-header">VINCITORE!</div>
+          <div class="card-body">
+            <h5 class="text-white">{{ vote.alternative }}</h5>
+            <hr>
+            <h2 class="text-end text-white"><span>{{ vote.count }}</span></h2>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="col-md-6 col-xl-3">
+        <div class="card">
+          <div class="card-body">
+            <h5>{{ vote.alternative }}</h5>
+            <hr>
+            <h2 class="text-end"><span>{{ vote.count }}</span></h2>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="row">
+      <h5>Grafici</h5>
+      <hr>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h5>Istogramma risposte</h5>
+          </div>
+          <div class="card-body">
+            <div id="bar-chart"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h5>Diagramma a torta</h5>
+          </div>
+          <div class="card-body" style="position: relative;">
+            <div id="pie-chart"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- [ Main Content ] end -->
+  </div>
+</div>
+<!-- [ Main Content ] end -->
+{% endblock content %}
+
+{% block javascripts %}
+<script src="/static/js/plugins/apexcharts.min.js"></script>
+<script>
+  var options = {
+    series: [{
+      name: 'Preferenze',
+      data: [
+        {% for vote in results %}
+        {
+      x: '{{ vote.alternative }}',
+      y: {{ vote.count }},
+        },
+  {% endfor %}
+      ]
+    }],
+  chart: {
+    type: 'bar'
+  },
+  plotOptions: {
+    bar: {
+      horizontal: false,
+        columnWidth: '55%',
+          endingShape: 'rounded'
+    },
+  },
+  dataLabels: {
+    enabled: false
+  },
+  stroke: {
+    show: true,
+      width: 2,
+        colors: ['transparent']
+  },
+  xaxis: {
+    type: 'category'
+  },
+  yaxis: {
+    title: {
+      text: '# preferenze'
+    }
+  },
+  fill: {
+    opacity: 1
+  },
+  tooltip: {
+    y: {
+      formatter: function (val) {
+        return val
+      }
+    }
+  }
+  };
+
+  var chart = new ApexCharts(document.querySelector("#bar-chart"), options);
+  chart.render();
+</script>
+
+<script>
+  var options = {
+    series: [{% for vote in results %}{{ vote.count }}, {% endfor %}],
+  chart: {
+    type: 'pie'
+  },
+  labels: [{% for vote in results %}'{{ vote.alternative }}', {% endfor %}],
+  responsive: [{
+    breakpoint: 200,
+    options: {
+      legend: {
+        position: 'bottom'
+      }
+    }
+  }]
+  };
+
+  var chart = new ApexCharts(document.querySelector("#pie-chart"), options);
+  chart.render();
+</script>
+{% endblock javascripts %}
