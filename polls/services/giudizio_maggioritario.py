@@ -206,17 +206,17 @@ class GiudizioMaggioritario:
     #la lista è ordinata in ordine di posizione nella classifica
     def get_vote_list(self):
 
-        classifica = self.get_classifica()
         results_list = self.__get_result_list()
         
-        out_list = []
+        tuple_list = self.__calculate_tuple_list() #utilizziamo questo ordine per salvarci la lista di voti
+
+        out_list = [None] * len(tuple_list)
         #iteriamo per ottenere il risultato desiderato
         for result in results_list:
             alternativa = Alternative.objects.get(id = result['choice_id']).text
             votes = result['voti']
             different_votes = [e.value for e in MajorityOpinionJudgement.JudgeType]
             different_votes.sort(reverse=True) #abbiamo i voti in ordine di valore
-
 
             lista_voti = {}
             #produciamo le tuple
@@ -225,8 +225,14 @@ class GiudizioMaggioritario:
                 vote_name = MajorityOpinionJudgement.JudgeType(different_votes[i])
                 vote_name = vote_name.name
                 lista_voti.update({vote_name : amount})
-                
-            out_list.append({'alternativa' : alternativa, 'lista_voti' : lista_voti})
+
+            #salviamola nella corretta posizione della lista
+            position = None
+            for i in range(0,len(tuple_list), 1):
+                if tuple_list[i].choice_id()== result['choice_id']:
+                    position = i
+
+            out_list[position]={'alternativa' : alternativa, 'lista_voti' : lista_voti}
 
         return out_list
 
