@@ -203,7 +203,10 @@ class GiudizioMaggioritario:
 
     #ritorna una lista di dict del tipo 
     #{'alternativa' : alternativa, 'lista_voti' : lista_voti} dove lista voti è una lista di dict della forma {'voto':voto, 'amount' : numero}
+    #la lista è ordinata in ordine di posizione nella classifica
     def get_vote_list(self):
+
+        classifica = self.get_classifica()
         results_list = self.__get_result_list()
         
         out_list = []
@@ -222,7 +225,7 @@ class GiudizioMaggioritario:
                 vote_name = MajorityOpinionJudgement.JudgeType(different_votes[i])
                 vote_name = vote_name.name
                 lista_voti.update({vote_name : amount})
-        
+                
             out_list.append({'alternativa' : alternativa, 'lista_voti' : lista_voti})
 
         return out_list
