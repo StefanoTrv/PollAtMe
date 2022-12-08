@@ -25,27 +25,52 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5>Inserisci le {{count}} alternative di scelta</h5>
+                        <h3>Controlla i dati che hai inserito</h3>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                    Titolo
+                                    </td>
+                                    <td>
+                                    {{ title }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                    Testo
+                                    </td>
+                                    <td>
+                                    {{ text }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                    Alternative
+                                    </td>
+                                    <td>
+                                        <ul>
+                                            {% for alternative in alternatives %}
+                                                <li>{{alternative}}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <h3>Opzioni aggiuntive</h3>
+                        <p>WIP</p>
                         <br>
                         <form method="post">
                             <div class="form-group">
                                 {% csrf_token %}
                                 <table>
                                     <tbody>
-                                    {% for field in form %}
-                                        <tr>
-                                            <td>
-                                            <label for="{{ field.label }}" style="display:inline-block;vertical-align:middle">{{ field.label_tag }}</label>
-                                            </td>
-                                            <td>
-                                            {{ field }}
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
+                                        {{ form.as_table }}
                                     </tbody> 
                                 </table>
                                 <br>                         
-                                <button type="submit" class="btn btn-primary"> Prossimo</button>
+                                <button type="submit" class="btn btn-primary">Salva</button>
                             </div>
                         </form>
                         <br>

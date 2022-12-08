@@ -15,6 +15,8 @@ class NewPollSessionCleaner:
                 del request.session['new_poll_alternatives']
             if 'new_poll_page_index' in request.session:
                 del request.session['new_poll_page_index']
+            if 'new_poll_type' in request.session:
+                del request.session['new_poll_type']
 
         response = self.get_response(request)
 

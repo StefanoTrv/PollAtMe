@@ -24,13 +24,14 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5>Inserisci titolo e domanda</h5>
+                        <h5>Inserisci i dati del tuo sondaggio</h5>
                         <br>
                         <form method="post">
                             <div class="form-group">
                                 {% csrf_token %}
+                                {{ form.non_field_errors }}
                                 <table>
-                                    <tbody>
+                                    <tbody id="formtablebody">
                                     {% for field in form %}
                                         <tr>
                                             <td>
@@ -43,10 +44,12 @@
                                     {% endfor %}
                                     </tbody> 
                                 </table>
-                                <br>                         
-                                <button type="submit" class="btn btn-primary"> Prossimo</button>
+                                <br>
+                                <button id="submitformbutton" type="submit" class="btn btn-primary"> Prossimo</button>
                             </div>
                         </form>
+                        <br>
+                        <button id="add-another" class="btn btn-secondary" onclick="add_alternative()">Aggiungi un'altra alternativa</button>
                         <br>
                         <a href="{% url 'polls:index' %}"> 
                             <button class="btn btn-block btn-secondary"> Annulla e torna alla home </button>
@@ -58,3 +61,20 @@
     </div>
 </div>
 {% endblock content %}
+
+{% block javascripts %}
+<script>
+    let form_count = document.getElementById("{{form.hidden_alternative_count.auto_id }}").value
+
+    function add_alternative(){
+        form_count ++;
+        
+        var element = document.createElement("tr");
+        element.innerHTML="<td>\n <label for=\"Alternativa " + form_count+"\" style=\"display:inline-block;vertical-align:middle\">Alternativa "+form_count+"</label>\n </td>\n <td>\n <input type=\"text\"/ name=\"alternative"+form_count+"\">\n </td>";
+        document.getElementById("formtablebody").append(element);
+        // build element and append it to our forms container
+        document.getElementById("{{form.hidden_alternative_count.auto_id }}").value=form_count;
+        console.log(document.getElementById("{{form.hidden_alternative_count.auto_id }}").value);        
+    }
+</script>
+{% endblock javascripts %}
