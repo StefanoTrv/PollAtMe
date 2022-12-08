@@ -201,6 +201,32 @@ class GiudizioMaggioritario:
 
         return result_list
 
+    #ritorna una lista di dict del tipo 
+    #{'alternativa' : alternativa, 'lista_voti' : lista_voti} dove lista voti è una lista di dict della forma {'voto':voto, 'amount' : numero}
+    def get_vote_list(self):
+        results_list = self.__get_result_list()
+        
+        out_list = []
+        #iteriamo per ottenere il risultato desiderato
+        for result in results_list:
+            alternativa = Alternative.objects.get(id = result['choice_id']).text
+            votes = result['voti']
+            different_votes = [e.value for e in MajorityOpinionJudgement.JudgeType]
+            different_votes.sort(reverse=True) #abbiamo i voti in ordine di valore
+
+
+            lista_voti = {}
+            #produciamo le tuple
+            for i in range(0, len(different_votes), 1):
+                amount = votes.count(different_votes[i])
+                vote_name = MajorityOpinionJudgement.JudgeType(different_votes[i])
+                vote_name = vote_name.name
+                lista_voti.update({vote_name : amount})
+        
+            out_list.append({'alternativa' : alternativa, 'lista_voti' : lista_voti})
+
+        return out_list
+
         
 ##non dipende dall'istanza della classe quindi lo facciamo statico, così può essere testato
 def produce_vote_tuple_list(result_query: list) -> list:
@@ -260,13 +286,68 @@ class MajorityJudgementService:
         self.__poll = Poll.objects.get(id = poll_id)
         return self
     
-    def get_classifica(self) -> list[Any]:
-        context = self.__get_results()
+    """
+    Metodi per ottenere informazioni sul risultato del sondaggio a giudizio
+    maggioritario ritornano sempre un dizionario della forma {'label': valore}
+
+    La view può chiamare quelli che vuole ed aggiungerli al suo contesto
+    """
+
+    #ritorna un dict {'classifica' : classifica}, dove classifica è una lista di dict
+    #{'alternative': alternativa, 'place' : posizione}
+    def get_classifica(self):
+        classifica = self.__get_classifica()
+        context = {'classifica' : classifica}    
         return context
 
-    def __get_results(self):
+    def __get_classifica(self):
         self.giudizio_maggioritario = GiudizioMaggioritario(self.__poll.id)
-        classifica = self.giudizio_maggioritario.get_classifica()
-        context = {'classifica' : classifica}            
+        classifica  = self.giudizio_maggioritario.get_classifica()            
+        return classifica
+
+    #ritorna un dict {'winners' : vincitori} dove vincitori è una lista di
+    #alternative, in genere è 1 ma può essere superiore in caso di pareggio
+    def get_winners(self):
+        winners = self.__get_winners()
+        context = {'winners' : winners} 
         return context
-    
+
+    def __get_winners(self):
+        self.giudizio_maggioritario = GiudizioMaggioritario(self.__poll.id)
+        classifica = self.__get_classifica()
+
+        #filtriamo la classifica per prendere i vincitori
+        winners = []
+        for alternativa in classifica:
+            if alternativa['place'] == 1:
+                winners.append(alternativa['alternative'])
+
+        return winners
+
+
+    #ritorna un dict {'voti_alternativa' : voti_alternativa, 'ordered_votes' : lista_voti}, dove voti_alternativa è una lista di dict
+    #{'alternativa' alternativa, 'lista_voti' : lista_voti} 
+    # dove lista voti è un dict della forma {'voto' : numero} e lista voti è una lista
+    # ordinata dei voti possibili
+    def get_voti_alternativa(self) :
+        voti_alternativa = self.__get_voti_alternativa()
+        ordered_votes = self.__get_all_votes()
+        context = {'voti_alternativa' : voti_alternativa, 'ordered_votes' : ordered_votes} 
+        return context
+
+    def __get_voti_alternativa(self):
+        self.giudizio_maggioritario = GiudizioMaggioritario(self.__poll.id)
+        lista_voti = self.giudizio_maggioritario.get_vote_list()
+        return lista_voti
+
+    def __get_all_votes(self):
+        self.giudizio_maggioritario = GiudizioMaggioritario(self.__poll.id)
+        different_votes = [e.value for e in MajorityOpinionJudgement.JudgeType]
+        different_votes.sort(reverse=True)
+
+        ordered_votes = []
+        for i in range(0, len(different_votes), 1):
+            ordered_votes.append(MajorityOpinionJudgement.JudgeType(different_votes[i]).name)
+
+        return ordered_votes
+

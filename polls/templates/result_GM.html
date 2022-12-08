@@ -1,30 +1,209 @@
 {% extends 'layouts/base.html' %}
-
+{% load lookup_filter %}
 {% block title %} {{block.super}} | Risultati MJ {% endblock title %}
 
 {% block content %}
 <div class="pcoded-main-container">
   <div class="pcoded-content">
-      <div class="page-header">
-          <div class="page-block">
-              <div class="row align-items-center">
-                  <div class="col-md-12">
-                      <div class="page-header-title">
-                          <h3 class="m-b-10"> Risultato: </h3>
-                          <ul>
-                            {%for element in result.classifica%}
-                              <li>la scelta {{ element.alternative }} è arrivata in posizione {{ element.place }}</li>
-                            {% endfor %}
-                          </ul>
-                          <a href={% url 'polls:vote' id=poll_id %}>
-                              <button class="btn btn-block btn-primary mb-4"> Torna al questionario </button>
-                          </a>
-                      </div>
-                  </div>
-              </div>
+    <div class="page-header">
+      <div class="page-block">
+        <div class="row align-items-center">
+          <div class="col-md-12">
+            <div class="page-header-title">
+              <h5 class="m-b-10">Risultati sondaggio</h5>
+            </div>
+            <ul class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/"><em class="feather icon-home"></em></a></li>
+              <li class="breadcrumb-item">Risultati</li>
+              <li class="breadcrumb-item"><strong>{{ poll_title }}</strong></li>
+            </ul>
           </div>
+        </div>
       </div>
     </div>
+
+
+    <!-- [ Riepilogo ] start -->
+    <div class="row">
+      <h5>Riepilogo</h5>
+      <hr>
+      <div class="col-md-6 col-xl-3">
+        <div class="card bg-c-blue order-card">
+          <div class="card-body">
+            <h6 class="text-white">Data di apertura del sondaggio:</h6>
+            <h2 class="text-end text-white"><em class="feather icon-calendar float-start"></em><span>{% now "SHORT_DATE_FORMAT" %}</span>
+            </h2>
+            <p class="m-b-0">Data di chiusura<span class="float-end">{% now "SHORT_DATE_FORMAT" %}</span></p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-xl-3">
+        <div class="card bg-c-green order-card">
+          <div class="card-body">
+            <h6 class="text-white">Sondaggio creato da:</h6>
+            <h2 class="text-end text-white"><em class="feather icon-user float-start"></em><span>User</span>
+            </h2>
+            <p class="m-b-0">Sondaggio creato il giorno<span class="float-end">{% now "SHORT_DATE_FORMAT" %}</span></p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-xl-3">
+        <div class="card bg-c-yellow order-card">
+          <div class="card-body">
+            <h6 class="text-white">Tipo di sondaggio</h6>
+            <h2 class="text-end text-white"><em class="feather icon-lock float-start"></em><span>Pubblico</span></h2>
+            <p class="m-b-0">Tipo di risposte<span class="float-end">anonime</span></p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-xl-3">
+        <div class="card bg-c-red order-card">
+          <div class="card-body">
+            <h6 class="text-white">Numero di giudizi</h6>
+            <h2 class="text-end text-white"><em class="feather icon-edit float-start"></em><span>{{ tot_votes }}</span></h2>
+            <p class="m-b-0">Numero di alternative<span class="float-end">{{ numero_alternative }}</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- [ Vincitore/i ] start -->
+    <div class="col-sm-12">
+      <div class="card bg-success text-white">
+
+        {%if winners|length > 1%}
+
+          <div class="card-header"><h2 class="text-white">Vincitori a parimerito</div>
+            <div class="card-body">
+              {%for alternativa in winners%}
+                <ul>
+                  <h5 class="text-white">
+                    {{ alternativa }}
+                  </h5>
+                </ul>
+              {% endfor %}
+            </div>
+          </div>
+
+        {%else%}
+
+          <div class="card-header"><h2 class="text-white">Vincitore</div>
+            <div class="card-body">
+              {%for alternativa in winners%}
+                <h5 class="text-white">
+                  {{ alternativa }}
+                </h5>
+              {% endfor %}
+            </div>
+          </div>
+
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- [ barplot orizzontale/i ] start -->
+    
+    <div class="row">
+      <h5>Grafici</h5>
+      <hr>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h5>Barplot orizzontale</h5>
+          </div>
+          <div class="card-body">
+            <div id="chart"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
   </div>
 </div>
 {% endblock content %}
+
+
+{% block javascripts %}
+<script src="/static/js/plugins/apexcharts.min.js"></script>
+<script>
+
+  var options = {
+    series: [{
+    name: '{{ordered_votes.0}}',
+    data: [{% for alternativa in voti_alternativa %}
+              {{ alternativa.lista_voti|get_value:ordered_votes.0 }},
+          {% endfor %}]
+  },
+  {
+    name: '{{ordered_votes.1}}',
+    data: [{% for alternativa in voti_alternativa %}
+              {{ alternativa.lista_voti|get_value:ordered_votes.1 }},
+          {% endfor %}]
+  },
+  {
+    name: '{{ordered_votes.2}}',
+    data: [{% for alternativa in voti_alternativa %}
+              {{ alternativa.lista_voti|get_value:ordered_votes.2 }},
+          {% endfor %}]
+  },
+  {
+    name: '{{ordered_votes.3}}',
+    data: [{% for alternativa in voti_alternativa %}
+              {{ alternativa.lista_voti|get_value:ordered_votes.3 }},
+          {% endfor %}]
+  },
+  {
+    name: '{{ordered_votes.4}}',
+    data: [{% for alternativa in voti_alternativa %}
+              {{ alternativa.lista_voti|get_value:ordered_votes.4 }},
+          {% endfor %}]
+  },
+  ],
+    chart: {
+    type: 'bar',
+    height: 350,
+    stacked: true,
+    stackType: '100%'
+  },
+  plotOptions: {
+    bar: {
+      horizontal: true,
+    },
+  },
+  stroke: {
+    width: 1,
+    colors: ['#fff']
+  },
+  title: {
+    text: '100% Stacked Bar'
+  },
+  xaxis: {
+    categories: [{% for alternativa in voti_alternativa %}
+                    '{{ alternativa.alternativa }}',
+                  {% endfor %}]
+  },
+  tooltip: {
+    y: {
+      formatter: function (val) {
+        return val + "K"
+      }
+    }
+  },
+  fill: {
+    opacity: 1
+  
+  },
+  legend: {
+    position: 'top',
+    horizontalAlign: 'left',
+    offsetX: 40
+  }
+  };
+
+  var chart = new ApexCharts(document.querySelector("#chart"), options);
+  chart.render();
+
+</script>
+
+{% endblock javascripts %}

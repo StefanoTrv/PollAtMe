@@ -19,6 +19,7 @@ class ResultsViewTest(TestCase):
         for alternative in Alternative.objects.filter(poll = poll.id):
             self.assertContains(resp, 'la scelta '+alternative.text+' ha ottenuto '+str(results[alternative.text])+' voti')
 
+    """
     def test_giudizio_maggioritario_mostra_alternative_in_classifica(self):
         url = reverse('polls:result', args=[4])
         results = {}
@@ -29,3 +30,4 @@ class ResultsViewTest(TestCase):
         self.assertEqual(resp.status_code, 200)
         for alternative in Alternative.objects.filter(poll = poll.id):
             self.assertContains(resp, 'la scelta '+alternative.text+' è arrivata in posizione '+str(results[alternative.text]))
+    """
