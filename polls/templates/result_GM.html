@@ -106,6 +106,7 @@
     <div class="row">
       <h5>Grafici</h5>
       <hr>
+
       <div class="col-md-6">
         <div class="card">
           <div class="card-header">
@@ -116,6 +117,7 @@
           </div>
         </div>
       </div>
+
       <div class="col-md-6">
         <div class="card">
           <div class="card-header">
@@ -137,36 +139,15 @@
 <script>
 
   var options = {
-    series: [{
-    name: '{{ordered_votes.0}}',
+    series: [
+    {%for vote in ordered_votes%}
+    {
+    name: '{{vote}}',
     data: [{% for alternativa in voti_alternativa %}
-              {{ alternativa.lista_voti|get_value:ordered_votes.0 }},
+              {{ alternativa.lista_voti|get_value:vote }},
           {% endfor %}]
-  },
-  {
-    name: '{{ordered_votes.1}}',
-    data: [{% for alternativa in voti_alternativa %}
-              {{ alternativa.lista_voti|get_value:ordered_votes.1 }},
-          {% endfor %}]
-  },
-  {
-    name: '{{ordered_votes.2}}',
-    data: [{% for alternativa in voti_alternativa %}
-              {{ alternativa.lista_voti|get_value:ordered_votes.2 }},
-          {% endfor %}]
-  },
-  {
-    name: '{{ordered_votes.3}}',
-    data: [{% for alternativa in voti_alternativa %}
-              {{ alternativa.lista_voti|get_value:ordered_votes.3 }},
-          {% endfor %}]
-  },
-  {
-    name: '{{ordered_votes.4}}',
-    data: [{% for alternativa in voti_alternativa %}
-              {{ alternativa.lista_voti|get_value:ordered_votes.4 }},
-          {% endfor %}]
-  },
+    },
+    {%endfor%}
   ],
     chart: {
     type: 'bar',
@@ -204,7 +185,7 @@
   },
   legend: {
     position: 'top',
-    horizontalAlign: 'left',
+    horizontalAlign: 'center',
     offsetX: 40
   }
   };
