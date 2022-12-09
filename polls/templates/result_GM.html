@@ -101,7 +101,7 @@
       </div>
     </div>
 
-    <!-- [ barplot orizzontale/i ] start -->
+    <!-- [ plots ] start -->
     
     <div class="row">
       <h5>Grafici</h5>
@@ -119,14 +119,44 @@
       </div>
 
       <div class="col-md-6">
-        <div class="card">
-          <div class="card-header">
-            <h5>grafico orizzontale</h5>
+          <div class="card text-center">
+            <div class="card-header">
+              <ul class="nav nav-tabs card-header-tabs"  role="tablist">
+                {%for alternativa in voti_alternativa%}
+                  {%if forloop.first%}
+                    <li class="nav-item">
+                      <a class="nav-link active" id='{{alternativa.alternativa}}' data-toggle="tab" href="#{{alternativa.alternativa}}" role="tab">{{alternativa.alternativa}}</a>
+                    </li>
+                  {%else%}
+                  <li class="nav-item">
+                    <a class="nav-link" id='{{alternativa.alternativa}}' data-toggle="tab" href="#{{alternativa.alternativa}}" role="tab">{{alternativa.alternativa}}</a>
+                  </li>
+                  {%endif%}
+                {%endfor%}
+              </ul>
+            </div>
+            <div class="tab-content" id='{{alternativa.alternativa}}'>
+              {%for alternativa in voti_alternativa%}
+                {%if forloop.first%}
+                <div class="tab-pane fade show active" id="{{alternativa.alternativa}}" role="tabpanel" aria-labelledby="home-tab">
+                  <div class="card-header">
+                    <h5>Grafico a barre per {{alternativa.alternativa}}</h5>
+                  </div>
+                  <div class="card-body">
+                    <div id="bar"></div>
+                  </div>
+                </div>
+                {%else%}
+                <div class="tab-pane fade" id="{{alternativa.alternativa}}" role="tabpanel">
+                  <div class="card-header">
+                    <h5>Grafico a barre per {{alternativa.alternativa}}</h5>
+                  </div>           
+                </div>
+                {%endif%}
+                {%endfor%}
+              </div>
+            </div>
           </div>
-          <div class="card-body">
-            <div id="bar"></div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -196,56 +226,56 @@
 </script>
 
 <script>
-  var options = {
-    series: [{
-      name: 'Preferenze',
-      data: [{% for voto, amount in voti_alternativa.0.lista_voti.items%}
-              {
-               x: '{{voto}}',
-               y: {{amount}},
-              },
-             {%endfor%}]
-    }],
-  chart: {
-    type: 'bar'
-  },
-  plotOptions: {
-    bar: {
-      horizontal: false,
-        columnWidth: '55%',
-          endingShape: 'rounded'
+    var options = {
+      series: [{
+        name: 'Preferenze',
+        data: [{% for voto, amount in voti_alternativa.0.lista_voti.items%}
+                {
+                x: '{{voto}}',
+                y: {{amount}},
+                },
+              {%endfor%}]
+      }],
+    chart: {
+      type: 'bar'
     },
-  },
-  dataLabels: {
-    enabled: false
-  },
-  stroke: {
-    show: true,
-      width: 2,
-        colors: ['transparent']
-  },
-  xaxis: {
-    type: 'category'
-  },
-  yaxis: {
-    title: {
-      text: '# giudizi'
-    }
-  },
-  fill: {
-    opacity: 1
-  },
-  tooltip: {
-    y: {
-      formatter: function (val) {
-        return val
+    plotOptions: {
+      bar: {
+        horizontal: false,
+          columnWidth: '55%',
+            endingShape: 'rounded'
+      },
+    },
+    dataLabels: {
+      enabled: false
+    },
+    stroke: {
+      show: true,
+        width: 2,
+          colors: ['transparent']
+    },
+    xaxis: {
+      type: 'category'
+    },
+    yaxis: {
+      title: {
+        text: '#giudizi'
+      }
+    },
+    fill: {
+      opacity: 1
+    },
+    tooltip: {
+      y: {
+        formatter: function (val) {
+          return val
+        }
       }
     }
-  }
-  };
+    };
 
-  var chart = new ApexCharts(document.querySelector("#bar"), options);
-  chart.render();
+    var chart = new ApexCharts(document.querySelector("#bar"), options);
+    chart.render();
 </script>
 
 {% endblock javascripts %}
