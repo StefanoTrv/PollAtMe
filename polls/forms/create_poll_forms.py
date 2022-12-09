@@ -20,7 +20,7 @@ class CreatePollFormMain(forms.Form):
             # generate extra fields in the number specified via hidden_alternative_count
             self.fields['alternative'+str(index+1)] = forms.CharField(label = 'Alternativa '+str(index+1), max_length=100, required=False)
     
-    def clean(self): #aggiungere messaggi errori per campi vuoti !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    def clean(self):
         form_data = self.cleaned_data
         print(form_data['hidden_alternative_count'])
 
@@ -34,9 +34,17 @@ class CreatePollFormMain(forms.Form):
         for i in range(len(alternatives)):
             form_data['alternative'+str(i+1)]=alternatives[i]
         
+        #errore se il campo del titolo è vuoto
+        if 'poll_title' not in form_data:
+            self.add_error(None, "Il titolo non può essere vuoto.")
+
         #errore se non ci sono abbastanza alternative
         if form_data['hidden_alternative_count'] not in range (2,10):
             self.add_error(None, "Il numero di alternative deve essere compreso tra 2 e 10.")
+        
+        #errore se il campo del testo è vuoto
+        if 'poll_text' not in form_data:
+            self.add_error(None, "Il testo del sondaggio non può essere vuoto.")
         return form_data
 
 #Form per la seconda pagina della creazione di nuovi sondaggi, contenente opzioni secondarie
