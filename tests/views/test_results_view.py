@@ -14,11 +14,11 @@ class ResultsViewTest(TestCase):
         results = {}
         poll = SinglePreferencePoll.objects.get(id = 1)
         for item in SinglePreferencePollResultsService().set_poll(poll).as_list():
-            results[item['alternative']]=item['count']
+            results[item['text']]=item['count']
         resp = self.client.get(url)
         assert_that(resp.status_code).is_equal_to(200)
         for alternative in Alternative.objects.filter(poll = poll.id):
-            self.assertContains(resp, alternative.text)
+            self.assertContains(resp, alternative.text.upper())
             self.assertContains(resp, results[alternative.text])
 
     def test_giudizio_maggioritario_mostra_alternative_in_classifica(self):

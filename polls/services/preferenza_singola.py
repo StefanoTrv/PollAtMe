@@ -37,13 +37,25 @@ class SinglePreferencePollResultsService():
             Returns:
                 lista ordinata in base al valore di count di dictionary con la seguente struttura:
                 {
-                    'alternative': Testo dell'alternativa,
+                    'text': Testo dell'alternativa,
                     'count': Numero di preferenze,
-                    'winner': Se l'alternativa ha la maggioranza relativa delle preferenze (in caso di pareggio tra più opzioni non sono previsti vincitori)
+                    'positition': posizione in classifica (rispetto all'ordine richiesto)
                 }
         """
-        context = self.__get_results()
-        return sorted(context, key=lambda d: d['count'], reverse=reverse)
+        results_as_dict = dict(sorted(self.__get_results().items(), reverse=reverse))
+        results_as_list = []
+        position = 1
+        for n_votes, alternatives in results_as_dict.items():
+            for alternative in alternatives:
+                results_as_list.append({
+                    'text': alternative,
+                    'count': n_votes,
+                    'position': position
+                })
+            position += 1
+        
+        return results_as_list
+
 
     # privato, deve costruire gli oggetti da ritornare
     def __get_results(self):
@@ -52,27 +64,18 @@ class SinglePreferencePollResultsService():
             'alternative').annotate(count=Count('alternative')).order_by('-count')  # preferenze per la scelta
         all_alternatives: QuerySet[Alternative] = Alternative.objects.filter(
             poll=self.__poll)  # tutte le scelte possibili
-        context = []
-
+        
+        context = {}
         for alternative_key in all_alternatives.values_list('pk', flat=True):
             count = 0
             # se l'alternativa è stata votata allora aggiorniamo il conto
             # se è stata votata è in preferences
             if alternative_key in preferences.values_list('alternative', flat=True):
-                count = preferences.get(alternative=alternative_key)['count']
+                count: int = preferences.get(alternative=alternative_key)['count']
+            if context.get(count) is None:
+                context[count]: list = []
 
             text = Alternative.objects.get(id=alternative_key).text
-            context.append(
-                {'alternative': text, 'count': count, 'winner': 3})
-
-        context = sorted(context, key=lambda d: d['count'], reverse=True)
-        if context[0]['count'] > context[1]['count']:
-            context[0]['winner'] = 1
-        else:
-            context[0]['winner'] = 2
-            i = 1
-            while context[i]['count'] == context[i-1]['count']:
-                context[i]['winner'] = 2
-                i += 1
+            context[count].append(text)
 
         return context

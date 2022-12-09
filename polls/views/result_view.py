@@ -46,20 +46,28 @@ class ResultView(View):
 class SinglePreferenceListView(TemplateView):
 
     model: type[models.Model] = Preference
-    template_name: str = 'result_SP.html'
-
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
+    template_name: str = 'results/result_SP.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         poll = SearchPollService().search_by_id(self.kwargs['id'])
         results = SinglePreferencePollResultsService().set_poll(poll).as_list()
         
+        tot_votes = sum([votes['count'] for votes in results])
+        for res in results:
+            if tot_votes == 0:
+                res['percentage'] = 0.0
+            else:
+                res['percentage'] = (res['count']/tot_votes)*100
+        
         context['results'] = results
-        context['tot_votes'] = sum([votes['count'] for votes in results])
+        context['unique_winner'] = results[0]['position'] != results[1]['position']
+        context['tot_votes'] = tot_votes
         context['poll_title'] = poll.title
         return context
+    
+    def render_to_response(self, context: dict[str, Any], **response_kwargs: Any) -> http.HttpResponse:
+        return super().render_to_response(context, **response_kwargs)
     
 
 class ShultzePreferenceListView(ListView):

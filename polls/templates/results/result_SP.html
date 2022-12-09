@@ -25,9 +25,9 @@
     </div>
     <!-- [ breadcrumb ] end -->
     <!-- [ Main Content ] start -->
+    <h5 class="mt-4">Riepilogo</h5>
+    <hr>
     <div class="row">
-      <h5>Riepilogo</h5>
-      <hr>
       <div class="col-md-6 col-xl-3">
         <div class="card bg-c-blue order-card">
           <div class="card-body">
@@ -68,49 +68,56 @@
       </div>
     </div>
 
-    <div class="row">
-      <h5>Numero di preferenze per alternativa</h5>
-      <hr>
-      {% for vote in results %}
-      {% if vote.winner == 1 %}
-      <div class="col-sm-12">
-        <div class="card bg-success text-white">
-          <div class="card-header"><h2 class="text-white">1° posizione</h2></div>
-          <div class="card-body">
-            <h5 class="text-white">{{ vote.alternative }}</h5>
-            <hr>
-            <h2 class="text-end text-white"><span>{{ vote.count }}</span></h2>
+    <h5 class="mt-4">Numero di preferenze per alternativa</h5>
+    <hr>
+    <div class="row row-cols-md-3 row-cols-sm-1 g-4">
+      {% for alternative in results %}
+      {% if alternative.position == 1 and unique_winner %}
+      <div class="col-md-12">
+        <div class="card bg-success">
+          <div class="card-body text-white">
+            <h3 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.position }}° posizione</span></h3>
+            <h4 class="card-title text-white">{{ alternative.text|upper }}</h4>
+            <h4 class="card-text text-white">{{ alternative.count }}</h4>
+          </div>
+          <div class="card-footer">
+            <p class="text-white">{{ alternative.percentage }}%</p>
           </div>
         </div>
       </div>
-      {% elif vote.winner == 2 %}
-      <div class="col-md-6 col-xl-3">
-        <div class="card bg-warning">
-          <div class="card-header"><h3>1° posizione</h3></div>
+      {% elif alternative.position == 1 and tot_votes > 0 %}
+      <div class="col">
+        <div class="card bg-warning h-100">
           <div class="card-body">
-            <h5>{{ vote.alternative }}</h5>
-            <hr>
-            <h2 class="text-end"><span>{{ vote.count }}</span></h2>
+            <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.position }}° posizione</span></h4>
+            <h5 class="card-title">{{ alternative.text|upper }}</h5>
+            <h5 class="card-text">{{ alternative.count }}</h5>
+          </div>
+          <div class="card-footer">
+            <p class="card-text">{{ alternative.percentage }}%</p>
           </div>
         </div>
       </div>
       {% else %}
-      <div class="col-md-6 col-xl-3">
-        <div class="card">
+      <div class="col">
+        <div class="card border border-dark h-100">
           <div class="card-body">
-            <h5>{{ vote.alternative }}</h5>
-            <hr>
-            <h2 class="text-end"><span>{{ vote.count }}</span></h2>
+            <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.position }}° posizione</span></h4>
+            <h5 class="card-title">{{ alternative.text|upper }}</h5>
+            <h5 class="card-text">{{ alternative.count }}</h5>
+          </div>
+          <div class="card-footer">
+            <p class="card-text">{{ alternative.percentage }}%</p>
           </div>
         </div>
       </div>
       {% endif %}
       {% endfor %}
     </div>
-
+    
+    <h5 class="mt-4">Grafici</h5>
+    <hr>
     <div class="row">
-      <h5>Grafici</h5>
-      <hr>
       <div class="col-md-6">
         <div class="card">
           <div class="card-header">
@@ -147,10 +154,10 @@
       data: [
         {% for vote in results %}
         {
-      x: '{{ vote.alternative }}',
-      y: {{ vote.count }},
+          x: "{{ vote.text|safe }}",
+          y: {{ vote.count }},
         },
-  {% endfor %}
+        {% endfor %}
       ]
     }],
   chart: {
@@ -201,7 +208,7 @@
   chart: {
     type: 'pie'
   },
-  labels: [{% for vote in results %}'{{ vote.alternative }}', {% endfor %}],
+  labels: [{% for vote in results %}"{{ vote.text|safe }}", {% endfor %}],
   responsive: [{
     breakpoint: 200,
     options: {
