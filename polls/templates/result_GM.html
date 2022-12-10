@@ -119,44 +119,34 @@
       </div>
 
       <div class="col-md-6">
-          <div class="card text-center">
-            <div class="card-header">
-              <ul class="nav nav-tabs card-header-tabs"  role="tablist">
-                {%for alternativa in voti_alternativa%}
-                  {%if forloop.first%}
-                    <li class="nav-item">
-                      <a class="nav-link active" id='{{alternativa.alternativa}}' data-toggle="tab" href="#{{alternativa.alternativa}}" role="tab">{{alternativa.alternativa}}</a>
-                    </li>
-                  {%else%}
-                  <li class="nav-item">
-                    <a class="nav-link" id='{{alternativa.alternativa}}' data-toggle="tab" href="#{{alternativa.alternativa}}" role="tab">{{alternativa.alternativa}}</a>
-                  </li>
-                  {%endif%}
-                {%endfor%}
-              </ul>
-            </div>
-            <div class="tab-content" id='{{alternativa.alternativa}}'>
-              {%for alternativa in voti_alternativa%}
+        <div class="card">
+          <ul class="nav nav-tabs" id="myTab" role="tablist">
+            {%for alternativa in voti_alternativa%}
                 {%if forloop.first%}
-                <div class="tab-pane fade show active" id="{{alternativa.alternativa}}" role="tabpanel" aria-labelledby="home-tab">
-                  <div class="card-header">
-                    <h5>Grafico a barre per {{alternativa.alternativa}}</h5>
-                  </div>
-                  <div class="card-body">
-                    <div id="bar"></div>
-                  </div>
-                </div>
+                  <li class="nav-item" role="presentation">
+                    <a class="nav-link active" id='{{alternativa.alternativa}}' data-bs-toggle="tab" data-bs-target="#graph_{{alternativa.alternativa|replace_space_with_underscore}}" type="button" role="tab">{{alternativa.alternativa}}</a>
+                  </li>
                 {%else%}
-                <div class="tab-pane fade" id="{{alternativa.alternativa}}" role="tabpanel">
-                  <div class="card-header">
-                    <h5>Grafico a barre per {{alternativa.alternativa}}</h5>
-                  </div>           
-                </div>
+                  <li class="nav-item" role="presentation">
+                    <a class="nav-link" id='{{alternativa.alternativa}}' data-bs-toggle="tab" data-bs-target="#graph_{{alternativa.alternativa|replace_space_with_underscore}}" type="button" role="tab">{{alternativa.alternativa}}</a>
+                  </li>
                 {%endif%}
-                {%endfor%}
+              {%endfor%}
+          </ul>
+          <div class="tab-content" id='tab1content'>
+            {%for alternativa in voti_alternativa%}
+              {%if forloop.first%}
+              <div class="tab-pane fade show active" id="graph_{{alternativa.alternativa|replace_space_with_underscore}}" role="tabpanel">
+                <div id="bar_{{alternativa.alternativa|replace_space_with_underscore}}"></div>
               </div>
-            </div>
+              {%else%}
+              <div class="tab-pane fade" id="graph_{{alternativa.alternativa|replace_space_with_underscore}}" role="tabpanel">
+                <div id="bar_{{alternativa.alternativa|replace_space_with_underscore}}"></div> 
+              </div>
+              {%endif%}
+            {%endfor%}
           </div>
+        </div>
       </div>
     </div>
   </div>
@@ -165,6 +155,7 @@
 
 
 {% block javascripts %}
+<script src="/static/js/plugins/bootstrap.min.js"></script>
 <script src="/static/js/plugins/apexcharts.min.js"></script>
 <script>
 
@@ -199,7 +190,7 @@
   },
   xaxis: {
     categories: [{% for alternativa in voti_alternativa %}
-                    '{{ alternativa.alternativa }}',
+                    '{{alternativa.alternativa}}',
                   {% endfor %}]
   },
   tooltip: {
@@ -225,11 +216,13 @@
 
 </script>
 
+{%for alternativa in voti_alternativa%}
 <script>
+
     var options = {
       series: [{
-        name: 'Preferenze',
-        data: [{% for voto, amount in voti_alternativa.0.lista_voti.items%}
+        name: 'Preferenze {{alternativa.al}}',
+        data: [{% for voto, amount in alternativa.lista_voti.items%}
                 {
                 x: '{{voto}}',
                 y: {{amount}},
@@ -243,11 +236,19 @@
       bar: {
         horizontal: false,
           columnWidth: '55%',
-            endingShape: 'rounded'
+            endingShape: 'rounded',
+            borderRadius: 10,
+            dataLabels : {
+              position : 'top',
+            }
       },
     },
     dataLabels: {
-      enabled: false
+      enabled: true,
+          style: {
+            fontSize: '12px',
+            colors: ["#FFFFFF"]
+          }
     },
     stroke: {
       show: true,
@@ -271,11 +272,12 @@
           return val
         }
       }
-    }
+    },
     };
 
-    var chart = new ApexCharts(document.querySelector("#bar"), options);
+    var chart = new ApexCharts(document.querySelector("#bar_{{alternativa.alternativa|replace_space_with_underscore}}"), options);
     chart.render();
 </script>
+{% endfor %}
 
 {% endblock javascripts %}
