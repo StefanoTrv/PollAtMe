@@ -33,27 +33,29 @@
                                 <table>
                                     <tbody id="formtablebody">
                                     {% for field in form %}
-                                        <tr>
+                                        <tr id="{{field.name}}row" {% if 'hidden' in field.name %}style="visibility:collapse;"{% endif%}>
                                             <td>
                                             <label for="{{ field.label }}" style="display:inline-block;vertical-align:middle">{{ field.label_tag }}</label>
                                             </td>
                                             <td>
                                             {{ field }}
+                                                {% if 'alternative' in field.name and 'hidden' not in field.name%}
+                                                    <input type="button" name="btn" value="Elimina alternativa" class="btn btn-danger" onclick="remove_row(parseInt('{{field.name|slice:"11:12"}}'))"/>
+                                                {% endif %}
                                             </td>
                                         </tr>
                                     {% endfor %}
                                     </tbody> 
                                 </table>
                                 <br>
-                                <button id="submitformbutton" type="submit" class="btn btn-primary"> Prossimo</button>
+                                <input type="button" id="add-another" class="btn btn-secondary" onclick="add_alternative()" value="Aggiungi un'altra alternativa"/>
+                                <br>
+                                <input type="submit" id="submitformbutton" class="btn btn-primary" value="Prossimo">
+                                <a href="{% url 'polls:index' %}"> 
+                                    <input type="button" class="btn btn-block btn-secondary" value="Annulla e torna alla home"/>
+                                </a>
                             </div>
                         </form>
-                        <br>
-                        <button id="add-another" class="btn btn-secondary" onclick="add_alternative()">Aggiungi un'altra alternativa</button>
-                        <br>
-                        <a href="{% url 'polls:index' %}"> 
-                            <button class="btn btn-block btn-secondary"> Annulla e torna alla home </button>
-                        </a>
                     </div>
                 </div>
             </div>
@@ -70,11 +72,17 @@
         form_count ++;
         
         var element = document.createElement("tr");
-        element.innerHTML="<td>\n <label for=\"Alternativa " + form_count+"\" style=\"display:inline-block;vertical-align:middle\">Alternativa "+form_count+"</label>\n </td>\n <td>\n <input type=\"text\"/ name=\"alternative"+form_count+"\">\n </td>";
+        element.id="alternative"+form_count+"row";
+        element.innerHTML="<td>\n <label for=\"Alternativa " + form_count+"\" style=\"display:inline-block;vertical-align:middle\">Alternativa "+form_count+"</label>\n </td>\n <td>\n <input type=\"text\"/ name=\"alternative"+form_count+"\" id=\"id_alternative"+form_count+"\">\n<input type=\"button\" name=\"btn\" value=\"Elimina alternativa\" class=\"btn btn-danger\" onclick=\"remove_row("+form_count+")\"\/>\n </td>";
         document.getElementById("formtablebody").append(element);
         // build element and append it to our forms container
-        document.getElementById("{{form.hidden_alternative_count.auto_id }}").value=form_count;
-        console.log(document.getElementById("{{form.hidden_alternative_count.auto_id }}").value);        
+        document.getElementById("{{form.hidden_alternative_count.auto_id }}").value=form_count;       
+    }
+
+    function remove_row(row_number){
+        console.log("{{form.alternative1.auto_id|slice:":-1"}}"+row_number);
+        document.getElementById("{{form.alternative1.auto_id|slice:":-1"}}"+row_number).value="";
+        document.getElementById("alternative"+row_number+"row").style.visibility = "collapse";
     }
 </script>
 {% endblock javascripts %}
