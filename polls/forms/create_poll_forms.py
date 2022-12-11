@@ -8,7 +8,7 @@ class CreatePollFormMain(forms.Form):
         ('Preferenza singola', 'Preferenza singola'),
     ])
     poll_text = forms.CharField(label = 'Testo', widget=forms.Textarea)
-    hidden_alternative_count = forms.IntegerField(widget=forms.HiddenInput(),label='')
+    hidden_alternative_count = forms.IntegerField(widget=forms.HiddenInput())
 
     def __init__(self, *args, **kwargs):
         number_of_alternatives = int(kwargs.pop('count', 2))
@@ -18,11 +18,12 @@ class CreatePollFormMain(forms.Form):
 
         for index in range(int(number_of_alternatives)):
             # generate extra fields in the number specified via hidden_alternative_count
-            self.fields['alternative'+str(index+1)] = forms.CharField(label = 'Alternativa '+str(index+1), max_length=100, required=False)
+            self.fields['alternative'+str(index+1)] = forms.CharField(label = 'Alternativa', max_length=100, required=False)
+            #il seguente campo serve al javascript nel template per nascondere i campi eliminati quando la pagina viene ricaricata per un errore di compilazione del form.
+            self.fields['alternative_is_hidden_'+str(index+1)] = forms.CharField(widget=forms.HiddenInput(),initial="false",max_length=5,required=False)
     
     def clean(self):
         form_data = self.cleaned_data
-        print(form_data['hidden_alternative_count'])
 
         #rimuovo le alternative vuote
         alternatives=[]

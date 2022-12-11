@@ -33,7 +33,7 @@
                                 <table>
                                     <tbody id="formtablebody">
                                     {% for field in form %}
-                                        <tr id="{{field.name}}row" {% if 'hidden' in field.name %}style="visibility:collapse;"{% endif%}>
+                                        <tr id="{{field.name}}row" {% if 'hidden' in field.name %}style="visibility:collapse;"{% endif%}><!-- Nasconde completamente i campi con "hidden" nel nome -->
                                             <td>
                                             <label for="{{ field.label }}" style="display:inline-block;vertical-align:middle">{{ field.label_tag }}</label>
                                             </td>
@@ -66,23 +66,29 @@
 
 {% block javascripts %}
 <script>
-    let form_count = document.getElementById("{{form.hidden_alternative_count.auto_id }}").value
+    let form_count = document.getElementById("{{form.hidden_alternative_count.auto_id }}").value;
+    //nascondi i campi che sono stati "eliminati", ma che in realtà sono solo nascosti
+    for (let i = 1; i <= form_count; i++) {
+        if(document.getElementById("{{form.alternative_is_hidden_1.auto_id|slice:":-1"}}"+i).value == "true"){
+            document.getElementById("alternative"+i+"row").style.visibility = "collapse";
+        }
+      }
 
     function add_alternative(){
         form_count ++;
         
         var element = document.createElement("tr");
         element.id="alternative"+form_count+"row";
-        element.innerHTML="<td>\n <label for=\"Alternativa " + form_count+"\" style=\"display:inline-block;vertical-align:middle\">Alternativa "+form_count+"</label>\n </td>\n <td>\n <input type=\"text\"/ name=\"alternative"+form_count+"\" id=\"id_alternative"+form_count+"\">\n<input type=\"button\" name=\"btn\" value=\"Elimina alternativa\" class=\"btn btn-danger\" onclick=\"remove_row("+form_count+")\"\/>\n </td>";
+        element.innerHTML="<td>\n <label for=\"Alternativa " + form_count+"\" style=\"display:inline-block;vertical-align:middle\">Alternativa:</label>\n </td>\n <td>\n <input type=\"text\"/ name=\"alternative"+form_count+"\" id=\"id_alternative"+form_count+"\">\n<input type=\"button\" name=\"btn\" value=\"Elimina alternativa\" class=\"btn btn-danger\" onclick=\"remove_row("+form_count+")\"\/>\n<input type=\"text\"/ name=\"alternative_is_hidden_"+form_count+"\" id=\"id_alternative_is_hidden"+form_count+"\" value=\"false\" style=\"visibility:collapse;\">\n </td>";
         document.getElementById("formtablebody").append(element);
         // build element and append it to our forms container
         document.getElementById("{{form.hidden_alternative_count.auto_id }}").value=form_count;       
     }
 
     function remove_row(row_number){
-        console.log("{{form.alternative1.auto_id|slice:":-1"}}"+row_number);
         document.getElementById("{{form.alternative1.auto_id|slice:":-1"}}"+row_number).value="";
         document.getElementById("alternative"+row_number+"row").style.visibility = "collapse";
+        document.getElementById("{{form.alternative_is_hidden_1.auto_id|slice:":-1"}}"+row_number).value = "true";
     }
 </script>
 {% endblock javascripts %}

@@ -33,7 +33,6 @@ def _create_poll_main(request):
             request.session['new_poll_type']=form.cleaned_data['poll_type']
             request.session['new_poll_page_index']=2
             return HttpResponseRedirect(reverse('polls:create_poll')) #redirect alla stessa pagina per forzare il caricamento della prossima schermata
-
     # if a GET (or any other method) we'll create a blank form
     else:
         form = CreatePollFormMain()
