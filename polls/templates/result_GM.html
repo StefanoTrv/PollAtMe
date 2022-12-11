@@ -2,6 +2,23 @@
 {% load lookup_filter %}
 {% block title %} {{block.super}} | Risultati MJ {% endblock title %}
 
+{% block stylesheets %} 
+<style>
+  /* bootstrap hack: fix content width inside hidden tabs */
+  .tab-content > .tab-pane,
+  .pill-content > .pill-pane {
+  display: block;     /* undo display:none          */
+  height: 0;          /* height:0 is also invisible */ 
+  overflow-y: hidden; /* no-overflow                */
+  }
+  .tab-content > .active,
+  .pill-content > .active {
+  height: auto;       /* let the content decide it  */
+  } /* bootstrap hack end */
+</style>
+{% endblock stylesheets %}
+
+
 {% block content %}
 <div class="pcoded-main-container">
   <div class="pcoded-content">
@@ -60,7 +77,7 @@
         <div class="card bg-c-red order-card">
           <div class="card-body">
             <h6 class="text-white">Numero di giudizi</h6>
-            <h2 class="text-end text-white"><em class="feather icon-edit float-start"></em><span>{{ tot_votes }}</span></h2>
+            <h2 class="text-end text-white">{{ numero_preferenze }}<em class="feather icon-edit float-start"></em><span>{{ tot_votes }}</span></h2>
             <p class="m-b-0">Numero di alternative<span class="float-end">{{ numero_alternative }}</span></p>
           </div>
         </div>
@@ -136,11 +153,11 @@
           <div class="tab-content" id='tab1content'>
             {%for alternativa in voti_alternativa%}
               {%if forloop.first%}
-              <div class="tab-pane fade show active" id="graph_{{alternativa.alternativa|replace_space_with_underscore}}" role="tabpanel">
-                <div id="bar_{{alternativa.alternativa|replace_space_with_underscore}}"></div>
+              <div class="tab-pane show active" id="graph_{{alternativa.alternativa|replace_space_with_underscore}}" role="tabpanel">
+                  <div id="bar_{{alternativa.alternativa|replace_space_with_underscore}}"></div>
               </div>
               {%else%}
-              <div class="tab-pane fade" id="graph_{{alternativa.alternativa|replace_space_with_underscore}}" role="tabpanel">
+              <div class="tab-pane" id="graph_{{alternativa.alternativa|replace_space_with_underscore}}" role="tabpanel">
                 <div id="bar_{{alternativa.alternativa|replace_space_with_underscore}}"></div> 
               </div>
               {%endif%}
@@ -230,7 +247,8 @@
               {%endfor%}]
       }],
     chart: {
-      type: 'bar'
+      type: 'bar',
+      redrawOnWindowResize: true
     },
     plotOptions: {
       bar: {

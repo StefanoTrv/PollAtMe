@@ -85,12 +85,18 @@ class MajorityJudgementListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        classifica = self.__poll_results_service.search_by_poll_id(self.kwargs['id']).get_classifica()
-        winners = self.__poll_results_service.search_by_poll_id(self.kwargs['id']).get_winners()
-        vote_list = self.__poll_results_service.search_by_poll_id(self.kwargs['id']).get_voti_alternativa()
+        poll_service = self.__poll_results_service.search_by_poll_id(self.kwargs['id'])
+
+        classifica = poll_service.get_classifica()
+        winners = poll_service.get_winners()
+        vote_list = poll_service.get_voti_alternativa()
+        numero_alternative = poll_service.get_numero_alternative()
+        numero_giudizi = poll_service.get_numero_numero_giudizi()
 
         context['poll_id'] = self.kwargs['id']
         context.update(classifica)
         context.update(winners)
         context.update(vote_list)
+        context.update(numero_alternative)
+        context.update(numero_giudizi)
         return context
