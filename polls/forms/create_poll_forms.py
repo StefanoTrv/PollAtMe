@@ -8,19 +8,30 @@ class CreatePollFormMain(forms.Form):
         ('Preferenza singola', 'Preferenza singola'),
     ])
     poll_text = forms.CharField(label = 'Testo', widget=forms.Textarea)
-    hidden_alternative_count = forms.IntegerField(widget=forms.HiddenInput())
+    hidden_alternative_count = forms.IntegerField(widget=forms.HiddenInput())#sia quelle attive che quelle che l'utente ha cancellato, ma che in realtà sono solo nascoste
 
     def __init__(self, *args, **kwargs):
         number_of_alternatives = int(kwargs.pop('count', 2))
 
+        poll_title = kwargs.pop('poll_title',None)
+        poll_text = kwargs.pop('poll_text',None)
+        poll_type = kwargs.pop('poll_type',None)
+
+        alternatives = kwargs.pop('alternatives',[])
+
         super(CreatePollFormMain, self).__init__(*args, **kwargs)
-        self.fields['hidden_alternative_count'].initial = number_of_alternatives
+        self.fields['hidden_alternative_count'].initial = max(number_of_alternatives,len(alternatives))
+
+        self.fields['poll_title'].initial = poll_title
+        self.fields['poll_text'].initial = poll_text
+        self.fields['poll_type'].initial = poll_type
 
         for index in range(int(number_of_alternatives)):
             # generate extra fields in the number specified via hidden_alternative_count
             self.fields['alternative'+str(index+1)] = forms.CharField(label = 'Alternativa', max_length=100, required=False)
-            #il seguente campo serve al javascript nel template per nascondere i campi eliminati quando la pagina viene ricaricata per un errore di compilazione del form.
-            self.fields['alternative_is_hidden_'+str(index+1)] = forms.CharField(widget=forms.HiddenInput(),initial="false",max_length=5,required=False)
+        
+        for index in range(len(alternatives)):
+            self.fields['alternative'+str(index+1)].initial=alternatives[index]
     
     def clean(self):
         form_data = self.cleaned_data

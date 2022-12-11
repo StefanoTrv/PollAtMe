@@ -33,6 +33,11 @@ def _create_poll_main(request):
             request.session['new_poll_type']=form.cleaned_data['poll_type']
             request.session['new_poll_page_index']=2
             return HttpResponseRedirect(reverse('polls:create_poll')) #redirect alla stessa pagina per forzare il caricamento della prossima schermata
+        else: #crea un nuovo form con gli stessi dati, in modo da eliminare definitivamente i campi cancellati
+            alternatives=[]
+            for i in range(1,form.cleaned_data['hidden_alternative_count']+1):
+                alternatives.append(form.cleaned_data['alternative'+str(i)])
+            form=CreatePollFormMain(poll_title=form.cleaned_data['poll_title'],poll_text=form.cleaned_data['poll_text'],poll_type=form.cleaned_data['poll_type'],alternatives=alternatives)
     # if a GET (or any other method) we'll create a blank form
     else:
         form = CreatePollFormMain()
@@ -57,4 +62,4 @@ def _create_poll_summary_and_additional_options(request):
     else:
         form = CreatePollAdditionalOptions()
 
-    return render(request, 'create_poll/summary_and_additional_options_page.html', {'form': form,  'title': request.session['new_poll_title'],  'text': request.session['new_poll_text'],  'alternatives': request.session['new_poll_alternatives']})
+    return render(request, 'create_poll/summary_and_additional_options_page.html', {'form': form, 'type': request.session['new_poll_type'],  'title': request.session['new_poll_title'],  'text': request.session['new_poll_text'],  'alternatives': request.session['new_poll_alternatives']})
