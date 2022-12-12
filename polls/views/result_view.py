@@ -1,12 +1,13 @@
-from typing import Any, Callable, Optional, Type
+from typing import Any, Callable
 
 from django.db import models
 from django.views import View
 from django import http
 from django.views.generic.list import ListView
+from django.views.generic import TemplateView
 
 from polls.models import Preference, Poll
-from polls.services import PollResultsService
+from polls.services import SinglePreferencePollResultsService
 from polls.services import MajorityJudgementService
 from polls.services import SearchPollService
 
@@ -42,20 +43,31 @@ class ResultView(View):
         else:
             return ShultzePreferenceListView.as_view()
 
-class SinglePreferenceListView(ListView):
+class SinglePreferenceListView(TemplateView):
 
     model: type[models.Model] = Preference
-    template_name: str = 'result.html'
-
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self.__poll_results_service = PollResultsService()
+    template_name: str = 'results/result_SP.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['results'] = self.__poll_results_service.search_by_poll_id(self.kwargs['id']).as_list()
-        context['poll_id'] = self.kwargs['id']
+        poll = SearchPollService().search_by_id(self.kwargs['id'])
+        results = SinglePreferencePollResultsService().set_poll(poll).as_list()
+        
+        tot_votes = sum([votes['count'] for votes in results])
+        for res in results:
+            if tot_votes == 0:
+                res['percentage'] = 0.0
+            else:
+                res['percentage'] = (res['count']/tot_votes)*100
+        
+        context['results'] = results
+        context['unique_winner'] = results[0]['position'] != results[1]['position']
+        context['tot_votes'] = tot_votes
+        context['poll_title'] = poll.title
         return context
+    
+    def render_to_response(self, context: dict[str, Any], **response_kwargs: Any) -> http.HttpResponse:
+        return super().render_to_response(context, **response_kwargs)
     
 
 class ShultzePreferenceListView(ListView):
@@ -68,7 +80,7 @@ class ShultzePreferenceListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        ##TODO
+        # TODO
         return context
     
 

@@ -29,8 +29,8 @@ class TestSearchPollService(TestCase):
     def test_search_by_id(self):
         expected_poll = Poll.objects.get(id=1)
         poll = SearchPollService().search_by_id(1)
-        self.assertEquals(poll,expected_poll)
-        self.assertEquals(poll.alternative_set,expected_poll.alternative_set)
+        assert_that(poll).is_equal_to(expected_poll)
+        assert_that(poll.alternative_set).is_equal_to(expected_poll.alternative_set)
     
     def test_search_by_error(self):
         last_id = Poll.objects.all().order_by('-id').first().id
