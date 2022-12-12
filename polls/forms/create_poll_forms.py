@@ -26,8 +26,8 @@ class CreatePollFormMain(forms.Form):
         self.fields['poll_text'].initial = poll_text
         self.fields['poll_type'].initial = poll_type
 
-        for index in range(int(number_of_alternatives)):
-            # generate extra fields in the number specified via hidden_alternative_count
+        for index in range(max(number_of_alternatives,len(alternatives))):
+            # generate extra fields in the number specified via hidden_alternative_count and enough for all the alternatives passed as input (that is, the max of the two)
             self.fields['alternative'+str(index+1)] = forms.CharField(label = 'Alternativa', max_length=100, required=False)
         
         for index in range(len(alternatives)):

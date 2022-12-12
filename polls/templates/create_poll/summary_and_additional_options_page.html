@@ -78,12 +78,16 @@
                                     </tbody> 
                                 </table>
                                 <br>                         
-                                <button type="submit" class="btn btn-primary">Salva</button>
+                                <input type="submit" class="btn btn-primary" value="Salva"/>
                             </div>
                         </form>
                         <br>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="submit" name="go_back" value="Torna indietro" class="btn btn-primary"/>
+                        </form>                        
                         <a href="{% url 'polls:index' %}"> 
-                            <button class="btn btn-block btn-secondary"> Annulla e torna alla home </button>
+                            <input type="button" class="btn btn-secondary" value="Annulla e torna alla home"/>
                         </a>
                     </div>
                 </div>

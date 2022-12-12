@@ -37,7 +37,11 @@ def _create_poll_main(request):
             alternatives=[]
             for i in range(1,form.cleaned_data['hidden_alternative_count']+1):
                 alternatives.append(form.cleaned_data['alternative'+str(i)])
-            form=CreatePollFormMain(poll_title=form.cleaned_data['poll_title'],poll_text=form.cleaned_data['poll_text'],poll_type=form.cleaned_data['poll_type'],alternatives=alternatives)
+            form=CreatePollFormMain(
+                poll_title=form.cleaned_data['poll_title'],
+                poll_text=form.cleaned_data['poll_text'],
+                poll_type=form.cleaned_data['poll_type'],
+                alternatives=alternatives)
     # if a GET (or any other method) we'll create a blank form
     else:
         form = CreatePollFormMain()
@@ -46,8 +50,18 @@ def _create_poll_main(request):
 
 #View per la seconda pagina della creazione di un nuovo sondaggio, che mostra i dati inseriti prima e consente di scegliere opzioni aggiuntive secondarie.
 def _create_poll_summary_and_additional_options(request):
-    # if this is a POST request we need to process the form data
-    if request.method == 'POST':
+    #richiesta di tornare alla pagina precedente
+    if request.method == 'POST' and 'go_back' in request.POST:
+        form=CreatePollFormMain(
+            poll_title=request.session['new_poll_title'],
+            poll_text=request.session['new_poll_text'],
+            poll_type=request.session['new_poll_type'],
+            alternatives=request.session['new_poll_alternatives']
+            )
+        request.session['new_poll_page_index']=1
+        return render(request, 'create_poll/main_page.html', {'form': form}) #mostra la pagina precedente
+    #richiesta di salvare il sondaggio
+    elif request.method == 'POST':
         # create a form instance and populate it with data from the request:
         form = CreatePollAdditionalOptions(request.POST)
         # check whether it's valid:
