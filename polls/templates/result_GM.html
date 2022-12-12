@@ -84,46 +84,45 @@
       </div>
     </div>
 
-    <!-- [ Vincitore/i ] start -->
-    <div class="col-sm-12">
-      <div class="card bg-success text-white">
-
-        {%if winners|length > 1%}
-
-          <div class="card-header"><h2 class="text-white">Vincitori a parimerito</div>
-            <div class="card-body">
-              {%for alternativa in winners%}
-                <ul>
-                  <h5 class="text-white">
-                    {{ alternativa }}
-                  </h5>
-                </ul>
-              {% endfor %}
-            </div>
+    <h5 class="mt-4">Numero di preferenze per alternativa</h5>
+    <hr>
+    <div class="row row-cols-md-3 row-cols-sm-1 g-4">
+      {% for alternative in classifica %}
+      {% if alternative.place == 1 and winners|length == 1 %}
+      <div class="col-md-12">
+        <div class="card bg-success">
+          <div class="card-body text-white">
+            <h3 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.place }}° posizione</span></h3>
+            <h4 class="card-title text-white">{{ alternative.alternative|upper }}</h4>
           </div>
-
-        {%else%}
-
-          <div class="card-header"><h2 class="text-white">Vincitore</div>
-            <div class="card-body">
-              {%for alternativa in winners%}
-                <h5 class="text-white">
-                  {{ alternativa }}
-                </h5>
-              {% endfor %}
-            </div>
-          </div>
-
-        {% endif %}
+        </div>
       </div>
-
-    <!-- [ plots ] start -->
+      {% elif alternative.place == 1 and winners|length > 0 %}
+      <div class="col">
+        <div class="card bg-warning h-100">
+          <div class="card-body">
+            <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.place }}° posizione</span></h4>
+            <h5 class="card-title">{{ alternative.alternative|upper }}</h5>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="col">
+        <div class="card border border-dark h-100">
+          <div class="card-body">
+            <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.place }}° posizione</span></h4>
+            <h5 class="card-title">{{ alternative.alternative|upper }}</h5>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
     
-    <div class="row">
-      <h5>Grafici</h5>
-      <hr>
-
-      <div class="col-md-6">
+    <h5 class="mt-4">Grafici</h5>
+    <hr>
+    <div class="row row-cols-md-2 row-cols-sm-1 g-4">
+      <div class="col-md-6 h-100">
         <div class="card">
           <div class="card-header">
             <h5>Barplot orizzontale</h5>
@@ -133,18 +132,17 @@
           </div>
         </div>
       </div>
-
-      <div class="col-md-6">
+      <div class="col-md-6 h-100">
         <div class="card">
           <ul class="nav nav-tabs" id="myTab" role="tablist">
             {%for alternativa in voti_alternativa%}
                 {%if forloop.first%}
                   <li class="nav-item" role="presentation">
-                    <a class="nav-link active" id='{{alternativa.alternativa}}' data-bs-toggle="tab" data-bs-target="#graph_{{alternativa.alternativa|replace_space_with_underscore}}" type="button" role="tab">{{alternativa.alternativa}}</a>
+                    <a class="nav-link active" id='{{alternativa.alternativa}}' data-bs-toggle="tab" data-bs-target="#graph_{{alternativa.alternativa|replace_space_with_underscore}}" type="button" role="tab">{{alternativa.alternativa|upper}}</a>
                   </li>
                 {%else%}
                   <li class="nav-item" role="presentation">
-                    <a class="nav-link" id='{{alternativa.alternativa}}' data-bs-toggle="tab" data-bs-target="#graph_{{alternativa.alternativa|replace_space_with_underscore}}" type="button" role="tab">{{alternativa.alternativa}}</a>
+                    <a class="nav-link" id='{{alternativa.alternativa}}' data-bs-toggle="tab" data-bs-target="#graph_{{alternativa.alternativa|replace_space_with_underscore}}" type="button" role="tab">{{alternativa.alternativa|upper}}</a>
                   </li>
                 {%endif%}
               {%endfor%}

@@ -168,16 +168,19 @@ class GiudizioMaggioritario:
         classifica = []
 
         place = 1
+        offset = 0
         index = 0
         length = len(ordered_tuple_list)
         while index < length:
             if index != 0:
                 if not ordered_tuple_list[index].sameScore(ordered_tuple_list[index-1]):
-                    place += 1
+                    place += offset
+                    offset = 0
             
             current_alternative_name = Alternative.objects.get(id = ordered_tuple_list[index].choice_id()).text
             classifica.append({'alternative' : current_alternative_name, 'place' : place})                 
             index += 1
+            offset += 1
 
         return classifica    
 
