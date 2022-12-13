@@ -26,7 +26,8 @@ SECRET_KEY = "django-insecure-tw(*s1_&$8oa)19y(fu)uyc^)yzs6h4^7fz*ny0ezbp@bker@d
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = [environ['WEBSITE_HOSTNAME']] if 'WEBSITE_HOSTNAME' in environ else ['*']
+ALLOWED_HOSTS = [environ['WEBSITE_HOSTNAME']] if 'WEBSITE_HOSTNAME' in environ else []
+CSRF_TRUSTED_ORIGINS = ['https://'+ environ['WEBSITE_HOSTNAME']] if 'WEBSITE_HOSTNAME' in environ else []
 
 # Application definition
 
