@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
-from os import environ
+from os import environ, path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -124,7 +124,7 @@ USE_TZ = bool(environ.get('USE_TZ', True))
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = environ.get("DJANGO_STATIC_URL", "/static/")
-STATIC_ROOT = environ.get("DJANGO_STATIC_ROOT", "./static/")
+STATIC_ROOT = path.join(BASE_DIR, 'static')
 STATICFILES_STORAGE = ('whitenoise.storage.CompressedManifestStaticFilesStorage')
 
 
