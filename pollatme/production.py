@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-tw(*s1_&$8oa)19y(fu)uyc^)yzs6h4^7fz*ny0ezbp@bker@d
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = [environ['WEBSITE_HOSTNAME']] if 'WEBSITE_HOSTNAME' in environ else []
+ALLOWED_HOSTS = [environ['WEBSITE_HOSTNAME']] if 'WEBSITE_HOSTNAME' in environ else ['*']
 
 # Application definition
 
@@ -79,7 +79,7 @@ WSGI_APPLICATION = "pollatme.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": f"django.db.backends.{environ.get('DB_ENGINE')}",
+        "ENGINE": f"django.db.backends.postgresql",
         "NAME": environ.get('DB_NAME'),
         "USER": environ.get('DB_USER'),
         "PASSWORD": environ.get('DB_PASSWORD'),
@@ -125,7 +125,7 @@ USE_TZ = bool(environ.get('USE_TZ', True))
 
 STATIC_URL = environ.get("DJANGO_STATIC_URL", "/static/")
 STATIC_ROOT = path.join(BASE_DIR, 'static')
-STATICFILES_STORAGE = ('whitenoise.storage.CompressedManifestStaticFilesStorage')
+STATICFILES_STORAGE = ('whitenoise.storage.CompressedStaticFilesStorage')
 
 
 # Default primary key field type
