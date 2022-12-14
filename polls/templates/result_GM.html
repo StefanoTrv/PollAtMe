@@ -134,31 +134,33 @@
       </div>
       <div class="col-md-6 h-100">
         <div class="card">
-          <ul class="nav nav-tabs" id="myTab" role="tablist">
-            {%for alternativa in voti_alternativa%}
+          <div class="card-body">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+              {%for alternativa in voti_alternativa%}
+                  {%if forloop.first%}
+                    <li class="nav-item" role="presentation">
+                      <a class="nav-link active" id='{{alternativa.alternativa}}' data-bs-toggle="tab" data-bs-target="#tab_{{forloop.counter}}" type="button" role="tab">{{alternativa.alternativa|upper}}</a>
+                    </li>
+                  {%else%}
+                    <li class="nav-item" role="presentation">
+                      <a class="nav-link" id='{{alternativa.alternativa}}' data-bs-toggle="tab" data-bs-target="#tab_{{forloop.counter}}" type="button" role="tab">{{alternativa.alternativa|upper}}</a>
+                    </li>
+                  {%endif%}
+                {%endfor%}
+            </ul>
+            <div class="tab-content" id='tab1content'>
+              {%for alternativa in voti_alternativa%}
                 {%if forloop.first%}
-                  <li class="nav-item" role="presentation">
-                    <a class="nav-link active" id='{{alternativa.alternativa}}' data-bs-toggle="tab" data-bs-target="#tab_{{forloop.counter}}" type="button" role="tab">{{alternativa.alternativa|upper}}</a>
-                  </li>
+                <div class="tab-pane show active" id="tab_{{forloop.counter}}" role="tabpanel">
+                    <div id="bar_{{forloop.counter}}"></div>
+                </div>
                 {%else%}
-                  <li class="nav-item" role="presentation">
-                    <a class="nav-link" id='{{alternativa.alternativa}}' data-bs-toggle="tab" data-bs-target="#tab_{{forloop.counter}}" type="button" role="tab">{{alternativa.alternativa|upper}}</a>
-                  </li>
+                <div class="tab-pane" id="tab_{{forloop.counter}}" role="tabpanel">
+                  <div id="bar_{{forloop.counter}}"></div> 
+                </div>
                 {%endif%}
               {%endfor%}
-          </ul>
-          <div class="tab-content" id='tab1content'>
-            {%for alternativa in voti_alternativa%}
-              {%if forloop.first%}
-              <div class="tab-pane show active" id="tab_{{forloop.counter}}" role="tabpanel">
-                  <div id="bar_{{forloop.counter}}"></div>
-              </div>
-              {%else%}
-              <div class="tab-pane" id="tab_{{forloop.counter}}" role="tabpanel">
-                <div id="bar_{{forloop.counter}}"></div> 
-              </div>
-              {%endif%}
-            {%endfor%}
+            </div>
           </div>
         </div>
       </div>
