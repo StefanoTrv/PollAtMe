@@ -1,0 +1,98 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} {{block.super}} | Aggiungi le alternative {% endblock title %}
+
+{% block content %}
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h3 class="m-b-10"> Inserisci le alternative </h3>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                            <li class="breadcrumb-item"><a> Crea un sondaggio </a></li>
+                            <li class="breadcrumb-item"><a> Inserisci le alternative </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page-block">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h3>Controlla i dati che hai inserito</h3>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                    Titolo
+                                    </td>
+                                    <td>
+                                    {{ title }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                    Metodo
+                                    </td>
+                                    <td>
+                                    {{ type }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                    Testo
+                                    </td>
+                                    <td>
+                                    {{ text }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                    Alternative
+                                    </td>
+                                    <td>
+                                        <ul>
+                                            {% for alternative in alternatives %}
+                                                <li>{{alternative}}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <h3>Opzioni aggiuntive</h3>
+                        <p>WIP</p>
+                        <br>
+                        <form method="post">
+                            <div class="form-group">
+                                {% csrf_token %}
+                                <table>
+                                    <tbody>
+                                        {{ form.as_table }}
+                                    </tbody> 
+                                </table>
+                                <br>                         
+                                <input type="submit" class="btn btn-primary" value="Salva"/>
+                            </div>
+                        </form>
+                        <br>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="submit" name="go_back" value="Torna indietro" class="btn btn-primary"/>
+                        </form>                        
+                        <a href="{% url 'polls:index' %}"> 
+                            <input type="button" class="btn btn-secondary" value="Annulla e torna alla home"/>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

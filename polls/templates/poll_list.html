@@ -21,75 +21,17 @@
             </div>
         </div>
         <div class="row">
+            {% for type, polls in object_list %}
             <div class="col-md-6 col-xl-4">
-                <h5>Preferenza singola</h5>
+                <h5>{{ type }}</h5>
                 <hr>
-                {% for poll in object_list.0 %}
-                    <div class="card mb-3" style="text-align:center">
-                        <img class="img-fluid card-img-top" src="https://appsrv1-147a1.kxcdn.com/gradient/images/slider/img-slide-3.jpg" alt="Card Image cap">
-                        <div class="card-body">
-                            <h6 class="card-title"> {{ poll.title }} </h6>
-                            <a class="btn btn-block btn-primary mb-4" href={% url 'polls:vote' id=poll.id %}>Vai</a>
-                        </div>
-                    </div>
+                {% for poll in polls %}
+                    {% include 'includes/poll_card.html' with poll=poll %}
                 {% empty %}
-                <div class="card mb-3" style="text-align:center">
-                    <div class="card-header">
-                        <img class="img-fluid card-img-top" src="/static/img/absent.jpg" alt="Card Image cap">
-                    </div>    
-                    <div class="card-body">
-                        <h6 class="card-title"> Non ci sono sondaggi attivi al momento </h6>
-                        <a class="btn btn-block btn-primary mb-4" href={% url 'polls:create_poll' %}>Creane uno</a>
-                    </div>
-                </div>
+                    {% include 'includes/no_poll_card.html' %}
                 {% endfor %}
             </div>
-            <div class="col-sm-12 col-md-4">
-                <h5>Giudizio maggioritario</h5>
-                <hr>
-                {% for poll in object_list.1 %}
-                    <div class="card mb-3" style="text-align:center">
-                        <img class="img-fluid card-img-top" src="https://appsrv1-147a1.kxcdn.com/gradient/images/slider/img-slide-3.jpg" alt="Card Image cap">
-                        <div class="card-body">
-                            <h6 class="card-title"> {{ poll.title }} </h6>
-                            <a class="btn btn-block btn-primary mb-4" href={% url 'polls:vote' id=poll.id %}>Vai</a>
-                        </div>
-                    </div>
-                {% empty %}
-                <div class="card mb-3" style="text-align:center">
-                    <div class="card-header">
-                        <img class="img-fluid card-img-top" src="/static/img/absent.jpg" alt="Card Image cap">
-                    </div>    
-                    <div class="card-body">
-                        <h6 class="card-title"> Non ci sono sondaggi attivi al momento </h6>
-                        <a class="btn btn-block btn-primary mb-4" href={% url 'polls:create_poll' %}>Creane uno</a>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            <div class="col-sm-12 col-md-4">
-                <h5>Schulze</h5>
-                <hr>
-                {% for poll in object_list.2 %}
-                    <div class="card mb-3" style="text-align:center">
-                        <img class="img-fluid card-img-top" src="https://appsrv1-147a1.kxcdn.com/gradient/images/slider/img-slide-3.jpg" alt="Card Image cap">
-                        <div class="card-body">
-                            <h6 class="card-title"> {{ poll.title }} </h6>
-                            <a class="btn btn-block btn-primary mb-4" href={% url 'polls:vote' id=poll.id %}>Vai</a>
-                        </div>
-                    </div>
-                {% empty %}
-                <div class="card mb-3" style="text-align:center">
-                    <div class="card-header">
-                        <img class="img-fluid card-img-top" src="/static/img/absent.jpg" alt="Card Image cap">
-                    </div>    
-                    <div class="card-body">
-                        <h6 class="card-title"> Non ci sono sondaggi attivi al momento </h6>
-                        <a class="btn btn-block btn-primary mb-4" >Creane uno</a>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
+            {% endfor %}
         </div>
     </div>
 </div>
