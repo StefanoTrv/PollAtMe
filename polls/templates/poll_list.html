@@ -14,7 +14,6 @@
                         </div>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
-                            <!--<li class="breadcrumb-item"><a href="#">Sondaggi attivi</a></li>-->
                         </ul>
                     </div>
                 </div>
@@ -36,3 +35,13 @@
     </div>
 </div>
 {% endblock content %}
+
+{% block javascripts %}
+<script>
+    function delete_poll(poll_id, poll_name){
+        if (confirm("Vuoi veramente eliminare il sondaggio \""+poll_name+"\"?")) {
+            document.forms["delete_poll_form_"+poll_id].submit();
+        }
+    }
+</script>
+{% endblock javascripts %}
