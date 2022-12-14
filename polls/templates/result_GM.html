@@ -138,11 +138,11 @@
             {%for alternativa in voti_alternativa%}
                 {%if forloop.first%}
                   <li class="nav-item" role="presentation">
-                    <a class="nav-link active" id='{{alternativa.alternativa}}' data-bs-toggle="tab" data-bs-target="#graph_{{alternativa.alternativa|replace_space_with_underscore}}" type="button" role="tab">{{alternativa.alternativa|upper}}</a>
+                    <a class="nav-link active" id='{{alternativa.alternativa}}' data-bs-toggle="tab" data-bs-target="#tab_{{forloop.counter}}" type="button" role="tab">{{alternativa.alternativa|upper}}</a>
                   </li>
                 {%else%}
                   <li class="nav-item" role="presentation">
-                    <a class="nav-link" id='{{alternativa.alternativa}}' data-bs-toggle="tab" data-bs-target="#graph_{{alternativa.alternativa|replace_space_with_underscore}}" type="button" role="tab">{{alternativa.alternativa|upper}}</a>
+                    <a class="nav-link" id='{{alternativa.alternativa}}' data-bs-toggle="tab" data-bs-target="#tab_{{forloop.counter}}" type="button" role="tab">{{alternativa.alternativa|upper}}</a>
                   </li>
                 {%endif%}
               {%endfor%}
@@ -150,12 +150,12 @@
           <div class="tab-content" id='tab1content'>
             {%for alternativa in voti_alternativa%}
               {%if forloop.first%}
-              <div class="tab-pane show active" id="graph_{{alternativa.alternativa|replace_space_with_underscore}}" role="tabpanel">
-                  <div id="bar_{{alternativa.alternativa|replace_space_with_underscore}}"></div>
+              <div class="tab-pane show active" id="tab_{{forloop.counter}}" role="tabpanel">
+                  <div id="bar_{{forloop.counter}}"></div>
               </div>
               {%else%}
-              <div class="tab-pane" id="graph_{{alternativa.alternativa|replace_space_with_underscore}}" role="tabpanel">
-                <div id="bar_{{alternativa.alternativa|replace_space_with_underscore}}"></div> 
+              <div class="tab-pane" id="tab_{{forloop.counter}}" role="tabpanel">
+                <div id="bar_{{forloop.counter}}"></div> 
               </div>
               {%endif%}
             {%endfor%}
@@ -290,7 +290,7 @@
     },
     };
 
-    var chart = new ApexCharts(document.querySelector("#bar_{{alternativa.alternativa|replace_space_with_underscore}}"), options);
+    var chart = new ApexCharts(document.querySelector("#bar_{{forloop.counter}}"), options);
     chart.render();
 </script>
 {% endfor %}
