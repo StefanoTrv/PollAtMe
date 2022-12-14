@@ -30,30 +30,42 @@
                             <div class="form-group">
                                 {% csrf_token %}
                                 {{ form.non_field_errors }}
-                                <table>
-                                    <tbody id="formtablebody">
-                                    {% for field in form %}
-                                        <tr id="{{field.name}}row" {% if 'hidden' in field.name %}style="visibility:collapse;"{% endif%}><!-- Nasconde completamente i campi con "hidden" nel nome -->
-                                            <td>
-                                            <label for="{{ field.label }}" style="display:inline-block;vertical-align:middle">{{ field.label_tag }}</label>
-                                            </td>
-                                            <td>
-                                            {{ field }}
-                                                {% if 'alternative' in field.name and 'hidden' not in field.name%}
-                                                    <input type="button" name="btn" value="Elimina alternativa" class="btn btn-danger" onclick="remove_row(parseInt('{{field.name|slice:"11:12"}}'))"/>
-                                                {% endif %}
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                    </tbody> 
-                                </table>
+                                <div class="table-responsive">
+                                    <table class="table" style="width:100%">
+                                        <tbody id="formtablebody">
+                                        {% for field in form %}
+                                            <tr id="{{field.name}}row" {% if 'hidden' in field.name %}style="visibility:collapse;"{% endif%}><!-- Nasconde completamente i campi con "hidden" nel nome -->
+                                                <td>
+                                                    <label for="{{ field.label }}">{{ field.label_tag }}</label>
+                                                </td>
+                                                <td>
+                                                    {{ field }}
+                                                </td>
+                                                <td style="text-align:right">
+                                                    {% if 'alternative' in field.name and 'hidden' not in field.name%}
+                                                        <input type="button" name="btn" value="Elimina alternativa" class="btn btn-danger" onclick="remove_row(parseInt('{{field.name|slice:"11:12"}}'))"/>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody> 
+                                    </table>
+                                </div>
                                 <br>
-                                <input type="button" id="add-another" class="btn btn-secondary" onclick="add_alternative()" value="Aggiungi un'altra alternativa"/>
-                                <br>
-                                <input type="submit" id="submitformbutton" class="btn btn-primary" value="Prossimo">
-                                <a href="{% url 'polls:index' %}"> 
-                                    <input type="button" class="btn btn-block btn-secondary" value="Annulla e torna alla home"/>
-                                </a>
+                                <div class="row">
+                                    <div class="col-sm-12" style="text-align:right">
+                                        <input type="button" id="add-another" class="btn btn-secondary" onclick="add_alternative()" value="Aggiungi un'altra alternativa"/>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-8">
+                                        <a href="{% url 'polls:index' %}"> <input type="button" class="btn btn-block btn-secondary" value="Annulla e torna alla home"/> </a>
+                                    </div>
+                                    <div class="col-sm-4" style="text-align:right">
+                                        <input type="submit" id="submitformbutton" class="btn btn-primary" value="Prossimo">
+                                    </div>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -73,7 +85,7 @@
         
         var element = document.createElement("tr");
         element.id="alternative"+form_count+"row";
-        element.innerHTML="<td>\n <label for=\"Alternativa " + form_count+"\" style=\"display:inline-block;vertical-align:middle\">Alternativa:</label>\n </td>\n <td>\n <input type=\"text\"/ name=\"alternative"+form_count+"\" id=\"id_alternative"+form_count+"\">\n<input type=\"button\" name=\"btn\" value=\"Elimina alternativa\" class=\"btn btn-danger\" onclick=\"remove_row("+form_count+")\"\/>\n </td>";
+        element.innerHTML="<td>\n <label for=\"Alternativa " + form_count+"\" style=\"display:inline-block;vertical-align:middle\">Alternativa:</label>\n </td>\n <td>\n <input type=\"text\" class=\"form-control\" placeholder=\"Inserisci il testo dell'alternativa\"/ name=\"alternative"+form_count+"\" id=\"id_alternative"+form_count+"\"> <td style=\"text-align:right\"><input type=\"button\" name=\"btn\" value=\"Elimina alternativa\" class=\"btn btn-danger\" onclick=\"remove_row("+form_count+")\"\/></td>\n </td>";
         document.getElementById("formtablebody").append(element);
         // build element and append it to our forms container
         document.getElementById("{{form.hidden_alternative_count.auto_id }}").value=form_count;       

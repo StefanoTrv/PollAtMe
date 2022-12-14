@@ -14,8 +14,8 @@
                         </div>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
-                            <li class="breadcrumb-item"><a> Crea un sondaggio </a></li>
-                            <li class="breadcrumb-item"><a> Inserisci le alternative </a></li>
+                            <li class="breadcrumb-item"> Crea un sondaggio </li>
+                            <li class="breadcrumb-item"> Inserisci le alternative </li>
                         </ul>
                     </div>
                 </div>
@@ -25,70 +25,59 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-body">
-                        <h3>Controlla i dati che hai inserito</h3>
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                    Titolo
-                                    </td>
-                                    <td>
-                                    {{ title }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                    Metodo
-                                    </td>
-                                    <td>
-                                    {{ type }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                    Testo
-                                    </td>
-                                    <td>
-                                    {{ text }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                    Alternative
-                                    </td>
-                                    <td>
-                                        <ul>
-                                            {% for alternative in alternatives %}
-                                                <li>{{alternative}}</li>
-                                            {% endfor %}
-                                        </ul>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <h3>Opzioni aggiuntive</h3>
-                        <p>WIP</p>
-                        <br>
-                        <form method="post">
-                            <div class="form-group">
-                                {% csrf_token %}
-                                <table>
-                                    <tbody>
-                                        {{ form.as_table }}
-                                    </tbody> 
-                                </table>
-                                <br>                         
-                                <input type="submit" class="btn btn-primary" value="Salva"/>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h5> Controlla i dati che hai inserito </h3>
                             </div>
-                        </form>
-                        <br>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm">
+                                <h6> Titolo </h6>
+                                <hr>
+                                {{ title }}
+                            </div>
+                            <div class="col-sm">
+                                <h6> Metodo </h6> 
+                                <hr>
+                                {{ type }}
+                            </div>
+                            <div class="col-sm">
+                                <h6> Testo </h6>
+                                <hr>
+                                {{ text }}
+                            </div>
+                            <div class="col-sm">
+                                <h6> Alternative </h6>
+                                <hr>
+                                {% for alternative in alternatives %}
+                                <li>{{alternative}}</li>
+                            {% endfor %}
+                            </div>
+                        </div>
+                        <hr>
+                        <h5>Opzioni aggiuntive</h5>
+                        <p>WIP</p>
+                        <br>  
                         <form method="post">
                             {% csrf_token %}
-                            <input type="submit" name="go_back" value="Torna indietro" class="btn btn-primary"/>
-                        </form>                        
-                        <a href="{% url 'polls:index' %}"> 
-                            <input type="button" class="btn btn-secondary" value="Annulla e torna alla home"/>
-                        </a>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-4" style="text-align:left">
+                                        <form method="post">
+                                            {% csrf_token %}
+                                            <input type="submit" name="go_back" value="Torna indietro" class="btn btn-primary"/>
+                                        </form>
+                                    </div>
+                                    <div class="col-sm-4" style="text-align:center">
+                                        <a href="{% url 'polls:index' %}"> <input type="button" class="btn btn-secondary" value="Annulla e torna alla home"/></a>
+                                    </div>
+                                    <div class="col-sm-4" style="text-align:right">
+                                        <input type="submit" class="btn btn-primary" value="Salva"/> 
+                                    </div>
+                                </div>
+                            </div>
+                        </form>                   
                     </div>
                 </div>
             </div>
