@@ -6,7 +6,7 @@ class CreatePollFormMain(forms.Form):
     poll_type = forms.ChoiceField(label = 'Tipo di sondaggio', choices=[
         ('Giudizio maggioritario', 'Giudizio maggioritario'),
         ('Preferenza singola', 'Preferenza singola'),
-    ], widget=forms.Select(attrs={'class':'form-control'}))
+    ], widget=forms.Select(attrs={'class':'form-select'}))
     poll_text = forms.CharField(label = 'Testo', widget=forms.Textarea(attrs={'class':'form-control', 'rows':'4', 'placeholder':'Inserisci il testo della domanda del sondaggio'}))
     hidden_alternative_count = forms.IntegerField(widget=forms.HiddenInput())#sia quelle attive che quelle che l'utente ha cancellato, ma che in realtà sono solo nascoste
 

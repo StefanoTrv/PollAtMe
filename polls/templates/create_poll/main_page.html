@@ -43,7 +43,7 @@
                                                 </td>
                                                 <td style="text-align:right">
                                                     {% if 'alternative' in field.name and 'hidden' not in field.name%}
-                                                        <input type="button" name="btn" value="Elimina alternativa" class="btn btn-danger" onclick="remove_row(parseInt('{{field.name|slice:"11:12"}}'))"/>
+                                                        <input type="button" name="btn" class="btn btn-danger" value="-" onclick="remove_row(parseInt('{{field.name|slice:"11:12"}}'))"/>
                                                     {% endif %}
                                                 </td>
                                             </tr>
@@ -51,10 +51,9 @@
                                         </tbody> 
                                     </table>
                                 </div>
-                                <br>
                                 <div class="row">
-                                    <div class="col-sm-12" style="text-align:right">
-                                        <input type="button" id="add-another" class="btn btn-secondary" onclick="add_alternative()" value="Aggiungi un'altra alternativa"/>
+                                    <div class="col-sm-12" style="text-align:center">
+                                        <input type="button" id="add-another" class="btn btn-secondary" onclick="add_alternative()" value="+"/>
                                     </div>
                                 </div>
                                 <hr>
@@ -82,10 +81,10 @@
 
     function add_alternative(){
         form_count ++;
-        
+        console.log(form_count);
         var element = document.createElement("tr");
         element.id="alternative"+form_count+"row";
-        element.innerHTML="<td>\n <label for=\"Alternativa " + form_count+"\" style=\"display:inline-block;vertical-align:middle\">Alternativa:</label>\n </td>\n <td>\n <input type=\"text\" class=\"form-control\" placeholder=\"Inserisci il testo dell'alternativa\"/ name=\"alternative"+form_count+"\" id=\"id_alternative"+form_count+"\"> <td style=\"text-align:right\"><input type=\"button\" name=\"btn\" value=\"Elimina alternativa\" class=\"btn btn-danger\" onclick=\"remove_row("+form_count+")\"\/></td>\n </td>";
+        element.innerHTML="<td>\n <label for=\"Alternativa " + form_count +"\" style=\"display:inline-block;vertical-align:middle\">Alternativa:</label>\n </td>\n <td>\n <input type=\"text\" class=\"form-control\" placeholder=\"Inserisci il testo dell'alternativa\"/ name=\"alternative"+form_count+"\" id=\"id_alternative"+form_count+"\"> <td style=\"text-align:right\"><input type=\"button\" name=\"btn\" value=\"-\" class=\"btn btn-danger\" onclick=\"remove_row("+form_count+")\"\/></td>\n </td>";
         document.getElementById("formtablebody").append(element);
         // build element and append it to our forms container
         document.getElementById("{{form.hidden_alternative_count.auto_id }}").value=form_count;       

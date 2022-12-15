@@ -29422,3 +29422,47 @@ div.dtk-focus-alt table.dataTable tbody th.focus {
     border-top-left-radius: calc(5px - 0px);
     border-top-right-radius: calc(5px - 0px);
 }
+
+
+.username,
+.password {
+  display: flex;
+  align-items: center;
+  position: relative;
+  border-radius: 2px;
+    border:1px solid #ECF0EF;
+    height: 35px;
+    -webkit-box-shadow: 0px 0px 28px -15px rgba(0,0,0,1);
+    -moz-box-shadow: 0px 0px 28px -15px rgba(0,0,0,1);
+    box-shadow: 0px 0px 28px -15px rgba(0,0,0,1);
+}
+
+.username input[type="text"],
+.password input[type="password"]{
+    padding: 5px 27.5px;
+    position: relative;
+    border: none;
+    background-color: unset;
+}
+
+.username i:first-child,
+.password i:first-child {
+  left: 7.5px;
+    position: absolute;
+    z-index: 9999;
+}
+.username i:last-child,
+.password i:last-child {
+    right: 7.5px;
+    position: absolute;
+    z-index: 9999;
+}
+.password input::after{
+    content: '<i class="fa fa-envelope icon"> ';
+}
+
+/* EDITS END HERE */
+
+.checkbox{
+    float: left;
+}
