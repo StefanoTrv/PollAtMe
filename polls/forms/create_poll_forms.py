@@ -1,4 +1,5 @@
 from django import forms
+from polls.models import SinglePreferencePoll, MajorityOpinionPoll
 
 #Form per la pagina principale della pagina di creazione di nuovi sondaggi, contenente i dati principali
 class CreatePollFormMain(forms.Form):
@@ -10,6 +11,8 @@ class CreatePollFormMain(forms.Form):
     poll_text = forms.CharField(label = 'Testo', widget=forms.Textarea)
     hidden_alternative_count = forms.IntegerField(widget=forms.HiddenInput())#sia quelle attive che quelle che l'utente ha cancellato, ma che in realtà sono solo nascoste
 
+    #Senza argomenti i campi sono tutti vuoti.
+    #Può ricevere i parametri 'poll_title', 'poll_text', 'poll_type', 'alternatives' e 'poll'. Se quest'ultimo è presente, sovrascrive tutti i precedenti.
     def __init__(self, *args, **kwargs):
         number_of_alternatives = int(kwargs.pop('count', 2))
 
@@ -18,6 +21,20 @@ class CreatePollFormMain(forms.Form):
         poll_type = kwargs.pop('poll_type',None)
 
         alternatives = kwargs.pop('alternatives',[])
+
+        if 'poll' in kwargs:
+            poll = kwargs.pop('poll')
+            #è necessario fare query sul db per scoprire il tipo del sondaggio
+            if len(SinglePreferencePoll.objects.filter(id=poll.id)) == 1:
+                poll_type= 'Preferenza singola'
+            elif len(MajorityOpinionPoll.objects.filter(id=poll.id)) == 1:
+                poll_type='Giudizio maggioritario'
+            else:
+                raise TypeError
+            poll_title=poll.title
+            poll_text=poll.text
+            poll_type=poll_type
+            alternatives=[a.text for a in poll.alternative_set.all()]
 
         super(CreatePollFormMain, self).__init__(*args, **kwargs)
         self.fields['hidden_alternative_count'].initial = max(number_of_alternatives,len(alternatives))
