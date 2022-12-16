@@ -3,12 +3,12 @@ from polls.models import SinglePreferencePoll, MajorityOpinionPoll
 
 #Form per la pagina principale della pagina di creazione di nuovi sondaggi, contenente i dati principali
 class CreatePollFormMain(forms.Form):
-    poll_title = forms.CharField(label = 'Titolo', max_length=100)
+    poll_title = forms.CharField(label = 'Titolo', max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Inserisci il titolo del sondaggio'}))
     poll_type = forms.ChoiceField(label = 'Tipo di sondaggio', choices=[
         ('Giudizio maggioritario', 'Giudizio maggioritario'),
         ('Preferenza singola', 'Preferenza singola'),
-    ])
-    poll_text = forms.CharField(label = 'Testo', widget=forms.Textarea)
+    ], widget=forms.Select(attrs={'class':'form-select'}))
+    poll_text = forms.CharField(label = 'Testo', widget=forms.Textarea(attrs={'class':'form-control', 'rows':'4', 'placeholder':'Inserisci il testo della domanda del sondaggio'}))
     hidden_alternative_count = forms.IntegerField(widget=forms.HiddenInput())#sia quelle attive che quelle che l'utente ha cancellato, ma che in realtà sono solo nascoste
 
     #Senza argomenti i campi sono tutti vuoti.
@@ -45,7 +45,7 @@ class CreatePollFormMain(forms.Form):
 
         for index in range(max(number_of_alternatives,len(alternatives))):
             # generate extra fields in the number specified via hidden_alternative_count and enough for all the alternatives passed as input (that is, the max of the two)
-            self.fields['alternative'+str(index+1)] = forms.CharField(label = 'Alternativa', max_length=100, required=False)
+            self.fields['alternative'+str(index+1)] = forms.CharField(label = 'Alternativa', max_length=100, required=False, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Inserisci il testo dell\'alternativa'}))
         
         for index in range(len(alternatives)):
             self.fields['alternative'+str(index+1)].initial=alternatives[index]
