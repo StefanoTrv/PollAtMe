@@ -59,8 +59,9 @@
                                 <hr>
                                 <div class="row">
                                     <div class="col-sm-8">
-                                        <a href="{% url 'polls:index' %}"> <input type="button" class="btn btn-block btn-secondary" value="Annulla e torna alla home"/> </a>
+                                        <input type="button" id="popup" class="btn btn-block btn-secondary" value="Torna alla home"/> </a>
                                     </div>
+                                    
                                     <div class="col-sm-4" style="text-align:right">
                                         <input type="submit" id="submitformbutton" class="btn btn-primary" value="Prossimo">
                                     </div>
@@ -73,6 +74,22 @@
         </div>
     </div>
 </div>
+
+<div class="bg-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Attenzione!</h5>
+            <button type="button" id = "btn-close" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div> 
+        <div class="modal-body">
+            <p> Il sondaggio che stavi creando non verrà salvato.</p>
+        </div>
+        <div class="modal-footer">
+            <a href="{% url 'polls:index' %}"> <input type="button" class="btn btn-block btn-secondary" value="Torna alla home"/> </a>
+        </div>
+    </div>
+</div>
+
 {% endblock content %}
 
 {% block javascripts %}
@@ -94,5 +111,19 @@
         document.getElementById("{{form.alternative1.auto_id|slice:":-1"}}"+row_number).value="";
         document.getElementById("alternative"+row_number+"row").style.visibility = "collapse";
     }
+</script>
+
+<script>
+    
+    document.getElementById("popup").addEventListener("click",
+    function(){
+        document.querySelector(".bg-modal").style.display = "flex";
+    });
+
+    document.querySelector("btn-close").addEventListener("click",
+    function(){
+        document.querySelector(".bg-modal").style.display = "none";
+    });
+
 </script>
 {% endblock javascripts %}
