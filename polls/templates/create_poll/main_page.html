@@ -59,9 +59,26 @@
                                 <hr>
                                 <div class="row">
                                     <div class="col-sm-8">
-                                        <input type="button" id="popup" class="btn btn-block btn-secondary" value="Torna alla home"/> </a>
+                                        <button type="button" class="btn btn-block btn-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal">Torna alla home</button>
+                                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                              <div class="modal-content">
+                                                <div class="modal-header">
+                                                  <h5 class="modal-title" id="exampleModalLabel">Attenzione!</h5>
+                                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p> Il sondaggio che stavi creando non verrà salvato!</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <a href="{% url 'polls:index' %}">
+                                                        <button type="button" class="btn btn-primary">Home</button>
+                                                    </a>
+                                                </div>
+                                              </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    
                                     <div class="col-sm-4" style="text-align:right">
                                         <input type="submit" id="submitformbutton" class="btn btn-primary" value="Prossimo">
                                     </div>
@@ -71,21 +88,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-
-<div class="bg-modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title">Attenzione!</h5>
-            <button type="button" id = "btn-close" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div> 
-        <div class="modal-body">
-            <p> Il sondaggio che stavi creando non verrà salvato.</p>
-        </div>
-        <div class="modal-footer">
-            <a href="{% url 'polls:index' %}"> <input type="button" class="btn btn-block btn-secondary" value="Torna alla home"/> </a>
         </div>
     </div>
 </div>
@@ -113,17 +115,4 @@
     }
 </script>
 
-<script>
-    
-    document.getElementById("popup").addEventListener("click",
-    function(){
-        document.querySelector(".bg-modal").style.display = "flex";
-    });
-
-    document.querySelector("btn-close").addEventListener("click",
-    function(){
-        document.querySelector(".bg-modal").style.display = "none";
-    });
-
-</script>
 {% endblock javascripts %}

@@ -32,11 +32,28 @@
             </div>
             {% endfor %}
         </div>
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Attenzione!</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p> Vuoi veramente cancellare il sondaggio?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary">Elimina</button>
+                </div>
+              </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock content %}
 
 {% block javascripts %}
+
 <script>
     function delete_poll(poll_id, poll_name){
         if (confirm("Vuoi veramente eliminare il sondaggio \""+poll_name+"\"?")) {
@@ -44,4 +61,5 @@
         }
     }
 </script>
+
 {% endblock javascripts %}
