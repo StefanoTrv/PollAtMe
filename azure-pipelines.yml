@@ -11,49 +11,15 @@ trigger:
 
 variables:
   PYTHON_VERSION: '3.10'
-  DB_ENGINE: 'postgresql'
+  DB_ENGINE: 'sqlite3'
   DB_NAME: 'postgres'
-  DB_USER: 'postgres'
-  DB_PASSWORD: 'postgres'
-  DB_HOST: 'db'
   TIME_ZONE: 'Europe/Rome'
   USE_TZ: 1
-
-
-resources:
-  containers:
-    - container: postgres
-      image: postgres:15-alpine
-      volumes:
-          - '/data/db:/var/lib/postgresql/data'
-      env:
-        POSTGRES_USER: $(DB_USER)
-        POSTGRES_DB: $(DB_NAME)
-        POSTGRES_PASSWORD: $(DB_PASSWORD)
-    
-    - container: web
-      image: python:3.10-bullseye
-      volumes:
-        - '/code'
-      ports:
-        - '8000:8000'
 
 pool:
   vmImage: ubuntu-latest
 
-container: web
-services:
-  db: postgres
-
 steps:
-- script: |
-    wget https://dot.net/v1/dotnet-install.sh
-    chmod +x ./dotnet-install.sh
-    ./dotnet-install.sh 
-    echo "##vso[task.prependpath]$HOME/.dotnet"
-
-- bash: |
-    dotnet --info
 - task: PythonScript@0
   displayName: 'Export project path'
   inputs:
@@ -70,8 +36,6 @@ steps:
       print('Found Django project in', project_location)
       print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
 
-- script: echo "##vso[task.prependpath]$HOME/.local/bin"
-
 - script: |
     python -m pip install --upgrade pip setuptools wheel
     pip install -r requirements/dev.txt
@@ -86,7 +50,7 @@ steps:
 
 - script: |
     pushd '$(projectRoot)'
-    pytest --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml --no-coverage-upload --cov-branch
+    pytest --ds=pollatme.test --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml --no-coverage-upload --cov-branch
   displayName: 'Run tests'
 
 - task: PublishTestResults@2

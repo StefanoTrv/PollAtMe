@@ -24,9 +24,9 @@ class MajorityOpinionJudgement(models.Model):
         Possibili valori per grade
         """
         PESSIMO = 1
-        MEDIOCRE = 2
-        BUONO = 3
-        DISCRETO = 4
+        SCARSO = 2
+        SUFFICIENTE = 3
+        BUONO = 4
         OTTIMO = 5
     
     grade = models.IntegerField(choices=JudgeType.choices)

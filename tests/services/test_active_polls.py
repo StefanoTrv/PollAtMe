@@ -12,12 +12,14 @@ class TestActivePollsService(TestCase):
     def test_sondaggi_pref_singola_ordine_crescente(self):
         queryset = ActivePollsService().get_ordered_queryset(asc=False)[0]
         excluded = Poll.objects.get(id=3)
-        assert_that(queryset).does_not_contain(excluded).is_sorted(lambda x: x.text, reverse=True)
+        self.assertNotIn(excluded,queryset)
+        assert_that(queryset).is_sorted(lambda x: x.text, reverse=True)
     
     def test_sondaggi_pref_singola_ordine_decrescente(self):
         queryset = ActivePollsService().get_ordered_queryset(asc=True)[0]
         excluded = Poll.objects.get(id=3)
-        assert_that(queryset).does_not_contain(excluded).is_sorted(lambda x: x.text, reverse=False)
+        self.assertNotIn(excluded,queryset)
+        assert_that(queryset).is_sorted(lambda x: x.text, reverse=False)
 
 
 class TestSearchPollService(TestCase):
@@ -32,5 +34,5 @@ class TestSearchPollService(TestCase):
     
     def test_search_by_error(self):
         last_id = Poll.objects.all().order_by('-id').first().id
-        assert_that(SearchPollService().search_by_id).raises(ObjectDoesNotExist).when_called_with(last_id+1)
-        assert_that(SearchPollService().search_by_id).raises(PollWithoutAlternativesException).when_called_with(3)
+        self.assertRaises(ObjectDoesNotExist,SearchPollService().search_by_id,last_id+1)
+        self.assertRaises(PollWithoutAlternativesException,SearchPollService().search_by_id,3)

@@ -9,9 +9,9 @@ class TestAddPollsServices(TestCase):
         alternatives=['a', 'b', 'c']
         add_single_preference_poll(title='TestAddPollsServices', text='text', alternatives=alternatives)
         poll = Poll.objects.last()
-        self.assertEquals(poll.title,'TestAddPollsServices')
-        self.assertEquals(poll.text,'text')
-        self.assertEquals(len(poll.alternative_set.all()),len(alternatives))
+        assert_that(poll.title).is_equal_to('TestAddPollsServices')
+        assert_that(poll.text).is_equal_to('text')
+        assert_that(poll.alternative_set.all()).is_length(len(alternatives))
         for alt in poll.alternative_set.all():
             self.assertIn(alt.text,alternatives)
 
@@ -19,8 +19,8 @@ class TestAddPollsServices(TestCase):
         alternatives=['a', 'b', 'c']
         add_majority_judgment_poll(title='TestAddPollsServices', text='text', alternatives=alternatives)
         poll = Poll.objects.last()
-        self.assertEquals(poll.title,'TestAddPollsServices')
-        self.assertEquals(poll.text,'text')
-        self.assertEquals(len(poll.alternative_set.all()),len(alternatives))
+        assert_that(poll.title).is_equal_to('TestAddPollsServices')
+        assert_that(poll.text).is_equal_to('text')
+        assert_that(poll.alternative_set.all()).is_length(len(alternatives))
         for alt in poll.alternative_set.all():
             self.assertIn(alt.text,alternatives)
