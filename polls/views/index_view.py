@@ -28,7 +28,3 @@ class IndexView(ListView):
 
     def get_queryset(self) -> list[QuerySet[Poll]]:
         return self.__active_poll_service.get_ordered_queryset()
-    
-    def post(self, request, *args, **kwargs):
-        Poll.objects.filter(id=request.POST['delete_poll_id']).delete()
-        return HttpResponseRedirect(reverse('polls:index'))
