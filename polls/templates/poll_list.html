@@ -13,7 +13,7 @@
                             <h3 class="m-b-10">Sondaggi attivi</h3>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/"><em class="feather icon-home"></em></a></li>
+                            <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
                         </ul>
                     </div>
                 </div>
@@ -32,7 +32,7 @@
             </div>
             {% endfor %}
         </div>
-        <div class="modal fade" id="modalDeletePollConfirm" tabindex="-1" aria-labelledby="modalDeletePollConfirmLabel" aria-hidden="true">
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
@@ -43,10 +43,7 @@
                     <p> Vuoi veramente cancellare il sondaggio?</p>
                 </div>
                 <div class="modal-footer">
-                    <form method="POST" action="{% url 'polls:delete_poll' pk=0 %}" id="deletePollForm">
-                        {% csrf_token %}
-                        <input type="submit" class="btn btn-danger" value="Elimina">
-                    </form>
+                    <button type="button" class="btn btn-primary">Elimina</button>
                 </div>
               </div>
             </div>
@@ -58,13 +55,11 @@
 {% block javascripts %}
 
 <script>
-    var confirmModal = document.getElementById('modalDeletePollConfirm')
-    confirmModal.addEventListener('show.bs.modal', function(event) {
-        var button = event.relatedTarget
-        var pollId = button.getAttribute('data-bs-poll')
-        var form = confirmModal.querySelector('#deletePollForm')
-        form.action = form.action.replace(/\/\d+/gm, `/${pollId}`)
-    })
+    function delete_poll(poll_id, poll_name){
+        if (confirm("Vuoi veramente eliminare il sondaggio \""+poll_name+"\"?")) {
+            document.forms["delete_poll_form_"+poll_id].submit();
+        }
+    }
 </script>
 
 {% endblock javascripts %}
