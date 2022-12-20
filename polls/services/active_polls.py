@@ -23,8 +23,8 @@ class ActivePollsService:
             ordered_majority_preference_polls = self.__majority_opinion_polls.order_by(f'-{by_field}')
         
         return [
-            ordered_single_preference_polls,
             ordered_majority_preference_polls,
+            ordered_single_preference_polls,
             []
         ]
             

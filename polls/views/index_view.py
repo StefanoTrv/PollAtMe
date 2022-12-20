@@ -5,9 +5,6 @@ from polls.models import Poll
 from django.views.generic.list import ListView
 from polls.services import ActivePollsService
 
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-
 class IndexView(ListView):
     model: Optional[Type[Model]] = Poll
     paginate_by: int = 50
@@ -20,8 +17,8 @@ class IndexView(ListView):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context['object_list'] = zip([
-            'Preferenza singola',
             'Giudizio maggioritario',
+            'Preferenza singola',
             'Metodo Shultze'
         ], context['object_list'])
         return context
