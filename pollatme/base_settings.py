@@ -27,6 +27,7 @@ SECRET_KEY = "django-insecure-tw(*s1_&$8oa)19y(fu)uyc^)yzs6h4^7fz*ny0ezbp@bker@d
 # Application definition
 
 INSTALLED_APPS = [
+    "whitenoise.runserver_nostatic",
     "polls.apps.PollsConfig",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -149,7 +151,7 @@ COOKIEBANNER = {
             "cookies": [
                 {
                     "pattern": "_pk_.*",
-                    "description": _("Matomo cookie for website analysis."),
+                    "description": _("Google Analytics cookie for website analysis."),
                 },
             ],
         },

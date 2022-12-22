@@ -32,3 +32,7 @@ DATABASES = {
         "PORT": environ.get('DB_PORT', '')
     }
 }
+
+STATIC_URL = environ.get("DJANGO_STATIC_URL", "/static/")
+STATIC_ROOT = path.join(BASE_DIR, 'static')
+STATICFILES_STORAGE = ('whitenoise.storage.CompressedStaticFilesStorage')
