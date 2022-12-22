@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 {% load static %}
+{% load cookiebanner %}
 <head>
     
     <title> {% block title %} ScegliMeglio {% endblock title %} </title>
@@ -26,12 +27,14 @@
     {% block stylesheets %}{% endblock stylesheets %}
 </head>
 <body class="">
-
     {% include 'includes/sidebar.html' %} 
     {% include 'includes/navigation.html' %}
     {% block content %}{% endblock content %}
     {% include 'includes/scripts.html' %} 
-
+    
+    {% cookiebanner_modal 'cookiebanner' %}
+    {% cookie_accepted 'analytics' as cookie_analytics %}
+    
     {% block javascripts %}{% endblock javascripts %}
 </body>
 </html>
