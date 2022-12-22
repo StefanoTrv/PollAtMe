@@ -1,11 +1,24 @@
 <!DOCTYPE html>
 <html lang="it">
 {% load static %}
+{% load cookiebanner %}
 <head>
     
     <title> {% block title %} ScegliMeglio {% endblock title %} </title>
 
 	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JW556FCGFS"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-JW556FCGFS');
+    </script>
 
     <link rel="icon" href="/static/img/favicon.ico" type="image/x-icon">
 
@@ -14,12 +27,14 @@
     {% block stylesheets %}{% endblock stylesheets %}
 </head>
 <body class="">
-
     {% include 'includes/sidebar.html' %} 
     {% include 'includes/navigation.html' %}
     {% block content %}{% endblock content %}
     {% include 'includes/scripts.html' %} 
-
+    
+    {% cookiebanner_modal 'cookiebanner' %}
+    {% cookie_accepted 'analytics' as cookie_analytics %}
+    
     {% block javascripts %}{% endblock javascripts %}
 </body>
 </html>

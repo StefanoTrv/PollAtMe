@@ -56,9 +56,9 @@ class SinglePreferenceListView(TemplateView):
         tot_votes = sum([votes['count'] for votes in results])
         for res in results:
             if tot_votes == 0:
-                res['percentage'] = 0.0
+                res['percentage'] = '0.00'
             else:
-                res['percentage'] = (res['count']/tot_votes)*100
+                res['percentage'] = "%.2f" % ((res['count']/tot_votes)*100)
         
         context['results'] = results
         context['unique_winner'] = results[0]['position'] != results[1]['position']
