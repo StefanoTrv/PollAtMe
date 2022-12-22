@@ -4,11 +4,6 @@ from enum import Enum
 from polls.models import SinglePreferencePoll, Alternative, SinglePreference
 from django.db.models import QuerySet, Count
 
-class WinnerType(Enum):
-    WINNER = 1
-    DRAW = 2
-    LOSE = 3
-
 class SinglePreferencePollResultsService():
     """
     Classe per il calcolo dei risultati dei sondaggi a preferenza singola
@@ -28,12 +23,12 @@ class SinglePreferencePollResultsService():
         self.__poll = poll
         return self
 
-    def as_list(self, reverse=True) -> list[dict]:
+    def as_list(self, desc=True) -> list[dict]:
         """
         Ritorna i risultati del sondaggio come lista di dictionary
 
             Parameters:
-                reverse (bool): Se le risposte devono essere ordinare in maniera decrescente o no (default: True)
+                desc (bool): Se le risposte devono essere ordinare in maniera decrescente o no (default: True)
             Returns:
                 lista ordinata in base al valore di count di dictionary con la seguente struttura:
                 {
@@ -42,7 +37,7 @@ class SinglePreferencePollResultsService():
                     'positition': posizione in classifica (rispetto all'ordine richiesto)
                 }
         """
-        results_as_dict = dict(sorted(self.__get_results().items(), reverse=reverse))
+        results_as_dict = dict(sorted(self.__get_results().items(), reverse=desc))
         results_as_list = []
         position = 1
         for n_votes, alternatives in results_as_dict.items():
@@ -52,7 +47,7 @@ class SinglePreferencePollResultsService():
                     'count': n_votes,
                     'position': position
                 })
-            position += 1
+            position += len(alternatives)
         
         return results_as_list
 
@@ -65,7 +60,7 @@ class SinglePreferencePollResultsService():
         all_alternatives: QuerySet[Alternative] = Alternative.objects.filter(
             poll=self.__poll)  # tutte le scelte possibili
         
-        context = {}
+        context: dict[int, list] = {}
         for alternative_key in all_alternatives.values_list('pk', flat=True):
             count = 0
             # se l'alternativa è stata votata allora aggiorniamo il conto
