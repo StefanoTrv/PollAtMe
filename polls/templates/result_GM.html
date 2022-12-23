@@ -41,48 +41,7 @@
 
 
     <!-- [ Riepilogo ] start -->
-    <div class="row">
-      <h5>Riepilogo</h5>
-      <hr>
-      <div class="col-md-6 col-xl-3">
-        <div class="card bg-c-blue order-card">
-          <div class="card-body">
-            <h6 class="text-white">Data di apertura del sondaggio:</h6>
-            <h2 class="text-end text-white"><em class="feather icon-calendar float-start"></em><span>{% now "SHORT_DATE_FORMAT" %}</span>
-            </h2>
-            <p class="m-b-0">Data di chiusura<span class="float-end">{% now "SHORT_DATE_FORMAT" %}</span></p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6 col-xl-3">
-        <div class="card bg-c-green order-card">
-          <div class="card-body">
-            <h6 class="text-white">Sondaggio creato da:</h6>
-            <h2 class="text-end text-white"><em class="feather icon-user float-start"></em><span>User</span>
-            </h2>
-            <p class="m-b-0">Sondaggio creato il giorno<span class="float-end">{% now "SHORT_DATE_FORMAT" %}</span></p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6 col-xl-3">
-        <div class="card bg-c-yellow order-card">
-          <div class="card-body">
-            <h6 class="text-white">Tipo di sondaggio</h6>
-            <h2 class="text-end text-white"><em class="feather icon-lock float-start"></em><span>Pubblico</span></h2>
-            <p class="m-b-0">Tipo di risposte<span class="float-end">anonime</span></p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6 col-xl-3">
-        <div class="card bg-c-red order-card">
-          <div class="card-body">
-            <h6 class="text-white">Numero di giudizi</h6>
-            <h2 class="text-end text-white">{{ numero_preferenze }}<em class="feather icon-edit float-start"></em><span>{{ tot_votes }}</span></h2>
-            <p class="m-b-0">Numero di alternative<span class="float-end">{{ numero_alternative }}</span></p>
-          </div>
-        </div>
-      </div>
-    </div>
+    {% include 'includes/riepilogo.html'%}
 
     <h5 class="mt-4">Numero di preferenze per alternativa</h5>
     <hr>
