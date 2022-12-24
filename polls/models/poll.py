@@ -10,6 +10,14 @@ class Poll(models.Model):
     def is_active(self) -> bool:
         return self.start <= timezone.now() < self.end
 
+    def get_type(self) -> str:
+        if hasattr(self, 'singlepreferencepoll'):
+            return 'singlepreferencepoll'
+        elif hasattr(self, 'majorityopinionpoll'):
+            return'majorityopinionpoll'
+        else:
+            return 'shultzemethodpoll'
+
     def __str__(self) -> str:
         return self.title
 
