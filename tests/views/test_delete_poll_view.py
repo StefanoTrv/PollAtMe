@@ -1,8 +1,13 @@
+from datetime import timedelta
+
+from assertpy import assert_that  # type: ignore
+from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase
 from django.urls import reverse
-from polls.models import Poll, SinglePreferencePoll, Alternative
-from assertpy import assert_that #type: ignore
-from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
+
+from polls.models import Alternative, Poll, SinglePreferencePoll
+
 
 class TestPollDeleteView(TestCase):
 
@@ -10,6 +15,8 @@ class TestPollDeleteView(TestCase):
         self.poll = SinglePreferencePoll()
         self.poll.title = "Sondaggio di prova"
         self.poll.text = "Sondaggio di prova"
+        self.poll.start = timezone.now()
+        self.poll.end = timezone.now() + timedelta(weeks=1)
         self.poll.save()
         self.poll.alternative_set.create(text="Alternativa di prova")
     

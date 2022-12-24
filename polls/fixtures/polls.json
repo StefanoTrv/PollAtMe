@@ -4,7 +4,9 @@
   "pk": 1,
   "fields": {
     "title": "Qual è il tuo colore preferito?",
-    "text": "Scegli tra"
+    "text": "Scegli tra",
+    "start": "2022-12-23T23:13:01.016Z",
+    "end": "2022-12-23T14:09:14.442Z"
   }
 },
 {
@@ -12,7 +14,9 @@
   "pk": 2,
   "fields": {
     "title": "Qual è il tuo animale preferito?",
-    "text": "Scegli tra"
+    "text": "Scegli tra",
+    "start": "2022-12-23T23:13:01.016Z",
+    "end": "2022-12-23T14:09:14.442Z"
   }
 },
 {
@@ -20,7 +24,9 @@
   "pk": 3,
   "fields": {
     "title": "Qual è il tuo posto preferito?",
-    "text": "Scegli tra"
+    "text": "Scegli tra",
+    "start": "2022-12-23T23:13:01.016Z",
+    "end": "2022-12-23T14:09:14.442Z"
   }
 },
 {
@@ -28,7 +34,19 @@
   "pk": 4,
   "fields": {
     "title": "Dai la tua opinione",
-    "text": "Dimmi la tua opinione a questi partiti"
+    "text": "Dimmi la tua opinione a questi partiti",
+    "start": "2022-12-23T23:13:01.016Z",
+    "end": "2022-12-23T14:09:14.442Z"
+  }
+},
+{
+  "model": "polls.poll",
+  "pk": 7,
+  "fields": {
+    "title": "Qual è l'esame più difficile",
+    "text": "Tra tutti gli esami della triennale, qual è il più difficile secondo te?",
+    "start": "2022-12-23T23:13:01.016Z",
+    "end": "2022-12-23T14:09:14.442Z"
   }
 },
 {
@@ -44,6 +62,11 @@
 {
   "model": "polls.singlepreferencepoll",
   "pk": 3,
+  "fields": {}
+},
+{
+  "model": "polls.singlepreferencepoll",
+  "pk": 7,
   "fields": {}
 },
 {
@@ -137,6 +160,30 @@
   "fields": {
     "poll": 4,
     "text": "Terzo Polo"
+  }
+},
+{
+  "model": "polls.alternative",
+  "pk": 24,
+  "fields": {
+    "poll": 7,
+    "text": "Fondamenti dell'informatica"
+  }
+},
+{
+  "model": "polls.alternative",
+  "pk": 25,
+  "fields": {
+    "poll": 7,
+    "text": "Algoritmi e Strutture dati"
+  }
+},
+{
+  "model": "polls.alternative",
+  "pk": 26,
+  "fields": {
+    "poll": 7,
+    "text": "Reti di calcolatori"
   }
 },
 {
@@ -259,6 +306,34 @@
   }
 },
 {
+  "model": "polls.preference",
+  "pk": 22,
+  "fields": {
+    "poll": 1
+  }
+},
+{
+  "model": "polls.preference",
+  "pk": 30,
+  "fields": {
+    "poll": 2
+  }
+},
+{
+  "model": "polls.preference",
+  "pk": 31,
+  "fields": {
+    "poll": 7
+  }
+},
+{
+  "model": "polls.preference",
+  "pk": 32,
+  "fields": {
+    "poll": 7
+  }
+},
+{
   "model": "polls.singlepreference",
   "pk": 1,
   "fields": {
@@ -354,6 +429,34 @@
   "pk": 14,
   "fields": {
     "alternative": 3
+  }
+},
+{
+  "model": "polls.singlepreference",
+  "pk": 22,
+  "fields": {
+    "alternative": 3
+  }
+},
+{
+  "model": "polls.singlepreference",
+  "pk": 30,
+  "fields": {
+    "alternative": 6
+  }
+},
+{
+  "model": "polls.singlepreference",
+  "pk": 31,
+  "fields": {
+    "alternative": 24
+  }
+},
+{
+  "model": "polls.singlepreference",
+  "pk": 32,
+  "fields": {
+    "alternative": 25
   }
 },
 {

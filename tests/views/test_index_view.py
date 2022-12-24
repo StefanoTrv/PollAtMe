@@ -1,5 +1,7 @@
 from django.test import Client, TestCase
 from polls.models import SinglePreferencePoll
+from django.utils import timezone
+from datetime import timedelta
 from django.urls import reverse
 
 class IndexViewTest(TestCase):
@@ -8,7 +10,8 @@ class IndexViewTest(TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.poll = SinglePreferencePoll(title="Titolo test", text = "Sondaggio di prova")
+        self.poll = SinglePreferencePoll(title="Titolo test", text = "Sondaggio di prova",
+            start = timezone.now(), end = timezone.now() + timedelta(weeks=1))
         self.poll.save()
 
     def test_sondaggi_attivi(self):

@@ -1,5 +1,8 @@
+from datetime import timedelta
+
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 
 from polls.models import SinglePreferencePoll, MajorityOpinionPoll
 
@@ -8,7 +11,17 @@ class CreatePollViewTest(TestCase):
     url = reverse('polls:create_poll')
 
     def test_aggiunta_poll_preferenza_singola(self):
-        response = self.client.post(self.url, data={'poll_title': 'titolo', 'poll_type': 'Preferenza singola', 'poll_text': 'testo della domanda', 'hidden_alternative_count': '3', 'alternative1': 'prima alternativa', 'alternative2': 'seconda alternativa', 'alternative3': 'terza alternativa'})
+        response = self.client.post(self.url, data={
+            'poll_title': 'titolo',
+            'poll_type': 'Preferenza singola',
+            'poll_text': 'testo della domanda',
+            'start': str(timezone.now()),
+            'end': str(timezone.now() + timedelta(weeks=1)),
+            'hidden_alternative_count': '3',
+            'alternative1': 'prima alternativa',
+            'alternative2': 'seconda alternativa',
+            'alternative3': 'terza alternativa'
+        })
         self.assertEqual(response.status_code, 302)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
@@ -26,7 +39,17 @@ class CreatePollViewTest(TestCase):
             self.assertIn(alternative.text,alternatives)
 
     def test_aggiunta_poll_giudizio_maggioritario(self):
-        response = self.client.post(self.url, data={'poll_title': 'titolo', 'poll_type': 'Giudizio maggioritario', 'poll_text': 'testo della domanda', 'hidden_alternative_count': '3', 'alternative1': 'prima alternativa', 'alternative2': 'seconda alternativa', 'alternative3': 'terza alternativa'})
+        response = self.client.post(self.url, data={
+            'poll_title': 'titolo',
+            'poll_type': 'Giudizio maggioritario',
+            'poll_text': 'testo della domanda',
+            'start': str(timezone.now()),
+            'end': str(timezone.now() + timedelta(weeks=1)),
+            'hidden_alternative_count': '3',
+            'alternative1': 'prima alternativa',
+            'alternative2': 'seconda alternativa', 
+            'alternative3': 'terza alternativa'
+        })
         self.assertEqual(response.status_code, 302)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
