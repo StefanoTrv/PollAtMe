@@ -20,18 +20,29 @@
             </div>
         </div>
         <div class="row">
-            {% for type, polls in object_list %}
+            {% for poll in object_list %}
             <div class="col-sm-12 col-xl-4">
-                <h5>{{ type }}</h5>
-                <hr>
-                {% for poll in polls %}
-                    {% include 'includes/poll_card.html' with poll=poll %}
-                {% empty %}
-                    {% include 'includes/no_poll_card.html' %}
-                {% endfor %}
+                {% include 'includes/poll_card.html' with poll=poll %}
             </div>
             {% endfor %}
         </div>
+
+        <nav>
+            <ul class="pagination justify-content-center">
+                <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                    <a href="{% if page_obj.has_previous %}?page={{ page_obj.previous_page_number }}{% endif %}" class="page-link">Indietro</a>
+                </li>
+                {% for page in page_obj.paginator.page_range %}
+                <li class="page-item {% if page_obj.number == page %}active{% endif %}">
+                    <a href="?page={{ page }}" class="page-link">{{ page }}</a>
+                </li>
+                {% endfor %}
+                <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                    <a class="page-link">Avanti</a>
+                </li>
+            </ul>
+        </nav>
+
         <div class="modal fade" id="modalDeletePollConfirm" tabindex="-1" aria-labelledby="modalDeletePollConfirmLabel" aria-hidden="true">
             <div class="modal-dialog">
               <div class="modal-content">

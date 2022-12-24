@@ -7,21 +7,12 @@ from polls.services import ActivePollsService
 
 class IndexView(ListView):
     model: Optional[Type[Model]] = Poll
-    paginate_by: int = 50
+    paginate_by: int = 20
     template_name: str = 'poll_list.html'
 
     def __init__(self, **kwargs: Any) -> None:
         self.__active_poll_service = ActivePollsService()
         super().__init__(**kwargs)
 
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context['object_list'] = zip([
-            'Giudizio maggioritario',
-            'Preferenza singola',
-            'Metodo Shultze'
-        ], context['object_list'])
-        return context
-
-    def get_queryset(self) -> list[QuerySet[Poll]]:
+    def get_queryset(self) -> QuerySet[Poll]:
         return self.__active_poll_service.get_ordered_queryset()

@@ -1,5 +1,7 @@
+from datetime import timedelta
+from django.utils import timezone
 from django.test import TestCase
-from polls.models import Alternative, SinglePreferencePoll, SinglePreference, Poll, Preference
+from polls.models import Alternative, SinglePreferencePoll, SinglePreference, Poll
 
 class Modeltest(TestCase):
 
@@ -7,7 +9,9 @@ class Modeltest(TestCase):
     poll_text = "Quanti anni hai?"
 
     def setUp(self):
-        poll = SinglePreferencePoll(title=self.poll_title, text=self.poll_text)
+        poll = SinglePreferencePoll(title=self.poll_title, text=self.poll_text, 
+            start=timezone.now() - timedelta(weeks=1), 
+            end=timezone.now() + timedelta(weeks=1))
         poll.save()
         alternative1 = Alternative(poll = poll, text = "32")
         alternative1.save()
@@ -20,6 +24,15 @@ class Modeltest(TestCase):
         poll = Poll.objects.get(title=self.poll_title)
         self.assertEqual(poll.title, self.poll_title)
         self.assertEqual(poll.text, self.poll_text)
+
+    def test_poll_is_active(self):
+        poll = Poll.objects.get(title=self.poll_title)
+        self.assertTrue(poll.is_active())
+
+    def test_poll_is_not_active(self):
+        poll = Poll.objects.get(title=self.poll_title)
+        poll.end = timezone.now() - timedelta(hours=1)
+        self.assertFalse(poll.is_active())
 
     def test_choice_fk(self):
         poll = Poll.objects.get(text=self.poll_text)

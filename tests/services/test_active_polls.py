@@ -10,13 +10,13 @@ class TestActivePollsService(TestCase):
     fixtures: list[str] = ['polls.json']
 
     def test_sondaggi_pref_singola_ordine_crescente(self):
-        queryset = ActivePollsService().get_ordered_queryset(asc=False)[0]
+        queryset = ActivePollsService().get_ordered_queryset(asc=False)
         excluded = Poll.objects.get(id=3)
         self.assertNotIn(excluded,queryset)
         assert_that(queryset).is_sorted(lambda x: x.text, reverse=True)
     
     def test_sondaggi_pref_singola_ordine_decrescente(self):
-        queryset = ActivePollsService().get_ordered_queryset(asc=True)[0]
+        queryset = ActivePollsService().get_ordered_queryset(asc=True)
         excluded = Poll.objects.get(id=3)
         self.assertNotIn(excluded,queryset)
         assert_that(queryset).is_sorted(lambda x: x.text, reverse=False)

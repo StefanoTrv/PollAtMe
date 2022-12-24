@@ -1,13 +1,20 @@
+from datetime import timedelta
+
+from assertpy import assert_that  # type: ignore
 from django.test import TestCase
+from django.utils import timezone
+
 from polls.models import Poll
-from polls.services import add_single_preference_poll, add_majority_judgment_poll
-from assertpy import assert_that #type: ignore
+from polls.services import (add_majority_judgment_poll,
+                            add_single_preference_poll)
+
 
 class TestAddPollsServices(TestCase):
 
     def test_add_single_preference_poll(self):
         alternatives=['a', 'b', 'c']
-        add_single_preference_poll(title='TestAddPollsServices', text='text', alternatives=alternatives)
+        add_single_preference_poll(title='TestAddPollsServices', text='text', alternatives=alternatives, 
+            start=timezone.now(), end=timezone.now() + timedelta(weeks=1))
         poll = Poll.objects.last()
         assert_that(poll.title).is_equal_to('TestAddPollsServices')
         assert_that(poll.text).is_equal_to('text')
@@ -17,7 +24,8 @@ class TestAddPollsServices(TestCase):
 
     def test_add_majority_judgment_poll(self):
         alternatives=['a', 'b', 'c']
-        add_majority_judgment_poll(title='TestAddPollsServices', text='text', alternatives=alternatives)
+        add_majority_judgment_poll(title='TestAddPollsServices', text='text', alternatives=alternatives,
+            start=timezone.now(), end=timezone.now() + timedelta(weeks=1))
         poll = Poll.objects.last()
         assert_that(poll.title).is_equal_to('TestAddPollsServices')
         assert_that(poll.text).is_equal_to('text')
