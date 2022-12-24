@@ -10,6 +10,12 @@ class Poll(models.Model):
     def is_active(self) -> bool:
         return self.start <= timezone.now() < self.end
 
+    def is_ended(self) -> bool:
+        return timezone.now() >= self.end
+    
+    def is_not_started(self) -> bool:
+        return timezone.now() < self.start
+
     def get_type(self) -> str:
         if hasattr(self, 'singlepreferencepoll'):
             return 'singlepreferencepoll'

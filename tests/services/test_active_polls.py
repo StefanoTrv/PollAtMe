@@ -11,13 +11,13 @@ class TestActivePollsService(TestCase):
 
     def test_sondaggi_pref_singola_ordine_crescente(self):
         queryset = ActivePollsService().get_ordered_queryset(asc=False)
-        excluded = Poll.objects.get(id=3)
+        excluded = Poll.objects.filter(id__in = [2, 3])
         self.assertNotIn(excluded,queryset)
         assert_that(queryset).is_sorted(lambda x: x.text, reverse=True)
     
     def test_sondaggi_pref_singola_ordine_decrescente(self):
         queryset = ActivePollsService().get_ordered_queryset(asc=True)
-        excluded = Poll.objects.get(id=3)
+        excluded = Poll.objects.filter(id__in = [2, 3])
         self.assertNotIn(excluded,queryset)
         assert_that(queryset).is_sorted(lambda x: x.text, reverse=False)
 
