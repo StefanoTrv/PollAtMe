@@ -24,10 +24,13 @@ class IndexViewTest(TestCase):
     def test_sondaggio_senza_scelte(self):
         resp = self.client.get(self.url)
         self.assertEqual(resp.status_code, 200)
-        self.assertContains(resp, "Non ci sono sondaggi attivi al momento")
+        #Per ora controllano se ci sono i bottoni "Vota" e "Risultati" associati alle card dei sondaggi
+        self.assertNotContains(resp, "Vota")
+        self.assertNotContains(resp, "Risultati")
     
     def test_nessun_sondaggio(self):
         self.poll.delete()
         resp = self.client.get(self.url)
         self.assertEqual(resp.status_code, 200)
-        self.assertContains(resp, "Non ci sono sondaggi attivi al momento")
+        self.assertNotContains(resp, "Vota")
+        self.assertNotContains(resp, "Risultati")
