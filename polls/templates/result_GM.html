@@ -160,9 +160,6 @@
     width: 1,
     colors: ['#fff']
   },
-  title: {
-    text: 'Giudizi per alternativa'
-  },
   xaxis: {
     categories: [{% for alternativa in voti_alternativa %}
                     '{{alternativa.alternativa}}',
@@ -212,11 +209,7 @@
       bar: {
         horizontal: false,
           columnWidth: '55%',
-            endingShape: 'rounded',
-            borderRadius: 10,
-            dataLabels : {
-              position : 'top',
-            }
+            endingShape: 'rounded'
       },
     },
     dataLabels: {
