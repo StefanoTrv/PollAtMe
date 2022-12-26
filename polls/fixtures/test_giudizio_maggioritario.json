@@ -5,8 +5,8 @@
        "fields":{
           "title":"La migliore alternativa",
           "text":"Valuta le alternative",
-          "start":"2022-12-31 23:59",
-          "end":"2022-12-31 23:59"
+          "start":"2021-12-31 23:59+01:00",
+          "end":"2021-12-31 23:59+01:00"
        }
     },
     {
@@ -15,8 +15,8 @@
        "fields":{
           "title":"Test 1 sola risposta",
           "text":"Valuta le seguenti alternative",
-          "start":"2022-12-31 23:59",
-          "end":"2022-12-31 23:59"
+          "start":"2021-12-31 23:59+01:00",
+          "end":"2021-12-31 23:59+01:00"
        }
     },
     {

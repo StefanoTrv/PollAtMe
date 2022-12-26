@@ -1,213 +1,223 @@
 [
-    {
-       "model":"polls.poll",
-       "pk":1,
-       "fields":{
-          "title":"Migliori giocatori del mondiale di calcio del 2022",
-          "text":"Dai un giudizio ai seguenti giocatori"
-       }
-    },
-    {
-       "model":"polls.poll",
-       "pk":2,
-       "fields":{
-          "title":"Quotidiani nazionali",
-          "text":"Dai un giudizio ai seguenti quotidiani"
-       }
-    },
-    {
-       "model":"polls.poll",
-       "pk":4,
-       "fields":{
-          "title":"Capodanno 2023",
-          "text":"Come passerai capodanno 2023?"
-       }
-    },
-    {
-       "model":"polls.poll",
-       "pk":5,
-       "fields":{
-          "title":"Miglior dolce natalizio",
-          "text":"Quale ritieni il miglior dolce natalizio?"
-       }
-    },
-    {
-       "model":"polls.poll",
-       "pk":6,
-       "fields":{
-          "title":"Metodo di pagamento preferito",
-          "text":"Quale è secondo te il miglior metodo di pagamento?"
-       }
-    },
-    {
-       "model":"polls.singlepreferencepoll",
-       "pk":4,
-       "fields":{
-          
-       }
-    },
-    {
-       "model":"polls.singlepreferencepoll",
-       "pk":5,
-       "fields":{
-          
-       }
-    },
-    {
-       "model":"polls.singlepreferencepoll",
-       "pk":6,
-       "fields":{
-          
-       }
-    },
-    {
-       "model":"polls.majorityopinionpoll",
-       "pk":1,
-       "fields":{
-          
-       }
-    },
-    {
-       "model":"polls.majorityopinionpoll",
-       "pk":2,
-       "fields":{
-          
-       }
-    },
-    {
-       "model":"polls.alternative",
-       "pk":1,
-       "fields":{
-          "poll":1,
-          "text":"Messi"
-       }
-    },
-    {
-       "model":"polls.alternative",
-       "pk":2,
-       "fields":{
-          "poll":1,
-          "text":"Ronaldo"
-       }
-    },
-    {
-       "model":"polls.alternative",
-       "pk":3,
-       "fields":{
-          "poll":1,
-          "text":"Neymar"
-       }
-    },
-    {
-       "model":"polls.alternative",
-       "pk":4,
-       "fields":{
-          "poll":1,
-          "text":"Mbappe"
-       }
-    },
-    {
-       "model":"polls.alternative",
-       "pk":5,
-       "fields":{
-          "poll":1,
-          "text":"Modrić"
-       }
-    },
-    {
-       "model":"polls.alternative",
-       "pk":6,
-       "fields":{
-          "poll":2,
-          "text":"Corriere della Sera"
-       }
-    },
-    {
-       "model":"polls.alternative",
-       "pk":7,
-       "fields":{
-          "poll":2,
-          "text":"La Repubblica"
-       }
-    },
-    {
-       "model":"polls.alternative",
-       "pk":8,
-       "fields":{
-          "poll":2,
-          "text":"Il Fatto Quotidiano"
-       }
-    },
-    {
-       "model":"polls.alternative",
-       "pk":9,
-       "fields":{
-          "poll":2,
-          "text":"Il Sole 24 Ore"
-       }
-    },
-    {
-       "model":"polls.alternative",
-       "pk":22,
-       "fields":{
-          "poll":4,
-          "text":"Facendo festa con amici"
-       }
-    },
-    {
-       "model":"polls.alternative",
-       "pk":23,
-       "fields":{
-          "poll":4,
-          "text":"Rimanendo a casa"
-       }
-    },
-    {
-       "model":"polls.alternative",
-       "pk":24,
-       "fields":{
-          "poll":4,
-          "text":"Facendo un giro in piazza"
-       }
-    },
-    {
-       "model":"polls.alternative",
-       "pk":25,
-       "fields":{
-          "poll":4,
-          "text":"Facendo una vacanza"
-       }
-    },
-    {
-       "model":"polls.alternative",
-       "pk":26,
-       "fields":{
-          "poll":5,
-          "text":"Pandoro"
-       }
-    },
-    {
-       "model":"polls.alternative",
-       "pk":27,
-       "fields":{
-          "poll":5,
-          "text":"Panettone"
-       }
-    },
-    {
-       "model":"polls.alternative",
-       "pk":28,
-       "fields":{
-          "poll":6,
-          "text":"POS"
-       }
-    },
-    {
-       "model":"polls.alternative",
-       "pk":29,
-       "fields":{
-          "poll":6,
-          "text":"Contanti"
-       }
-    }
- ]
+   {
+      "model":"polls.poll",
+      "pk":1,
+      "fields":{
+         "title":"Migliori giocatori del mondiale di calcio del 2022",
+         "text":"Dai un giudizio ai seguenti giocatori",
+         "start":"2021-12-31 23:59+01:00",
+         "end":"2022-12-31 23:59+01:00"
+      }
+   },
+   {
+      "model":"polls.poll",
+      "pk":2,
+      "fields":{
+         "title":"Quotidiani nazionali",
+         "text":"Dai un giudizio ai seguenti quotidiani",
+         "start":"2021-12-31 23:59+01:00",
+         "end":"2022-12-31 23:59+01:00"
+      }
+   },
+   {
+      "model":"polls.poll",
+      "pk":4,
+      "fields":{
+         "title":"Capodanno 2023",
+         "text":"Come passerai capodanno 2023?",
+         "start":"2021-12-31 23:59+01:00",
+         "end":"2022-12-31 23:59+01:00"
+      }
+   },
+   {
+      "model":"polls.poll",
+      "pk":5,
+      "fields":{
+         "title":"Miglior dolce natalizio",
+         "text":"Quale ritieni il miglior dolce natalizio?",
+         "start":"2021-12-31 23:59+01:00",
+         "end":"2022-12-31 23:59+01:00"
+      }
+   },
+   {
+      "model":"polls.poll",
+      "pk":6,
+      "fields":{
+         "title":"Metodo di pagamento preferito",
+         "text":"Quale è secondo te il miglior metodo di pagamento?",
+         "start":"2021-12-31 23:59+01:00",
+         "end":"2022-12-31 23:59+01:00"
+      }
+   },
+   {
+      "model":"polls.singlepreferencepoll",
+      "pk":4,
+      "fields":{
+         
+      }
+   },
+   {
+      "model":"polls.singlepreferencepoll",
+      "pk":5,
+      "fields":{
+         
+      }
+   },
+   {
+      "model":"polls.singlepreferencepoll",
+      "pk":6,
+      "fields":{
+         
+      }
+   },
+   {
+      "model":"polls.majorityopinionpoll",
+      "pk":1,
+      "fields":{
+         
+      }
+   },
+   {
+      "model":"polls.majorityopinionpoll",
+      "pk":2,
+      "fields":{
+         
+      }
+   },
+   {
+      "model":"polls.alternative",
+      "pk":1,
+      "fields":{
+         "poll":1,
+         "text":"Messi"
+      }
+   },
+   {
+      "model":"polls.alternative",
+      "pk":2,
+      "fields":{
+         "poll":1,
+         "text":"Ronaldo"
+      }
+   },
+   {
+      "model":"polls.alternative",
+      "pk":3,
+      "fields":{
+         "poll":1,
+         "text":"Neymar"
+      }
+   },
+   {
+      "model":"polls.alternative",
+      "pk":4,
+      "fields":{
+         "poll":1,
+         "text":"Mbappe"
+      }
+   },
+   {
+      "model":"polls.alternative",
+      "pk":5,
+      "fields":{
+         "poll":1,
+         "text":"Modrić"
+      }
+   },
+   {
+      "model":"polls.alternative",
+      "pk":6,
+      "fields":{
+         "poll":2,
+         "text":"Corriere della Sera"
+      }
+   },
+   {
+      "model":"polls.alternative",
+      "pk":7,
+      "fields":{
+         "poll":2,
+         "text":"La Repubblica"
+      }
+   },
+   {
+      "model":"polls.alternative",
+      "pk":8,
+      "fields":{
+         "poll":2,
+         "text":"Il Fatto Quotidiano"
+      }
+   },
+   {
+      "model":"polls.alternative",
+      "pk":9,
+      "fields":{
+         "poll":2,
+         "text":"Il Sole 24 Ore"
+      }
+   },
+   {
+      "model":"polls.alternative",
+      "pk":22,
+      "fields":{
+         "poll":4,
+         "text":"Facendo festa con amici"
+      }
+   },
+   {
+      "model":"polls.alternative",
+      "pk":23,
+      "fields":{
+         "poll":4,
+         "text":"Rimanendo a casa"
+      }
+   },
+   {
+      "model":"polls.alternative",
+      "pk":24,
+      "fields":{
+         "poll":4,
+         "text":"Facendo un giro in piazza"
+      }
+   },
+   {
+      "model":"polls.alternative",
+      "pk":25,
+      "fields":{
+         "poll":4,
+         "text":"Facendo una vacanza"
+      }
+   },
+   {
+      "model":"polls.alternative",
+      "pk":26,
+      "fields":{
+         "poll":5,
+         "text":"Pandoro"
+      }
+   },
+   {
+      "model":"polls.alternative",
+      "pk":27,
+      "fields":{
+         "poll":5,
+         "text":"Panettone"
+      }
+   },
+   {
+      "model":"polls.alternative",
+      "pk":28,
+      "fields":{
+         "poll":6,
+         "text":"POS"
+      }
+   },
+   {
+      "model":"polls.alternative",
+      "pk":29,
+      "fields":{
+         "poll":6,
+         "text":"Contanti"
+      }
+   }
+]
