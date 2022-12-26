@@ -14,7 +14,7 @@ class TestAddPollsServices(TestCase):
     def test_add_single_preference_poll(self):
         alternatives=['a', 'b', 'c']
         add_single_preference_poll(title='TestAddPollsServices', text='text', alternatives=alternatives, 
-            start=timezone.now(), end=timezone.now() + timedelta(weeks=1))
+            start_time=timezone.now(), end_time=timezone.now() + timedelta(weeks=1))
         poll = Poll.objects.last()
         assert_that(poll.title).is_equal_to('TestAddPollsServices')
         assert_that(poll.text).is_equal_to('text')
@@ -25,7 +25,7 @@ class TestAddPollsServices(TestCase):
     def test_add_majority_judgment_poll(self):
         alternatives=['a', 'b', 'c']
         add_majority_judgment_poll(title='TestAddPollsServices', text='text', alternatives=alternatives,
-            start=timezone.now(), end=timezone.now() + timedelta(weeks=1))
+            start_time=timezone.now(), end_time=timezone.now() + timedelta(weeks=1))
         poll = Poll.objects.last()
         assert_that(poll.title).is_equal_to('TestAddPollsServices')
         assert_that(poll.text).is_equal_to('text')

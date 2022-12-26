@@ -1,5 +1,7 @@
+from datetime import timedelta
 from django import forms
 from polls.models import SinglePreferencePoll, MajorityOpinionPoll
+from django.utils import timezone
 
 #Form per la pagina principale della pagina di creazione di nuovi sondaggi, contenente i dati principali
 class CreatePollFormMain(forms.Form):
@@ -74,8 +76,51 @@ class CreatePollFormMain(forms.Form):
         #errore se il campo del testo è vuoto
         if 'poll_text' not in form_data:
             self.add_error(None, "Il testo del sondaggio non può essere vuoto.")
+
         return form_data
 
 #Form per la seconda pagina della creazione di nuovi sondaggi, contenente opzioni secondarie
 class CreatePollAdditionalOptions(forms.Form):#per ora vuota, sarà da riempire con le opzioni
-    pass
+    start_time = forms.DateTimeField(label = 'Data inizio votazioni',initial=timezone.now(),input_formats=['%d/%m/%Y %H:%M'])
+    end_time = forms.DateTimeField(label = 'Data fine votazioni',initial=timezone.now()+timedelta(weeks=1),input_formats=['%d/%m/%Y %H:%M']) #durata di default: 1 settimana
+
+    #Può ricevere i parametri 'start_time', 'end_time' e 'poll'. Se quest'ultimo è presente, sovrascrive tutti i precedenti.
+    def __init__(self, *args, **kwargs):
+        start_time = kwargs.pop('start_time', None)
+        end_time = kwargs.pop('end_time', None)
+
+        poll = kwargs.pop('poll', None)
+        if poll!=None:
+            start_time=poll.start
+            end_time=poll.end
+
+        super(CreatePollAdditionalOptions, self).__init__(*args, **kwargs)
+
+        if start_time!=None:
+            self.fields['start_time'].initial=start_time
+        
+        if end_time!=None:
+            self.field['end_time'].initial=end_time
+
+    def clean(self):
+        form_data = self.cleaned_data
+
+        print("test")
+        print(form_data)
+        
+        #errore se il tempo di inizio è precedente ad adesso, con una precisione di 15 minuti
+        if form_data['start_time']+timedelta(minutes=15)<timezone.now():#aggiungo informazioni sulla timezone per poter fare il confronto
+            self.add_error(None, "Il momento di inizio delle votazioni deve essere successivo ad adesso.")
+        
+        #errore se il tempo di fine è precedente a cinque minuti da adesso
+        if form_data['end_time']<timezone.now()+timedelta(minutes=5):
+            self.add_error(None, "Il momento di fine delle votazioni deve essere almeno cinque minuti da adesso.")
+
+        #errore se il tempo di fine è precedente al tempo di inizio
+        if form_data['end_time']<form_data['start_time']:
+            self.add_error(None, "Il momento di fine delle votazioni deve essere successivo a quello di inizio.")
+        #errore se non ci sono almeno cinque minuti di differenza tra i due tempi
+        elif form_data['end_time']<form_data['start_time']+timedelta(minutes=5):
+            self.add_error(None, "Il momento di fine delle votazioni deve essere almeno cinque minuti dopo quello di inizio.")
+
+        return form_data

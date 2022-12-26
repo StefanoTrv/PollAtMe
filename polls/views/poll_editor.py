@@ -72,12 +72,12 @@ def poll_editor_summary_and_additional_options(request, poll = None):
         # check whether it's valid:
         if form.is_valid():
             if poll != None:#la funzione per l'update è la stessa per tutti i tipi di Poll
-                update_poll(poll,request.session[session_prefix+'_poll_title'],request.session[session_prefix+'_poll_text'],request.session[session_prefix+'_poll_alternatives'])
+                update_poll(poll,request.session[session_prefix+'_poll_title'],request.session[session_prefix+'_poll_text'],request.session[session_prefix+'_poll_alternatives'],form.cleaned_data['start_time'],form.cleaned_data['end_time'])
                 return render(request, 'update_poll_success.html')
             elif request.session[session_prefix+'_poll_type']=='Preferenza singola':
-                add_single_preference_poll(request.session[session_prefix+'_poll_title'],request.session[session_prefix+'_poll_text'],request.session[session_prefix+'_poll_alternatives'])
+                add_single_preference_poll(request.session[session_prefix+'_poll_title'],request.session[session_prefix+'_poll_text'],request.session[session_prefix+'_poll_alternatives'],form.cleaned_data['start_time'],form.cleaned_data['end_time'])
             elif request.session[session_prefix+'_poll_type']=='Giudizio maggioritario':
-                add_majority_judgment_poll(request.session[session_prefix+'_poll_title'],request.session[session_prefix+'_poll_text'],request.session[session_prefix+'_poll_alternatives'])
+                add_majority_judgment_poll(request.session[session_prefix+'_poll_title'],request.session[session_prefix+'_poll_text'],request.session[session_prefix+'_poll_alternatives'],form.cleaned_data['start_time'],form.cleaned_data['end_time'])
             return render(request, 'create_poll_success.html')
 
     # if a GET (or any other method) we'll create a blank form
@@ -85,6 +85,6 @@ def poll_editor_summary_and_additional_options(request, poll = None):
         if poll == None:#per adesso sono identici
             form = CreatePollAdditionalOptions()
         else:
-            form = CreatePollAdditionalOptions()#aggiungere il parametro poll
+            form = CreatePollAdditionalOptions(poll=poll)
 
     return render(request, 'create_poll/summary_and_additional_options_page.html', {'form': form, 'type': request.session[session_prefix+'_poll_type'],  'title': request.session[session_prefix+'_poll_title'],  'text': request.session[session_prefix+'_poll_text'],  'alternatives': request.session[session_prefix+'_poll_alternatives']})
