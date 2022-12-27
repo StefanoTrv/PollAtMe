@@ -73,22 +73,23 @@
                                     <br>
                                     <div id = "rows">
                                         {% for field in form %}
-                                            <div data-value= "2" id="{{field.name}}row" {% if 'hidden' in field.name %}style="visibility:collapse;"{% endif%}><!-- Nasconde completamente i campi con "hidden" nel nome -->
-                                                {% if 'alternative' in field.name and 'hidden' not in field.name%}
-                                                    <div class="row">
-                                                        <div class="col-10">
-                                                            <div class="form-floating">
-                                                                <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" aria-label="Recipient's username" aria-describedby="basic-addon2">
-                                                                <label for="floatingInput">Inserisci l'alternativa</label>
-                                                            </div>
+                                            {% if field.name == "hidden_alternative_count" %}
+                                                <div data-value= "2" id="{{field.name}}row" {% if 'hidden' in field.name %}style="visibility:collapse;"{% endif%}></div><!-- Nasconde completamente i campi con "hidden" nel nome -->
+                                            {% endif %}
+                                            {% if 'alternative' in field.name and 'hidden' not in field.name%}
+                                                <div class="row">
+                                                    <div class="col-10">
+                                                        <div class="form-floating">
+                                                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                                                            <label for="floatingInput">Inserisci l'alternativa</label>
                                                         </div>
-                                                        <div class="col-2" style="text-align: center">
-                                                            <input type="button" name="btn" class="btn btn-danger" value="-" onclick="remove_row(parseInt('{{field.name|slice:"11:12"}}'))"/>
-                                                        </div>
-                                                    </div> 
+                                                    </div>
+                                                    <div class="col-2" style="text-align: center">
+                                                        <input type="button" name="btn" class="btn btn-danger" value="-" onclick="remove_row(parseInt('{{field.name|slice:"11:12"}}'))"/>
+                                                    </div>
+                                                </div> 
                                                 <br>
                                             {% endif %}
-                                            </div>
                                         {% endfor%}
                                     </div>
                                     <hr>
@@ -142,19 +143,19 @@
 <script>
     let parent = document.getElementById("rows");
     let childs = parent.childNodes;
-    console.log(childs[7]);
-    let form_count = childs[7].dataset["value"];
+    console.log(childs);
+    let form_count = childs[1].dataset["value"];
     //let form_count = document.getElementById("{{form.hidden_alternative_count.auto_id }}").value;
 
     function add_alternative(){
         form_count ++;
         console.log(form_count);
-        var element = document.createElement("row");
+        var element = document.createElement("div");
         element.id = "alternative"+form_count+"row";
         element.innerHTML = "<div class=\"row\"> \n <div class=\"col-10\"> \n <div class=\"form-floating\"> \n <input type=\"text\" class=\"form-control\" placeholder=\"name@example.com\" name=\"alternative\"+form_count+\"\" id=\"id_alternative\"+form_count+\"\" aria-label=\"Recipient's username\" aria-describedby=\"basic-addon2\"> <label for=\"floatingInput\">Inserisci l'alternativa</label> </div> </div> <div class=\"col-2\" style=\"text-align: center\"> \n <input type=\"button\" name=\"btn\" class=\"btn btn-danger\" value=\"-\" onclick=\"remove_row(\"+form_count+\")\"\/> \n </div> </div> <br>";
         document.getElementById("rows").append(element);
         // build element and append it to our forms container
-        childs[7].dataset["value"] = form_count;
+        childs[1].dataset["value"] = form_count;
         // document.getElementById("{{form.hidden_alternative_count.auto_id }}").value=form_count;       
     }
 
