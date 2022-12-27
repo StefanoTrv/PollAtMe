@@ -52,7 +52,7 @@ class SinglePreferenceListView(TemplateView):
         context = super().get_context_data(**kwargs)
         poll = SearchPollService().search_by_id(self.kwargs['id'])
         results = SinglePreferencePollResultsService().set_poll(poll).as_list()
-        
+
         tot_votes = sum([votes['count'] for votes in results])
         for res in results:
             if tot_votes == 0:
@@ -62,8 +62,9 @@ class SinglePreferenceListView(TemplateView):
         
         context['results'] = results
         context['unique_winner'] = results[0]['position'] != results[1]['position']
-        context['tot_votes'] = tot_votes
-        context['poll_title'] = poll.title
+        context['poll'] = poll
+        
+
         return context
     
     def render_to_response(self, context: dict[str, Any], **response_kwargs: Any) -> http.HttpResponse:
@@ -98,17 +99,16 @@ class MajorityJudgementListView(ListView):
         context = super().get_context_data(**kwargs)
 
         poll_service = self.__poll_results_service.search_by_poll_id(self.kwargs['id'])
+        poll = SearchPollService().search_by_id(self.kwargs['id'])
+
 
         classifica = poll_service.get_classifica()
         winners = poll_service.get_winners()
         vote_list = poll_service.get_voti_alternativa()
-        numero_alternative = poll_service.get_numero_alternative()
-        numero_giudizi = poll_service.get_numero_numero_giudizi()
 
         context['poll_id'] = self.kwargs['id']
         context.update(classifica)
         context.update(winners)
         context.update(vote_list)
-        context.update(numero_alternative)
-        context.update(numero_giudizi)
+        context['poll'] = poll
         return context
