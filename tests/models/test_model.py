@@ -1,9 +1,11 @@
 from datetime import timedelta
-from assertpy import assert_that #type: ignore
 
-from django.utils import timezone
 from django.test import TestCase
-from polls.models import Alternative, SinglePreferencePoll, SinglePreference, Poll, MajorityOpinionPoll
+from django.utils import timezone
+
+from polls.models import (Alternative, MajorityOpinionPoll, Poll,
+                          SinglePreference, SinglePreferencePoll)
+
 
 class Modeltest(TestCase):
 

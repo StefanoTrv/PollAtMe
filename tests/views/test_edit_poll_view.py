@@ -1,15 +1,14 @@
 from datetime import timedelta
 
 from assertpy import assert_that  # type: ignore
-from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from polls.models import Alternative, Poll, SinglePreferencePoll
+from polls.models import SinglePreferencePoll
 
 
-class TestPollDeleteView(TestCase):
+class TestPollEditView(TestCase):
 
     def setUp(self) -> None:
         self.poll = SinglePreferencePoll()
@@ -20,16 +19,12 @@ class TestPollDeleteView(TestCase):
         self.poll.save()
         self.poll.alternative_set.create(text="Alternativa di prova")
     
-    def test_eliminazione(self):
-        poll_id = self.poll.pk
-        response = self.client.post(
-            reverse('polls:delete_poll', kwargs={'pk': poll_id}),
+    def test_mostra_pagina_edit(self):
+        response = self.client.get(
+            reverse('polls:edit_poll', kwargs={'id': self.poll.pk}),
         )
 
-        assert_that(response.url).is_equal_to(reverse('polls:index'))
-        assert_that(Poll.objects.get).raises(ObjectDoesNotExist).when_called_with(pk=poll_id)
-        assert_that(Alternative.objects.filter(poll=poll_id)).is_length(0)
-        assert_that(SinglePreferencePoll.objects.filter(poll_ptr_id=poll_id)).is_length(0)
+        assert_that(response.status_code).is_equal_to(200)
 
     def test_forbidden(self):
         self.poll.start = timezone.now() - timedelta(days=1)
@@ -37,7 +32,7 @@ class TestPollDeleteView(TestCase):
 
         poll_id = self.poll.pk
         response = self.client.post(
-            reverse('polls:delete_poll', kwargs={'pk': poll_id}),
+            reverse('polls:edit_poll', kwargs={'id': poll_id}),
         )
         assert_that(response.status_code).is_equal_to(403)
 
