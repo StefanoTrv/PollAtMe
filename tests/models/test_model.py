@@ -1,7 +1,9 @@
 from datetime import timedelta
+from assertpy import assert_that #type: ignore
+
 from django.utils import timezone
 from django.test import TestCase
-from polls.models import Alternative, SinglePreferencePoll, SinglePreference, Poll
+from polls.models import Alternative, SinglePreferencePoll, SinglePreference, Poll, MajorityOpinionPoll
 
 class Modeltest(TestCase):
 
@@ -26,13 +28,48 @@ class Modeltest(TestCase):
         self.assertEqual(poll.text, self.poll_text)
 
     def test_poll_is_active(self):
-        poll = Poll.objects.get(title=self.poll_title)
-        self.assertTrue(poll.is_active())
+        poll = Poll()
+        poll.start = timezone.now()
+        poll.end = timezone.now() + timedelta(weeks=1)
 
-    def test_poll_is_not_active(self):
-        poll = Poll.objects.get(title=self.poll_title)
-        poll.end = timezone.now() - timedelta(hours=1)
+        self.assertTrue(poll.is_active())
+        self.assertFalse(poll.is_ended())
+        self.assertFalse(poll.is_not_started())
+
+    def test_poll_is_ended(self):
+        poll = Poll()
+        poll.start = timezone.now() - timedelta(weeks=2)
+        poll.end = timezone.now() - timedelta(weeks=1)
+
         self.assertFalse(poll.is_active())
+        self.assertTrue(poll.is_ended())
+        self.assertFalse(poll.is_not_started())
+    
+    def test_poll_not_started(self):
+        poll = Poll()
+        poll.start = timezone.now() + timedelta(weeks=1)
+        poll.end = timezone.now() + timedelta(weeks=2)
+
+        self.assertFalse(poll.is_active())
+        self.assertFalse(poll.is_ended())
+        self.assertTrue(poll.is_not_started())
+
+    
+    def test_poll_type_preferenza_singola(self):
+        poll = SinglePreferencePoll(title=self.poll_title, text=self.poll_text, 
+            start=timezone.now() - timedelta(weeks=1), 
+            end=timezone.now() + timedelta(weeks=1))
+        poll.save()
+
+        self.assertEqual(poll.get_type(), 'Preferenza singola')
+    
+    def test_poll_type_giudizio_maggioritario(self):
+        poll = MajorityOpinionPoll(title=self.poll_title, text=self.poll_text, 
+            start=timezone.now() - timedelta(weeks=1), 
+            end=timezone.now() + timedelta(weeks=1))
+        poll.save()
+        
+        self.assertEqual(poll.get_type(), 'Giudizio maggioritario')
 
     def test_choice_fk(self):
         poll = Poll.objects.get(text=self.poll_text)

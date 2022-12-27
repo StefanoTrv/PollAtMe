@@ -24,6 +24,7 @@ class IndexViewTest(TestCase):
     def test_sondaggio_senza_scelte(self):
         resp = self.client.get(self.url)
         self.assertEqual(resp.status_code, 200)
+        
         #Per ora controllano se ci sono i bottoni "Vota" e "Risultati" associati alle card dei sondaggi
         self.assertNotContains(resp, "Vota")
         self.assertNotContains(resp, "Risultati")

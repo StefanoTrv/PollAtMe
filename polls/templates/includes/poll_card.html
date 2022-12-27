@@ -15,13 +15,22 @@
     <img class="img-fluid card-img-top" src="https://appsrv1-147a1.kxcdn.com/gradient/images/slider/img-slide-3.jpg" alt="Card Image cap">
     <div class="card-body">
         <h6 class="card-title"> {{ poll.title }} </h6>
+        {% if poll.is_active %}
         <a class="btn btn-block btn-primary mb-4" href={% url 'polls:vote' id=poll.id %}>Vota</a>
+        {% endif %}
+        
         <a class="btn btn-block btn-secondary mb-4" href={% url 'polls:result' id=poll.id %}>Risultati</a>
-        {% if poll.id > 6%} <!--- Temporaneo per impedire cancellazione e modifica dei poll "civetta" -->
-            <a class="btn btn-block btn-warning mb-4" href={% url 'polls:edit_poll' id=poll.id %}><em class="feather icon-edit-2"></em></a>
-            <button type="button" class="btn btn-block btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#modalDeletePollConfirm" data-bs-poll="{{ poll.id }}">
-                <em class="feather icon-trash-2"></em>
-            </button>
-        {% endif%}
+    
+        {% if poll.is_not_started %}
+        <a class="btn btn-block btn-warning mb-4" href={% url 'polls:edit_poll' id=poll.id %} data-bs-toggle="tooltip" data-bs-placement="top" title="Modifica il sondaggio">
+            <em class="feather icon-edit-2"></em>
+        </a>
+        <button type="button" class="btn btn-block btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#modalDeletePollConfirm" data-bs-poll="{{ poll.id }}">
+            <em class="feather icon-trash-2"></em>
+        </button>
+        {% endif %}
+    </div>
+    <div class="card-footer text-end">
+        <small class="text-muted">{{ poll.get_type }}</small>
     </div>
 </div>
