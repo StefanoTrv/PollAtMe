@@ -99,3 +99,62 @@ class CreatePollViewTest(TestCase):
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, 200)#resta nella stessa pagina
         self.assertContains(response,'Il testo del sondaggio non può essere vuoto.')#controllo il messaggio di errore
+    
+    def test_stop_if_vote_starts_before_now(self):
+        self.client.post(self.url, self.data)
+        self.client.get(self.url)
+
+        start_time=timezone.now()-datetime.timedelta(days=1)
+        end_time=timezone.now()+datetime.timedelta(weeks=1)
+
+        response = self.client.post(self.url, data={
+            'start_time': start_time,
+            'end_time': end_time
+        })
+        self.assertEqual(response.status_code, 200)#resta nella stessa pagina
+        self.assertContains(response,'Il momento di inizio delle votazioni deve essere successivo ad adesso.')#controllo il messaggio di errore
+    
+    def test_stop_if_vote_ends_too_early(self):
+        self.client.post(self.url, self.data)
+        self.client.get(self.url)
+
+        start_time=timezone.now()
+        end_time=timezone.now()+datetime.timedelta(minutes=2)
+
+        response = self.client.post(self.url, data={
+            'start_time': start_time,
+            'end_time': end_time
+        })
+        self.assertEqual(response.status_code, 200)#resta nella stessa pagina
+        self.assertContains(response,'Il momento di fine delle votazioni deve essere almeno cinque minuti da adesso.')#controllo il messaggio di errore
+    
+    def test_stop_if_vote_ends_before_starting(self):
+        self.client.post(self.url, self.data)
+        self.client.get(self.url)
+
+        start_time=timezone.now()+datetime.timedelta(days=2)
+        end_time=timezone.now()+datetime.timedelta(days=1)
+
+        response = self.client.post(self.url, data={
+            'start_time': start_time,
+            'end_time': end_time
+        })
+        self.assertEqual(response.status_code, 200)#resta nella stessa pagina
+        self.assertContains(response,'Il momento di fine delle votazioni deve essere successivo a quello di inizio.')#controllo il messaggio di errore
+    
+    def test_stop_if_vote_time_too_short(self):
+        self.client.post(self.url, self.data)
+        self.client.get(self.url)
+
+        start_time=timezone.now()+datetime.timedelta(days=1)
+        end_time=timezone.now()+datetime.timedelta(days=1)+datetime.timedelta(minutes=2)
+
+        response = self.client.post(self.url, data={
+            'start_time': start_time,
+            'end_time': end_time
+        })
+        self.assertEqual(response.status_code, 200)#resta nella stessa pagina
+        self.assertContains(response,'Il momento di fine delle votazioni deve essere almeno cinque minuti dopo quello di inizio.')#controllo il messaggio di errore
+        
+
+

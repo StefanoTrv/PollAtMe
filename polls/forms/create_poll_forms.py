@@ -141,20 +141,20 @@ class CreatePollAdditionalOptions(forms.Form):
         # errore se il tempo di inizio è precedente ad adesso, con una precisione di 15 minuti
         if form_data['start_time'] + timedelta(minutes=15) < timezone.now():
             self.add_error(
-                None, "Il momento di inizio delle votazioni deve essere successivo ad adesso.")
+                None, 'Il momento di inizio delle votazioni deve essere successivo ad adesso.')
 
         # errore se il tempo di fine è precedente a cinque minuti da adesso
         if form_data['end_time'] < timezone.now() + timedelta(minutes=5):
             self.add_error(
-                None, "Il momento di fine delle votazioni deve essere almeno cinque minuti da adesso.")
+                None, 'Il momento di fine delle votazioni deve essere almeno cinque minuti da adesso.')
 
         # errore se il tempo di fine è precedente al tempo di inizio
         if form_data['end_time'] < form_data['start_time']:
             self.add_error(
-                None, "Il momento di fine delle votazioni deve essere successivo a quello di inizio.")
+                None, 'Il momento di fine delle votazioni deve essere successivo a quello di inizio.')
         # errore se non ci sono almeno cinque minuti di differenza tra i due tempi
         elif form_data['end_time'] < form_data['start_time'] + timedelta(minutes=5):
             self.add_error(
-                None, "Il momento di fine delle votazioni deve essere almeno cinque minuti dopo quello di inizio.")
+                None, 'Il momento di fine delle votazioni deve essere almeno cinque minuti dopo quello di inizio.')
 
         return form_data
