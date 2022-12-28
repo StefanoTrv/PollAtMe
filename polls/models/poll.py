@@ -18,11 +18,11 @@ class Poll(models.Model):
 
     def get_type(self) -> str:
         if hasattr(self, 'singlepreferencepoll'):
-            return 'singlepreferencepoll'
+            return 'Preferenza singola'
         elif hasattr(self, 'majorityopinionpoll'):
-            return'majorityopinionpoll'
+            return'Giudizio maggioritario'
         else:
-            return 'shultzemethodpoll'
+            return 'Metodo Shultze'
 
     def __str__(self) -> str:
         return self.title
