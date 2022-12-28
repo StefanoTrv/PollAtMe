@@ -89,7 +89,7 @@ class CreatePollFormMain(forms.Form):
             self.add_error(None, 'Il titolo non può essere vuoto.')
 
         # errore se non ci sono abbastanza alternative
-        if form_data['hidden_alternative_count'] not in range(2, 10):
+        if form_data['hidden_alternative_count'] not in range(2, 11):
             self.add_error(
                 None, 'Il numero di alternative deve essere compreso tra 2 e 10.')
 
