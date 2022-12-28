@@ -23,7 +23,6 @@
         <form method="post">
             {% csrf_token %}
             {{ form.hidden_alternative_count }}
-            {{ form.non_field_errors }}
             <div class="row">
                 <div class="col-sm-12 col-xl-6">
                     <div class="card">
@@ -39,6 +38,12 @@
                     <div class="card">
                         <div class="card-body">
                             <h4 class="card-title">Alternative (min 2, max 10)</h4>
+                            {% if errors.hidden_alternative_count %}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <strong>Attenzione!</strong> {{ errors.hidden_alternative_count.0 }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            {% endif %}
                             <div id="alternatives-rows">
                                 {% for field in form.alternatives_group %}
                                 <div class="input-group mb-3">

@@ -41,7 +41,7 @@ class CreatePollFormMain(forms.Form):
         poll_text = kwargs.pop('poll_text', None)
         poll_type = kwargs.pop('poll_type', None)
 
-        self.alternatives = kwargs.pop('alternatives', [])
+        alternatives = kwargs.pop('alternatives', [])
 
         if 'poll' in kwargs:
             poll = kwargs.pop('poll')
@@ -54,30 +54,16 @@ class CreatePollFormMain(forms.Form):
                 raise TypeError
             poll_title = poll.title
             poll_text = poll.text
-            self.alternatives = [a.text for a in poll.alternative_set.all()]
+            alternatives = [a.text for a in poll.alternative_set.all()]
 
         super(CreatePollFormMain, self).__init__(*args, **kwargs)
-        self.fields['hidden_alternative_count'].initial = max(
-            number_of_alternatives, len(self.alternatives))
 
         self.fields['poll_title'].initial = poll_title
         self.fields['poll_text'].initial = poll_text
         self.fields['poll_type'].initial = poll_type
 
-        for index in range(max(number_of_alternatives, len(self.alternatives))):
-            # generate extra fields in the number specified via hidden_alternative_count and enough for all the alternatives passed as input (that is, the max of the two)
-            self.fields[f'alternative{index+1}'] = forms.CharField(
-                label='Alternativa',
-                max_length=100,
-                required=False,
-                widget=forms.TextInput(
-                    attrs={'class': 'form-control',
-                           'placeholder': 'Inserisci il testo dell\'alternativa'}
-                )
-            )
-
-        for index in range(len(self.alternatives)):
-            self.fields[f'alternative{index+1}'].initial = self.alternatives[index]
+        self.__add_alternatives_fields(alternatives, number_of_alternatives)
+        self.effective_alternatives_count = 0
 
     def clean(self):
         form_data = self.cleaned_data
@@ -89,6 +75,7 @@ class CreatePollFormMain(forms.Form):
                 alternatives.append(form_data[f'alternative{i}'].strip())
             del form_data[f'alternative{i}']
         form_data['hidden_alternative_count'] = len(alternatives)
+
         for i in range(len(alternatives)):
             form_data[f'alternative{i+1}'] = alternatives[i]
 
@@ -98,8 +85,11 @@ class CreatePollFormMain(forms.Form):
 
         # errore se non ci sono abbastanza alternative
         if form_data['hidden_alternative_count'] not in range(2, 10):
+            # Quando si usa add_error su un field, questo viene rimosso dai cleaned_data. Utilizziamo un attributo della classe per
+            # salvare il numero effettivo di alternative per essere utilizzato all'esterno
+            self.effective_alternatives_count = len(alternatives)
             self.add_error(
-                None, "Il numero di alternative deve essere compreso tra 2 e 10.")
+                'hidden_alternative_count', "Il numero di alternative deve essere compreso tra 2 e 10.")
 
         # errore se il campo del testo è vuoto
         if 'poll_text' not in form_data:
@@ -110,6 +100,24 @@ class CreatePollFormMain(forms.Form):
     
     def alternatives_group(self):
         return [self[name] for name in filter(lambda x: x.startswith('alternative'), self.fields)]
+
+    def __add_alternatives_fields(self, alternatives, number_of_alternatives):
+        self.fields['hidden_alternative_count'].initial = max(
+            number_of_alternatives, len(alternatives))
+        
+        for index in range(max(number_of_alternatives, len(alternatives))):
+            # generate extra fields in the number specified via hidden_alternative_count and enough for all the alternatives passed as input (that is, the max of the two)
+            self.fields[f'alternative{index+1}'] = forms.CharField(
+                label='Alternativa',
+                max_length=100,
+                required=False,
+                widget=forms.TextInput(
+                    attrs={'class': 'form-control',
+                           'placeholder': 'Inserisci il testo dell\'alternativa'}
+                ),
+                initial=alternatives[index] if index < len(alternatives) else None
+            )
+
 
 # Form per la seconda pagina della creazione di nuovi sondaggi, contenente opzioni secondarie
 
