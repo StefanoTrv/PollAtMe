@@ -20,151 +20,62 @@
                 </div>
             </div>
         </div>
-        <div class="page-block">
-            <form method="post">
-                <div class="form-group">
-                    {% csrf_token %}
-                    {{ form.non_field_errors }}   
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5> Inserisci i dati del sondaggio </h5>
-                                    <br>
-                                    {% for field in form %}
-                                        <div class="row">
-                                            <p>{{field.tag}}</p>
-                                            {% if 'alternative' not in field.name and 'hidden' not in field.name %}
-                                            <!-- form-floating non si possono mettere come widget della classe?-->
-                                                {% if field.name == "poll_title" %}
-                                                    <div class="col-12">
-                                                        <div class="form-floating">
-                                                            <input type="text" class="form-control" id="floatingInput" placeholder="Title" aria-label="Recipient's username" aria-describedby="basic-addon2">
-                                                            <label for="floatingInput">Inserisci il titolo del sondaggio</label>
-                                                        </div>
-                                                    </div>
-                                                {% elif field.name == "poll_type" %}
-                                                    <div class="col-12">
-                                                        <div class="form-floating">
-                                                            <select class="form-select" id="floatingSelect" aria-label="Floating label select example">
-                                                            <option selected> Giudizio maggioritario </option>
-                                                            <option value="2"> Preferenza singola </option>
-                                                            </select>
-                                                            <label for="floatingSelect">Seleziona il tipo di sondaggio</label>
-                                                        </div>
-                                                    </div>
-                                                {% elif field.name == "poll_text" %}
-                                                    <div class="col-12">
-                                                        <div class="form-floating">
-                                                            <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea"></textarea>
-                                                            <label for="floatingTextarea2">Inserisci il testo della domanda</label>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            {% endif %}
-                                        </div>
-                                        <br>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5> Aggiungi le alternative al sondaggio </h5>
-                                    <br>
-                                    <div id = "rows">
-                                        {% for field in form %}
-                                            {% if field.name == "hidden_alternative_count" %}
-                                                <div data-value= "2" id="{{field.name}}row" {% if 'hidden' in field.name %}style="visibility:collapse;"{% endif%}></div><!-- Nasconde completamente i campi con "hidden" nel nome -->
-                                            {% endif %}
-                                            {% if 'alternative' in field.name and 'hidden' not in field.name%}
-                                                <div id="alternative1row"> <!-- recuperare id corretto per le alternative di default -->
-                                                    <div class="row">
-                                                        <div class="col-10">
-                                                            <div class="form-floating">
-                                                                <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" aria-label="Recipient's username" aria-describedby="basic-addon2">
-                                                                <label for="floatingInput">Inserisci l'alternativa</label>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-2" style="text-align: center">
-                                                            <input type="button" name="btn" class="btn btn-danger" value="-" onclick="remove_row(parseInt('{{field.name|slice:"11:12"}}'))"/>
-                                                        </div>
-                                                    </div>
-                                                </div> 
-                                                <br>
-                                            {% endif %}
-                                        {% endfor%}
-                                    </div>
-                                    <hr>
-                                    <div class="row">
-                                        <div class="col-sm-12" style="text-align:center">
-                                            <input type="button" id="add-another" class="btn btn-secondary" onclick="add_alternative()" value="+"/>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-sm-12 col-xl-6">
                     <div class="card">
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col md-6" style="text-align:left"> 
-                                    <button type="button" class="btn btn-block btn-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal">Torna alla home</button>
-                                </div>
-                                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">Attenzione!</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p> Il sondaggio che stavi creando non verrà salvato!</p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <a href="{% url 'polls:index' %}">
-                                                    <button type="button" class="btn btn-primary">Home</button>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col md-6" style="text-align:right"><input type="submit" id="submitformbutton" class="btn btn-primary" value="Prossimo"></div>
-                            </div>
+                            <h4 class="card-title">Title</h4>
+                            <p class="card-text">poll_title</p>
+                            <p class="card-text">poll_text</p>
+                            <p class="card-text">poll_type</p>
                         </div>
                     </div>
                 </div>
-            </form>
-        </div>
+                <div class="col-sm-12 col-xl-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Title</h4>
+                            <p class="card-text">Text</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <div class="card text-center">
+                      <div class="card-body">
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modal-return-home">Torna alla home</button>
+                        <button type="submit" class="btn btn-primary">Prossimo</button>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 
+<div class="modal fade" id="modal-return-home" tabindex="-1" aria-labelledby="modal-return-home-label" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modal-return-home-label">Attenzione!</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <p> Il sondaggio che stavi creando non verrà salvato!</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+          <a href="{% url 'polls:index' %}"><button type="button" class="btn btn-primary">Home</button></a>
+        </div>
+      </div>
+    </div>
+  </div>
 
 {% endblock content %}
 
 {% block javascripts %}
 <script>
-    let parent = document.getElementById("rows");
-    let childs = parent.childNodes;
-    console.log(childs);
-    let form_count = childs[1].dataset["value"];
-
-    function add_alternative(){
-        form_count ++;
-        console.log(form_count);
-        var element = document.createElement("div");
-        element.id = "alternative"+form_count+"row";
-        element.innerHTML = "<div class=\"row\"> \n <div class=\"col-10\"> \n <div class=\"form-floating\"> \n <input type=\"text\" class=\"form-control\" placeholder=\"name@example.com\" name=\"alternative\"+form_count+\"\" id=\"id_alternative\"+form_count+\"\" aria-label=\"Recipient's username\" aria-describedby=\"basic-addon2\"> <label for=\"floatingInput\">Inserisci l'alternativa</label> </div> </div> <div class=\"col-2\" style=\"text-align: center\"> \n <input type=\"button\" name=\"btn\" class=\"btn btn-danger\" value=\"-\" onclick=\"remove_row(\"+form_count+\")\"\/> \n </div> </div> <br>";
-        document.getElementById("rows").append(element);
-        childs[1].dataset["value"] = form_count;       
-    }
-
-    function remove_row(row_number){
-        console.log(row_number);
-        document.getElementById("{{form.alternative1row|slice:":-1"}}"+row_number);
-        document.getElementById("alternative"+row_number+"row").style.visibility = "collapse";
-    }
+    let form_count = document.getElementById("{{form.hidden_alternative_count.auto_id }}").value;
 </script>
-
 {% endblock javascripts %}
