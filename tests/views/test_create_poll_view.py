@@ -25,6 +25,9 @@ class CreatePollViewTest(TestCase):
         end_time=timezone.now()+datetime.timedelta(weeks=1)
         data=self.data.copy()
         data['poll_type']='Preferenza singola'
+
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, 302)
         response = self.client.get(self.url)
@@ -50,7 +53,9 @@ class CreatePollViewTest(TestCase):
     def test_aggiunta_poll_giudizio_maggioritario(self):
         start_time=timezone.now()
         end_time=timezone.now()+datetime.timedelta(weeks=1)
-
+        
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
         response = self.client.post(self.url, self.data)
         self.assertEqual(response.status_code, 302)
         response = self.client.get(self.url)

@@ -80,7 +80,6 @@ def poll_editor_summary_and_additional_options(request, poll = None):
                     form.cleaned_data['start_time'],
                     form.cleaned_data['end_time']
                 )
-                return render(request, 'update_poll_success.html')
             elif request.session[f'{session_prefix}_poll_type'] == 'Preferenza singola':#creazione o update con cambio di tipo
                 if poll!=None:#cancello il poll del vecchio tipo
                     poll.delete()
@@ -101,7 +100,10 @@ def poll_editor_summary_and_additional_options(request, poll = None):
                     form.cleaned_data['start_time'],
                     form.cleaned_data['end_time']
                 )
-            return render(request, 'create_poll_success.html')
+            if poll!=None:
+                return render(request, 'update_poll_success.html')
+            else:
+                return render(request, 'create_poll_success.html')
 
     # if a GET (or any other method) we'll create a form
     else:
