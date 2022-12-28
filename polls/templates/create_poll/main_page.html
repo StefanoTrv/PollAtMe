@@ -22,22 +22,33 @@
         </div>
         <form method="post">
             {% csrf_token %}
+            {{ form.hidden_alternative_count }}
             <div class="row">
                 <div class="col-sm-12 col-xl-6">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="card-title">Title</h4>
-                            <p class="card-text">poll_title</p>
-                            <p class="card-text">poll_text</p>
-                            <p class="card-text">poll_type</p>
+                            <h4 class="card-title">Informazioni generali</h4>
+                            <div class="mb-3">{{ form.poll_title }}</div>
+                            <div class="mb-3">{{ form.poll_type }}</div>
+                            <div class="mb-3">{{ form.poll_text }}</div>
                         </div>
                     </div>
                 </div>
                 <div class="col-sm-12 col-xl-6">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="card-title">Title</h4>
-                            <p class="card-text">Text</p>
+                            <h4 class="card-title">Alternative (min 2, max 10)</h4>
+                            <div id="alternatives-rows">
+                                {% for field in form.alternatives_group %}
+                                <div class="input-group mb-3">
+                                    {{ field }}
+                                    <input type="button" class="btn btn-danger" value="-" onclick="remove_row(this)"/>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <div class="text-center">
+                                <input type="button" id="add-another" class="btn btn-secondary" onclick="add_alternative()" value="+"/>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -76,6 +87,40 @@
 
 {% block javascripts %}
 <script>
-    let form_count = document.getElementById("{{form.hidden_alternative_count.auto_id }}").value;
+    
+
+    let form_count_field = document.getElementById("{{form.hidden_alternative_count.auto_id }}");
+    let form_count = form_count_field.value
+    let alternatives_rows = document.getElementById("alternatives-rows")
+    const regex = /\d+$/g
+
+    function add_alternative() {
+        if (alternatives_rows.children.length >= 10)
+            return
+        
+        form_count++
+        console.log(form_count)
+
+        let new_alternative = alternatives_rows.children[0].cloneNode(true)
+
+        let input = new_alternative.children[0]
+        input.name = input.name.replace(regex, form_count)
+        input.id = input.id.replace(regex, form_count)
+
+        let button = new_alternative.children[1]
+
+        alternatives_rows.append(new_alternative)
+        form_count_field.value = form_count;
+    }
+
+    function remove_row(button) {
+        if (alternatives_rows.children.length <= 2)
+            return
+        
+        let parent_div = button.parentNode
+        if (parent_div.parentNode) {
+            parent_div.parentNode.removeChild(parent_div)
+        }
+    }
 </script>
 {% endblock javascripts %}

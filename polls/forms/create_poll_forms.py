@@ -113,7 +113,7 @@ class CreatePollFormMain(forms.Form):
         return form_data
     
     def alternatives_group(self):
-        return [self[name] for name in filter(lambda x: x.startswith('alternative'), self.fields.values())]
+        return [self[name] for name in filter(lambda x: x.startswith('alternative'), self.fields)]
 
 # Form per la seconda pagina della creazione di nuovi sondaggi, contenente opzioni secondarie
 
