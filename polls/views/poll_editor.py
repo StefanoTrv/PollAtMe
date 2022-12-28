@@ -28,18 +28,11 @@ def poll_editor_main(request: HttpRequest, poll = None):
             request.session[f'{session_prefix}_poll_type'] = form.cleaned_data['poll_type']
             request.session[f'{session_prefix}_poll_page_index'] = 2
             return HttpResponseRedirect(request.get_full_path()) #redirect alla stessa pagina per forzare il caricamento della prossima schermata
-        else: #crea un nuovo form con gli stessi dati, in modo da eliminare definitivamente i campi cancellati
+        else:
             alternatives = []
             for i in range(1, form.cleaned_data['hidden_alternative_count'] + 1):
                 alternatives.append(form.cleaned_data[f'alternative{i}'])
-            errors = form.errors #brutto modo per far riapparire gli errori nel form ricreato
-            form=CreatePollFormMain(
-                poll_title=form.cleaned_data.get('poll_title',""),
-                poll_text=form.cleaned_data.get('poll_text',""),
-                poll_type=form.cleaned_data['poll_type'],
-                alternatives=alternatives)
-            form._errors = errors #vedi sopra
-    # if a GET (or any other method) we'll create a blank form
+            form.alternatives = alternatives
     else:
         if poll == None:#vuoto se stiamo creando un nuovo sondaggio
             form = CreatePollFormMain()

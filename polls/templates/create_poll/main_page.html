@@ -23,6 +23,7 @@
         <form method="post">
             {% csrf_token %}
             {{ form.hidden_alternative_count }}
+            {{ form.non_field_errors }}
             <div class="row">
                 <div class="col-sm-12 col-xl-6">
                     <div class="card">

@@ -41,7 +41,7 @@ class CreatePollFormMain(forms.Form):
         poll_text = kwargs.pop('poll_text', None)
         poll_type = kwargs.pop('poll_type', None)
 
-        alternatives = kwargs.pop('alternatives', [])
+        self.alternatives = kwargs.pop('alternatives', [])
 
         if 'poll' in kwargs:
             poll = kwargs.pop('poll')
@@ -54,17 +54,17 @@ class CreatePollFormMain(forms.Form):
                 raise TypeError
             poll_title = poll.title
             poll_text = poll.text
-            alternatives = [a.text for a in poll.alternative_set.all()]
+            self.alternatives = [a.text for a in poll.alternative_set.all()]
 
         super(CreatePollFormMain, self).__init__(*args, **kwargs)
         self.fields['hidden_alternative_count'].initial = max(
-            number_of_alternatives, len(alternatives))
+            number_of_alternatives, len(self.alternatives))
 
         self.fields['poll_title'].initial = poll_title
         self.fields['poll_text'].initial = poll_text
         self.fields['poll_type'].initial = poll_type
 
-        for index in range(max(number_of_alternatives, len(alternatives))):
+        for index in range(max(number_of_alternatives, len(self.alternatives))):
             # generate extra fields in the number specified via hidden_alternative_count and enough for all the alternatives passed as input (that is, the max of the two)
             self.fields[f'alternative{index+1}'] = forms.CharField(
                 label='Alternativa',
@@ -76,8 +76,8 @@ class CreatePollFormMain(forms.Form):
                 )
             )
 
-        for index in range(len(alternatives)):
-            self.fields[f'alternative{index+1}'].initial = alternatives[index]
+        for index in range(len(self.alternatives)):
+            self.fields[f'alternative{index+1}'].initial = self.alternatives[index]
 
     def clean(self):
         form_data = self.cleaned_data
