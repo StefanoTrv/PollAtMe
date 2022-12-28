@@ -16,7 +16,7 @@ class PollDeleteView(DeleteView):
     def get_object(self, queryset: Optional[models.query.QuerySet[Any]] = None) -> models.Model:
         poll: Poll = super().get_object(queryset)
 
-        if poll.is_active():
-            raise PermissionDenied('Il sondaggio è attivo e non può essere eliminato')
+        if not poll.is_not_started():
+            raise PermissionDenied('Non è possibile eliminare un sondaggio dopo che la votazione è iniziata')
 
         return poll
