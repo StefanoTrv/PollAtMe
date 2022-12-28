@@ -36,9 +36,9 @@ class ResultView(View):
             raise http.Http404(self.POLL_DOES_NOT_EXISTS_MSG)
     
     def __dispatch_view(self, poll: Poll) -> Callable:
-        if hasattr(poll, 'singlepreferencepoll'):
+        if poll.get_type()=='Preferenza singola':
             return SinglePreferenceListView.as_view()
-        elif hasattr(poll, 'majorityopinionpoll'):
+        elif poll.get_type()=='Giudizio maggioritario':
             return MajorityJudgementListView.as_view()
         else:
             return ShultzePreferenceListView.as_view()
@@ -63,7 +63,6 @@ class SinglePreferenceListView(TemplateView):
         context['results'] = results
         context['unique_winner'] = results[0]['position'] != results[1]['position']
         context['poll'] = poll
-        
 
         return context
     
@@ -73,7 +72,7 @@ class SinglePreferenceListView(TemplateView):
 
 class ShultzePreferenceListView(ListView):
     model: type[models.Model] = Preference
-    template_name: str = 'result_GM.html' ##qui al limite si deciderà se ritornare tutti la stessa pagina
+    template_name: str = 'result_GM.html'
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -88,7 +87,7 @@ class ShultzePreferenceListView(ListView):
 class MajorityJudgementListView(ListView):
     
     model: type[models.Model] = Preference
-    template_name: str = 'result_GM.html' ##qui al limite si deciderà se ritornare tutti la stessa pagina
+    template_name: str = 'results/result_GM.html'
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)

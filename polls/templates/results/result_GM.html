@@ -42,11 +42,11 @@
 
     <!-- [ Riepilogo ] start -->
     {% include 'includes/riepilogo.html'%}
-
     <h5 class="mt-4">Numero di preferenze per alternativa</h5>
     <hr>
     <div class="row row-cols-md-3 row-cols-sm-1 g-4">
       {% for alternative in classifica %}
+      <!-- {{ alternative.alternative}}-{{ alternative.place }} -->
       {% if alternative.place == 1 and winners|length == 1 %}
       <div class="col-md-12">
         <div class="card bg-success">

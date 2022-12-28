@@ -20,7 +20,7 @@ class Poll(models.Model):
         if hasattr(self, 'singlepreferencepoll'):
             return 'Preferenza singola'
         elif hasattr(self, 'majorityopinionpoll'):
-            return'Giudizio maggioritario'
+            return 'Giudizio maggioritario'
         else:
             return 'Metodo Shultze'
 
