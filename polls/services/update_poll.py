@@ -1,6 +1,7 @@
 from polls.models import Poll, Alternative
 import datetime
 
+#Permette di modificare tutti i dati del sondaggio ma non il tipo
 def update_poll(poll : Poll, title : str, text : str, alternatives : list, start_time : datetime.datetime, end_time : datetime.datetime) -> None:
     poll.title = title[:100]
     poll.text = text

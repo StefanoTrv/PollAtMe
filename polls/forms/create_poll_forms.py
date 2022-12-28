@@ -71,10 +71,6 @@ class CreatePollFormMain(forms.Form):
         for index in range(len(alternatives)):
             self.fields[f'alternative{index+1}'].initial = alternatives[index]
 
-    def set_errors(self, errors):
-        for error in errors:
-            self.add_error(error)
-
     def clean(self):
         form_data = self.cleaned_data
 
