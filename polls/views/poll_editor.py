@@ -71,7 +71,7 @@ def poll_editor_summary_and_additional_options(request, poll = None):
         form = CreatePollAdditionalOptions(request.POST)
         # check whether it's valid:
         if form.is_valid():
-            if poll != None:#la funzione per l'update è la stessa per tutti i tipi di Poll
+            if poll != None and poll.get_type()==request.session[f'{session_prefix}_poll_type']:#aggiornamento senza cambiare tipo di poll
                 update_poll(
                     poll,
                     request.session[f'{session_prefix}_poll_title'],
@@ -81,7 +81,9 @@ def poll_editor_summary_and_additional_options(request, poll = None):
                     form.cleaned_data['end_time']
                 )
                 return render(request, 'update_poll_success.html')
-            elif request.session[f'{session_prefix}_poll_type'] == 'Preferenza singola':
+            elif request.session[f'{session_prefix}_poll_type'] == 'Preferenza singola':#creazione o update con cambio di tipo
+                if poll!=None:#cancello il poll del vecchio tipo
+                    poll.delete()
                 add_single_preference_poll(
                     request.session[f'{session_prefix}_poll_title'],
                     request.session[f'{session_prefix}_poll_text'],
@@ -89,7 +91,9 @@ def poll_editor_summary_and_additional_options(request, poll = None):
                     form.cleaned_data['start_time'],
                     form.cleaned_data['end_time']
                 )
-            elif request.session[f'{session_prefix}_poll_type'] == 'Giudizio maggioritario':
+            elif request.session[f'{session_prefix}_poll_type'] == 'Giudizio maggioritario':#creazione o update con cambio di tipo
+                if poll!=None:#cancello il poll del vecchio tipo
+                    poll.delete()
                 add_majority_judgment_poll(
                     request.session[f'{session_prefix}_poll_title'],
                     request.session[f'{session_prefix}_poll_text'],
@@ -99,9 +103,9 @@ def poll_editor_summary_and_additional_options(request, poll = None):
                 )
             return render(request, 'create_poll_success.html')
 
-    # if a GET (or any other method) we'll create a blank form
+    # if a GET (or any other method) we'll create a form
     else:
-        if poll == None:#per adesso sono identici
+        if poll == None:
             form = CreatePollAdditionalOptions()
         else:
             form = CreatePollAdditionalOptions(poll=poll)
