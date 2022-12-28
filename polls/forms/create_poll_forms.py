@@ -111,6 +111,9 @@ class CreatePollFormMain(forms.Form):
                 None, "Il testo del sondaggio non può essere vuoto.")
 
         return form_data
+    
+    def alternatives_group(self):
+        return [self[name] for name in filter(lambda x: x.startswith('alternative'), self.fields.values())]
 
 # Form per la seconda pagina della creazione di nuovi sondaggi, contenente opzioni secondarie
 

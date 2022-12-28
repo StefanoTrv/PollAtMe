@@ -20,99 +20,62 @@
                 </div>
             </div>
         </div>
-        <div class="page-block">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5>Inserisci i dati del tuo sondaggio</h5>
-                        <br>
-                        <form method="post">
-                            <div class="form-group">
-                                {% csrf_token %}
-                                {{ form.non_field_errors }}
-                                <div class="table-responsive">
-                                    <table class="table" style="width:100%">
-                                        <tbody id="formtablebody">
-                                        {% for field in form %}
-                                            <tr id="{{field.name}}row" {% if 'hidden' in field.name %}style="visibility:collapse;"{% endif%}><!-- Nasconde completamente i campi con "hidden" nel nome -->
-                                                <td>
-                                                    <label for="{{ field.label }}">{{ field.label_tag }}</label>
-                                                </td>
-                                                <td>
-                                                    {{ field }}
-                                                </td>
-                                                <td style="text-align:right">
-                                                    {% if 'alternative' in field.name and 'hidden' not in field.name%}
-                                                        <input type="button" name="btn" class="btn btn-danger" value="-" onclick="remove_row(parseInt('{{field.name|slice:"11:12"}}'))"/>
-                                                    {% endif %}
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                        </tbody> 
-                                    </table>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-12" style="text-align:center">
-                                        <input type="button" id="add-another" class="btn btn-secondary" onclick="add_alternative()" value="+"/>
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="row">
-                                    <div class="col-sm-8">
-                                        <button type="button" class="btn btn-block btn-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal">Torna alla home</button>
-                                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                              <div class="modal-content">
-                                                <div class="modal-header">
-                                                  <h5 class="modal-title" id="exampleModalLabel">Attenzione!</h5>
-                                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <p> Il sondaggio che stavi creando non verrà salvato!</p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <a href="{% url 'polls:index' %}">
-                                                        <button type="button" class="btn btn-primary">Home</button>
-                                                    </a>
-                                                </div>
-                                              </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-4" style="text-align:right">
-                                        <input type="submit" id="submitformbutton" class="btn btn-primary" value="Prossimo">
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
+        <form method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-sm-12 col-xl-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Title</h4>
+                            <p class="card-text">poll_title</p>
+                            <p class="card-text">poll_text</p>
+                            <p class="card-text">poll_type</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-xl-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Title</h4>
+                            <p class="card-text">Text</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <div class="card text-center">
+                      <div class="card-body">
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modal-return-home">Torna alla home</button>
+                        <button type="submit" class="btn btn-primary">Prossimo</button>
+                      </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 </div>
+
+<div class="modal fade" id="modal-return-home" tabindex="-1" aria-labelledby="modal-return-home-label" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modal-return-home-label">Attenzione!</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <p> Il sondaggio che stavi creando non verrà salvato!</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+          <a href="{% url 'polls:index' %}"><button type="button" class="btn btn-primary">Home</button></a>
+        </div>
+      </div>
+    </div>
+  </div>
 
 {% endblock content %}
 
 {% block javascripts %}
 <script>
     let form_count = document.getElementById("{{form.hidden_alternative_count.auto_id }}").value;
-
-    function add_alternative(){
-        form_count ++;
-        console.log(form_count);
-        var element = document.createElement("tr");
-        element.id="alternative"+form_count+"row";
-        element.innerHTML="<td>\n <label for=\"Alternativa " + form_count +"\" style=\"display:inline-block;vertical-align:middle\">Alternativa:</label>\n </td>\n <td>\n <input type=\"text\" class=\"form-control\" placeholder=\"Inserisci il testo dell'alternativa\"/ name=\"alternative"+form_count+"\" id=\"id_alternative"+form_count+"\"> <td style=\"text-align:right\"><input type=\"button\" name=\"btn\" value=\"-\" class=\"btn btn-danger\" onclick=\"remove_row("+form_count+")\"\/></td>\n </td>";
-        document.getElementById("formtablebody").append(element);
-        // build element and append it to our forms container
-        document.getElementById("{{form.hidden_alternative_count.auto_id }}").value=form_count;       
-    }
-
-    function remove_row(row_number){
-        document.getElementById("{{form.alternative1.auto_id|slice:":-1"}}"+row_number).value="";
-        document.getElementById("alternative"+row_number+"row").style.visibility = "collapse";
-    }
 </script>
-
 {% endblock javascripts %}
