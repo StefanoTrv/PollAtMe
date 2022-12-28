@@ -92,6 +92,7 @@
     let form_count_field = document.getElementById("{{form.hidden_alternative_count.auto_id }}");
     let form_count = form_count_field.value
     let alternatives_rows = document.getElementById("alternatives-rows")
+    const prototype = alternatives_rows.children[0].cloneNode(true)
     const regex = /\d+$/g
 
     function add_alternative() {
@@ -101,7 +102,7 @@
         form_count++
         console.log(form_count)
 
-        let new_alternative = alternatives_rows.children[0].cloneNode(true)
+        let new_alternative = prototype.cloneNode(true)
 
         let input = new_alternative.children[0]
         input.name = input.name.replace(regex, form_count)
