@@ -4,8 +4,6 @@ from polls.models import SinglePreferencePoll, MajorityOpinionPoll
 from django.utils import timezone
 
 # Form per la pagina principale della pagina di creazione di nuovi sondaggi, contenente i dati principali
-
-
 class CreatePollFormMain(forms.Form):
 
     poll_title = forms.CharField(
@@ -45,13 +43,7 @@ class CreatePollFormMain(forms.Form):
 
         if 'poll' in kwargs:
             poll = kwargs.pop('poll')
-            # è necessario fare query sul db per scoprire il tipo del sondaggio
-            if len(SinglePreferencePoll.objects.filter(id=poll.id)) == 1:
-                poll_type = 'Preferenza singola'
-            elif len(MajorityOpinionPoll.objects.filter(id=poll.id)) == 1:
-                poll_type = 'Giudizio maggioritario'
-            else:
-                raise TypeError
+            poll_type = poll.get_type()
             poll_title = poll.title
             poll_text = poll.text
             alternatives = [a.text for a in poll.alternative_set.all()]
@@ -89,7 +81,7 @@ class CreatePollFormMain(forms.Form):
         # rimuovo le alternative vuote
         alternatives = []
         for i in range(1, form_data['hidden_alternative_count'] + 1):
-            if form_data[f'alternative{i}'].strip() != "":
+            if form_data[f'alternative{i}'].strip() != ''""'':
                 alternatives.append(form_data[f'alternative{i}'].strip())
             del form_data[f'alternative{i}']
         form_data['hidden_alternative_count'] = len(alternatives)
@@ -98,36 +90,32 @@ class CreatePollFormMain(forms.Form):
 
         # errore se il campo del titolo è vuoto
         if 'poll_title' not in form_data:
-            self.add_error(None, "Il titolo non può essere vuoto.")
+            self.add_error(None, 'Il titolo non può essere vuoto.')
 
         # errore se non ci sono abbastanza alternative
         if form_data['hidden_alternative_count'] not in range(2, 10):
             self.add_error(
-                None, "Il numero di alternative deve essere compreso tra 2 e 10.")
+                None, 'Il numero di alternative deve essere compreso tra 2 e 10.')
 
         # errore se il campo del testo è vuoto
         if 'poll_text' not in form_data:
             self.add_error(
-                None, "Il testo del sondaggio non può essere vuoto.")
+                None, 'Il testo del sondaggio non può essere vuoto.')
 
         return form_data
 
+
 # Form per la seconda pagina della creazione di nuovi sondaggi, contenente opzioni secondarie
-
-
-# per ora vuota, sarà da riempire con le opzioni
 class CreatePollAdditionalOptions(forms.Form):
     
     start_time = forms.DateTimeField(
         label='Data inizio votazioni', 
-        initial=timezone.now(), 
-        input_formats=['%d/%m/%Y %H:%M']
+        initial=timezone.now()
     )
     
     end_time = forms.DateTimeField(
         label='Data fine votazioni',
-        initial=timezone.now() + timedelta(weeks=1),
-        input_formats=['%d/%m/%Y %H:%M']
+        initial=timezone.now() + timedelta(weeks=1)
     )  # durata di default: 1 settimana
 
     # Può ricevere i parametri 'start_time', 'end_time' e 'poll'. Se quest'ultimo è presente, sovrascrive tutti i precedenti.
@@ -146,7 +134,7 @@ class CreatePollAdditionalOptions(forms.Form):
             self.fields['start_time'].initial = start_time
 
         if end_time != None:
-            self.field['end_time'].initial = end_time
+            self.fields['end_time'].initial = end_time
 
     def clean(self):
         form_data = self.cleaned_data
@@ -155,7 +143,6 @@ class CreatePollAdditionalOptions(forms.Form):
         print(form_data)
 
         # errore se il tempo di inizio è precedente ad adesso, con una precisione di 15 minuti
-        # aggiungo informazioni sulla timezone per poter fare il confronto
         if form_data['start_time'] + timedelta(minutes=15) < timezone.now():
             self.add_error(
                 None, "Il momento di inizio delle votazioni deve essere successivo ad adesso.")
