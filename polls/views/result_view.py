@@ -25,8 +25,6 @@ class ResultView(View):
         """
         Questo metodo viene invocato quando viene fatta una richiesta
         HTTP (di qualunque tipo).
-        Il dispatching avviene verificando gli attributi della poll
-        (non funziona il polimorfismo)
         """
         try:
             poll = SearchPollService().search_by_id(kwargs['id'])
@@ -99,7 +97,6 @@ class MajorityJudgementListView(ListView):
 
         poll_service = self.__poll_results_service.search_by_poll_id(self.kwargs['id'])
         poll = SearchPollService().search_by_id(self.kwargs['id'])
-
 
         classifica = poll_service.get_classifica()
         winners = poll_service.get_winners()

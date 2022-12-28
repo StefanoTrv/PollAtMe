@@ -3,7 +3,7 @@ from django.db.models import Count
 from polls.exceptions import PollWithoutAlternativesException
 
 class ActivePollsService:
-    """Service for get all active polls from database"""
+    """Service to get all active polls from database"""
 
     def __init__(self) -> None:
         ids = [

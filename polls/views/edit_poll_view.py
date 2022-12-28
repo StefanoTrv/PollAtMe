@@ -15,7 +15,7 @@ def edit_poll(request, id):
     poll = SearchPollService().search_by_id(id)
 
     if poll.is_active():
-        raise PermissionDenied("Questo sondaggio è attivo e non può essere modificato")
+        raise PermissionDenied("Non è possibile modificare il sondaggio perché è in corso la votazione")
     
     if poll.is_ended():
         raise PermissionDenied("Questo sondaggio è concluso e non può essere modificato")

@@ -339,8 +339,7 @@ class MajorityJudgementService:
 
     #ritorna un dict {'voti_alternativa' : voti_alternativa, 'ordered_votes' : lista_voti}, dove voti_alternativa è una lista di dict
     #{'alternativa' alternativa, 'lista_voti' : lista_voti} 
-    # dove lista voti è un dict della forma {'voto' : numero} e lista voti è una lista
-    # ordinata dei voti possibili
+    # dove lista_voti è un dict della forma {'voto' : numero} e lista_voti è una lista ordinata dei voti possibili
     def get_voti_alternativa(self) :
         voti_alternativa = self.__get_voti_alternativa()
         ordered_votes = self.__get_all_votes()
