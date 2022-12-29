@@ -28,14 +28,20 @@
             </div>
             {% endfor %}
             <legend>{{ f.grade.label }}</legend>
-            {% for radio in f.grade %}
-            <div class="form-check form-check-inline">
-                {{ radio.tag }}
-                <label
-                    class="{% if f.errors %}btn btn-outline-danger is-invalid{% else %}btn btn-outline-secondary{% endif %}"
-                    for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+            <div class="d-flex justify-content-center justify-content-sm-start">
+                <div class="d-sm-inline-flex p-2">
+                {% for radio in f.grade %}
+                    <div class="form-check">
+                        
+                        {{ radio.tag }}
+                        <label
+                            class="{% if f.errors %}btn btn-outline-danger is-invalid{% else %}btn btn-outline-secondary{% endif %}"
+                            for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                        </div>
+                    
+                {% endfor %}
+                </div>
             </div>
-            {% endfor %}
         </div>
     </div>
     {% endfor %}
