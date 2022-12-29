@@ -20,99 +20,131 @@
                 </div>
             </div>
         </div>
-        <div class="page-block">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5>Inserisci i dati del tuo sondaggio</h5>
-                        <br>
-                        <form method="post">
-                            <div class="form-group">
-                                {% csrf_token %}
-                                {{ form.non_field_errors }}
-                                <div class="table-responsive">
-                                    <table class="table" style="width:100%">
-                                        <tbody id="formtablebody">
-                                        {% for field in form %}
-                                            <tr id="{{field.name}}row" {% if 'hidden' in field.name %}style="visibility:collapse;"{% endif%}><!-- Nasconde completamente i campi con "hidden" nel nome -->
-                                                <td>
-                                                    <label for="{{ field.label }}">{{ field.label_tag }}</label>
-                                                </td>
-                                                <td>
-                                                    {{ field }}
-                                                </td>
-                                                <td style="text-align:right">
-                                                    {% if 'alternative' in field.name and 'hidden' not in field.name%}
-                                                        <input type="button" name="btn" class="btn btn-danger" value="-" onclick="remove_row(parseInt('{{field.name|slice:"11:12"}}'))"/>
-                                                    {% endif %}
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                        </tbody> 
-                                    </table>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.hidden_alternative_count }}
+            <div class="row">
+                <div class="col-sm-12 col-xl-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Informazioni generali</h4>
+                            {% if errors.poll_title %}
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <strong>Attenzione!</strong> {{ errors.poll_title.0 }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                 </div>
-                                <div class="row">
-                                    <div class="col-sm-12" style="text-align:center">
-                                        <input type="button" id="add-another" class="btn btn-secondary" onclick="add_alternative()" value="+"/>
-                                    </div>
+                            {% endif %}
+                            <div class="mb-3">{{ form.poll_title }}</div>
+
+                            <div class="mb-3">{{ form.poll_type }}</div>
+
+                            {% if errors.poll_text %}
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <strong>Attenzione!</strong> {{ errors.poll_text.0 }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                 </div>
-                                <hr>
-                                <div class="row">
-                                    <div class="col-sm-8">
-                                        <button type="button" class="btn btn-block btn-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal">Torna alla home</button>
-                                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                              <div class="modal-content">
-                                                <div class="modal-header">
-                                                  <h5 class="modal-title" id="exampleModalLabel">Attenzione!</h5>
-                                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <p> Il sondaggio che stavi creando non verrà salvato!</p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <a href="{% url 'polls:index' %}">
-                                                        <button type="button" class="btn btn-primary">Home</button>
-                                                    </a>
-                                                </div>
-                                              </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-4" style="text-align:right">
-                                        <input type="submit" id="submitformbutton" class="btn btn-primary" value="Prossimo">
-                                    </div>
-                                </div>
+                            {% endif %}
+                            <div class="mb-3">{{ form.poll_text }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-xl-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Alternative (min 2, max 10)</h4>
+                            {% if errors.hidden_alternative_count %}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <strong>Attenzione!</strong> {{ errors.hidden_alternative_count.0 }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
-                        </form>
+                            {% endif %}
+                            <div id="alternatives-rows">
+                                {% for field in form.alternatives_group %}
+                                <div class="input-group mb-3">
+                                    {{ field }}
+                                    <input type="button" class="btn btn-danger" value="-" onclick="remove_row(this)"/>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <div class="text-center">
+                                <input type="button" id="add-another" class="btn btn-secondary" onclick="add_alternative()" value="+"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <div class="card text-center">
+                      <div class="card-body">
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modal-return-home">Torna alla home</button>
+                        <button type="submit" class="btn btn-primary">Prossimo</button>
+                      </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 </div>
+
+<div class="modal fade" id="modal-return-home" tabindex="-1" aria-labelledby="modal-return-home-label" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modal-return-home-label">Attenzione!</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <p> Il sondaggio che stavi creando non verrà salvato!</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+          <a href="{% url 'polls:index' %}"><button type="button" class="btn btn-primary">Home</button></a>
+        </div>
+      </div>
+    </div>
+  </div>
 
 {% endblock content %}
 
 {% block javascripts %}
 <script>
-    let form_count = document.getElementById("{{form.hidden_alternative_count.auto_id }}").value;
+    
 
-    function add_alternative(){
-        form_count ++;
-        console.log(form_count);
-        var element = document.createElement("tr");
-        element.id="alternative"+form_count+"row";
-        element.innerHTML="<td>\n <label for=\"Alternativa " + form_count +"\" style=\"display:inline-block;vertical-align:middle\">Alternativa:</label>\n </td>\n <td>\n <input type=\"text\" class=\"form-control\" placeholder=\"Inserisci il testo dell'alternativa\"/ name=\"alternative"+form_count+"\" id=\"id_alternative"+form_count+"\"> <td style=\"text-align:right\"><input type=\"button\" name=\"btn\" value=\"-\" class=\"btn btn-danger\" onclick=\"remove_row("+form_count+")\"\/></td>\n </td>";
-        document.getElementById("formtablebody").append(element);
-        // build element and append it to our forms container
-        document.getElementById("{{form.hidden_alternative_count.auto_id }}").value=form_count;       
+    let form_count_field = document.getElementById("{{form.hidden_alternative_count.auto_id }}");
+    let form_count = form_count_field.value
+    let alternatives_rows = document.getElementById("alternatives-rows")
+    let prototype = alternatives_rows.children[0].cloneNode(true)
+    const regex = /\d+$/g
+
+    function add_alternative() {
+        if (alternatives_rows.children.length >= 10)
+            return
+        
+        form_count++
+        console.log(form_count)
+
+        let new_alternative = prototype.cloneNode(true)
+
+        let input = new_alternative.children[0]
+        input.name = input.name.replace(regex, form_count)
+        input.id = input.id.replace(regex, form_count)
+        input.value = ""
+
+        let button = new_alternative.children[1]
+
+        alternatives_rows.append(new_alternative)
+        form_count_field.value = form_count;
     }
 
-    function remove_row(row_number){
-        document.getElementById("{{form.alternative1.auto_id|slice:":-1"}}"+row_number).value="";
-        document.getElementById("alternative"+row_number+"row").style.visibility = "collapse";
+    function remove_row(button) {
+        let parent_div = button.parentNode
+        if (alternatives_rows.children.length <= 2) {
+            parent_div.children[0].value = ""
+            return
+        }
+
+        if (parent_div.parentNode) {
+            parent_div.parentNode.removeChild(parent_div)
+        }
     }
 </script>
-
 {% endblock javascripts %}

@@ -12,6 +12,8 @@ def poll_editor_main(request: HttpRequest, poll = None):
     else:
         session_prefix = "edit"
     # if this is a POST request we need to process the form data
+    
+    errors = None
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
         form = CreatePollFormMain(request.POST, count = request.POST.get('hidden_alternative_count'))
@@ -28,25 +30,25 @@ def poll_editor_main(request: HttpRequest, poll = None):
             request.session[f'{session_prefix}_poll_type'] = form.cleaned_data['poll_type']
             request.session[f'{session_prefix}_poll_page_index'] = 2
             return HttpResponseRedirect(request.get_full_path()) #redirect alla stessa pagina per forzare il caricamento della prossima schermata
-        else: #crea un nuovo form con gli stessi dati, in modo da eliminare definitivamente i campi cancellati
+        else:
+            # renderizza un nuovo form con gli stessi dati, ma con il numero corretto di alternative (problema del form bounded)
             alternatives = []
-            for i in range(1, form.cleaned_data['hidden_alternative_count'] + 1):
-                alternatives.append(form.cleaned_data['alternative'+str(i)])
-            errors = form.errors #brutto modo per far riapparire gli errori nel form ricreato
+            for i in range(1, form.effective_alternatives_count + 1):
+                alternatives.append(form.cleaned_data[f'alternative{i}'])
+            errors = form.errors
             form=CreatePollFormMain(
                 poll_title=form.cleaned_data.get('poll_title',''),
                 poll_text=form.cleaned_data.get('poll_text',''),
                 poll_type=form.cleaned_data['poll_type'],
-                alternatives=alternatives)
-            form._errors=errors # type: ignore
-    # if a GET (or any other method) we'll create a blank form
+                alternatives=alternatives
+            )
     else:
         if poll == None:#vuoto se stiamo creando un nuovo sondaggio
             form = CreatePollFormMain()
         else:#se stiamo modificando un sondaggio esistente, precompiliamo i campi
             form=CreatePollFormMain(poll=poll)
 
-    return render(request, 'create_poll/main_page.html', {'form': form})
+    return render(request, 'create_poll/main_page.html', {'form': form, 'errors': errors})
 
 #View per la seconda pagina della creazione o modifica di un sondaggio, che mostra i dati inseriti prima e consente di scegliere opzioni aggiuntive secondarie.
 # Il parametro poll è specificato quando si intende modificare un sondaggio esistente.
