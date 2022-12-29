@@ -20,7 +20,7 @@
     {{ form.management_form }}
     <div class="row">
         {% for f in form %}
-        <div class="col-sm-12 col-xl-6">
+        <div class="col-sm-12 col-md-6">
             <div class="card">
                 <div class="card-body">
                     {% for error in f.grade.errors %}
@@ -29,7 +29,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                     {% endfor %}
-                    <p class="text-center fs-3 p-2">{{ f.grade.label }}</p>
+                    <p class="fs-4 p-2">{{ f.grade.label }}</p>
                     <div class="d-grid gap-2 d-md-flex justify-content-md-center flex-md-fill">
                         {% for radio in f.grade %}
                         {{ radio.tag }}
@@ -39,6 +39,7 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-6"></div>
         {% endfor %}
     </div>
     <div class="card">
