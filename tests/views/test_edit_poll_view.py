@@ -102,3 +102,36 @@ class TestPollEditView(TestCase):
         alternatives = [data['alternative1'], data['alternative2'], data['alternative3']]
         for alternative in last_poll.alternative_set.all():
             self.assertIn(alternative.text,alternatives)
+
+    def test_edit_poll_after_start(self):
+        
+        start_time=timezone.now()
+        end_time=timezone.now() + timedelta(weeks=1)
+        data={
+            'poll_title': 'titolo',
+            'poll_type': 'Giudizio maggioritario',
+            'poll_text': 'testo della domanda',
+            'hidden_alternative_count': '3',
+            'alternative1': 'prima alternativa',
+            'alternative2': 'seconda alternativa', 
+            'alternative3': 'terza alternativa'
+        }
+        url = reverse('polls:edit_poll', kwargs={'id': self.poll.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Alternativa di prova 2')
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, data['alternative3'])
+        
+        self.poll.start = timezone.now() - timedelta(minutes=1)
+        self.poll.save()
+        
+        response = self.client.post(url, data={
+            'start_time': start_time,
+            'end_time': end_time
+        })
+        self.assertEqual(response.status_code, 403)
+

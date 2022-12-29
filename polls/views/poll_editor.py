@@ -1,8 +1,19 @@
+from django.core.exceptions import PermissionDenied
+
 from django.http import HttpResponseRedirect, HttpRequest
 from django.shortcuts import render
 
 from polls.forms import CreatePollFormMain, CreatePollAdditionalOptions
 from polls.services import add_single_preference_poll, add_majority_judgment_poll, update_poll
+from polls.models import Poll
+
+
+def can_edit_poll(poll: Poll):
+    if poll.is_active():
+        raise PermissionDenied("Non è possibile modificare il sondaggio perché è in corso la votazione")
+    
+    if poll.is_ended():
+        raise PermissionDenied("Questo sondaggio è concluso e non può essere modificato")
 
 # View per la pagina principale della creazione o modifica del sondaggio, in cui si scelgono i parametri fondamentali.
 # Il parametro poll è specificato quando si intende modificare un sondaggio esistente.
@@ -74,6 +85,7 @@ def poll_editor_summary_and_additional_options(request, poll = None):
         # check whether it's valid:
         if form.is_valid():
             if poll != None and poll.get_type()==request.session[f'{session_prefix}_poll_type']:#aggiornamento senza cambiare tipo di poll
+                can_edit_poll(poll)
                 update_poll(
                     poll,
                     request.session[f'{session_prefix}_poll_title'],
@@ -84,6 +96,7 @@ def poll_editor_summary_and_additional_options(request, poll = None):
                 )
             elif request.session[f'{session_prefix}_poll_type'] == 'Preferenza singola':#creazione o update con cambio di tipo
                 if poll!=None:#cancello il poll del vecchio tipo
+                    can_edit_poll(poll)
                     poll.delete()
                 add_single_preference_poll(
                     request.session[f'{session_prefix}_poll_title'],
@@ -94,6 +107,7 @@ def poll_editor_summary_and_additional_options(request, poll = None):
                 )
             elif request.session[f'{session_prefix}_poll_type'] == 'Giudizio maggioritario':#creazione o update con cambio di tipo
                 if poll!=None:#cancello il poll del vecchio tipo
+                    can_edit_poll(poll)
                     poll.delete()
                 add_majority_judgment_poll(
                     request.session[f'{session_prefix}_poll_title'],
