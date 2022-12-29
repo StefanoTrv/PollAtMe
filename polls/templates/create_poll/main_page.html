@@ -85,30 +85,12 @@
     </div>
 </div>
 
-<div class="modal fade" id="modal-return-home" tabindex="-1" aria-labelledby="modal-return-home-label" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="modal-return-home-label">Attenzione!</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            <p> Il sondaggio che stavi creando non verrà salvato!</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
-          <a href="{% url 'polls:index' %}"><button type="button" class="btn btn-primary">Home</button></a>
-        </div>
-      </div>
-    </div>
-  </div>
+{% include 'includes/modal.html' with id_modal='modal-return-home' %}
 
 {% endblock content %}
 
 {% block javascripts %}
 <script>
-    
-
     let form_count_field = document.getElementById("{{form.hidden_alternative_count.auto_id }}");
     let form_count = form_count_field.value
     let alternatives_rows = document.getElementById("alternatives-rows")
@@ -147,4 +129,6 @@
         }
     }
 </script>
+
+{% include 'includes/lock-sidebar.html' with id_modal='modal-return-home' %}
 {% endblock javascripts %}

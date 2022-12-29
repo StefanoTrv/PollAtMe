@@ -1,0 +1,16 @@
+<script>
+    document.querySelectorAll('.nav-link, .b-brand').forEach(el => el.addEventListener('click', event => {
+        event.preventDefault()
+        const modalDiv = document.getElementById('{{ id_modal }}')
+        const link = modalDiv.querySelector('a')
+
+        const defaultHref = link.href
+        modalDiv.addEventListener('hide.bs.modal', event => {
+            link.href = defaultHref
+        })
+
+        link.href = el.href
+        const myModal = new bootstrap.Modal(modalDiv)
+        myModal.show()
+    }))
+</script>
