@@ -122,10 +122,12 @@
     }
 
     function remove_row(button) {
-        if (alternatives_rows.children.length <= 2)
-            return
-        
         let parent_div = button.parentNode
+        if (alternatives_rows.children.length <= 2) {
+            parent_div.children[0].value = ""
+            return
+        }
+
         if (parent_div.parentNode) {
             parent_div.parentNode.removeChild(parent_div)
         }
