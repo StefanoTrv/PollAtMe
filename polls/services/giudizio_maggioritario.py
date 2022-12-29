@@ -47,6 +47,15 @@ class Grade:
     def __eq__(self, __o) -> bool:
         return (self.vote() == __o.vote()) and (self.positive() == __o.positive())
 
+    def __str__(self):
+
+        vote_string =  MajorityOpinionJudgement.JudgeType(self._vote).name
+        sign = '-'
+        if self._positive:
+            sign = '+'
+
+        return vote_string + ' ' + sign
+
 ##rappresentazione delle tuple
 class VoteTuple:
     def __init__(self, choice_id: int, giuduzi_migliori: int, grade: Grade, giudizi_peggiori: int) -> None:
@@ -113,6 +122,9 @@ class VoteTuple:
             self.giudizi_peggiori() == __o.giudizi_peggiori()
         )
     
+    def __str__(self):
+        return'(' + str(self._giudizi_migliori) + ', ' + str(self._grade) + ', ' + str(self._giudizi_peggiori) + ')'
+
     def sameScore(self, __o) -> bool:
         return (
             self.giuduzi_migliori() == __o.giuduzi_migliori() and
@@ -178,7 +190,7 @@ class GiudizioMaggioritario:
                     offset = 0
             
             current_alternative_name = Alternative.objects.get(id = ordered_tuple_list[index].choice_id()).text
-            classifica.append({'alternative' : current_alternative_name, 'place' : place})                 
+            classifica.append({'alternative' : current_alternative_name, 'place' : place, 'judgment' : ordered_tuple_list[index]})                 
             index += 1
             offset += 1
 
@@ -306,7 +318,7 @@ class MajorityJudgementService:
     """
 
     #ritorna un dict {'classifica' : classifica}, dove classifica è una lista di dict
-    #{'alternative': alternativa, 'place' : posizione}
+    #{'alternative': alternativa, 'place' : posizione. 'vote' : voto}
     def get_classifica(self):
         classifica = self.__get_classifica()
         context = {'classifica' : classifica}    

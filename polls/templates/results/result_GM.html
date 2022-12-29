@@ -53,6 +53,10 @@
           <div class="card-body text-white">
             <h3 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.place }}° posizione</span></h3>
             <h4 class="card-title text-white">{{ alternative.alternative|upper }}</h4>
+            
+          </div>
+          <div class="card-footer">
+            <p class="text-white">{{ alternative.judgment|stringformat:'s'}}</p>
           </div>
         </div>
       </div>
@@ -63,6 +67,9 @@
             <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.place }}° posizione</span></h4>
             <h5 class="card-title">{{ alternative.alternative|upper }}</h5>
           </div>
+          <div class="card-footer">
+            <p class="card-text">{{ alternative.judgment|stringformat:'s'}}</p>
+          </div>
         </div>
       </div>
       {% else %}
@@ -71,6 +78,9 @@
           <div class="card-body">
             <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.place }}° posizione</span></h4>
             <h5 class="card-title">{{ alternative.alternative|upper }}</h5>
+          </div>
+          <div class="card-footer">
+            <p class="card-text">{{ alternative.judgment|stringformat:'s'}}</p>
           </div>
         </div>
       </div>
