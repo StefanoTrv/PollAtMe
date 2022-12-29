@@ -13,11 +13,13 @@
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JW556FCGFS"></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-
-        gtag('config', 'G-JW556FCGFS');
+        var host = window.location.hostname;
+        if(!(host == "localhost" || host == "127.0.0.1")) {
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-JW556FCGFS');
+        }
     </script>
 
     <link rel="icon" href="/static/img/favicon.ico" type="image/x-icon">
