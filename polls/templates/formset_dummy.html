@@ -9,7 +9,7 @@
 {% block title %} {{block.super}} | {{ poll.title }} {% endblock title %}
 
 {% block form_card %}
-<div class="card">
+<div class="card col-sm-12">
     <div class="card-body">
         {{ poll.text }}
     </div>
@@ -18,33 +18,29 @@
 <form class="needs-validation" method="post" novalidate>
     {% csrf_token %}
     {{ form.management_form }}
-    {% for f in form %}
-    <div class="card">
-        <div class="card-body">
-            {% for error in f.grade.errors %}
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <div>{{ error }}</div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            {% endfor %}
-            <legend>{{ f.grade.label }}</legend>
-            <div class="d-flex justify-content-center justify-content-sm-start">
-                <div class="d-sm-inline-flex p-2">
-                {% for radio in f.grade %}
-                    <div class="form-check">
-                        
+    <div class="row">
+        {% for f in form %}
+        <div class="col-sm-12 col-xl-6">
+            <div class="card">
+                <div class="card-body">
+                    {% for error in f.grade.errors %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <div>{{ error }}</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endfor %}
+                    <p class="text-center fs-3 p-2">{{ f.grade.label }}</p>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center flex-md-fill">
+                        {% for radio in f.grade %}
                         {{ radio.tag }}
-                        <label
-                            class="{% if f.errors %}btn btn-outline-danger is-invalid{% else %}btn btn-outline-secondary{% endif %}"
-                            for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
-                        </div>
-                    
-                {% endfor %}
+                        <label class="{% if f.errors %}btn btn-outline-danger is-invalid{% else %}btn btn-outline-secondary{% endif %} w-100" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
+        {% endfor %}
     </div>
-    {% endfor %}
     <div class="card">
         <div class="card-body">
             <button type="submit" class="btn btn-primary">Salva</button>
@@ -52,5 +48,4 @@
         </div>
     </div>
 </form>
-
 {% endblock form_card %}
