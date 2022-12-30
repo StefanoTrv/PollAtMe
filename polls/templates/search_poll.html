@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %} {{block.super}} | Sondaggi attivi {% endblock title %}
+{% block title %} {{block.super}} | Ricerca {% endblock title %}
 
 {% block content %}
 <div class="pcoded-main-container">
@@ -10,7 +10,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h3 class="m-b-10">Sondaggi attivi</h3>
+                            <h3 class="m-b-10">Cerca sondaggi</h3>
                         </div>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><a href="/"><em class="feather icon-home"></em></a></li>
@@ -19,7 +19,9 @@
                 </div>
             </div>
         </div>
-        {% include 'includes/poll_list.html' with object_list=object_list page_obj=page_obj %}
+
+        {{ form }}
+
     </div>
 </div>
 {% endblock content %}

@@ -1,7 +1,13 @@
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 class Poll(models.Model):
+    class PollType(models.IntegerChoices):
+        MAJORITY_JUDGMENT = 1, _("Giudizio maggioritario")
+        SHULTZE_METHOD = 2, _("Metodo Shultze")
+        SINGLE_PREFERENCE = 3, _("Preferenza singola")
+
     title = models.CharField(max_length=100)
     text = models.TextField()
     start = models.DateTimeField(auto_now_add = False, auto_now = False)
