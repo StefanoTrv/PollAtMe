@@ -64,17 +64,16 @@ class CreatePollFormMain(forms.Form):
         self.fields['poll_type'].initial = poll_type
 
         self.__add_alternatives_fields(alternatives, number_of_alternatives)
-        self.effective_alternatives_count = 0
 
     def clean(self):
         form_data = self.cleaned_data
 
-        # rimuovo le alternative vuote
         alternatives = []
         for i in range(1, form_data['hidden_alternative_count'] + 1):
             if form_data[f'alternative{i}'].strip() != "":
                 alternatives.append(form_data[f'alternative{i}'].strip())
             del form_data[f'alternative{i}']
+        
         form_data['hidden_alternative_count'] = len(alternatives)
 
         for i in range(len(alternatives)):
@@ -82,9 +81,6 @@ class CreatePollFormMain(forms.Form):
 
         # errore se non ci sono abbastanza alternative
         if form_data['hidden_alternative_count'] not in range(2, 11):
-            # Quando si usa add_error su un field, questo viene rimosso dai cleaned_data. Utilizziamo un attributo della classe per
-            # salvare il numero effettivo di alternative per essere utilizzato all'esterno
-            self.effective_alternatives_count = len(alternatives)
             self.add_error(
                 'hidden_alternative_count', "Il numero di alternative deve essere compreso tra 2 e 10.")
 

@@ -24,11 +24,11 @@ class Poll(models.Model):
 
     def get_type(self) -> str:
         if hasattr(self, 'singlepreferencepoll'):
-            return 'Preferenza singola'
+            return self.PollType(self.PollType.SINGLE_PREFERENCE).label
         elif hasattr(self, 'majorityopinionpoll'):
-            return 'Giudizio maggioritario'
+            return self.PollType(self.PollType.MAJORITY_JUDGMENT).label
         else:
-            return 'Metodo Shultze'
+            return self.PollType(self.PollType.SHULTZE_METHOD).label
 
     def __str__(self) -> str:
         return self.title
