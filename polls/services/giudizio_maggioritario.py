@@ -58,9 +58,9 @@ class Grade:
 
 ##rappresentazione delle tuple
 class VoteTuple:
-    def __init__(self, choice_id: int, giuduzi_migliori: int, grade: Grade, giudizi_peggiori: int) -> None:
+    def __init__(self, choice_id: int, giudizi_migliori: int, grade: Grade, giudizi_peggiori: int) -> None:
         self._choice_id = choice_id
-        self._giudizi_migliori = giuduzi_migliori
+        self._giudizi_migliori = giudizi_migliori
         self._grade = grade
         self._giudizi_peggiori = giudizi_peggiori
 
@@ -68,7 +68,7 @@ class VoteTuple:
     def choice_id(self) -> int:
         return self._choice_id
     
-    def giuduzi_migliori(self) -> int:
+    def giudizi_migliori(self) -> int:
         return self._giudizi_migliori
     
     def grade(self) -> Grade:
@@ -88,7 +88,7 @@ class VoteTuple:
     def __lt__(self, __o) -> bool:
         if self.grade() == __o.grade():
             if self.grade().positive() and __o.grade().positive(): #true solo se entrambi +
-                return self.giuduzi_migliori() < __o.giuduzi_migliori()
+                return self.giudizi_migliori() < __o.giudizi_migliori()
             if (not self.grade().positive()) and (not __o.grade().positive()): #true solo se entrambi -
                 return self.giudizi_peggiori() > __o.giudizi_peggiori()
         if self.grade() > __o.grade():
@@ -106,7 +106,7 @@ class VoteTuple:
     def __gt__(self, __o) -> bool:
         if (self.grade()) == (__o.grade()):
             if self.grade().positive() and __o.grade().positive(): #true solo se entrambi +
-                return self.giuduzi_migliori() > __o.giuduzi_migliori()
+                return self.giudizi_migliori() > __o.giudizi_migliori()
             if (not self.grade().positive()) and (not __o.grade().positive()): #true solo se entrambi -
                 return self.giudizi_peggiori() < __o.giudizi_peggiori()
         if self.grade() < __o.grade():
@@ -117,7 +117,7 @@ class VoteTuple:
     def __eq__(self, __o) -> bool:
         return (
             self.choice_id() == __o.choice_id() and
-            self.giuduzi_migliori() == __o.giuduzi_migliori() and
+            self.giudizi_migliori() == __o.giudizi_migliori() and
             self.grade() == __o.grade() and
             self.giudizi_peggiori() == __o.giudizi_peggiori()
         )
@@ -127,7 +127,7 @@ class VoteTuple:
 
     def sameScore(self, __o) -> bool:
         return (
-            self.giuduzi_migliori() == __o.giuduzi_migliori() and
+            self.giudizi_migliori() == __o.giudizi_migliori() and
             self.grade() == __o.grade() and
             self.giudizi_peggiori() == __o.giudizi_peggiori()
         )
@@ -268,7 +268,7 @@ def produce_vote_tuple_list(result_query: list) -> list:
         ##se la lista è vuota si crea una tupla nulla
         if len(lista_voti) == 0:
             tupla = VoteTuple(element['choice_id'],
-                giuduzi_migliori = 0,
+                giudizi_migliori = 0,
                 giudizi_peggiori = 0,
                 grade=Grade(vote=1, positive=False))
         else:
@@ -293,7 +293,7 @@ def produce_vote_tuple_list(result_query: list) -> list:
 
             grade = Grade(giudizio_mediano, positive)
             tupla = VoteTuple(element['choice_id'],
-                giuduzi_migliori = giudizi_migliori,
+                giudizi_migliori = giudizi_migliori,
                 giudizi_peggiori = giudizi_peggiori,
                 grade=grade)
             

@@ -15,6 +15,12 @@
   .pill-content > .active {
   height: auto;       /* let the content decide it  */
   } /* bootstrap hack end */
+
+  #textbox {
+    display: flex;
+    justify-content: space-between;
+  }
+
 </style>
 {% endblock stylesheets %}
 
@@ -42,7 +48,7 @@
 
     <!-- [ Riepilogo ] start -->
     {% include 'includes/riepilogo.html'%}
-    <h5 class="mt-4">Numero di preferenze per alternativa</h5>
+    <h5 class="mt-4">Classifica e giudizi per alternativa</h5>
     <hr>
     <div class="row row-cols-md-3 row-cols-sm-1 g-4">
       {% for alternative in classifica %}
@@ -53,10 +59,13 @@
           <div class="card-body text-white">
             <h3 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.place }}° posizione</span></h3>
             <h4 class="card-title text-white">{{ alternative.alternative|upper }}</h4>
-            
           </div>
           <div class="card-footer">
-            <p class="text-white">{{ alternative.judgment|stringformat:'s'}}</p>
+            <div class="row">
+              <div class="col-12 col-lg-4"><p class="text-lg-start text-white"><b>Voto</b>: {{ alternative.judgment.grade|stringformat:'s'}}</p></div>  
+              <div class="col-12 col-lg-4"><p class="text-lg-center text-white"><b>Migliori</b>: {{ alternative.judgment.giudizi_migliori|stringformat:'s'}}</p></div>
+              <div class="col-12 col-lg-4"><p class="text-lg-end text-white"><b>Peggiori</b>: {{ alternative.judgment.giudizi_peggiori|stringformat:'s'}}</p></div>  
+            </div>
           </div>
         </div>
       </div>
@@ -68,7 +77,11 @@
             <h5 class="card-title">{{ alternative.alternative|upper }}</h5>
           </div>
           <div class="card-footer">
-            <p class="card-text">{{ alternative.judgment|stringformat:'s'}}</p>
+            <div class="row">
+              <div class="col-12 col-lg-4"><p class="text-lg-start"><b>Voto</b>: {{ alternative.judgment.grade|stringformat:'s'}}</p></div>  
+              <div class="col-12 col-lg-4"><p class="text-lg-center"><b>Migliori</b>: {{ alternative.judgment.giudizi_migliori|stringformat:'s'}}</p></div>
+              <div class="col-12 col-lg-4"><p class="text-lg-end"><b>Peggiori</b>: {{ alternative.judgment.giudizi_peggiori|stringformat:'s'}}</p></div>  
+            </div>
           </div>
         </div>
       </div>
@@ -80,7 +93,11 @@
             <h5 class="card-title">{{ alternative.alternative|upper }}</h5>
           </div>
           <div class="card-footer">
-            <p class="card-text">{{ alternative.judgment|stringformat:'s'}}</p>
+            <div class="row">
+              <div class="col-12 col-lg-4"><p class="text-lg-start"><b>Voto</b>: {{ alternative.judgment.grade|stringformat:'s'}}</p></div>  
+              <div class="col-12 col-lg-4"><p class="text-lg-center"><b>Migliori</b>: {{ alternative.judgment.giudizi_migliori|stringformat:'s'}}</p></div>
+              <div class="col-12 col-lg-4"><p class="text-lg-end"><b>Peggiori</b>: {{ alternative.judgment.giudizi_peggiori|stringformat:'s'}}</p></div>  
+            </div>
           </div>
         </div>
       </div>

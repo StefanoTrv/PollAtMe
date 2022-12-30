@@ -46,7 +46,7 @@ class GiudizioMaggioritarioTest(TestCase):
 
         ##test che gli attributi funzionino correttamente
         self.assertEqual(tuple_one.choice_id(),1)
-        self.assertEqual(tuple_one.giuduzi_migliori(),25)
+        self.assertEqual(tuple_one.giudizi_migliori(),25)
         self.assertEqual(tuple_one.grade(), Grade(4, True))
         self.assertEqual(tuple_one.giudizi_peggiori(),12)
 
