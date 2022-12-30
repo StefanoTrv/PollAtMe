@@ -22,7 +22,7 @@ class CreatePollViewTest(TestCase):
 
     def test_aggiunta_poll_preferenza_singola(self):
         start_time=timezone.now()
-        end_time=timezone.now()+datetime.timedelta(weeks=1)
+        end_time=timezone.now() + datetime.timedelta(weeks=1)
         data=self.data.copy()
         data['poll_type']='Preferenza singola'
 
@@ -48,7 +48,7 @@ class CreatePollViewTest(TestCase):
         assert_that(last_poll.end).is_equal_to(end_time)
         alternatives = [data['alternative1'], data['alternative2'], data['alternative3']]
         for alternative in last_poll.alternative_set.all():
-            self.assertIn(alternative.text,alternatives)
+            self.assertIn(alternative.text, alternatives)
 
     def test_aggiunta_poll_giudizio_maggioritario(self):
         start_time=timezone.now()

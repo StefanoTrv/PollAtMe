@@ -1,6 +1,6 @@
 from datetime import timedelta
 from django import forms
-from polls.models import SinglePreferencePoll, MajorityOpinionPoll
+from polls.models import Poll
 from django.utils import timezone
 
 # Form per la pagina principale della pagina di creazione di nuovi sondaggi, contenente i dati principali
@@ -51,7 +51,7 @@ class CreatePollFormMain(forms.Form):
         alternatives = kwargs.pop('alternatives', [])
 
         if 'poll' in kwargs:
-            poll = kwargs.pop('poll')
+            poll: Poll = kwargs.pop('poll')
             poll_type = poll.get_type()
             poll_title = poll.title
             poll_text = poll.text
