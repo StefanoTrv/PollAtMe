@@ -1,0 +1,14 @@
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <strong>Attenzione!</strong> Impossibile effettuare la ricerca: uno o più campi del form non sono validi!
+    <ul>
+    {% for field in form %}
+        {% if field.errors %}
+        <ul>
+            <li>{{ field.label }}</li>
+            {{ field.errors }}
+        </ul>
+        {% endif %}
+    {% endfor %}
+    </ul>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>

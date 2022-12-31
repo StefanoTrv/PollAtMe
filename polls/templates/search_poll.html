@@ -20,8 +20,98 @@
             </div>
         </div>
 
-        {{ form }}
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <a href="#!" onclick="bsCollapse.toggle()">Mostra/Nascondi</a>
+                    </div>
+                    <div class="card-body collapse show" id="search-accordion-body">
+                        <form method="POST" class="row g-4 needs-validation" onsubmit="return search(this)" novalidate>
+                            {% csrf_token %}
+                            <div class="col-xl-4 col-sm-12">
+                                <label for="{{ form.title.auto_id }}" class="form-label">{{ form.title.label }}</label>
+                                {{ form.title }}
+                            </div>
+                            <div class="col-xl-4 col-md-6 col-sm-12">
+                                <label for="{{ form.status.auto_id }}" class="form-label">{{ form.status.label }}</label>
+                                {{ form.status }}
+                            </div>
+                            <div class="col-xl-4 col-md-6 col-sm-12">
+                                <label for="{{ form.type.auto_id }}" class="form-label">{{ form.type.label }}</label>
+                                {{ form.type }}
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                <label for="{{ form.range_start_a.auto_id }}" class="form-label">{{ form.range_start_a.label }}</label>
+                                <div class="input-group">
+                                    {{ form.range_start_a }}
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                <label for="{{ form.range_start_b.auto_id }}" class="form-label">{{ form.range_start_a.label }}</label>
+                                <div class="input-group d-flex">
+                                    {{ form.range_start_b }}
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                <label for="{{ form.range_end_a.auto_id }}" class="form-label">{{ form.range_start_a.label }}</label>
+                                <div class="input-group">
+                                    {{ form.range_end_a }}
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                <label for="{{ form.range_end_b.auto_id }}" class="form-label">{{ form.range_start_a.label }}</label>
+                                <div class="input-group">
+                                    {{ form.range_end_b }}
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">Cerca</button>
+                                <button type="reset" class="btn btn-secondary">Reset</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <div id="results">
+        </div>
     </div>
 </div>
 {% endblock content %}
+
+{% block javascripts %}
+<script>
+
+    const accordion = document.querySelector('#search-accordion-body')
+    var bsCollapse = new bootstrap.Collapse(accordion, {
+        toggle: false
+    })
+
+    search = form => {
+        bsCollapse.hide()
+        
+        document.querySelector('#results').innerHTML = 
+            `
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border m-5 text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+            `
+        const data = new FormData(form)
+        const request = new XMLHttpRequest()
+        request.open(form.method, form.action)
+        request.send(data)
+        request.onload = event => {
+            document.querySelector('#results').innerHTML = event.target.responseText
+        }
+        return false
+    }
+
+    validateDate = (day, month, year) => {
+        return (day == "" && month == "" && year == "") || (day != "" && month != "" && year != "")
+    }
+</script>
+{% endblock javascripts %}

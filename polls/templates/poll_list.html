@@ -19,7 +19,8 @@
                 </div>
             </div>
         </div>
-        {% include 'includes/poll_list.html' with object_list=object_list page_obj=page_obj %}
+        {% include 'includes/poll_list.html' with object_list=object_list %}
+        {% include 'includes/pagination.html' with page_obj=page_obj %}
     </div>
 </div>
 {% endblock content %}
