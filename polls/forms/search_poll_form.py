@@ -88,22 +88,37 @@ class SearchPollForm(forms.Form):
         coerce=int,
         label="Tipo di sondaggio",
         required=False,
-        choices=[(0, '-------'), *Poll.PollType.choices],
+        choices=[(None, '-------'), *Poll.PollType.choices],
         widget=forms.Select(
             attrs={'class': 'form-select'},
         ))
 
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+
+        for f_name in self.fields:
+            if self.has_error(f_name):
+                widget_class =  self.fields[f_name].widget.attrs['class']
+                self.fields[f_name].widget.attrs['class'] = f'{widget_class} is-invalid'
+
+    def range_group(self):
+        return [self[name] for name in filter(lambda x: x.startswith('range'), self.fields)]
+
     def clean(self) -> Dict[str, Any]:
         form_data: dict = self.cleaned_data
 
-        if form_data['range_start_a'] is not None and form_data['range_start_b'] is not None and form_data['range_start_a'] >= form_data['range_start_b']:
+        range_start_a = form_data.get('range_start_a', None)
+        range_start_b = form_data.get('range_start_b', None)
+        range_end_a = form_data.get('range_end_a', None)
+        range_end_b = form_data.get('range_end_b', None)
+        if range_start_a is not None and range_start_b is not None and range_start_a >= range_start_b:
             self.add_error('range_start_a', 'La data di inizio è successiva alla data di fine')
 
-        if form_data['range_end_a'] is not None and form_data['range_end_b'] is not None and form_data['range_end_a'] >= form_data['range_end_b']:
+        if range_end_a is not None and range_end_b is not None and range_end_a >= range_end_b:
             self.add_error('range_end_a', 'La data di inizio è successiva alla data di fine')
 
         def convert_to_datetime(key: str):
-            if form_data[key] != None:
+            if form_data.get(key, None) != None:
                 saved_date: date = form_data[key]
                 form_data[key] = datetime(saved_date.year, saved_date.month, saved_date.day, tzinfo=timezone.utc)
         convert_to_datetime('range_start_a')

@@ -34,6 +34,6 @@ class SearchView(FormView):
         })
     
     def form_invalid(self, form: SearchPollForm) -> http.HttpResponse:
-        return render(self.request, 'includes/error-alert.html', {
+        return render(self.request, 'includes/search_form.html', {
             'form': form
         })

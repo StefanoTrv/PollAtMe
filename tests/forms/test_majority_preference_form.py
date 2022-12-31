@@ -1,7 +1,6 @@
 from django.test import TestCase
 from polls.forms import MajorityOpinionForm, MajorityPreferenceFormSet
-from polls.models import MajorityOpinionPoll, MajorityOpinionJudgement, MajorityPreference, Alternative
-from assertpy import assert_that #type:ignore
+from polls.models import MajorityOpinionPoll, MajorityOpinionJudgement, Alternative
 from django import forms
 from django.db.models import QuerySet
 

@@ -35,3 +35,61 @@ class IndexViewTest(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertNotContains(resp, "Vota")
         self.assertNotContains(resp, "Risultati")
+
+
+class SearchPollViewTest(TestCase):
+
+    url = reverse('polls:search_poll')
+
+    def test_pagina_default(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'search_poll.html')
+        self.assertTemplateUsed(response, 'includes/poll_list.html')
+        self.assertTemplateUsed(response, 'includes/search_form.html')
+    
+    def test_form_valido(self):
+        response = self.client.post(self.url, {
+            'title': '',
+            'status': '',
+            'type': '',
+            'range_start_a_day': '',
+            'range_start_a_month': '',
+            'range_start_a_year': '',
+            'range_start_b_day': '',
+            'range_start_b_month': '',
+            'range_start_b_year': '',
+            'range_end_a_day': '',
+            'range_end_a_month': '',
+            'range_end_a_year': '',
+            'range_end_b_day': '',
+            'range_end_b_month': '',
+            'range_end_b_year': '',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateNotUsed(response, 'search_poll.html')
+        self.assertTemplateUsed(response, 'includes/poll_list.html')
+        self.assertTemplateNotUsed(response, 'includes/search_form.html')
+    
+    def test_form_non_valido(self):
+        response = self.client.post(self.url, {
+            'title': '',
+            'status': '',
+            'type': '',
+            'range_start_a_day': '1',
+            'range_start_a_month': '',
+            'range_start_a_year': '',
+            'range_start_b_day': '',
+            'range_start_b_month': '',
+            'range_start_b_year': '',
+            'range_end_a_day': '',
+            'range_end_a_month': '',
+            'range_end_a_year': '',
+            'range_end_b_day': '',
+            'range_end_b_month': '',
+            'range_end_b_year': '',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateNotUsed(response, 'search_poll.html')
+        self.assertTemplateNotUsed(response, 'includes/poll_list.html')
+        self.assertTemplateUsed(response, 'includes/search_form.html')
