@@ -27,6 +27,17 @@ class GiudizioMaggioritarioTest(TestCase):
 
         self.assertNotEqual(grade_one,grade_two)
 
+    #test della classe grade
+    def test_grade_as_string(self):
+        #creiamo un po'di grade
+        grade_one = Grade(3, True) #voto 3+
+        grade_two = Grade(3, False) #voto 3-
+        grade_three = Grade(2, True) #voto 2+
+
+        self.assertEqual('SUFFICIENTE +', str(grade_one))
+        self.assertEqual('SUFFICIENTE -', str(grade_two))
+        self.assertEqual('SCARSO +', str(grade_three))
+
     #test della classe VoteTuple
     def test_tuple_ordering(self):
 
@@ -35,7 +46,7 @@ class GiudizioMaggioritarioTest(TestCase):
 
         ##test che gli attributi funzionino correttamente
         self.assertEqual(tuple_one.choice_id(),1)
-        self.assertEqual(tuple_one.giuduzi_migliori(),25)
+        self.assertEqual(tuple_one.giudizi_migliori(),25)
         self.assertEqual(tuple_one.grade(), Grade(4, True))
         self.assertEqual(tuple_one.giudizi_peggiori(),12)
 
@@ -97,6 +108,12 @@ class GiudizioMaggioritarioTest(TestCase):
         tuple_two =  VoteTuple(2, 25, Grade(4, False), 35)
         self.assertEqual(lista_tuple[1], tuple_two)
 
+    def test_tuple_as_string(self):
+        #creiamo un po'di grade
+        tuple_one = VoteTuple(1, 25, Grade(4, True), 12) #voto (25, MB+, 12)
+        self.assertEqual('(25, BUONO +, 12)', str(tuple_one))
+
+
     def test_calculation_from_database(self):
         giudizio_maggioritario = GiudizioMaggioritario(1)
         winner = giudizio_maggioritario.get_winner_tuple()
@@ -107,13 +124,25 @@ class GiudizioMaggioritarioTest(TestCase):
         #la classifica per il poll 1 dovrebbe essere {'C' : 1, 'B' : 3 'A' : 2}
         giudizio_maggioritario = GiudizioMaggioritario(1)
         classifica = giudizio_maggioritario.get_classifica()
-        expected_classifica = [{'alternative' : 'C', 'place' : 1},{'alternative' : 'A', 'place' : 2},{'alternative' : 'B', 'place' : 3}]
+
+        #dobbiamo verificare che le tuple siano corrette
+        A_tuple = VoteTuple(1, 1, Grade(3, False), 1)
+        B_tuple = VoteTuple(2, 2, Grade(2, True), 0)
+        C_tuple = VoteTuple(3, 2, Grade(3, True), 1)
+
+        expected_classifica = [{'alternative' : 'C', 'place' : 1, 'judgment' : C_tuple},{'alternative' : 'A', 'place' : 2, 'judgment' : A_tuple},{'alternative' : 'B', 'place' : 3, 'judgment' : B_tuple}]
+        
         self.assertEqual(classifica, expected_classifica)
 
     ##testiamo che per il sondaggio numero 2 venga ritornata la classifica corretta anche se votata solamente da una persona
     def test_one_preference(self):
         giudizio_maggioritario = GiudizioMaggioritario(2)
         classifica = giudizio_maggioritario.get_classifica()
-        expected_classifica = [{'alternative' : 'Bella', 'place' : 1},{'alternative' : 'Meno bella', 'place' : 2},{'alternative' : 'Ancora meno bella', 'place' : 3},{'alternative' : 'Brutta', 'place' : 4}]
+
+        expected_classifica = [{'alternative' : 'Bella', 'place' : 1, 'judgment' :  VoteTuple(4, 0, Grade(5, False), 0)}
+                              ,{'alternative' : 'Meno bella', 'place' : 2, 'judgment' :  VoteTuple(5, 0, Grade(4, False), 0)}
+                              ,{'alternative' : 'Ancora meno bella', 'place' : 3, 'judgment' :  VoteTuple(6, 0, Grade(3, False), 0)}
+                              ,{'alternative' : 'Brutta', 'place' : 4, 'judgment' :  VoteTuple(7, 0, Grade(1, False), 0)}]
+                              
         self.assertEqual(classifica, expected_classifica)
 
