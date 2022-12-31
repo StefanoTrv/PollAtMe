@@ -45,7 +45,7 @@ class SearchPollViewTest(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'search_poll.html')
-        self.assertTemplateUsed(response, 'includes/poll_list.html')
+        self.assertTemplateNotUsed(response, 'includes/poll_list.html')
         self.assertTemplateUsed(response, 'includes/search_form.html')
     
     def test_form_valido(self):
