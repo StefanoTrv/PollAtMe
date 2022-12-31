@@ -48,7 +48,13 @@
 
     <!-- [ Riepilogo ] start -->
     {% include 'includes/riepilogo.html'%}
-    <h5 class="mt-4">Classifica e giudizi per alternativa</h5>
+    <h5 class="mt-4">
+      Classifica e giudizi per alternativa 
+      <button type="button" class="btn  btn-icon btn-outline-info" data-bs-toggle="modal" data-bs-target="#modal-majority-explanation">
+        <i class="feather icon-info">
+        </i>
+      </button>
+    </h5>
     <hr>
     <div class="row row-cols-md-3 row-cols-sm-1 g-4">
       {% for alternative in classifica %}
@@ -153,6 +159,43 @@
     </div>
   </div>
 </div>
+
+
+<div class="modal fade" id="modal-majority-explanation" tabindex="-1" aria-labelledby="modal-majority-explanation" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modal-return-home-label">Il giudizio maggioritario</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <p>Il votante esprime un giudizio su una scala a 5 o 7 valori che
+            vanno da Ottimo a Pessimo, per ognuna delle opzioni. L’ordinamento finale è dato dal calcolo del
+            giudizio maggioritario secondo il seguente algoritmo:
+            <ul>
+              <li>Si calcola il grado maggioritario di ogni opzione che è dato dal peggiore dei valori mediani.</li>
+              <li>Aggiungo un segno + se il numero di votanti che hanno espresso un giudizio
+                strettamente migliore sono più di coloro che hanno espresso un giudizio strettamente
+                peggiore del grado maggioritario.</li>
+              <li> Scrivo una tripla data da (#giudizi migliori, grado maggioritario con segno, #giudizi
+                peggiori)</li>
+              <li> Le opzioni vengono ordinate secondo il grado maggioritario
+                <ul>
+                  <li>i) A parità di grado, il segno + prevale su -</li>
+                  <li>ii) A parità di segno + prevale l’opzione con un numero di giudizi migliori superiore</li>
+                  <li>iii) A parità di segno - prevale l’opzione con un numero di giudizi peggiori inferiore</li>
+                </ul>
+              </li>
+            </ul>
+          </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock content %}
 
 
