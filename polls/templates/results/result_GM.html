@@ -169,21 +169,21 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-          <p>Il votante esprime un giudizio su una scala a 5 o 7 valori che
-            vanno da Ottimo a Pessimo, per ognuna delle opzioni. L’ordinamento finale è dato dal calcolo del
+          <p>Il votante esprime un <b>giudizio</b> su una scala a 5 o 7 valori che
+            vanno da <b>Ottimo</b> a <b>Pessimo</b> per ognuna delle opzioni. L’<b>ordinamento</b> finale è dato dal calcolo del
             giudizio maggioritario secondo il seguente algoritmo:
             <ul>
-              <li>Si calcola il grado maggioritario di ogni opzione che è dato dal peggiore dei valori mediani.</li>
-              <li>Aggiungo un segno + se il numero di votanti che hanno espresso un giudizio
-                strettamente migliore sono più di coloro che hanno espresso un giudizio strettamente
-                peggiore del grado maggioritario.</li>
-              <li> Scrivo una tripla data da (#giudizi migliori, grado maggioritario con segno, #giudizi
-                peggiori)</li>
+              <li>Si calcola il <b>grado maggioritario</b> di ogni opzione che è dato dal <b>peggiore dei valori mediani</b>.</li>
+              <li>Aggiungo un <b>segno +</b> se il numero di votanti che hanno espresso un <b>giudizio
+                strettamente migliore</b> sono <b>più</b> di coloro che hanno espresso un <b>giudizio strettamente</b>
+                peggiore del grado maggioritario, aggiungo un <b>segno -</b> in caso contrario.</li>
+              <li> Scrivo una tripla data da <b>(#giudizi migliori, grado maggioritario con segno, #giudizi
+                peggiori)</b></li>
               <li> Le opzioni vengono ordinate secondo il grado maggioritario
                 <ul>
-                  <li>i) A parità di grado, il segno + prevale su -</li>
-                  <li>ii) A parità di segno + prevale l’opzione con un numero di giudizi migliori superiore</li>
-                  <li>iii) A parità di segno - prevale l’opzione con un numero di giudizi peggiori inferiore</li>
+                  <li>A <b>parità di grado</b>, il segno + prevale su -</li>
+                  <li>A <b>parità di segno +</b> prevale l’opzione con un <b>numero di giudizi migliori superiore</b></li>
+                  <li>A <b>parità di segno -</b> prevale l’opzione con un <b>numero di giudizi peggiori inferiore</b></li>
                 </ul>
               </li>
             </ul>
