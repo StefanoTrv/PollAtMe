@@ -10,22 +10,23 @@ class ActivePollsService:
     """Service to get all active polls from database"""
 
     def __init__(self) -> None:
-        ids = [
+        self.__polls = Poll.objects.filter(id__in=[
             poll.id
             for poll in Poll.objects.annotate(num_alternatives=Count('alternative')).filter(num_alternatives__gt=0)
             if not poll.is_not_started()
-        ]
-        self.__polls = Poll.objects.filter(id__in=ids)
+        ])
 
-    def get_ordered_queryset(self, by_field: str = 'title', asc: bool = False):
+    def get_ordered_queryset(self, by_field: str = 'title', desc: bool = False):
         """
-        Return active polls as ordered queryset by given field
+        Return active polls as ordered list by given field, with active polls before ended polls
         Default: descendending order by poll title
         """
-        if asc:
-            return self.__polls.order_by("-end", by_field)
-        else:
-            return self.__polls.order_by("-end", f'-{by_field}')
+        active_polls = [poll for poll in self.__polls if poll.is_active()]
+        ended_polls = [poll for poll in self.__polls if poll.is_ended()]
+        return [
+            *sorted(active_polls, key=lambda p: getattr(p, by_field), reverse=desc), 
+            *sorted(ended_polls, key=lambda p: getattr(p, by_field), reverse=desc)
+        ]
 
 
 class SearchPollQueryBuilder:

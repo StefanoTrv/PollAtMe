@@ -4,36 +4,61 @@ from django.core.exceptions import ObjectDoesNotExist
 from polls.exceptions import PollWithoutAlternativesException
 from polls.models import Poll
 from assertpy import assert_that #type: ignore
+from django.utils import timezone
+from datetime import timedelta
+from django.db.models import Q
 
 class TestActivePollsService(TestCase):
     
-    fixtures: list[str] = ['polls.json']
+    def setUp(self) -> None:
+        polls = [
+            {'title': 'A', 'text': 'A', 'start': timezone.now() - timedelta(weeks=2), 'end': timezone.now() - timedelta(weeks=1)},  # concluso   
+            {'title': 'B', 'text': 'B', 'start': timezone.now() - timedelta(weeks=2), 'end': timezone.now() - timedelta(weeks=1)},  # concluso
+            {'title': 'C', 'text': 'C', 'start': timezone.now() - timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2)},  # attivo
+            {'title': 'D', 'text': 'D', 'start': timezone.now() - timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2)},  # attivo
+            {'title': 'E', 'text': 'E', 'start': timezone.now() + timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2)},  # non ancora attivo
+            {'title': 'F', 'text': 'F', 'start': timezone.now(), 'end': timezone.now()},  # senza opzioni
+        ]
+
+        for p_dict in polls:
+            Poll.objects.create(**p_dict)
+        
+        for poll in Poll.objects.filter(~Q(title='F')):
+            poll.alternative_set.create(text="Prova1")
+            poll.alternative_set.create(text="Prova2")
 
     def test_sondaggi_ordine_crescente(self):
-        queryset = ActivePollsService().get_ordered_queryset(asc=True)
-        excluded = Poll.objects.filter(id__in = [2, 3])
+        queryset = ActivePollsService().get_ordered_queryset()
+        excluded = Poll.objects.filter(Q(title__in = ['E', 'F']))
         
         # Esclude sondaggi senza alternative o non ancora attivi 
-        self.assertNotIn(excluded, queryset)
-
+        for poll in excluded:
+            assert_that(queryset).does_not_contain(poll)
+        
         # Mostra prima i sondaggi attivi
         assert_that(queryset).is_sorted(lambda x: x.is_active(), reverse=True)
         assert_that([poll for poll in queryset if poll.is_active()]).is_sorted(lambda x: x.title)
         assert_that([poll for poll in queryset if not poll.is_active()]).is_sorted(lambda x: x.title)
+        
     
     def test_sondaggi_ordine_decrescente(self):
-        queryset = ActivePollsService().get_ordered_queryset(asc=False)
-        excluded = Poll.objects.filter(id__in = [2, 3])
+        queryset = ActivePollsService().get_ordered_queryset(desc=True)
+        excluded = Poll.objects.filter(Q(title__in = ['E', 'F']))
         
         # Esclude sondaggi senza alternative o non ancora attivi 
-        self.assertNotIn(excluded, queryset)
-
+        for poll in excluded:
+            assert_that(queryset).does_not_contain(poll)
+        
         # Mostra prima i sondaggi attivi
         assert_that(queryset).is_sorted(lambda x: x.is_active(), reverse=True)
         assert_that([poll for poll in queryset if poll.is_active()]).is_sorted(lambda x: x.title, reverse=True)
         assert_that([poll for poll in queryset if not poll.is_active()]).is_sorted(lambda x: x.title, reverse=True)
-        
-
+    
+    def test_order_by_text(self):
+        queryset = ActivePollsService().get_ordered_queryset(by_field='text')
+        assert_that(queryset).is_sorted(lambda x: x.is_active(), reverse=True)
+        assert_that([poll for poll in queryset if poll.is_active()]).is_sorted(lambda x: x.text)
+        assert_that([poll for poll in queryset if not poll.is_active()]).is_sorted(lambda x: x.text)
 
 class TestSearchPollService(TestCase):
     
