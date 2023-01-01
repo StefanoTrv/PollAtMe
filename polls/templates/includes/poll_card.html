@@ -1,15 +1,15 @@
 <div class="card mb-3" style="text-align:center">
     {% if poll.is_active %}
     <span class="badge rounded-pill position-absolute top-0 start-50 translate-middle bg-success">
-        Votazioni in corso
+        Votazione in corso
     </span>
     {% elif poll.is_ended %}
     <span class="badge rounded-pill position-absolute top-0 start-50 translate-middle bg-danger">
-        Votazioni concluse
+        Votazione conclusa
     </span>
     {% elif poll.is_not_started %}
     <span class="badge rounded-pill position-absolute top-0 start-50 translate-middle bg-warning">
-        Votazioni non avviate
+        Votazione non avviata
     </span>
     {% endif %}
     <img class="img-fluid card-img-top" src="https://appsrv1-147a1.kxcdn.com/gradient/images/slider/img-slide-3.jpg" alt="Card Image cap">
