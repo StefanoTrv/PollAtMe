@@ -8,7 +8,7 @@
             <h6 class="text-white">Info sondaggio:</h6>
             <h2 class="text-end text-white"><em class="feather icon-info float-start"></em><span>{{poll.title}}</span>
             </h2>
-            <p class="m-b-0">Testo<span class="float-end">{{poll.text}}</span></p>
+            <p class="m-b-0"><span class="float-end">{{poll.text}}</span></p>
           </div>
         </div>
       </div>
@@ -19,9 +19,9 @@
         <div class="card bg-c-blue order-card">
           <div class="card-body">
             <h6 class="text-white">Data di apertura del sondaggio:</h6>
-            <h2 class="text-end text-white"><em class="feather icon-calendar float-start"></em><span>{{poll.start}}</span>
+            <h2 class="text-end text-white"><em class="feather icon-calendar float-start"></em><span>{{poll.start | date:"d/m/Y h:i"}}</span>
             </h2>
-            <p class="m-b-0">Data di chiusura<span class="float-end">{{poll.end}}</span></p>
+            <p class="m-b-0">Data di chiusura<span class="float-end">{{poll.end |  date:"d/m/Y h:i"}}</span></p>
           </div>
         </div>
       </div>
