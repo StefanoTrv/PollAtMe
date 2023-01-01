@@ -47,11 +47,20 @@ class Grade:
     def __eq__(self, __o) -> bool:
         return (self.vote() == __o.vote()) and (self.positive() == __o.positive())
 
+    def __str__(self):
+
+        vote_string =  MajorityOpinionJudgement.JudgeType(self._vote).name
+        sign = '-'
+        if self._positive:
+            sign = '+'
+
+        return vote_string + ' ' + sign
+
 ##rappresentazione delle tuple
 class VoteTuple:
-    def __init__(self, choice_id: int, giuduzi_migliori: int, grade: Grade, giudizi_peggiori: int) -> None:
+    def __init__(self, choice_id: int, giudizi_migliori: int, grade: Grade, giudizi_peggiori: int) -> None:
         self._choice_id = choice_id
-        self._giudizi_migliori = giuduzi_migliori
+        self._giudizi_migliori = giudizi_migliori
         self._grade = grade
         self._giudizi_peggiori = giudizi_peggiori
 
@@ -59,7 +68,7 @@ class VoteTuple:
     def choice_id(self) -> int:
         return self._choice_id
     
-    def giuduzi_migliori(self) -> int:
+    def giudizi_migliori(self) -> int:
         return self._giudizi_migliori
     
     def grade(self) -> Grade:
@@ -79,7 +88,7 @@ class VoteTuple:
     def __lt__(self, __o) -> bool:
         if self.grade() == __o.grade():
             if self.grade().positive() and __o.grade().positive(): #true solo se entrambi +
-                return self.giuduzi_migliori() < __o.giuduzi_migliori()
+                return self.giudizi_migliori() < __o.giudizi_migliori()
             if (not self.grade().positive()) and (not __o.grade().positive()): #true solo se entrambi -
                 return self.giudizi_peggiori() > __o.giudizi_peggiori()
         if self.grade() > __o.grade():
@@ -97,7 +106,7 @@ class VoteTuple:
     def __gt__(self, __o) -> bool:
         if (self.grade()) == (__o.grade()):
             if self.grade().positive() and __o.grade().positive(): #true solo se entrambi +
-                return self.giuduzi_migliori() > __o.giuduzi_migliori()
+                return self.giudizi_migliori() > __o.giudizi_migliori()
             if (not self.grade().positive()) and (not __o.grade().positive()): #true solo se entrambi -
                 return self.giudizi_peggiori() < __o.giudizi_peggiori()
         if self.grade() < __o.grade():
@@ -108,14 +117,17 @@ class VoteTuple:
     def __eq__(self, __o) -> bool:
         return (
             self.choice_id() == __o.choice_id() and
-            self.giuduzi_migliori() == __o.giuduzi_migliori() and
+            self.giudizi_migliori() == __o.giudizi_migliori() and
             self.grade() == __o.grade() and
             self.giudizi_peggiori() == __o.giudizi_peggiori()
         )
     
+    def __str__(self):
+        return'(' + str(self._giudizi_migliori) + ', ' + str(self._grade) + ', ' + str(self._giudizi_peggiori) + ')'
+
     def sameScore(self, __o) -> bool:
         return (
-            self.giuduzi_migliori() == __o.giuduzi_migliori() and
+            self.giudizi_migliori() == __o.giudizi_migliori() and
             self.grade() == __o.grade() and
             self.giudizi_peggiori() == __o.giudizi_peggiori()
         )
@@ -178,7 +190,7 @@ class GiudizioMaggioritario:
                     offset = 0
             
             current_alternative_name = Alternative.objects.get(id = ordered_tuple_list[index].choice_id()).text
-            classifica.append({'alternative' : current_alternative_name, 'place' : place})                 
+            classifica.append({'alternative' : current_alternative_name, 'place' : place, 'judgment' : ordered_tuple_list[index]})                 
             index += 1
             offset += 1
 
@@ -256,7 +268,7 @@ def produce_vote_tuple_list(result_query: list) -> list:
         ##se la lista è vuota si crea una tupla nulla
         if len(lista_voti) == 0:
             tupla = VoteTuple(element['choice_id'],
-                giuduzi_migliori = 0,
+                giudizi_migliori = 0,
                 giudizi_peggiori = 0,
                 grade=Grade(vote=1, positive=False))
         else:
@@ -281,7 +293,7 @@ def produce_vote_tuple_list(result_query: list) -> list:
 
             grade = Grade(giudizio_mediano, positive)
             tupla = VoteTuple(element['choice_id'],
-                giuduzi_migliori = giudizi_migliori,
+                giudizi_migliori = giudizi_migliori,
                 giudizi_peggiori = giudizi_peggiori,
                 grade=grade)
             
@@ -306,7 +318,7 @@ class MajorityJudgementService:
     """
 
     #ritorna un dict {'classifica' : classifica}, dove classifica è una lista di dict
-    #{'alternative': alternativa, 'place' : posizione}
+    #{'alternative': alternativa, 'place' : posizione. 'vote' : voto}
     def get_classifica(self):
         classifica = self.__get_classifica()
         context = {'classifica' : classifica}    
