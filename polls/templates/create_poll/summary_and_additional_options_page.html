@@ -22,65 +22,66 @@
             </div>
         </div>
         <div class="page-block">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row">
+            <div class="row">
+                <div class="col-sm-12 col-xl-6">
+                    <div class="card">
+                        <div class="card-body">
                             <div class="col-sm-12">
-                                <h5> Controlla i dati che hai inserito </h3>
+                                <h4> Controlla i dati che hai inserito </h4>
                             </div>
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-sm">
-                                <h6> Titolo </h6>
-                                <hr>
-                                {{ title }}
+                            <hr>
+                            <div class="row">
+                                <p> Titolo </p>
+                                <h5>{{ title }}</h5>
                             </div>
-                            <div class="col-sm">
-                                <h6> Metodo </h6> 
-                                <hr>
-                                {{ type }}
+                            <br>
+                            <div class="row">
+                                <p> Metodo </p> 
+                                <h5>{{ type }}</h5>
                             </div>
-                            <div class="col-sm">
-                                <h6> Testo </h6>
-                                <hr>
-                                {{ text }}
+                            <br>
+                            <div class="row">
+                                <p>Testo</p>
+                                <h5>{{ text }}</h5>
                             </div>
-                            <div class="col-sm">
-                                <h6> Alternative </h6>
-                                <hr>
+                            <br>
+                            <div class="row">
+                                <p> Alternative </p>
                                 {% for alternative in alternatives %}
-                                <li>{{alternative}}</li>
-                            {% endfor %}
+                                    <h5><li>{{alternative}}</li></h5>
+                                {% endfor %}
                             </div>
                         </div>
-                        <hr>
-                        <h5>Opzioni aggiuntive</h5>
-                        <form id="additional-options" method="post">
-                            {% csrf_token %}
-                            {{ form }}
-                        </form>
-                        <br>
-                    <!--- Modal -->
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-sm-4" style="text-align:left">
-                                <form method="post">
-                                    {% csrf_token %}
-                                    <input type="submit" name="go_back" value="Torna indietro" class="btn btn-primary"/>
-                                </form>
-                            </div>
-                            <div class="col-sm-4" style="text-align:center">
+                    </div>
+                </div>
+                <div class="col-sm-12 col-xl-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4> Opzioni avanzate </h4>
+                            <hr>
+                            {{ form.media }}
+                            <form id="additional-options" method="post">
+                                {% csrf_token %}
+                                {{ form }}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>       
+            <!--- Modal -->
+            <div class="form-group">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="col-sm-12">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <input type="submit" name="go_back" value="Torna indietro" class="btn btn-primary"/>
                                 <button type="button" class="btn btn-block btn-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal">Torna alla home</button>
-                            </div>
-                            <div class="col-sm-4" style="text-align:right">
                                 <input type="submit" form="additional-options" class="btn btn-primary" value="Salva"/> 
                             </div>
                         </div>
-                    </div>               
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>
