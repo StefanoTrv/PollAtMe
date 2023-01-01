@@ -3,6 +3,8 @@ from django import forms
 from polls.models import SinglePreferencePoll, MajorityOpinionPoll
 from django.utils import timezone
 
+from bootstrap_datepicker_plus.widgets import DateTimePickerInput
+
 # Form per la pagina principale della pagina di creazione di nuovi sondaggi, contenente i dati principali
 
 
@@ -114,15 +116,20 @@ class CreatePollFormMain(forms.Form):
 
 # Form per la seconda pagina della creazione di nuovi sondaggi, contenente opzioni secondarie
 class CreatePollAdditionalOptions(forms.Form):
-
     start_time = forms.DateTimeField(
         label='Data inizio votazioni',
-        initial=timezone.now()
+        initial=timezone.now(),
+        widget=DateTimePickerInput(
+            options={"format":"DD-MM-YYYY HH:MM:SS"}
+        )
     )
 
     end_time = forms.DateTimeField(
         label='Data fine votazioni',
-        initial=timezone.now() + timedelta(weeks=1)
+        initial=timezone.now() + timedelta(weeks=1),
+        widget=DateTimePickerInput(
+            options={"format":"DD-MM-YYYY HH:MM:SS"}
+        )
     )  # durata di default: 1 settimana
 
     # Può ricevere i parametri 'start_time', 'end_time' e 'poll'. Se quest'ultimo è presente, sovrascrive tutti i precedenti.
