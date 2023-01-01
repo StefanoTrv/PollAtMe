@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %} {{block.super}} | Crea nuovo sondaggio {% endblock title %}
+{% block title %} {{block.super}} | {{ page_title }} {% endblock title %}
 
 {% block content %}
 <div class="pcoded-main-container">
@@ -10,11 +10,11 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h3 class="m-b-10"> Crea un sondaggio </h3>
+                            <h3 class="m-b-10"> {{ header }} </h3>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/"><em class="feather icon-home"></em></a></li>
-                            <li class="breadcrumb-item"><a href="#"> Crea un sondaggio </a></li>
+                            <li class="breadcrumb-item"><em class="feather icon-home"></em></li>
+                            <li class="breadcrumb-item"> {{ header }} </li>
                         </ul>
                     </div>
                 </div>
@@ -51,7 +51,7 @@
                 <div class="col-sm-12 col-xl-6">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="card-title">Alternative (min 2, max 10)</h4>
+                            <h4 class="card-title">Alternative (minimo 2, massimo 10)</h4>
                             {% if errors.hidden_alternative_count %}
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                 <strong>Attenzione!</strong> {{ errors.hidden_alternative_count.0 }}

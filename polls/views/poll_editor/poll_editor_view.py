@@ -31,13 +31,14 @@ def can_edit_poll(poll: Poll):
 
 def alternatives_as_list(**kwargs):
     return [
-        field for k, field in kwargs.items() if k.startswith('alternative')
+        field for key, field in kwargs.items() if key.startswith('alternative')
     ]
 
 # View per la pagina principale della creazione o modifica del sondaggio, in cui si scelgono i parametri fondamentali.
 # Il parametro poll è specificato quando si intende modificare un sondaggio esistente.
 def poll_editor_main(request: HttpRequest, poll = None):
-    action = "new" if poll is None else "edit"
+    action = 'new' if poll is None else 'edit'
+    url = 'create_poll/main_page_create.html' if poll is None else 'create_poll/main_page_edit.html'
 
     # if this is a POST request we need to process the form data
     errors = None
@@ -63,8 +64,7 @@ def poll_editor_main(request: HttpRequest, poll = None):
             form = CreatePollFormMain()
         else:#se stiamo modificando un sondaggio esistente, precompiliamo i campi
             form=CreatePollFormMain(poll=poll)
-
-    return render(request, 'create_poll/main_page.html', {'form': form, 'errors': errors})
+    return render(request, url, {'form': form, 'errors': errors})
 
 #View per la seconda pagina della creazione o modifica di un sondaggio, che mostra i dati inseriti prima e consente di scegliere opzioni aggiuntive secondarie.
 # Il parametro poll è specificato quando si intende modificare un sondaggio esistente.
@@ -82,7 +82,7 @@ def poll_editor_summary_and_additional_options(request: HttpRequest, poll: Poll|
             )
         session.poll_page_index = 1
         request.session[action] = session.__dict__
-        return render(request, 'create_poll/main_page.html', {'form': form}) #mostra la pagina precedente
+        return render(request, 'create_poll/main_page_create.html' if poll is None else 'create_poll/main_page_edit.html', {'form': form}) #mostra la pagina precedente
     #richiesta di salvare il sondaggio
     elif request.method == 'POST':
         # create a form instance and populate it with data from the request:
@@ -136,7 +136,7 @@ def poll_editor_summary_and_additional_options(request: HttpRequest, poll: Poll|
         else:
             form = CreatePollAdditionalOptions(poll=poll) # type: ignore
 
-    return render(request, 'create_poll/summary_and_additional_options_page.html', {
+    return render(request, 'create_poll/summary_and_options_create.html' if poll is None else 'create_poll/summary_and_options_edit.html', {
         'form': form,
         'type': session.poll_type,
         'title': session.poll_title,
