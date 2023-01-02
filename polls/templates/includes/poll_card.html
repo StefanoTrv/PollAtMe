@@ -30,7 +30,7 @@
         <a class="btn btn-block btn-warning mb-4" href={% url 'polls:edit_poll' id=poll.id %} data-bs-toggle="tooltip" data-bs-placement="top" title="Modifica il sondaggio">
             <em class="feather icon-edit-2"></em>
         </a>
-        <button type="button" class="btn btn-block btn-danger mb-4" data-bs-toggle="modal" data-bs-target="%modalDeletePollConfirm" data-bs-poll="{{ poll.id }}">
+        <button type="button" class="btn btn-block btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#modalDeletePollConfirm" data-bs-poll="{{ poll.id }}">
             <em class="feather icon-trash-2"></em>
         </button>
         {% endif %}
