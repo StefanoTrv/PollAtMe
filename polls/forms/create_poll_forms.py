@@ -114,17 +114,17 @@ class CreatePollFormMain(forms.Form):
 class CreatePollAdditionalOptions(forms.Form):
     start_time = forms.DateTimeField(
         label='Data inizio votazioni',
-        initial=timezone.now(),
+        initial=timezone.now() + timedelta(minutes=15),
         widget=DateTimePickerInput(
-            options={"format":"DD-MM-YYYY HH:MM:SS"}
+            options={"format": "DD-MM-YYYY HH:mm"}
         )
     )
 
     end_time = forms.DateTimeField(
         label='Data fine votazioni',
-        initial=timezone.now() + timedelta(weeks=1),
         widget=DateTimePickerInput(
-            options={"format":"DD-MM-YYYY HH:MM:SS"}
+            range_from="start_time",
+            options={"format": "DD-MM-YYYY HH:mm"}
         )
     )  # durata di default: 1 settimana
 

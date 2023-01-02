@@ -1,6 +1,11 @@
 {% extends 'layouts/base.html' %}
+{% load django_bootstrap5 %}
 
 {% block title %} {{block.super}} | Completa la creazione {% endblock title %}
+
+{% block stylesheets %}
+{{ form.media.css }}
+{% endblock stylesheets %}
 
 {% block content %}
 <div class="pcoded-main-container">
@@ -48,7 +53,7 @@
                             <div class="row">
                                 <p> Alternative </p>
                                 {% for alternative in alternatives %}
-                                    <h5><li>{{alternative}}</li></h5>
+                                    <h5><li>{{ alternative }}</li></h5>
                                 {% endfor %}
                             </div>
                         </div>
@@ -59,10 +64,9 @@
                         <div class="card-body">
                             <h4> Opzioni avanzate </h4>
                             <hr>
-                            {{ form.media }}
                             <form id="additional-options" method="post">
                                 {% csrf_token %}
-                                {{ form }}
+                                {% bootstrap_form form %}
                             </form>
                         </div>
                     </div>
@@ -91,5 +95,7 @@
 {% endblock content %}
 
 {% block javascripts %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.slim.min.js"></script>
+{{ form.media.js }}
 {% include 'includes/lock_sidebar.html' with id_modal='exampleModal' %}
 {% endblock javascripts %}
