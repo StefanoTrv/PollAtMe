@@ -10,18 +10,10 @@ class TestSearchForm(TestCase):
             'title': '',
             'status': '',
             'type': '',
-            'range_start_a_day': '',
-            'range_start_a_month': '',
-            'range_start_a_year': '',
-            'range_start_b_day': '',
-            'range_start_b_month': '',
-            'range_start_b_year': '',
-            'range_end_a_day': '',
-            'range_end_a_month': '',
-            'range_end_a_year': '',
-            'range_end_b_day': '',
-            'range_end_b_month': '',
-            'range_end_b_year': '',
+            'range_start_a': '',
+            'range_start_b': '',
+            'range_end_a': '',
+            'range_end_b': '',
         })
 
         assert_that(form.is_valid()).is_true()
@@ -31,18 +23,10 @@ class TestSearchForm(TestCase):
             'title': '',
             'status': '',
             'type': '',
-            'range_start_a_day': '1',
-            'range_start_a_month': '',
-            'range_start_a_year': '',
-            'range_start_b_day': '1',
-            'range_start_b_month': '',
-            'range_start_b_year': '',
-            'range_end_a_day': '1',
-            'range_end_a_month': '',
-            'range_end_a_year': '',
-            'range_end_b_day': '1',
-            'range_end_b_month': '',
-            'range_end_b_year': '',
+            'range_start_a': '05/01/0000',
+            'range_start_b': '05/01/0000',
+            'range_end_a': '05/01/0000',
+            'range_end_b': '05/01/0000',
         })
 
         assert_that(form.is_valid()).is_false()
@@ -52,22 +36,14 @@ class TestSearchForm(TestCase):
         assert_that(form.has_error('range_end_b')).is_true()
     
     def test_wrong_range(self):
-        form = SearchPollForm({           
+        form = SearchPollForm({
             'title': '',
             'status': '',
             'type': '',
-            'range_start_a_day': '31',
-            'range_start_a_month': '12',
-            'range_start_a_year': '2022',
-            'range_start_b_day': '1',
-            'range_start_b_month': '1',
-            'range_start_b_year': '2022',
-            'range_end_a_day': '31',
-            'range_end_a_month': '12',
-            'range_end_a_year': '2022',
-            'range_end_b_day': '1',
-            'range_end_b_month': '1',
-            'range_end_b_year': '2022',
+            'range_start_a': '05/01/2023',
+            'range_start_b': '02/01/2023',
+            'range_end_a': '05/01/2023',
+            'range_end_b': '02/01/2023',
         })
 
         assert_that(form.is_valid()).is_false()

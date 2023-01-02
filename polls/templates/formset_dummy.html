@@ -1,4 +1,5 @@
 {% extends 'layouts/base_form.html' %}
+{% load django_bootstrap5 %}
 
 {% block breadcrumb %}
 <li class="breadcrumb-item"><a href="#!">{{ poll.title }}</a></li>
@@ -15,7 +16,7 @@
     </div>
 </div>
 
-<form class="needs-validation" method="post" novalidate>
+<form method="post">
     {% csrf_token %}
     {{ form.management_form }}
     <div class="row">
@@ -23,19 +24,20 @@
         <div class="col-sm-12 col-md-6">
             <div class="card">
                 <div class="card-body">
-                    {% for error in f.grade.errors %}
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <div>{{ error }}</div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    {% endfor %}
                     <p class="fs-4 p-2">{{ f.grade.label }}</p>
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-center flex-md-fill">
+                    <div class="d-grid gap-2 d-xl-flex justify-content-xl-center flex-xl-fill {% if f.errors %}is-invalid{% endif %}">
                         {% for radio in f.grade %}
                         {{ radio.tag }}
                         <label class="{% if f.errors %}btn btn-outline-danger is-invalid{% else %}btn btn-outline-secondary{% endif %} w-100" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
                         {% endfor %}
                     </div>
+                    {% if f.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in f.grade.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
