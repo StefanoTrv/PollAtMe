@@ -1,4 +1,5 @@
 {% extends 'layouts/base.html' %}
+{% load django_bootstrap5 %}
 
 {% block title %} {{block.super}} | {{ page_title }} {% endblock title %}
 
@@ -22,29 +23,12 @@
         </div>
         <form method="post">
             {% csrf_token %}
-            {{ form.hidden_alternative_count }}
             <div class="row">
                 <div class="col-sm-12 col-xl-6">
                     <div class="card">
                         <div class="card-body">
                             <h4 class="card-title">Informazioni generali</h4>
-                            {% if errors.poll_title %}
-                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                    <strong>Attenzione!</strong> {{ errors.poll_title.0 }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
-                            {% endif %}
-                            <div class="mb-3">{{ form.poll_title }}</div>
-
-                            <div class="mb-3">{{ form.poll_type }}</div>
-
-                            {% if errors.poll_text %}
-                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                    <strong>Attenzione!</strong> {{ errors.poll_text.0 }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
-                            {% endif %}
-                            <div class="mb-3">{{ form.poll_text }}</div>
+                            {% bootstrap_form form %}
                         </div>
                     </div>
                 </div>
@@ -52,18 +36,17 @@
                     <div class="card">
                         <div class="card-body">
                             <h4 class="card-title">Alternative (minimo 2, massimo 10)</h4>
-                            {% if errors.hidden_alternative_count %}
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <strong>Attenzione!</strong> {{ errors.hidden_alternative_count.0 }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                            {% endif %}
+                            {{ formset.management_form }}
                             <div id="alternatives-rows">
-                                {% for field in form.alternatives_group %}
-                                <div class="input-group mb-3">
-                                    {{ field }}
+                                {% for f in formset %}
+                                <div id="form-{{forloop.counter0}}" class="input-group mb-3 {% if f.errors %}is-invalid border border-danger rounded{% endif %}{% if f.DELETE.value %}d-none{% endif %}">
+                                    {% for field in f %}
+                                        {{ field }}
+                                    {% endfor %}
                                     <input type="button" class="btn btn-danger" value="-" onclick="remove_row(this)"/>
+                                    
                                 </div>
+                                {% bootstrap_form_errors f %}
                                 {% endfor %}
                             </div>
                             <div class="text-center">
@@ -76,7 +59,7 @@
                     <div class="card text-center">
                       <div class="card-body">
                         <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modal-return-home">Torna alla home</button>
-                        <button type="submit" class="btn btn-primary">Prossimo</button>
+                        <button type="submit" name="summary" class="btn btn-primary">Prossimo</button>
                       </div>
                     </div>
                 </div>
@@ -85,47 +68,45 @@
     </div>
 </div>
 
+<div id='empty-form' class="input-group mb-3 d-none">
+    {{ formset.empty_form }}
+    <input type="button" class="btn btn-danger" value="-" onclick="remove_row(this)"/>
+</div>
 {% include 'includes/modal.html' with id_modal='modal-return-home' %}
 
 {% endblock content %}
 
 {% block javascripts %}
 <script>
-    let form_count_field = document.getElementById("{{form.hidden_alternative_count.auto_id }}");
-    let form_count = form_count_field.value
-    let alternatives_rows = document.getElementById("alternatives-rows")
-    let prototype = alternatives_rows.children[0].cloneNode(true)
-    const regex = /\d+$/g
+    const totalForms = document.getElementById('id_form-TOTAL_FORMS')
+    const alternativesRows = document.querySelector("#alternatives-rows")
+    let totalFormsCount = totalForms.value
+    const prototype = document.getElementById("empty-form")
+    const regex = /__prefix__/g
 
     function add_alternative() {
-        if (alternatives_rows.children.length >= 10)
+        if (alternativesRows.querySelectorAll('div:not(.d-none)').length >= 10)
             return
+
+        const copyEmptyForm = prototype.cloneNode(true)
+        copyEmptyForm.innerHTML = copyEmptyForm.innerHTML.replace(regex, totalFormsCount)
+        copyEmptyForm.setAttribute('id', `form-${totalFormsCount}`)
+        copyEmptyForm.classList.remove('d-none')
         
-        form_count++
-        console.log(form_count)
-
-        let new_alternative = prototype.cloneNode(true)
-
-        let input = new_alternative.children[0]
-        input.name = input.name.replace(regex, form_count)
-        input.id = input.id.replace(regex, form_count)
-        input.value = ""
-
-        let button = new_alternative.children[1]
-
-        alternatives_rows.append(new_alternative)
-        form_count_field.value = form_count;
+        totalForms.setAttribute('value', ++totalFormsCount)
+        alternativesRows.append(copyEmptyForm)
     }
 
     function remove_row(button) {
-        let parent_div = button.parentNode
-        if (alternatives_rows.children.length <= 2) {
-            parent_div.children[0].value = ""
+        let parentDiv = button.parentNode
+        if (alternativesRows.querySelectorAll('div:not(.d-none)').length <= 2) {
+            parentDiv.querySelector('input[type="text"]').value = ""
             return
         }
-
-        if (parent_div.parentNode) {
-            parent_div.parentNode.removeChild(parent_div)
+        else {
+            const id = parentDiv.id
+            parentDiv.classList.add('d-none')
+            document.querySelector(`#id_${id}-DELETE`).value = true
         }
     }
 </script>

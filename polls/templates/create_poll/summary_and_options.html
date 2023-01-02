@@ -1,6 +1,11 @@
 {% extends 'layouts/base.html' %}
+{% load django_bootstrap5 %}
 
 {% block title %} {{block.super}} | {{ page_title }} {% endblock title %}
+
+{% block stylesheets %}
+{{ form.media.css }}
+{% endblock stylesheets %}
 
 {% block content %}
 <div class="pcoded-main-container">
@@ -20,63 +25,47 @@
                 </div>
             </div>
         </div>
-        <div class="page-block">
-            <div class="col-md-12">
-                <div class="card">
+        <form method="post" id="additional-options">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-sm-12 col-xl-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Controlla i dati che hai inserito</h4>
+                            {% bootstrap_field form.title %}
+                            {% bootstrap_field form.default_type %}
+                            {% bootstrap_field form.text %}
+
+                            <div class="mb-3">
+                                <label class="form-label">Alternative</label>
+                                <ul class="list-group">
+                                    {% for alt in alternatives %}
+                                    <li class="list-group-item">{{ alt }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-xl-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Opzioni avanzate</h4>
+                            {% bootstrap_field form.start %}
+                            {% bootstrap_field form.end %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>   
+        <!--- Modal -->
+        <div class="form-group">
+            <div class="col-sm-12">
+                <div class="card text-center">
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <h5> Controlla i dati del sondaggio </h3>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-sm">
-                                <h6> Titolo </h6>
-                                <hr>
-                                {{ title }}
-                            </div>
-                            <div class="col-sm">
-                                <h6> Metodo </h6> 
-                                <hr>
-                                {{ type }}
-                            </div>
-                            <div class="col-sm">
-                                <h6> Testo </h6>
-                                <hr>
-                                {{ text }}
-                            </div>
-                            <div class="col-sm">
-                                <h6> Alternative </h6>
-                                <hr>
-                                {% for alternative in alternatives %}
-                                <li>{{alternative}}</li>
-                            {% endfor %}
-                            </div>
-                        </div>
-                        <hr>
-                        <h5>Opzioni aggiuntive</h5>
-                        <form id="additional-options" method="post">
-                            {% csrf_token %}
-                            {{ form }}
-                        </form>
-                        <br>
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-sm-4" style="text-align:left">
-                                <form method="post">
-                                    {% csrf_token %}
-                                    <input type="submit" name="go_back" value="Torna indietro" class="btn btn-secondary"/>
-                                </form>
-                            </div>
-                            <div class="col-sm-4" style="text-align:center">
-                                <input type="submit" form="additional-options" class="btn btn-primary" value="Salva"/> 
-                            </div>
-                            <div class="col-sm-4" style="text-align:right">
-                                <button type="button" class="btn btn-block btn-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal">Torna alla home</button>
-                            </div>
-                        </div>
-                    </div>               
+                        <input type="submit" form="go_back-form" name="go_back" value="Torna indietro" class="btn btn-primary"/>
+                        <button type="button" class="btn btn-block btn-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal">Torna alla home</button>
+                        <input type="submit" form="additional-options" name="save" class="btn btn-primary" value="Salva"/> 
                     </div>
                 </div>
             </div>
@@ -84,5 +73,14 @@
     </div>
 </div>
 
+<form method="POST" id="go_back-form" class="d-none">
+    {% csrf_token %}
+</form>
 {% include 'includes/modal.html' with id_modal='exampleModal' %}
 {% endblock content %}
+
+{% block javascripts %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.slim.min.js"></script>
+{{ form.media.js }}
+{% include 'includes/lock_sidebar.html' with id_modal='exampleModal' %}
+{% endblock javascripts %}

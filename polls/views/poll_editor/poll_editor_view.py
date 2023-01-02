@@ -1,8 +1,10 @@
 from django.core.exceptions import PermissionDenied
+from django.forms import modelformset_factory, TextInput
 from django.http import HttpRequest, HttpResponseRedirect
 from django.shortcuts import render
-from polls.forms import CreatePollAdditionalOptions, CreatePollFormMain
-from polls.models import Poll
+
+from polls.forms import PollFormAdditionalOptions, PollFormMain, BaseAlternativeFormSet
+from polls.models import Poll, Alternative
 from polls.services import (add_majority_judgment_poll,
                             add_single_preference_poll, update_poll)
 
@@ -23,11 +25,8 @@ class PollSessionTemp:
             return poll_editor_summary_and_additional_options(request=request, poll=poll)
 
 def can_edit_poll(poll: Poll):
-    if poll.is_active():
-        raise PermissionDenied("Non è possibile modificare il sondaggio perché è in corso la votazione")
+    pass
     
-    if poll.is_ended():
-        raise PermissionDenied("Questo sondaggio è concluso e non può essere modificato")
 
 def alternatives_as_list(**kwargs):
     return [
@@ -39,32 +38,25 @@ def alternatives_as_list(**kwargs):
 def poll_editor_main(request: HttpRequest, poll = None):
     action = 'new' if poll is None else 'edit'
     url = 'create_poll/main_page_create.html' if poll is None else 'create_poll/main_page_edit.html'
-
     # if this is a POST request we need to process the form data
-    errors = None
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
-        form = CreatePollFormMain(request.POST, count = request.POST.get('hidden_alternative_count'))
+        form = PollFormMain(request.POST)
+        formset = AlternativeFormSet(request.POST)
         # check whether it's valid:
-        if form.is_valid():
+        if form.is_valid() and formset.is_valid():
             session = PollSessionTemp(**form.cleaned_data, poll_page_index=2)
             request.session[action] = session.__dict__
             return HttpResponseRedirect(request.get_full_path()) #redirect alla stessa pagina per forzare il caricamento della prossima schermata
-        else:
-            # renderizza un nuovo form con gli stessi dati, ma con il numero corretto di alternative (problema del form bounded)
-            errors = form.errors
-            form=CreatePollFormMain(
-                poll_title=form.cleaned_data.get('poll_title',''),
-                poll_text=form.cleaned_data.get('poll_text',''),
-                poll_type=form.cleaned_data['poll_type'],
-                alternatives=alternatives_as_list(**form.cleaned_data)
-            )
     else:
-        if poll == None:#vuoto se stiamo creando un nuovo sondaggio
-            form = CreatePollFormMain()
+        if action == 'new':#vuoto se stiamo creando un nuovo sondaggio
+            form = PollFormMain()
+            formset = AlternativeFormSet(queryset=Poll.objects.none())
+
         else:#se stiamo modificando un sondaggio esistente, precompiliamo i campi
-            form=CreatePollFormMain(poll=poll)
-    return render(request, url, {'form': form, 'errors': errors})
+            form = PollFormMain(poll.__dict__)
+            formset = AlternativeFormSet(queryset=poll.alternative_set.all())
+    return render(request, url, {'form': form, 'formset': formset})
 
 #View per la seconda pagina della creazione o modifica di un sondaggio, che mostra i dati inseriti prima e consente di scegliere opzioni aggiuntive secondarie.
 # Il parametro poll è specificato quando si intende modificare un sondaggio esistente.
@@ -74,7 +66,7 @@ def poll_editor_summary_and_additional_options(request: HttpRequest, poll: Poll|
 
     #richiesta di tornare alla pagina precedente
     if request.method == 'POST' and 'go_back' in request.POST:
-        form = CreatePollFormMain(
+        form = PollFormMain(
             poll_title  = session.poll_title,
             poll_text   = session.poll_text,
             poll_type   = session.poll_type,
@@ -86,7 +78,7 @@ def poll_editor_summary_and_additional_options(request: HttpRequest, poll: Poll|
     #richiesta di salvare il sondaggio
     elif request.method == 'POST':
         # create a form instance and populate it with data from the request:
-        form = CreatePollAdditionalOptions(request.POST) # type: ignore
+        form = PollFormAdditionalOptions(request.POST) # type: ignore
         # check whether it's valid:
         if form.is_valid():
             if poll is not None and poll.get_type() == session.poll_type :#aggiornamento senza cambiare tipo di poll
@@ -132,9 +124,9 @@ def poll_editor_summary_and_additional_options(request: HttpRequest, poll: Poll|
     # if a GET (or any other method) we'll create a form
     else:
         if poll == None:
-            form = CreatePollAdditionalOptions() # type: ignore
+            form = PollFormAdditionalOptions() # type: ignore
         else:
-            form = CreatePollAdditionalOptions(poll=poll) # type: ignore
+            form = PollFormAdditionalOptions(poll=poll) # type: ignore
 
     return render(request, 'create_poll/summary_and_options_create.html' if poll is None else 'create_poll/summary_and_options_edit.html', {
         'form': form,

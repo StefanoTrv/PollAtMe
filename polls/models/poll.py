@@ -10,6 +10,8 @@ class Poll(models.Model):
 
     title = models.CharField(max_length=100)
     text = models.TextField()
+    default_type = models.IntegerField(choices=PollType.choices, default=PollType.MAJORITY_JUDGMENT)
+    
     start = models.DateTimeField(auto_now_add = False, auto_now = False)
     end = models.DateTimeField(auto_now_add = False, auto_now = False)
 
