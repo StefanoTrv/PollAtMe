@@ -24,6 +24,6 @@
         var button = event.relatedTarget
         var pollId = button.getAttribute('data-bs-poll')
         var form = confirmModal.querySelector('#deletePollForm')
-        form.action = form.action.replace(/\/\d+$/gm, `/${pollId}`)
+        form.action = form.action.replace(/\/\d+\/$/gm, `/${pollId}`)
     })
 </script>
