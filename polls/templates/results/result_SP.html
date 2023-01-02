@@ -37,36 +37,36 @@
           <div class="card-body text-white">
             <h3 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.position }}° posizione</span></h3>
             <h4 class="card-title text-white">{{ alternative.text|upper }}</h4>
-            <h4 class="card-text text-white">{{ alternative.count }}</h4>
-          </div>
-          <div class="card-footer">
-            <p class="text-white">{{ alternative.percentage }}%</p>
+            <div class="row">
+              <div class="col h4 card-text text-white text-start">{{ alternative.count }}<span class="fw-normal"> {%if alternative.count == 1%}voto{%else%}voti{%endif%}</span></div>
+              <div class="col h4 fw-normal text-white text-end">({{ alternative.percentage }}%)</div>
+            </div>
           </div>
         </div>
       </div>
-      {% elif alternative.position == 1 and tot_votes > 0 %}
+      {% elif alternative.position == 1 %}
       <div class="col">
         <div class="card bg-warning h-100">
           <div class="card-body">
             <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.position }}° posizione</span></h4>
             <h5 class="card-title">{{ alternative.text|upper }}</h5>
-            <h5 class="card-text">{{ alternative.count }}</h5>
-          </div>
-          <div class="card-footer">
-            <p class="card-text">{{ alternative.percentage }}%</p>
+            <div class="row">
+              <div class="col h5 card-text text-start">{{ alternative.count }}<span class="fw-normal"> {%if alternative.count == 1%}voto{%else%}voti{%endif%}</span></div>
+              <div class="col h5 fw-normal text-end">({{ alternative.percentage }}%)</div>
+            </div>
           </div>
         </div>
       </div>
       {% else %}
       <div class="col">
-        <div class="card border border-dark h-100">
+        <div class="card h-100">
           <div class="card-body">
             <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.position }}° posizione</span></h4>
             <h5 class="card-title">{{ alternative.text|upper }}</h5>
-            <h5 class="card-text">{{ alternative.count }}</h5>
-          </div>
-          <div class="card-footer">
-            <p class="card-text">{{ alternative.percentage }}%</p>
+            <div class="row">
+              <div class="col h5 card-text text-start">{{ alternative.count }}<span class="fw-normal"> {%if alternative.count == 1%}voto{%else%}voti{%endif%}</span></div>
+              <div class="col h5 fw-normal text-end">({{ alternative.percentage }}%)</div>
+            </div>
           </div>
         </div>
       </div>
@@ -96,6 +96,11 @@
             <div id="pie-chart"></div>
           </div>
         </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col text-center">
+        <a href="{% url 'polls:index' %}"><button type="button" class="btn btn-block btn-primary">Torna alla home</button></a>
       </div>
     </div>
     <!-- [ Main Content ] end -->
@@ -146,7 +151,7 @@
   },
   yaxis: {
     title: {
-      text: '# preferenze'
+      text: 'numero di preferenze'
     }
   },
   fill: {

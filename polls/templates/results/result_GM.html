@@ -58,7 +58,7 @@
     <hr>
     <div class="row row-cols-md-3 row-cols-sm-1 g-4">
       {% for alternative in classifica %}
-      <!-- {{ alternative.alternative}}-{{ alternative.place }} -->
+      <!-- Commento per i test: {{ alternative.alternative}}-{{ alternative.place }} -->
       {% if alternative.place == 1 and winners|length == 1 %}
       <div class="col-md-12">
         <div class="card bg-success">
@@ -93,7 +93,7 @@
       </div>
       {% else %}
       <div class="col">
-        <div class="card border border-dark h-100">
+        <div class="card h-100">
           <div class="card-body">
             <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.place }}° posizione</span></h4>
             <h5 class="card-title">{{ alternative.alternative|upper }}</h5>
@@ -158,6 +158,11 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col text-center">
+        <a href="{% url 'polls:index' %}"><button type="button" class="btn btn-block btn-primary">Torna alla home</button></a>
       </div>
     </div>
   </div>
@@ -301,7 +306,7 @@
     },
     yaxis: {
       title: {
-        text: '#giudizi'
+        text: 'numero di giudizi'
       }
     },
     fill: {
