@@ -34,9 +34,10 @@
                 </div>
                 <div class="col-sm-12 col-xl-6">
                     <div class="card">
-                        <div class="card-body">
+                        <div class="card-body {% if formset.non_form_errors %}border border-danger rounded{% endif %}">
                             <h4 class="card-title">Alternative (minimo 2, massimo 10)</h4>
                             {{ formset.management_form }}
+                            {% bootstrap_formset_errors formset %}
                             <div id="alternatives-rows">
                                 {% for f in formset %}
                                 <div id="form-{{forloop.counter0}}" class="input-group mb-3 {% if f.errors %}is-invalid border border-danger rounded{% endif %}{% if f.DELETE.value %}d-none{% endif %}">

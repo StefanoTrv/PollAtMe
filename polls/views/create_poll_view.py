@@ -11,6 +11,7 @@ from polls.forms import PollFormAdditionalOptions, PollFormMain, BaseAlternative
 
 ALTERNATIVE_FORMSET = BaseAlternativeFormSet.get_formset_class()
 
+
 def select_action(request: HttpRequest, poll=None):
     action = 'create' if poll is None else 'edit'
     queryset_alternatives = Poll.objects.none(
@@ -28,7 +29,8 @@ def select_action(request: HttpRequest, poll=None):
 
 def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Optional[Poll] = None):
     form = PollFormMain(request.POST, instance=poll)
-    formset_alternatives: BaseAlternativeFormSet = ALTERNATIVE_FORMSET(request.POST, queryset=alternatives)
+    formset_alternatives: BaseAlternativeFormSet = ALTERNATIVE_FORMSET(
+        request.POST, queryset=alternatives)
 
     if form.is_valid() and formset_alternatives.is_valid():
         poll = form.save(commit=False)
@@ -50,23 +52,34 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
 def go_back(request: HttpRequest, action: str, alternatives: QuerySet, poll: Optional[Poll] = None):
     return render(request, f'create_poll/main_page_{action}.html', {
         'form': PollFormMain(request.session[action]['poll'], instance=poll),
-        'formset':ALTERNATIVE_FORMSET(request.session[action]['alternatives'], queryset=alternatives)
+        'formset': ALTERNATIVE_FORMSET(request.session[action]['alternatives'], queryset=alternatives)
     })
-
 
 def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Optional[Poll] = None):
     form = PollFormAdditionalOptions(request.POST, instance=poll)
-    formset_alternatives: BaseAlternativeFormSet = ALTERNATIVE_FORMSET(request.session[action]['alternatives'], queryset=alternatives)
+    formset_alternatives: BaseAlternativeFormSet = ALTERNATIVE_FORMSET(
+        request.session[action]['alternatives'], queryset=alternatives)
 
     if form.is_valid() and formset_alternatives.is_valid():
-        form.save()
-        formset_alternatives.save()
+        saved_poll = form.save()
+
+        formset_alternatives.save(commit=False)
+        for alt in formset_alternatives.new_objects:
+            alt.poll = saved_poll
+            alt.save()
+        
+        for alt in formset_alternatives.changed_objects:
+            alt[0].save()
+        
+        for alt in formset_alternatives.deleted_objects:
+            alt.delete()
+
         return render(request, 'create_poll_success.html')
     else:
         render(request, f'create_poll/summary_and_options_{action}.html', {
-        'form': PollFormAdditionalOptions(instance=poll),
-        'alternatives': formset_alternatives.get_alternatives_text_list()
-    })
+            'form': PollFormAdditionalOptions(instance=poll),
+            'alternatives': formset_alternatives.get_alternatives_text_list()
+        })
 
 
 class CreatePollView(TemplateView):

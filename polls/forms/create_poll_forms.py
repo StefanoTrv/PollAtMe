@@ -21,19 +21,17 @@ class BaseAlternativeFormSet(forms.BaseModelFormSet):
         cleaned_data = self.get_not_empty_alternatives()
         data = {
             'form-TOTAL_FORMS': len(cleaned_data),	
-            'form-INITIAL_FORMS': '0',
+            'form-INITIAL_FORMS': self.data['form-INITIAL_FORMS'],
             'form-MIN_NUM_FORMS': '2',
             'form-MAX_NUM_FORMS':'10',
         }
 
         for i, alt in enumerate(cleaned_data):
             obj = alt.get('id', None)
-            poll = alt.get('poll', None)
             data = data | {
                 f'form-{i}-text': alt['text'],
-                f'form-{i}-id': obj.id if obj is not None else "",
-                f'form-{i}-poll': poll.id if poll is not None else "",
-                f'form-{i}-DELETE': alt['DELETE'],
+                f'form-{i}-id': obj.id if obj is not None else '',
+                f'form-{i}-DELETE': 'true' if alt['DELETE'] else '',
             }
 
         return data
@@ -48,18 +46,21 @@ class BaseAlternativeFormSet(forms.BaseModelFormSet):
         return forms.modelformset_factory(
             model=Alternative,
             formset=BaseAlternativeFormSet,
-            fields=['text', 'poll'],
+            fields=['text'],
             widgets={
-                'text': forms.TextInput(attrs={'class': 'form-control', 'placeholder': "inserisci il testo dell'alternativa"}),
-                'poll': forms.HiddenInput()
+                'text': forms.TextInput(attrs={'class': 'form-control', 'placeholder': "Inserisci il testo dell'alternativa"}),
             },
             labels={
                 'text': ""
             },
+            error_messages={
+                'too_few_forms': 'Inserisci almeno %(num)d alternative valide per proseguire'
+            },
             can_order=False, can_delete=True,
             extra=0,
             min_num=2, max_num=10,
-            validate_max=True, validate_min=True)
+            validate_max=True, validate_min=True,
+        )
 
 
 class PollFormMain(forms.ModelForm):
@@ -115,6 +116,7 @@ class PollFormAdditionalOptions(forms.ModelForm):
         
         initials = {
             'start': timezone.now() + timedelta(minutes=15),
+            'end': timezone.now() + timedelta(weeks=1)
         }
 
     def __init__(self, *args, **kwargs) -> None:
@@ -124,58 +126,20 @@ class PollFormAdditionalOptions(forms.ModelForm):
             if f_name in PollFormMain.Meta.fields:
                 self.fields[f_name].widget.attrs['readonly'] = True
 
-    # start_time = forms.DateTimeField(
-    #     label='Data inizio votazioni',
-    #     initial=timezone.now() + timedelta(minutes=15),
-    #     widget=DateTimePickerInput(
-    #         options={"format": "DD-MM-YYYY HH:mm"}
-    #     )
-    # )
+    def clean(self):
+        form_data = self.cleaned_data
 
-    # end_time = forms.DateTimeField(
-    #     label='Data fine votazioni',
-    #     widget=DateTimePickerInput(
-    #         range_from="start_time",
-    #         options={"format": "DD-MM-YYYY HH:mm"}
-    #     )
-    # )  # durata di default: 1 settimana
+        # errore se il tempo di inizio è precedente ad adesso, con una precisione di 15 minuti
+        if form_data['start'] + timedelta(minutes=15) < timezone.now():
+            self.add_error('start', 'Il momento di inizio delle votazioni deve essere successivo ad adesso.')
 
-    # # Può ricevere i parametri 'start_time', 'end_time' e 'poll'. Se quest'ultimo è presente, sovrascrive tutti i precedenti.
-    # def __init__(self, *args, **kwargs):
-    #     start_time = kwargs.pop('start_time', None)
-    #     end_time = kwargs.pop('end_time', None)
+        # errore se il tempo di fine è precedente a cinque minuti da adesso
+        if form_data['end'] < timezone.now() + timedelta(minutes=5):
+            self.add_error('end', 'Il momento di fine delle votazioni deve essere almeno cinque minuti da adesso.')
+        
+        if form_data['end'] <= form_data['start']:
+            self.add_error('start', 'Il momento di fine delle votazioni deve essere successivo a quello di inizio.')
+        elif form_data['end'] < form_data['start'] + timedelta(minutes=5):
+            self.add_error('end', 'Il momento di fine delle votazioni deve essere almeno cinque minuti dopo quello di inizio.')
 
-    #     poll = kwargs.pop('poll', None)
-    #     if poll != None:
-    #         start_time = poll.start
-    #         end_time = poll.end
-
-    #     super(PollFormAdditionalOptions, self).__init__(*args, **kwargs)
-
-    #     if start_time != None:
-    #         self.fields['start_time'].initial = start_time
-
-    #     if end_time != None:
-    #         self.fields['end_time'].initial = end_time
-
-    # def clean(self):
-    #     form_data = self.cleaned_data
-
-    #     # errore se il tempo di inizio è precedente ad adesso, con una precisione di 15 minuti
-    #     if form_data['start_time'] + timedelta(minutes=15) < timezone.now():
-    #         self.add_error(
-    #             None, 'Il momento di inizio delle votazioni deve essere successivo ad adesso.')
-    #     # errore se il tempo di fine è precedente a cinque minuti da adesso
-    #     if form_data['end_time'] < timezone.now() + timedelta(minutes=5):
-    #         self.add_error(
-    #             None, 'Il momento di fine delle votazioni deve essere almeno cinque minuti da adesso.')
-    #     # errore se il tempo di fine è precedente al tempo di inizio
-    #     if form_data['end_time'] < form_data['start_time']:
-    #         self.add_error(
-    #             None, 'Il momento di fine delle votazioni deve essere successivo a quello di inizio.')
-    #     # errore se non ci sono almeno cinque minuti di differenza tra i due tempi
-    #     elif form_data['end_time'] < form_data['start_time'] + timedelta(minutes=5):
-    #         self.add_error(
-    #             None, 'Il momento di fine delle votazioni deve essere almeno cinque minuti dopo quello di inizio.')
-
-    #     return form_data
+        return form_data
