@@ -41,6 +41,26 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="modalDeletePollConfirm" tabindex="-1" aria-labelledby="modalDeletePollConfirmLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Attenzione!</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <p> Vuoi veramente cancellare il sondaggio?</p>
+        </div>
+        <div class="modal-footer">
+            <form method="POST" action="{% url 'polls:delete_poll' pk=0 %}" id="deletePollForm">
+                {% csrf_token %}
+                <input type="submit" class="btn btn-danger" value="Elimina">
+            </form>
+        </div>
+      </div>
+    </div>
+</div>
 {% endblock content %}
 
 {% block javascripts %}
@@ -85,5 +105,14 @@
         request.onload = loaded
         return false
     }
+
+
+    const confirmModal = document.getElementById('modalDeletePollConfirm')
+    confirmModal.addEventListener('show.bs.modal', event => {
+        const button = event.relatedTarget
+        const pollId = button.getAttribute('data-bs-poll')
+        const form = confirmModal.querySelector('#deletePollForm')
+        form.action = form.action.replace(/\/\d+$/gm, `/${pollId}`)
+    })
 </script>
 {% endblock javascripts %}
