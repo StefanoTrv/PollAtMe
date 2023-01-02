@@ -1,48 +1,22 @@
+{% load django_bootstrap5 %}
 <form method="POST" class="row g-4 needs-validation" onsubmit="return search(this)" novalidate>
     {% csrf_token %}
     <div class="col-xl-4 col-sm-12">
-        <label for="{{ form.title.auto_id }}" class="form-label">{{ form.title.label }}</label>
-        {{ form.title }}
-
-        {% if form.title.errors %}
-        <div class="invalid-feedback">
-            {{ form.title.errors }}
-        </div>
-        {% endif %}
+        {% bootstrap_field form.title placeholder="" %}
     </div>
     <div class="col-xl-4 col-md-6 col-sm-12">
-        <label for="{{ form.status.auto_id }}" class="form-label">{{ form.status.label }}</label>
-        {{ form.status }}
-        {% if form.status.errors %}
-        <div class="invalid-feedback">
-            {{ form.status.errors }}
-        </div>
-        {% endif %}
+        {% bootstrap_field form.status %}
     </div>
     <div class="col-xl-4 col-md-6 col-sm-12">
-        <label for="{{ form.type.auto_id }}" class="form-label">{{ form.type.label }}</label>
-        {{ form.type }}
-        {% if form.type.errors %}
-        <div class="invalid-feedback">
-            {{ form.type.errors }}
-        </div>
-        {% endif %}
+        {% bootstrap_field form.type %}
     </div>
     {% for field in form.range_group %}
     <div class="col-md-6 col-sm-12 ">
-        <label for="{{ field.auto_id }}" class="form-label">{{ field.label }}</label>
-        <div class="input-group d-flex has-validation {% if field.errors %}is-invalid{% endif %}">
-            {{ field }}
-        </div>
-        {% if field.errors %}
-        <div class="invalid-feedback">
-            {{ field.errors }}
-        </div>
-        {% endif %}
+        {% bootstrap_field field placeholder="" %}
     </div>
     {% endfor %}
     <div class="col-12">
-        <button type="submit" class="btn btn-primary">Cerca</button>
-        <button type="reset" class="btn btn-secondary">Reset</button>
+        {% bootstrap_button button_type="submit" content="Cerca" %}
+        {% bootstrap_button button_type="reset" content="Reset" button_class="btn-secondary" %}
     </div>
 </form>

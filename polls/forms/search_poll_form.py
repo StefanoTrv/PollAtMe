@@ -5,69 +5,59 @@ from polls.models import Poll
 from polls.services import SearchPollQueryBuilder
 from django.utils.translation import gettext_lazy as _
 from datetime import date, datetime, timezone
-
-
-MONTHS = {
-    1: _("Gennaio"),
-    2: _("Febbraio"),
-    3: _("Marzo"),
-    4: _("Aprile"),
-    5: _("Maggio"),
-    6: _("Giugno"),
-    7: _("Luglio"),
-    8: _("Agosto"),
-    9: _("Settembre"),
-    10: _("Ottobre"),
-    11: _("Novembre"),
-    12: _("Dicembre"),
-}
+from bootstrap_datepicker_plus import widgets
 
 ERROR_MESSAGES = {
     'invalid': 'La data inserita non è valida'
 }
 
+FORMAT = "DD/MM/YYYY"
+
 class SearchPollForm(forms.Form):
     
     title = forms.CharField(
         label='Titolo',
-        required=False,
-        widget=forms.TextInput(
-            attrs={'class': 'form-control'}
-        )
+        required=False
     )
-    range_start_a = forms.DateField(
+    range_start_a = forms.DateTimeField(
         label='Data inizio sondaggio da',
         required=False,
-        widget=forms.SelectDateWidget(
-            attrs={'class': 'form-select'},
-            months=MONTHS
+        widget=widgets.DatePickerInput(
+            options={
+                'format': FORMAT,
+            },
         ),
         error_messages=ERROR_MESSAGES
     )
-    range_start_b = forms.DateField(
+    range_start_b = forms.DateTimeField(
         label='Data inizio sondaggio a',
         required=False,
-        widget=forms.SelectDateWidget(
-            attrs={'class': 'form-select'},
-            months=MONTHS
+        widget=widgets.DatePickerInput(
+            options={
+                'format': FORMAT,
+            },
+            range_from='range_start_a'
         ),
         error_messages=ERROR_MESSAGES
     )
-    range_end_a = forms.DateField(
+    range_end_a = forms.DateTimeField(
         label='Data fine sondaggio da',
         required=False,
-        widget=forms.SelectDateWidget(
-            attrs={'class': 'form-select'},
-            months=MONTHS
+        widget=widgets.DatePickerInput(
+            options={
+                'format': FORMAT,
+            },
         ),
         error_messages=ERROR_MESSAGES
     )
-    range_end_b = forms.DateField(
+    range_end_b = forms.DateTimeField(
         label='Data fine sondaggio a',
         required=False,
-        widget=forms.SelectDateWidget(
-            attrs={'class': 'form-select'},
-            months=MONTHS
+        widget=widgets.DatePickerInput(
+            options={
+                'format': FORMAT,
+            },
+            range_from='range_end_a'
         ),
         error_messages=ERROR_MESSAGES
     )
@@ -79,27 +69,17 @@ class SearchPollForm(forms.Form):
             ('NOT_STARTED', 'In attesa'),
             ('ACTIVE', 'In corso'),
             ('ENDED', 'Concluso'),
-        ],
-        widget=forms.Select(
-            attrs={'class': 'form-select'}
-        )
+        ]
     )
     type = forms.TypedChoiceField(
         coerce=int,
         label="Tipo di sondaggio",
         required=False,
-        choices=[(None, '-------'), *Poll.PollType.choices],
-        widget=forms.Select(
-            attrs={'class': 'form-select'},
-        ))
+        choices=[(None, '-------'), *Poll.PollType.choices]
+    )
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-
-        for f_name in self.fields:
-            if self.has_error(f_name):
-                widget_class =  self.fields[f_name].widget.attrs['class']
-                self.fields[f_name].widget.attrs['class'] = f'{widget_class} is-invalid'
 
     def range_group(self):
         return [self[name] for name in filter(lambda x: x.startswith('range'), self.fields)]
@@ -116,17 +96,7 @@ class SearchPollForm(forms.Form):
 
         if range_end_a is not None and range_end_b is not None and range_end_a >= range_end_b:
             self.add_error('range_end_a', 'La data di inizio è successiva alla data di fine')
-
-        def convert_to_datetime(key: str):
-            if form_data.get(key, None) != None:
-                saved_date: date = form_data[key]
-                form_data[key] = datetime(saved_date.year, saved_date.month, saved_date.day, tzinfo=timezone.utc)
-        convert_to_datetime('range_start_a')
-        convert_to_datetime('range_start_b')
-        convert_to_datetime('range_end_a')
-        convert_to_datetime('range_end_b')
         
-
         return form_data
     
     def to_query(self) -> SearchPollQueryBuilder:

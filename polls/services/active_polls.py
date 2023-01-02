@@ -12,8 +12,8 @@ class ActivePollsService:
     def __init__(self) -> None:
         self.__polls = Poll.objects.filter(id__in=[
             poll.id
-            for poll in Poll.objects.annotate(num_alternatives=Count('alternative')).filter(num_alternatives__gt=0)
-            if not poll.is_not_started()
+            for poll in Poll.objects.all()
+            if not poll.is_not_started() and poll.alternative_set.count() > 0
         ])
 
     def get_ordered_queryset(self, by_field: str = 'title', desc: bool = False):
@@ -78,7 +78,7 @@ class SearchPollQueryBuilder:
         return [
             poll
             for poll in Poll.objects.filter(self.__query_filter)
-            if self.__status_filter(poll) and self.__type_filter(poll)
+            if self.__status_filter(poll) and self.__type_filter(poll) and poll.alternative_set.count() > 0
         ]
 
 
