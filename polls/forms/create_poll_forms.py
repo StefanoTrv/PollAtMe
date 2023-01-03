@@ -22,8 +22,8 @@ class BaseAlternativeFormSet(forms.BaseModelFormSet):
         data = {
             'form-TOTAL_FORMS': len(cleaned_data),	
             'form-INITIAL_FORMS': self.data['form-INITIAL_FORMS'],
-            'form-MIN_NUM_FORMS': '2',
-            'form-MAX_NUM_FORMS':'10',
+            'form-MIN_NUM_FORMS': self.data['form-MIN_NUM_FORMS'],
+            'form-MAX_NUM_FORMS': self.data['form-MAX_NUM_FORMS'],
         }
 
         for i, alt in enumerate(cleaned_data):

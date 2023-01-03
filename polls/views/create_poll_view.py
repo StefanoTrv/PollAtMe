@@ -15,9 +15,8 @@ ALTERNATIVE_FORMSET = BaseAlternativeFormSet.get_formset_class()
 
 
 def select_action(request: HttpRequest, poll=None):
-    action = 'create' if poll is None else 'edit'
-    queryset_alternatives = Poll.objects.none(
-    ) if poll is None else poll.alternative_set.all()
+    action, queryset_alternatives = ('create', Poll.objects.none(
+    )) if poll is None else ('edit', poll.alternative_set.all())
 
     if 'summary' in request.POST:
         return summary(request, action, queryset_alternatives, poll)
@@ -59,6 +58,7 @@ def go_back(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
         'formset': ALTERNATIVE_FORMSET(request.session[action]['alternatives'], queryset=alternatives)
     })
 
+
 def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Optional[Poll] = None):
     form = PollFormAdditionalOptions(request.POST, instance=poll)
     formset_alternatives: BaseAlternativeFormSet = ALTERNATIVE_FORMSET(
@@ -71,10 +71,10 @@ def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Option
         for alt in formset_alternatives.new_objects:
             alt.poll = saved_poll
             alt.save()
-        
+
         for alt in formset_alternatives.changed_objects:
             alt[0].save()
-        
+
         for alt in formset_alternatives.deleted_objects:
             alt.delete()
 
