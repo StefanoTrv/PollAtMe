@@ -5,6 +5,8 @@ from django.views.generic import TemplateView
 from django.shortcuts import render, get_object_or_404
 from django.core.exceptions import PermissionDenied
 from django.db.models import QuerySet
+from django.utils import timezone
+from datetime import timedelta
 
 from polls.models import Poll
 from polls.forms import PollFormAdditionalOptions, PollFormMain, BaseAlternativeFormSet
@@ -33,14 +35,16 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
         request.POST, queryset=alternatives)
 
     if form.is_valid() and formset_alternatives.is_valid():
-        poll = form.save(commit=False)
+        f_poll: Poll = form.save(commit=False)
+        f_poll.start = timezone.now() + timedelta(minutes=10)
+        f_poll.end = f_poll.start + timedelta(weeks=1)
         request.session[action] = {
             'poll': form.cleaned_data,
             'alternatives': formset_alternatives.get_form_for_session()
         }
         return render(request, f'create_poll/summary_and_options_{action}.html', {
             'alternatives': formset_alternatives.get_alternatives_text_list(),
-            'form': PollFormAdditionalOptions(instance=poll)
+            'form': PollFormAdditionalOptions(instance=f_poll)
         })
     else:
         return render(request, f'create_poll/main_page_{action}.html', {
@@ -76,8 +80,8 @@ def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Option
 
         return render(request, 'create_poll_success.html')
     else:
-        render(request, f'create_poll/summary_and_options_{action}.html', {
-            'form': PollFormAdditionalOptions(instance=poll),
+        return render(request, f'create_poll/summary_and_options_{action}.html', {
+            'form': form,
             'alternatives': formset_alternatives.get_alternatives_text_list()
         })
 

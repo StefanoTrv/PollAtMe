@@ -82,5 +82,10 @@
 {% block javascripts %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.slim.min.js"></script>
 {{ form.media.js }}
+<script>
+    document.querySelector('#additional-options').onsubmit = event => {
+        document.querySelector("#{{ form.default_type.auto_id }}").removeAttribute('disabled')
+    }
+</script>
 {% include 'includes/lock_sidebar.html' with id_modal='exampleModal' %}
 {% endblock javascripts %}

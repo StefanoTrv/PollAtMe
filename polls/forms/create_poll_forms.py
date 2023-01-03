@@ -112,11 +112,13 @@ class PollFormAdditionalOptions(forms.ModelForm):
                 range_from='start',
                 options={"format": "DD-MM-YYYY HH:mm"}
             ),
-        } | PollFormMain.Meta.widgets
-        
-        initials = {
-            'start': timezone.now() + timedelta(minutes=15),
-            'end': timezone.now() + timedelta(weeks=1)
+            'default_type': forms.Select(
+                attrs={'disabled': True}
+            ),
+            'text': forms.Textarea(attrs={
+                'style': 'resize: none;',
+                'rows': 4
+            })
         }
 
     def __init__(self, *args, **kwargs) -> None:
@@ -127,19 +129,24 @@ class PollFormAdditionalOptions(forms.ModelForm):
                 self.fields[f_name].widget.attrs['readonly'] = True
 
     def clean(self):
+        if self.errors:
+            return
+
         form_data = self.cleaned_data
+        start = form_data['start']
+        end = form_data['end']
 
-        # errore se il tempo di inizio è precedente ad adesso, con una precisione di 15 minuti
-        if form_data['start'] + timedelta(minutes=15) < timezone.now():
-            self.add_error('start', 'Il momento di inizio delle votazioni deve essere successivo ad adesso.')
+        now = timezone.localtime(timezone.now())
 
-        # errore se il tempo di fine è precedente a cinque minuti da adesso
-        if form_data['end'] < timezone.now() + timedelta(minutes=5):
-            self.add_error('end', 'Il momento di fine delle votazioni deve essere almeno cinque minuti da adesso.')
-        
-        if form_data['end'] <= form_data['start']:
-            self.add_error('start', 'Il momento di fine delle votazioni deve essere successivo a quello di inizio.')
-        elif form_data['end'] < form_data['start'] + timedelta(minutes=5):
-            self.add_error('end', 'Il momento di fine delle votazioni deve essere almeno cinque minuti dopo quello di inizio.')
+        if end - start < timedelta(0):
+            self.add_error('end', 'La data di fine è precedente alla data di inizio')
+
+        # il sondaggio deve iniziare almeno 5 minuti da adesso
+        if now + timedelta(minutes=5) >= start:
+            self.add_error('start', 'Il sondaggio deve iniziare almeno 5 minuti da adesso')
+
+        # il sondaggio deve durare almeno 15 minuti
+        if end - start < timedelta(minutes=15):
+            self.add_error('end', 'Il sondaggio deve durare almeno 15 minuti')
 
         return form_data
