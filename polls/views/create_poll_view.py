@@ -35,8 +35,9 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
 
     if form.is_valid() and formset_alternatives.is_valid():
         f_poll: Poll = form.save(commit=False)
-        f_poll.start = timezone.now() + timedelta(minutes=10)
-        f_poll.end = f_poll.start + timedelta(weeks=1)
+        if f_poll.start is None:
+            f_poll.start = timezone.now() + timedelta(minutes=10)
+            f_poll.end = f_poll.start + timedelta(weeks=1)
         request.session[action] = {
             'poll': form.cleaned_data,
             'alternatives': formset_alternatives.get_form_for_session()
@@ -78,7 +79,7 @@ def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Option
         for alt in formset_alternatives.deleted_objects:
             alt.delete()
 
-        return render(request, 'create_poll_success.html')
+        return render(request, f'{action}_poll_success.html')
     else:
         return render(request, f'create_poll/summary_and_options_{action}.html', {
             'form': form,

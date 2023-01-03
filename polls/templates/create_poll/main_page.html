@@ -40,12 +40,11 @@
                             {% bootstrap_formset_errors formset %}
                             <div id="alternatives-rows">
                                 {% for f in formset %}
-                                <div id="form-{{forloop.counter0}}" class="input-group mb-3 {% if f.errors %}is-invalid border border-danger rounded{% endif %}{% if f.DELETE.value %}d-none{% endif %}">
+                                <div id="form-{{forloop.counter0}}" class="input-group mb-3 {% if f.errors %}is-invalid border border-danger rounded{% endif %} {% if f.DELETE.value %}d-none{% endif %}">
                                     {% for field in f %}
                                         {{ field }}
                                     {% endfor %}
                                     <input type="button" class="btn btn-danger" value="-" onclick="remove_row(this)"/>
-                                    
                                 </div>
                                 {% bootstrap_form_errors f %}
                                 {% endfor %}

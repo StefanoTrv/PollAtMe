@@ -28,8 +28,9 @@ class BaseAlternativeFormSet(forms.BaseModelFormSet):
 
         for i, alt in enumerate(cleaned_data):
             obj = alt.get('id', None)
+            text = '_' if alt['DELETE'] else alt.get('text', '')
             data = data | {
-                f'form-{i}-text': alt['text'],
+                f'form-{i}-text': text,
                 f'form-{i}-id': obj.id if obj is not None else '',
                 f'form-{i}-DELETE': 'true' if alt['DELETE'] else '',
             }
@@ -132,9 +133,8 @@ class PollFormAdditionalOptions(forms.ModelForm):
         if self.errors:
             return
 
-        form_data = self.cleaned_data
-        start = form_data['start']
-        end = form_data['end']
+        start = self.cleaned_data['start']
+        end = self.cleaned_data['end']
 
         now = timezone.localtime(timezone.now())
 
@@ -142,11 +142,11 @@ class PollFormAdditionalOptions(forms.ModelForm):
             self.add_error('end', 'La data di fine è precedente alla data di inizio')
 
         # il sondaggio deve iniziare almeno 5 minuti da adesso
-        if now + timedelta(minutes=5) >= start:
+        if start - now < timedelta(minutes=5):
             self.add_error('start', 'Il sondaggio deve iniziare almeno 5 minuti da adesso')
 
         # il sondaggio deve durare almeno 15 minuti
         if end - start < timedelta(minutes=15):
             self.add_error('end', 'Il sondaggio deve durare almeno 15 minuti')
 
-        return form_data
+        return self.cleaned_data

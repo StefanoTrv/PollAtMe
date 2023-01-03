@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from polls.models import SinglePreferencePoll, MajorityOpinionPoll, Poll
+from polls.models import SinglePreferencePoll, Poll
 
 # Test semplificati: molti aspetti vengono già testati relativamente alla creazione, che è praticamente la stessa pagina
 class TestPollEditView(TestCase):
@@ -37,101 +37,112 @@ class TestPollEditView(TestCase):
         )
         assert_that(response.status_code).is_equal_to(403)
 
-    # bug #146
-    def test_change_poll_type(self):
-        assert_that(SinglePreferencePoll.objects.all()).is_not_empty()
-        assert_that(MajorityOpinionPoll.objects.all()).is_empty()
-        url = reverse('polls:edit_poll', kwargs={'id': self.poll.pk})
-        title = self.poll.title
-        self.client.get(url)
-        response = self.client.post(url, data = {
-            'poll_title': self.poll.title,
-            'poll_type': 'Giudizio maggioritario',
-            'poll_text': self.poll.text,
-            'hidden_alternative_count': len(self.poll.alternative_set.all()),
-            'alternative1': self.poll.alternative_set.all()[0],
-            'alternative2': self.poll.alternative_set.all()[1]
-        })
-        self.assertEqual(response.status_code, 302)
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        response = self.client.post(url, data={
-            'start_time': self.poll.start,
-            'end_time': self.poll.end
-        })
-        self.assertEqual(response.status_code, 200)
-        assert_that(SinglePreferencePoll.objects.all()).is_empty()
-        assert_that(MajorityOpinionPoll.objects.all()).is_not_empty()
-        assert_that(MajorityOpinionPoll.objects.last().title).is_equal_to(title)
-
     def test_edit_poll(self):
-        start_time=timezone.now()
-        end_time=timezone.now()+timedelta(weeks=1)
-        data={
-            'poll_title': 'titolo',
-            'poll_type': 'Giudizio maggioritario',
-            'poll_text': 'testo della domanda',
-            'hidden_alternative_count': '3',
-            'alternative1': 'prima alternativa',
-            'alternative2': 'seconda alternativa', 
-            'alternative3': 'terza alternativa'
-        }
         url = reverse('polls:edit_poll', kwargs={'id': self.poll.pk})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Alternativa di prova 2')
-        response = self.client.post(url, data)
-        self.assertEqual(response.status_code, 302)
-        response = self.client.get(url)
+        self.assertTemplateUsed(response, 'create_poll/main_page_edit.html')
+
+        data={
+            'title': 'Lorem',
+            'text': 'Ipsum',
+            'default_type': 1,
+            'form-TOTAL_FORMS': 3,
+            'form-INITIAL_FORMS': self.poll.alternative_set.count(),
+            'form-MIN_NUM_FORMS': 2,
+            'form-MAX_NUM_FORMS': 10,
+        }
+        for i, alt in enumerate(self.poll.alternative_set.all()):
+            data = data | {
+                f'form-{i}-text': alt.text,
+                f'form-{i}-id': alt.id,
+                f'form-{i}-DELETE': '',
+            }
+        data = data | {
+            'form-2-text': 'Alternativa di prova 3',
+            'form-2-id': '',
+            'form-2-DELETE': ''
+        }
+        data['form-0-DELETE'] = True
+
+        response = self.client.post(url, data=data | {'summary': ''})
+        assert_that(response.status_code).is_equal_to(200)
+        self.assertTemplateUsed('create_poll/summary_and_options_edit.html')
+        assert_that(self.client.session.has_key('edit')).is_true()
+
+        start = (timezone.now() + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')
+        end = (timezone.now() + timedelta(days=2)).strftime('%Y-%m-%d %H:%M:%S')
+        data = {
+            'title': 'Lorem',
+            'text': 'Ipsum',
+            'default_type': 1,
+            'start': start,
+            'end': end,
+            'save': ''
+        }
+        response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, data['alternative3'])
-        response = self.client.post(url, data={
-            'start_time': start_time,
-            'end_time': end_time
-        })
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response,'Fatto! Il tuo sondaggio è stato modificato.')
+        self.assertTemplateUsed(response, 'edit_poll_success.html')
+
         last_poll = Poll.objects.last()
-        self.assertIsNotNone(last_poll)
-        self.assertEqual(last_poll.title,data['poll_title'])
-        assert_that(last_poll.get_type()).is_equal_to(data['poll_type'])
-        self.assertEqual(last_poll.text,data['poll_text'])
-        self.assertEqual(len(last_poll.alternative_set.all()),3)
-        assert_that(last_poll.start).is_equal_to(start_time)
-        assert_that(last_poll.end).is_equal_to(end_time)
-        alternatives = [data['alternative1'], data['alternative2'], data['alternative3']]
-        for alternative in last_poll.alternative_set.all():
-            self.assertIn(alternative.text,alternatives)
+        assert_that(last_poll.title).is_equal_to(data['title'])
+        assert_that(last_poll.default_type).is_equal_to(data['default_type'])
+        assert_that(last_poll.text).is_equal_to(data['text'])
+        assert_that(last_poll.alternative_set.count()).is_equal_to(2)
+
+        alternatives = last_poll.alternative_set.all()
+        expected_texts = ['Alternativa di prova 2', 'Alternativa di prova 3']
+        for alt, text in zip(alternatives, expected_texts):
+            assert_that(alt.text).is_equal_to(text)
 
     def test_edit_poll_after_start(self):
         
-        start_time=timezone.now()
-        end_time=timezone.now() + timedelta(weeks=1)
-        data={
-            'poll_title': 'titolo',
-            'poll_type': 'Giudizio maggioritario',
-            'poll_text': 'testo della domanda',
-            'hidden_alternative_count': '3',
-            'alternative1': 'prima alternativa',
-            'alternative2': 'seconda alternativa', 
-            'alternative3': 'terza alternativa'
-        }
         url = reverse('polls:edit_poll', kwargs={'id': self.poll.pk})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Alternativa di prova 2')
-        response = self.client.post(url, data)
-        self.assertEqual(response.status_code, 302)
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, data['alternative3'])
+        self.assertTemplateUsed(response, 'create_poll/main_page_edit.html')
+
+        data={
+            'title': 'Lorem',
+            'text': 'Ipsum',
+            'default_type': 1,
+            'form-TOTAL_FORMS': 3,
+            'form-INITIAL_FORMS': self.poll.alternative_set.count(),
+            'form-MIN_NUM_FORMS': 2,
+            'form-MAX_NUM_FORMS': 10,
+        }
+        for i, alt in enumerate(self.poll.alternative_set.all()):
+            data = data | {
+                f'form-{i}-text': alt.text,
+                f'form-{i}-id': alt.id,
+                f'form-{i}-DELETE': '',
+            }
+        data = data | {
+            'form-2-text': 'Alternativa di prova 3',
+            'form-2-id': '',
+            'form-2-DELETE': ''
+        }
+        data['form-0-DELETE'] = True
+
+        response = self.client.post(url, data=data | {'summary': ''})
+        assert_that(response.status_code).is_equal_to(200)
+        self.assertTemplateUsed('create_poll/summary_and_options_edit.html')
+        assert_that(self.client.session.has_key('edit')).is_true()
+
+        start = (timezone.now() + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')
+        end = (timezone.now() + timedelta(days=2)).strftime('%Y-%m-%d %H:%M:%S')
+        data = {
+            'title': 'Lorem',
+            'text': 'Ipsum',
+            'default_type': 1,
+            'start': start,
+            'end': end,
+            'save': ''
+        }
         
         self.poll.start = timezone.now() - timedelta(minutes=1)
         self.poll.save()
         
-        response = self.client.post(url, data={
-            'start_time': start_time,
-            'end_time': end_time
-        })
+        response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, 403)
 
