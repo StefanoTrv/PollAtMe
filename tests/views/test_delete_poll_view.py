@@ -6,13 +6,14 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from polls.models import Alternative, Poll, SinglePreferencePoll
+from polls.models import Alternative, Poll
 
 
 class TestPollDeleteView(TestCase):
 
     def setUp(self) -> None:
-        self.poll = SinglePreferencePoll()
+        self.poll = Poll()
+        self.poll.default_type = Poll.PollType.SINGLE_PREFERENCE
         self.poll.title = "Sondaggio di prova"
         self.poll.text = "Sondaggio di prova"
         self.poll.start = timezone.now() + timedelta(weeks=1)
@@ -29,7 +30,6 @@ class TestPollDeleteView(TestCase):
         assert_that(response.url).is_equal_to(reverse('polls:index'))
         assert_that(Poll.objects.get).raises(ObjectDoesNotExist).when_called_with(pk=poll_id)
         assert_that(Alternative.objects.filter(poll=poll_id)).is_length(0)
-        assert_that(SinglePreferencePoll.objects.filter(poll_ptr_id=poll_id)).is_length(0)
 
     def test_forbidden(self):
         self.poll.start = timezone.now() - timedelta(days=1)

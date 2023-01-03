@@ -62,15 +62,33 @@ class TestActivePollsService(TestCase):
 
 class TestSearchPollService(TestCase):
     
-    fixtures: list[str] = ['polls.json']
+    def setUp(self) -> None:
+        polls = [
+            {'title': 'A', 'text': 'A', 'start': timezone.now() - timedelta(weeks=2), 'end': timezone.now() - timedelta(weeks=1)},  # concluso   
+            {'title': 'B', 'text': 'B', 'start': timezone.now() - timedelta(weeks=2), 'end': timezone.now() - timedelta(weeks=1)},  # concluso
+            {'title': 'C', 'text': 'C', 'start': timezone.now() - timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2)},  # attivo
+            {'title': 'D', 'text': 'D', 'start': timezone.now() - timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2)},  # attivo
+            {'title': 'E', 'text': 'E', 'start': timezone.now() + timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2)},  # non ancora attivo
+            {'title': 'F', 'text': 'F', 'start': timezone.now(), 'end': timezone.now()},  # senza opzioni
+        ]
+
+        for p_dict in polls:
+            p = Poll(**p_dict)
+            p.save()
+        
+        for poll in Poll.objects.filter(~Q(title='F')):
+            poll.alternative_set.create(text="Prova1")
+            poll.alternative_set.create(text="Prova2")
+        
+        print("done")
 
     def test_search_by_id(self):
-        expected_poll = Poll.objects.get(id=1)
-        poll = SearchPollService().search_by_id(1)
+        expected_poll = Poll.objects.get(title='A')
+        poll = SearchPollService().search_by_id(expected_poll.id)
         assert_that(poll).is_equal_to(expected_poll)
         assert_that(poll.alternative_set).is_equal_to(expected_poll.alternative_set)
     
     def test_search_by_error(self):
         last_id = Poll.objects.all().order_by('-id').first().id
-        self.assertRaises(ObjectDoesNotExist,SearchPollService().search_by_id,last_id+1)
-        self.assertRaises(PollWithoutAlternativesException,SearchPollService().search_by_id,3)
+        self.assertRaises(ObjectDoesNotExist, SearchPollService().search_by_id, last_id+1)
+        self.assertRaises(PollWithoutAlternativesException, SearchPollService().search_by_id, Poll.objects.get(title='F').id)

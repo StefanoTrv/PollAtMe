@@ -8,10 +8,9 @@ URL = 'polls:vote'
 
 class TestCreateSinglePreferenceView(TestCase):
     fixtures = ['polls.json']
-    client = Client()
-
+    
     def setUp(self) -> None:
-        self.poll = models.SinglePreferencePoll.objects.first()
+        self.poll = models.Poll.objects.first()
         if self.poll is not None:
             self.url = reverse(URL, args=[self.poll.pk])
             self.form = pollforms.SinglePreferenceForm(poll=self.poll)
@@ -19,7 +18,7 @@ class TestCreateSinglePreferenceView(TestCase):
 
     def test_show_single_preference_poll_form(self):
         res = self.client.get(self.url)
-        self.assertIsInstance(res.context['form'],pollforms.SinglePreferenceForm)
+        self.assertIsInstance(res.context['form'], pollforms.SinglePreferenceForm)
         
         self.assertContains(
             response=res,
@@ -51,7 +50,7 @@ class TestCreateSinglePreferenceView(TestCase):
         self.assertEqual(resp.status_code,404)      
 
     def test_sondaggio_senza_scelte(self):
-        empty_poll = models.SinglePreferencePoll()
+        empty_poll = models.Poll()
         empty_poll.title = 'Title'
         empty_poll.text = 'Text'
         empty_poll.start = timezone.now()
@@ -79,10 +78,9 @@ class TestCreateSinglePreferenceView(TestCase):
 
 class TestCreateMajorityPreferenceView(TestCase):
     fixtures = ['polls.json']
-    client = Client()
 
     def setUp(self) -> None:
-        self.poll = models.MajorityOpinionPoll.objects.first()
+        self.poll = models.Poll.objects.filter(default_type=models.Poll.PollType.MAJORITY_JUDGMENT).first()
         if self.poll is not None:
             self.url = reverse(URL, args=[self.poll.pk])
             self.resp = self.client.get(self.url)

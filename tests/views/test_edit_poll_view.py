@@ -5,13 +5,13 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from polls.models import SinglePreferencePoll, Poll
+from polls.models import Poll
 
 # Test semplificati: molti aspetti vengono già testati relativamente alla creazione, che è praticamente la stessa pagina
 class TestPollEditView(TestCase):
 
     def setUp(self) -> None:
-        self.poll = SinglePreferencePoll()
+        self.poll = Poll()
         self.poll.title = 'Sondaggio di prova'
         self.poll.text = 'Sondaggio di prova'
         self.poll.start = timezone.now() + timedelta(weeks=1)

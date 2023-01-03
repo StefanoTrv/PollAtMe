@@ -1,6 +1,6 @@
 from django.test import TestCase
 from assertpy import assert_that #type: ignore
-from polls.models import SinglePreferencePoll, MajorityOpinionPoll, Alternative
+from polls.models import Poll, Alternative
 from django.urls import reverse
 from polls.services.preferenza_singola import SinglePreferencePollResultsService
 from polls.services.giudizio_maggioritario import MajorityJudgementService
@@ -12,7 +12,7 @@ class ResultsViewTest(TestCase):
     def test_preferenza_singola_mostra_alternative_con_voti_totali(self):
         url = reverse('polls:result', args=[1])
         results = {}
-        poll = SinglePreferencePoll.objects.get(id = 1)
+        poll = Poll.objects.get(id = 1)
         for item in SinglePreferencePollResultsService().set_poll(poll).as_list():
             results[item['text']]=item['count']
         resp = self.client.get(url)
@@ -23,14 +23,14 @@ class ResultsViewTest(TestCase):
 
     
     def test_giudizio_maggioritario_mostra_alternative_in_classifica(self):
-        url = reverse('polls:result', args=[4])
+        url = reverse('polls:result', args=[2])
         results = {}
-        for item in MajorityJudgementService().search_by_poll_id(4).get_classifica()['classifica']:
+        poll = Poll.objects.get(id=2)
+        for item in MajorityJudgementService(poll).get_classifica()['classifica']:
             results[item['alternative']]=item['place']
-        poll = MajorityOpinionPoll.objects.get(id = 4)
         resp = self.client.get(url)
         assert_that(resp.status_code).is_equal_to(200)
-        for alternative in Alternative.objects.filter(poll = poll.id):
+        for alternative in poll.alternative_set.all():
             self.assertContains(resp, alternative.text.upper())
             self.assertContains(resp, alternative.text+'-'+str(results[alternative.text]))
             

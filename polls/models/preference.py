@@ -7,8 +7,8 @@ from .poll import Poll
 class Preference(models.Model):
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
     
-    def __str__(self) -> str:
-        return str(self.id)
+    class Meta:
+        abstract = True
 
 class SinglePreference(Preference):
     alternative = models.ForeignKey(Alternative, on_delete=models.CASCADE)

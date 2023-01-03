@@ -25,18 +25,7 @@ class Poll(models.Model):
         return timezone.now() < self.start
 
     def get_type(self) -> str:
-        if hasattr(self, 'singlepreferencepoll'):
-            return self.PollType(self.PollType.SINGLE_PREFERENCE).label
-        elif hasattr(self, 'majorityopinionpoll'):
-            return self.PollType(self.PollType.MAJORITY_JUDGMENT).label
-        else:
-            return self.PollType(self.PollType.SHULTZE_METHOD).label
+        return self.PollType(self.default_type).label
 
     def __str__(self) -> str:
         return self.title
-
-class SinglePreferencePoll(Poll):
-    pass
-
-class MajorityOpinionPoll(Poll):
-    pass
