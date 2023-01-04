@@ -79,8 +79,6 @@ class TestSearchPollService(TestCase):
         for poll in Poll.objects.filter(~Q(title='F')):
             poll.alternative_set.create(text="Prova1")
             poll.alternative_set.create(text="Prova2")
-        
-        print("done")
 
     def test_search_by_id(self):
         expected_poll = Poll.objects.get(title='A')

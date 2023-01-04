@@ -4,7 +4,7 @@ from django import forms
 from polls.models import Poll
 from polls.services import SearchPollQueryBuilder
 from django.utils.translation import gettext_lazy as _
-from datetime import date, datetime, timezone
+from datetime import datetime
 from bootstrap_datepicker_plus import widgets
 
 ERROR_MESSAGES = {
