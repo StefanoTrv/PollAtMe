@@ -1,12 +1,15 @@
+from datetime import timedelta
+
+from assertpy import assert_that  # type: ignore
+from django.db.models import Q
+from django.http import Http404
 from django.test import TestCase
-from polls.services import ActivePollsService, SearchPollService
-from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
+
 from polls.exceptions import PollWithoutAlternativesException
 from polls.models import Poll
-from assertpy import assert_that #type: ignore
-from django.utils import timezone
-from datetime import timedelta
-from django.db.models import Q
+from polls.services import ActivePollsService, SearchPollService
+
 
 class TestActivePollsService(TestCase):
     
@@ -88,5 +91,5 @@ class TestSearchPollService(TestCase):
     
     def test_search_by_error(self):
         last_id = Poll.objects.all().order_by('-id').first().id
-        self.assertRaises(ObjectDoesNotExist, SearchPollService().search_by_id, last_id+1)
+        self.assertRaises(Http404, SearchPollService().search_by_id, last_id+1)
         self.assertRaises(PollWithoutAlternativesException, SearchPollService().search_by_id, Poll.objects.get(title='F').id)

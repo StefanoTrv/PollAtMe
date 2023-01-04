@@ -58,7 +58,7 @@ class TestCreateSinglePreferenceView(TestCase):
         empty_poll.save()
         url = reverse(URL, args=[empty_poll.id])
         resp = self.client.get(url)
-        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(resp.status_code, 404)
 
     def test_if_submit_and_save_in_db(self):
         last_vote_old = models.SinglePreference.objects.last()
