@@ -24,18 +24,29 @@
         <a class="btn btn-block btn-primary mb-4" href={% url 'polls:vote' id=poll.id %}>Vota</a>
         {% endif %}
         
-        <a class="btn btn-block btn-secondary mb-4" href={% url 'polls:result' id=poll.id %}>Risultati</a>
-        
+        {% if poll.is_active or poll.is_ended %}
+            <a class="btn btn-block btn-secondary mb-4" href={% url 'polls:result' id=poll.id %}>Risultati</a>      
+        {% endif %}
+
         {% if poll.is_not_started %}
         <a class="btn btn-block btn-warning mb-4" href={% url 'polls:edit_poll' id=poll.id %} data-bs-toggle="tooltip" data-bs-placement="top" title="Modifica il sondaggio">
-            <em class="feather icon-edit-2"></em>
+            Modifica
         </a>
         <button type="button" class="btn btn-block btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#modalDeletePollConfirm" data-bs-poll="{{ poll.id }}">
-            <em class="feather icon-trash-2"></em>
+            Cancella
         </button>
         {% endif %}
     </div>
     <div class="card-footer text-end">
-        <small class="text-muted">{{ poll.get_type }}</small>
+        <small class="text-muted">{{ poll.get_type }}
+            {% if poll.get_type == "Giudizio maggioritario" %}
+              <button type="button" class="btn-md  btn-icon btn-outline-info" data-bs-toggle="modal" data-bs-target="#modal-majority-explanation" href="spiegazione_giudizio_maggioritario.html">
+                <i class="feather icon-info">
+                </i>
+              </button>
+            {% endif %}
+        </small>
     </div>
 </div>
+
+{% include 'includes/spiegazione_giudizio_maggioritario.html'%}
