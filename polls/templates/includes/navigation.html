@@ -12,10 +12,14 @@
     <div class="collapse navbar-collapse">
         <ul class="navbar-nav me-auto">
             <li class="nav-item">
-                <a href="#" class="pop-search"><em class="feather icon-search"></em></a>
+                <a href="#" class="pop-search" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Voto con codice"><em class="feather icon-edit"></em></a>
                 <div class="search-bar">
-                    <input type="text" class="form-control border-0 shadow-none" placeholder="Search here">
-                    <button type="button" class="btn-close" aria-label="Close">
+                    <form method="POST" action="{% url 'polls:vote_code' %}">
+                        {% csrf_token %}
+                        <input type="text" name="code" class="form-control border-0 shadow-none" placeholder="Inserisci l'ID di un sondaggio e premi invio">
+                        <button type="button" class="btn-close" aria-label="Close">
+                        <input type="submit" hidden="true" />
+                    </form>
                     </button>
                 </div>
             </li>

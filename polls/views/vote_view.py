@@ -1,7 +1,7 @@
 from typing import Any, Callable, Optional, Type
 
 from django import forms, http
-from django.core.exceptions import BadRequest, ObjectDoesNotExist
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render
 from django.views import View
 from django.views.generic.edit import CreateView
@@ -18,8 +18,6 @@ class VotingView(View):
     Class view che sceglie quale view mostrare in base al tipo di sondaggio
     scelto nel link.
     """
-    POLL_DOES_NOT_EXISTS_MSG = "Il sondaggio ricercato non esiste"
-    NO_ALTERNATIVES_POLL_MSG = "Il sondaggio ricercato non ha opzioni di risposta"
 
     def dispatch(self, request, *args, **kwargs):
         """
@@ -28,12 +26,14 @@ class VotingView(View):
         """
         try:
             poll = SearchPollService().search_by_id(kwargs['id'])
+
+            if not poll.is_active():
+                raise PermissionDenied('Non è possibile votare questo sondaggio')
+
             view = self.__dispatch_view(poll)
             return view(request, *args, **kwargs)
-        except ObjectDoesNotExist:
-            raise http.Http404(self.POLL_DOES_NOT_EXISTS_MSG)
         except PollWithoutAlternativesException:
-            raise BadRequest(self.NO_ALTERNATIVES_POLL_MSG)
+            raise http.Http404("Il sondaggio ricercato non ha opzioni di risposta")
     
     def __dispatch_view(self, poll: Poll) -> Callable:
         if poll.get_type() == 'Preferenza singola':

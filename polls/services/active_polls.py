@@ -1,10 +1,10 @@
 from typing import Callable
 
 from polls.models import Poll
-from django.db.models import Count, Q
+from django.db.models import Q
 from polls.exceptions import PollWithoutAlternativesException
 from datetime import datetime, timezone
-
+from django.http import Http404
 
 class ActivePollsService:
     """Service to get all active polls from database"""
@@ -82,7 +82,10 @@ class SearchPollQueryBuilder:
 
 class SearchPollService:
     def search_by_id(self, id: int) -> Poll:
-        poll = Poll.objects.get(id=id)
-        if poll.alternative_set.count() == 0:
-            raise PollWithoutAlternativesException
+        try:
+            poll = Poll.objects.get(id=id)
+            if poll.alternative_set.count() == 0:
+                raise PollWithoutAlternativesException
+        except Poll.DoesNotExist:
+            raise Http404("Il sondaggio ricercato non esiste")
         return poll

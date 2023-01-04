@@ -3,7 +3,8 @@ from typing import Any, Optional, Type
 from django import http
 from django.db.models import Model, QuerySet
 from django.shortcuts import render
-from django.views.generic import FormView
+from django.urls import reverse
+from django.views.generic import FormView, View
 from django.views.generic.list import ListView
 
 from polls.forms import SearchPollForm
@@ -37,3 +38,12 @@ class SearchView(FormView):
         return render(self.request, 'includes/search_form.html', {
             'form': form
         })
+
+class VoteWithCodeView(View):
+    http_method_names = ['post']
+
+    def post(self, request: http.HttpRequest, *args, **kwargs):
+        code = request.POST.get('code')
+        url = reverse('polls:vote', kwargs={'id': code})
+
+        return http.HttpResponseRedirect(url)
