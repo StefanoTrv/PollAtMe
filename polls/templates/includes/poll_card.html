@@ -37,15 +37,28 @@
         </button>
         {% endif %}
     </div>
-    <div class="card-footer text-end">
-        <small class="text-muted">{{ poll.get_type }}
-            {% if poll.get_type == "Giudizio maggioritario" %}
-              <button type="button" class="btn-md  btn-icon btn-outline-info" data-bs-toggle="modal" data-bs-target="#modal-majority-explanation" href="spiegazione_giudizio_maggioritario.html">
-                <i class="feather icon-info">
-                </i>
-              </button>
-            {% endif %}
-        </small>
+    <div class="card-footer">
+        <div class="row">
+            <div class = "col">
+                <div  class="text-start">
+                    <small class="text-muted">
+                        ID: {{ poll.pk }}
+                    </small>
+                </div>
+            </div>
+            <div class = "col">
+                <div  class="text-end">
+                    <small class="text-muted">{{ poll.get_type }}
+                        {% if poll.get_type == "Giudizio maggioritario" %}
+                        <button type="button" class="btn-md  btn-icon btn-outline-info" data-bs-toggle="modal" data-bs-target="#modal-majority-explanation" href="spiegazione_giudizio_maggioritario.html">
+                            <i class="feather icon-info">
+                            </i>
+                        </button>
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
