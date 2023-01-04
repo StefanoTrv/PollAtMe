@@ -1,5 +1,5 @@
 <script>
-    document.querySelectorAll('.nav-link, .b-brand').forEach(el => el.addEventListener('click', event => {
+    document.querySelectorAll('.nav-link, .b-brand, .btn-external').forEach(el => el.addEventListener('click', event => {
         event.preventDefault()
         const modalDiv = document.getElementById('{{ id_modal }}')
         const link = modalDiv.querySelector('a')

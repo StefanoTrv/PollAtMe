@@ -73,7 +73,7 @@
                                 <input type="submit" form="additional-options" class="btn btn-primary" value="Salva"/> 
                             </div>
                             <div class="col-sm-4" style="text-align:right">
-                                <button type="button" class="btn btn-block btn-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal">Torna alla home</button>
+                                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modal-return-home">Torna alla home</button>
                             </div>
                         </div>
                     </div>               
@@ -81,8 +81,16 @@
                 </div>
             </div>
         </div>
+        {% include 'includes/footer.html' %}
     </div>
 </div>
 
-{% include 'includes/modal.html' with id_modal='exampleModal' %}
+{% include 'includes/modal.html' with id_modal='modal-return-home' %}
+
 {% endblock content %}
+
+{% block javascripts %}
+
+{% include 'includes/lock_sidebar.html' with id_modal='modal-return-home' %}
+
+{% endblock javascripts%}
