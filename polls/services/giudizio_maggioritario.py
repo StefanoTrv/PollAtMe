@@ -306,9 +306,8 @@ def produce_vote_tuple_list(result_query: list) -> list:
 ##Servizio per ottenere il risultato dei giudizi maggioritari, per coerenza con il servizio a scelta singola
 class MajorityJudgementService:
 
-    def search_by_poll_id(self, poll_id: int) -> Any:
-        self.__poll = Poll.objects.get(id = poll_id)
-        return self
+    def __init__(self, poll: Poll) -> None:
+        self.__poll = poll
     
     """
     Metodi per ottenere informazioni sul risultato del sondaggio a giudizio

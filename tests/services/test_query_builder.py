@@ -4,102 +4,89 @@ from django.utils import timezone
 from datetime import timedelta
 from polls.services import SearchPollQueryBuilder
 from assertpy import assert_that # type: ignore
+from django.db.models import Q
 
 class TestQueryBuilder(TestCase):
-
     def setUp(self) -> None:
-        self.titles = ['Lorem ipsum', 'dolor sit amet', 'consectetur adipiscing', 'Lorem ipsum dolor sit amet', 'enim eget consectetur', 'sapien tellus tristique lorem']
-        self.texts = ['Lorem ipsum', 'dolor sit amet', 'consectetur adipiscing', 'Nulla pulvinar', 'enim eget consectetur', 'sapien tellus tristique lorem']
-        self.starts = [
-            timezone.now() - timedelta(days=1),
-            timezone.now() - timedelta(days=1),
-            timezone.now() - timedelta(weeks=1),
-            timezone.now() - timedelta(weeks=1),
-            timezone.now() - timedelta(weeks=2),
-            timezone.now() - timedelta(weeks=2)
-        ]
-        self.ends = [
-            timezone.now() + timedelta(weeks=1),
-            timezone.now() + timedelta(weeks=1),
-            timezone.now() + timedelta(weeks=2),
-            timezone.now() + timedelta(weeks=2),
-            timezone.now() + timedelta(weeks=4),
-            timezone.now() + timedelta(weeks=4)
+        polls = [
+            {'title': 'A', 'text': 'A', 'default_type': 1, 'start': timezone.now() - timedelta(weeks=2), 'end': timezone.now() - timedelta(weeks=1)},  # concluso   
+            {'title': 'B', 'text': 'B', 'default_type': 3, 'start': timezone.now() - timedelta(weeks=2), 'end': timezone.now() - timedelta(weeks=1)},  # concluso
+            {'title': 'C', 'text': 'C', 'default_type': 2, 'start': timezone.now() - timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2)},  # attivo
+            {'title': 'D', 'text': 'D', 'default_type': 1, 'start': timezone.now() - timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2)},  # attivo
+            {'title': 'E', 'text': 'E', 'default_type': 3, 'start': timezone.now() + timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2)},  # non ancora attivo
+            {'title': 'F', 'text': 'F', 'default_type': 2, 'start': timezone.now(), 'end': timezone.now()},  # senza opzioni
         ]
 
-        for title, text, start, end in zip(self.titles, self.texts, self.starts, self.ends):
-            Poll.objects.create(title=title, text=text, start=start, end=end)
+        for p_dict in polls:
+            p = Poll(**p_dict)
+            p.save()
+        
+        for poll in Poll.objects.filter(~Q(title='F')):
+            poll.alternative_set.create(text="Prova1")
+            poll.alternative_set.create(text="Prova2")
+
     
     def test_empty_query(self):
         query = SearchPollQueryBuilder().search()
-        all_polls = Poll.objects.all()
-        for poll in query:
-            assert_that(all_polls).contains(poll)
+        all_polls = [p for p in Poll.objects.all() if p.alternative_set.count() > 0]
+        assert_that(all_polls).is_equal_to(query)
+        
     
     def test_title(self):
-        query = SearchPollQueryBuilder().title_filter("L").search()
-        expected_polls = Poll.objects.filter(title__startswith="L")
-        for poll in query:
-            assert_that(expected_polls).contains(poll)
+        query = SearchPollQueryBuilder().title_filter("A").search()
+        expected_polls = [p for p in Poll.objects.filter(title__icontains="A") if p.alternative_set.count() > 0]
+        assert_that(expected_polls).is_equal_to(query)
 
     def test_status_filter(self):
         query = SearchPollQueryBuilder().status_filter('NOT_STARTED').search()
-        active_polls = Poll.objects.filter(id__in = [
+        expected_polls = [p for p in Poll.objects.filter(id__in = [
             poll.id for poll in Poll.objects.all() if poll.is_not_started()
-        ])
-        for poll in query:
-            assert_that(active_polls).contains(poll)
+        ]) if p.alternative_set.count() > 0 ]
+        assert_that(expected_polls).is_equal_to(query)
         
         query = SearchPollQueryBuilder().status_filter('ACTIVE').search()
-        active_polls = Poll.objects.filter(id__in = [
+        expected_polls = [p for p in Poll.objects.filter(id__in = [
             poll.id for poll in Poll.objects.all() if poll.is_active()
-        ])
-        for poll in query:
-            assert_that(active_polls).contains(poll)
+        ]) if p.alternative_set.count() > 0 ]
+        assert_that(expected_polls).is_equal_to(query)
         
         query = SearchPollQueryBuilder().status_filter('ENDED').search()
-        active_polls = Poll.objects.filter(id__in = [
+        expected_polls = [p for p in Poll.objects.filter(id__in = [
             poll.id for poll in Poll.objects.all() if poll.is_ended()
-        ])
-        for poll in query:
-            assert_that(active_polls).contains(poll)
+        ]) if p.alternative_set.count() > 0 ]
+        assert_that(expected_polls).is_equal_to(query)
     
     def test_type(self):
-        """
-        Reimplementare modello prima
-        """
+        query = SearchPollQueryBuilder().type_filter(Poll.PollType.MAJORITY_JUDGMENT).search()
+        expected_polls = [p for p in Poll.objects.filter(default_type=Poll.PollType.MAJORITY_JUDGMENT)]
+        assert_that(expected_polls).is_equal_to(query)
 
     def test_range_start(self):
         start = timezone.now()
         query = SearchPollQueryBuilder().start_range_filter(start=start).search()
-        expected_polls = Poll.objects.filter(start__gte=start)
-        for poll in query:
-            assert_that(expected_polls).contains(poll)
+        expected_polls = [p for p in Poll.objects.filter(start__gte=start) if p.alternative_set.count() > 0]
+        assert_that(expected_polls).is_equal_to(query)
         
         end = timezone.now()
         query = SearchPollQueryBuilder().start_range_filter(end=end).search()
-        expected_polls = Poll.objects.filter(start__lte=end)
-        for poll in query:
-            assert_that(expected_polls).contains(poll)
+        expected_polls = [p for p in Poll.objects.filter(start__lte=end) if p.alternative_set.count() > 0]
+        assert_that(expected_polls).is_equal_to(query)
 
     def test_range_end(self):
         start = timezone.now()
         query = SearchPollQueryBuilder().end_range_filter(start=start).search()
-        expected_polls = Poll.objects.filter(end__gte=start)
-        for poll in query:
-            assert_that(expected_polls).contains(poll)
+        expected_polls = [p for p in Poll.objects.filter(end__gte=start) if p.alternative_set.count() > 0]
+        assert_that(expected_polls).is_equal_to(query)
         
         end = timezone.now()
         query = SearchPollQueryBuilder().end_range_filter(end=end).search()
-        expected_polls = Poll.objects.filter(end__lte=end)
-        for poll in query:
-            assert_that(expected_polls).contains(poll)
+        expected_polls = [p for p in Poll.objects.filter(end__lte=end) if p.alternative_set.count() > 0]
+        assert_that(expected_polls).is_equal_to(query)
     
     def test_complex(self):
-        query = SearchPollQueryBuilder().title_filter("Lorem").status_filter("NOT_STARTED").search()
-        expected_polls = Poll.objects.filter(id__in = [
+        query = SearchPollQueryBuilder().title_filter("B").status_filter("NOT_STARTED").search()
+        expected_polls = [p for p in Poll.objects.filter(id__in = [
             poll.id
-            for poll in Poll.objects.all() if poll.is_not_started() and poll.title.startswith("Lorem")
-        ])
-        for poll in query:
-            assert_that(expected_polls).contains(poll)
+            for poll in Poll.objects.all() if poll.is_not_started() and poll.title.startswith("B")
+        ]) if p.alternative_set.count() > 0]
+        assert_that(expected_polls).is_equal_to(query)

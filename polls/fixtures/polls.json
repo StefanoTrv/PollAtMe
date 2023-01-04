@@ -3,83 +3,63 @@
   "model": "polls.poll",
   "pk": 1,
   "fields": {
-    "title": "Qual è il tuo colore preferito?",
-    "text": "Scegli tra",
-    "start": "2022-12-23T23:13:01.016Z",
-    "end": "2022-12-31T13:31:02.425Z"
+    "title": "Capodanno 2023",
+    "text": "Come passerai capodanno 2023?",
+    "default_type": 3,
+    "start": "2023-01-03T16:42:00Z",
+    "end": "2023-01-10T16:42:34Z"
   }
 },
 {
   "model": "polls.poll",
   "pk": 2,
   "fields": {
-    "title": "Qual è il tuo animale preferito?",
-    "text": "Scegli tra",
-    "start": "2022-12-31T13:32:24.831Z",
-    "end": "2023-01-14T13:32:38.118Z"
+    "title": "Migliori giocatori del mondiale di calcio del 2022",
+    "text": "Dai un giudizio ai seguenti giocatori",
+    "default_type": 1,
+    "start": "2023-01-03T16:44:27Z",
+    "end": "2023-01-10T16:44:27Z"
   }
 },
 {
   "model": "polls.poll",
   "pk": 3,
   "fields": {
-    "title": "Qual è il tuo posto preferito?",
-    "text": "Scegli tra",
-    "start": "2022-12-23T23:13:01.016Z",
-    "end": "2022-12-23T14:09:14.442Z"
+    "title": "Quotidiani nazionali",
+    "text": "Dai un giudizio ai seguenti quotidiani",
+    "default_type": 1,
+    "start": "2023-01-03T16:45:32Z",
+    "end": "2023-01-10T16:45:32Z"
   }
 },
 {
   "model": "polls.poll",
   "pk": 4,
   "fields": {
-    "title": "Dai la tua opinione",
-    "text": "Dimmi la tua opinione a questi partiti",
-    "start": "2022-12-23T23:13:01.016Z",
-    "end": "2022-12-23T14:09:14.442Z"
+    "title": "Miglior dolce natalizio",
+    "text": "Quale ritieni il miglior dolce natalizio?",
+    "default_type": 3,
+    "start": "2023-01-03T16:48:47Z",
+    "end": "2023-01-10T16:48:47Z"
   }
 },
 {
   "model": "polls.poll",
-  "pk": 7,
+  "pk": 5,
   "fields": {
-    "title": "Qual è l'esame più difficile",
-    "text": "Tra tutti gli esami della triennale, qual è il più difficile secondo te?",
-    "start": "2022-12-23T23:13:01.016Z",
-    "end": "2022-12-23T14:09:14.442Z"
+    "title": "Metodo di pagamento preferito",
+    "text": "Quale è secondo te il miglior metodo di pagamento?",
+    "default_type": 3,
+    "start": "2023-01-03T16:49:27Z",
+    "end": "2023-01-10T16:49:27Z"
   }
-},
-{
-  "model": "polls.singlepreferencepoll",
-  "pk": 1,
-  "fields": {}
-},
-{
-  "model": "polls.singlepreferencepoll",
-  "pk": 2,
-  "fields": {}
-},
-{
-  "model": "polls.singlepreferencepoll",
-  "pk": 3,
-  "fields": {}
-},
-{
-  "model": "polls.singlepreferencepoll",
-  "pk": 7,
-  "fields": {}
-},
-{
-  "model": "polls.majorityopinionpoll",
-  "pk": 4,
-  "fields": {}
 },
 {
   "model": "polls.alternative",
   "pk": 1,
   "fields": {
     "poll": 1,
-    "text": "blu"
+    "text": "Facendo festa con amici"
   }
 },
 {
@@ -87,7 +67,7 @@
   "pk": 2,
   "fields": {
     "poll": 1,
-    "text": "rosso"
+    "text": "Rimanendo a casa"
   }
 },
 {
@@ -95,15 +75,15 @@
   "pk": 3,
   "fields": {
     "poll": 1,
-    "text": "verde"
+    "text": "Facendo un giro in piazza"
   }
 },
 {
   "model": "polls.alternative",
   "pk": 4,
   "fields": {
-    "poll": 2,
-    "text": "cane"
+    "poll": 1,
+    "text": "Facendo una vacanza"
   }
 },
 {
@@ -111,7 +91,7 @@
   "pk": 5,
   "fields": {
     "poll": 2,
-    "text": "gatto"
+    "text": "Messi"
   }
 },
 {
@@ -119,224 +99,118 @@
   "pk": 6,
   "fields": {
     "poll": 2,
-    "text": "cavallo"
+    "text": "Ronaldo"
   }
 },
 {
   "model": "polls.alternative",
   "pk": 7,
   "fields": {
-    "poll": 4,
-    "text": "PD"
+    "poll": 2,
+    "text": "Modric"
   }
 },
 {
   "model": "polls.alternative",
   "pk": 8,
   "fields": {
-    "poll": 4,
-    "text": "Lega"
+    "poll": 2,
+    "text": "Neymar"
   }
 },
 {
   "model": "polls.alternative",
   "pk": 9,
   "fields": {
-    "poll": 4,
-    "text": "M5S"
+    "poll": 2,
+    "text": "Mbappè"
   }
 },
 {
   "model": "polls.alternative",
   "pk": 10,
   "fields": {
-    "poll": 4,
-    "text": "FDI"
+    "poll": 3,
+    "text": "Corriere della Sera"
   }
 },
 {
   "model": "polls.alternative",
   "pk": 11,
   "fields": {
-    "poll": 4,
-    "text": "Terzo Polo"
+    "poll": 3,
+    "text": "La Repubblica"
   }
 },
 {
   "model": "polls.alternative",
-  "pk": 24,
-  "fields": {
-    "poll": 7,
-    "text": "Fondamenti dell'informatica"
-  }
-},
-{
-  "model": "polls.alternative",
-  "pk": 25,
-  "fields": {
-    "poll": 7,
-    "text": "Algoritmi e Strutture dati"
-  }
-},
-{
-  "model": "polls.alternative",
-  "pk": 26,
-  "fields": {
-    "poll": 7,
-    "text": "Reti di calcolatori"
-  }
-},
-{
-  "model": "polls.preference",
-  "pk": 1,
-  "fields": {
-    "poll": 1
-  }
-},
-{
-  "model": "polls.preference",
-  "pk": 2,
-  "fields": {
-    "poll": 1
-  }
-},
-{
-  "model": "polls.preference",
-  "pk": 3,
-  "fields": {
-    "poll": 1
-  }
-},
-{
-  "model": "polls.preference",
-  "pk": 4,
-  "fields": {
-    "poll": 1
-  }
-},
-{
-  "model": "polls.preference",
-  "pk": 5,
-  "fields": {
-    "poll": 1
-  }
-},
-{
-  "model": "polls.preference",
-  "pk": 6,
-  "fields": {
-    "poll": 1
-  }
-},
-{
-  "model": "polls.preference",
-  "pk": 7,
-  "fields": {
-    "poll": 1
-  }
-},
-{
-  "model": "polls.preference",
-  "pk": 8,
-  "fields": {
-    "poll": 2
-  }
-},
-{
-  "model": "polls.preference",
-  "pk": 9,
-  "fields": {
-    "poll": 2
-  }
-},
-{
-  "model": "polls.preference",
-  "pk": 10,
-  "fields": {
-    "poll": 2
-  }
-},
-{
-  "model": "polls.preference",
-  "pk": 11,
-  "fields": {
-    "poll": 2
-  }
-},
-{
-  "model": "polls.preference",
   "pk": 12,
   "fields": {
-    "poll": 2
+    "poll": 3,
+    "text": "Il Fatto Quotidiano"
   }
 },
 {
-  "model": "polls.preference",
+  "model": "polls.alternative",
   "pk": 13,
   "fields": {
-    "poll": 1
+    "poll": 3,
+    "text": "Il Sole 24 Ore"
   }
 },
 {
-  "model": "polls.preference",
+  "model": "polls.alternative",
   "pk": 14,
   "fields": {
-    "poll": 1
+    "poll": 4,
+    "text": "Pandoro"
   }
 },
 {
-  "model": "polls.preference",
+  "model": "polls.alternative",
+  "pk": 15,
+  "fields": {
+    "poll": 4,
+    "text": "Panettone"
+  }
+},
+{
+  "model": "polls.alternative",
+  "pk": 16,
+  "fields": {
+    "poll": 4,
+    "text": "Brovada e musetto"
+  }
+},
+{
+  "model": "polls.alternative",
+  "pk": 17,
+  "fields": {
+    "poll": 5,
+    "text": "POS"
+  }
+},
+{
+  "model": "polls.alternative",
+  "pk": 18,
+  "fields": {
+    "poll": 5,
+    "text": "Contanti"
+  }
+},
+{
+  "model": "polls.alternative",
   "pk": 19,
   "fields": {
-    "poll": 4
-  }
-},
-{
-  "model": "polls.preference",
-  "pk": 20,
-  "fields": {
-    "poll": 4
-  }
-},
-{
-  "model": "polls.preference",
-  "pk": 21,
-  "fields": {
-    "poll": 4
-  }
-},
-{
-  "model": "polls.preference",
-  "pk": 22,
-  "fields": {
-    "poll": 1
-  }
-},
-{
-  "model": "polls.preference",
-  "pk": 30,
-  "fields": {
-    "poll": 2
-  }
-},
-{
-  "model": "polls.preference",
-  "pk": 31,
-  "fields": {
-    "poll": 7
-  }
-},
-{
-  "model": "polls.preference",
-  "pk": 32,
-  "fields": {
-    "poll": 7
+    "poll": 5,
+    "text": "Baratto"
   }
 },
 {
   "model": "polls.singlepreference",
   "pk": 1,
   "fields": {
+    "poll": 1,
     "alternative": 1
   }
 },
@@ -344,13 +218,15 @@
   "model": "polls.singlepreference",
   "pk": 2,
   "fields": {
-    "alternative": 3
+    "poll": 1,
+    "alternative": 1
   }
 },
 {
   "model": "polls.singlepreference",
   "pk": 3,
   "fields": {
+    "poll": 1,
     "alternative": 2
   }
 },
@@ -358,121 +234,201 @@
   "model": "polls.singlepreference",
   "pk": 4,
   "fields": {
-    "alternative": 1
+    "poll": 1,
+    "alternative": 3
   }
 },
 {
   "model": "polls.singlepreference",
   "pk": 5,
   "fields": {
-    "alternative": 3
+    "poll": 1,
+    "alternative": 2
   }
 },
 {
   "model": "polls.singlepreference",
   "pk": 6,
   "fields": {
-    "alternative": 1
+    "poll": 1,
+    "alternative": 2
   }
 },
 {
   "model": "polls.singlepreference",
   "pk": 7,
   "fields": {
-    "alternative": 3
+    "poll": 1,
+    "alternative": 4
   }
 },
 {
   "model": "polls.singlepreference",
   "pk": 8,
   "fields": {
-    "alternative": 4
+    "poll": 1,
+    "alternative": 3
   }
 },
 {
   "model": "polls.singlepreference",
   "pk": 9,
   "fields": {
-    "alternative": 5
+    "poll": 5,
+    "alternative": 17
   }
 },
 {
   "model": "polls.singlepreference",
   "pk": 10,
   "fields": {
-    "alternative": 5
+    "poll": 5,
+    "alternative": 17
   }
 },
 {
   "model": "polls.singlepreference",
   "pk": 11,
   "fields": {
-    "alternative": 6
+    "poll": 5,
+    "alternative": 18
   }
 },
 {
   "model": "polls.singlepreference",
   "pk": 12,
   "fields": {
-    "alternative": 6
+    "poll": 5,
+    "alternative": 17
   }
 },
 {
   "model": "polls.singlepreference",
   "pk": 13,
   "fields": {
-    "alternative": 1
+    "poll": 5,
+    "alternative": 17
   }
 },
 {
   "model": "polls.singlepreference",
   "pk": 14,
   "fields": {
-    "alternative": 3
+    "poll": 4,
+    "alternative": 14
   }
 },
 {
   "model": "polls.singlepreference",
-  "pk": 22,
+  "pk": 15,
   "fields": {
-    "alternative": 3
+    "poll": 4,
+    "alternative": 14
   }
 },
 {
   "model": "polls.singlepreference",
-  "pk": 30,
+  "pk": 16,
   "fields": {
-    "alternative": 6
+    "poll": 4,
+    "alternative": 16
   }
 },
 {
   "model": "polls.singlepreference",
-  "pk": 31,
+  "pk": 17,
   "fields": {
-    "alternative": 24
-  }
-},
-{
-  "model": "polls.singlepreference",
-  "pk": 32,
-  "fields": {
-    "alternative": 25
+    "poll": 4,
+    "alternative": 16
   }
 },
 {
   "model": "polls.majoritypreference",
-  "pk": 19,
-  "fields": {}
+  "pk": 1,
+  "fields": {
+    "poll": 2
+  }
 },
 {
   "model": "polls.majoritypreference",
-  "pk": 20,
-  "fields": {}
+  "pk": 2,
+  "fields": {
+    "poll": 2
+  }
 },
 {
   "model": "polls.majoritypreference",
-  "pk": 21,
-  "fields": {}
+  "pk": 3,
+  "fields": {
+    "poll": 2
+  }
+},
+{
+  "model": "polls.majoritypreference",
+  "pk": 4,
+  "fields": {
+    "poll": 2
+  }
+},
+{
+  "model": "polls.majoritypreference",
+  "pk": 5,
+  "fields": {
+    "poll": 2
+  }
+},
+{
+  "model": "polls.majoritypreference",
+  "pk": 6,
+  "fields": {
+    "poll": 3
+  }
+},
+{
+  "model": "polls.majoritypreference",
+  "pk": 7,
+  "fields": {
+    "poll": 3
+  }
+},
+{
+  "model": "polls.majoritypreference",
+  "pk": 8,
+  "fields": {
+    "poll": 3
+  }
+},
+{
+  "model": "polls.majoritypreference",
+  "pk": 9,
+  "fields": {
+    "poll": 3
+  }
+},
+{
+  "model": "polls.majoritypreference",
+  "pk": 10,
+  "fields": {
+    "poll": 3
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 1,
+  "fields": {
+    "grade": 5,
+    "alternative": 5,
+    "preference": 1
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 2,
+  "fields": {
+    "grade": 2,
+    "alternative": 6,
+    "preference": 1
+  }
 },
 {
   "model": "polls.majorityopinionjudgement",
@@ -480,16 +436,16 @@
   "fields": {
     "grade": 5,
     "alternative": 7,
-    "preference": 19
+    "preference": 1
   }
 },
 {
   "model": "polls.majorityopinionjudgement",
   "pk": 4,
   "fields": {
-    "grade": 3,
+    "grade": 4,
     "alternative": 8,
-    "preference": 19
+    "preference": 1
   }
 },
 {
@@ -498,88 +454,88 @@
   "fields": {
     "grade": 5,
     "alternative": 9,
-    "preference": 19
+    "preference": 1
   }
 },
 {
   "model": "polls.majorityopinionjudgement",
   "pk": 6,
   "fields": {
-    "grade": 2,
-    "alternative": 10,
-    "preference": 19
+    "grade": 4,
+    "alternative": 5,
+    "preference": 2
   }
 },
 {
   "model": "polls.majorityopinionjudgement",
   "pk": 7,
   "fields": {
-    "grade": 2,
-    "alternative": 11,
-    "preference": 19
+    "grade": 3,
+    "alternative": 6,
+    "preference": 2
   }
 },
 {
   "model": "polls.majorityopinionjudgement",
   "pk": 8,
   "fields": {
-    "grade": 5,
+    "grade": 3,
     "alternative": 7,
-    "preference": 20
+    "preference": 2
   }
 },
 {
   "model": "polls.majorityopinionjudgement",
   "pk": 9,
   "fields": {
-    "grade": 2,
+    "grade": 3,
     "alternative": 8,
-    "preference": 20
+    "preference": 2
   }
 },
 {
   "model": "polls.majorityopinionjudgement",
   "pk": 10,
   "fields": {
-    "grade": 2,
+    "grade": 5,
     "alternative": 9,
-    "preference": 20
+    "preference": 2
   }
 },
 {
   "model": "polls.majorityopinionjudgement",
   "pk": 11,
   "fields": {
-    "grade": 4,
-    "alternative": 10,
-    "preference": 20
+    "grade": 3,
+    "alternative": 5,
+    "preference": 3
   }
 },
 {
   "model": "polls.majorityopinionjudgement",
   "pk": 12,
   "fields": {
-    "grade": 2,
-    "alternative": 11,
-    "preference": 20
+    "grade": 4,
+    "alternative": 6,
+    "preference": 3
   }
 },
 {
   "model": "polls.majorityopinionjudgement",
   "pk": 13,
   "fields": {
-    "grade": 3,
+    "grade": 1,
     "alternative": 7,
-    "preference": 21
+    "preference": 3
   }
 },
 {
   "model": "polls.majorityopinionjudgement",
   "pk": 14,
   "fields": {
-    "grade": 4,
+    "grade": 1,
     "alternative": 8,
-    "preference": 21
+    "preference": 3
   }
 },
 {
@@ -588,16 +544,16 @@
   "fields": {
     "grade": 3,
     "alternative": 9,
-    "preference": 21
+    "preference": 3
   }
 },
 {
   "model": "polls.majorityopinionjudgement",
   "pk": 16,
   "fields": {
-    "grade": 2,
-    "alternative": 10,
-    "preference": 21
+    "grade": 4,
+    "alternative": 5,
+    "preference": 4
   }
 },
 {
@@ -605,8 +561,260 @@
   "pk": 17,
   "fields": {
     "grade": 3,
+    "alternative": 6,
+    "preference": 4
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 18,
+  "fields": {
+    "grade": 2,
+    "alternative": 7,
+    "preference": 4
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 19,
+  "fields": {
+    "grade": 3,
+    "alternative": 8,
+    "preference": 4
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 20,
+  "fields": {
+    "grade": 1,
+    "alternative": 9,
+    "preference": 4
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 21,
+  "fields": {
+    "grade": 5,
+    "alternative": 5,
+    "preference": 5
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 22,
+  "fields": {
+    "grade": 2,
+    "alternative": 6,
+    "preference": 5
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 23,
+  "fields": {
+    "grade": 4,
+    "alternative": 7,
+    "preference": 5
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 24,
+  "fields": {
+    "grade": 2,
+    "alternative": 8,
+    "preference": 5
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 25,
+  "fields": {
+    "grade": 4,
+    "alternative": 9,
+    "preference": 5
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 26,
+  "fields": {
+    "grade": 4,
+    "alternative": 10,
+    "preference": 6
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 27,
+  "fields": {
+    "grade": 4,
     "alternative": 11,
-    "preference": 21
+    "preference": 6
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 28,
+  "fields": {
+    "grade": 4,
+    "alternative": 12,
+    "preference": 6
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 29,
+  "fields": {
+    "grade": 4,
+    "alternative": 13,
+    "preference": 6
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 30,
+  "fields": {
+    "grade": 2,
+    "alternative": 10,
+    "preference": 7
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 31,
+  "fields": {
+    "grade": 2,
+    "alternative": 11,
+    "preference": 7
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 32,
+  "fields": {
+    "grade": 1,
+    "alternative": 12,
+    "preference": 7
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 33,
+  "fields": {
+    "grade": 1,
+    "alternative": 13,
+    "preference": 7
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 34,
+  "fields": {
+    "grade": 1,
+    "alternative": 10,
+    "preference": 8
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 35,
+  "fields": {
+    "grade": 3,
+    "alternative": 11,
+    "preference": 8
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 36,
+  "fields": {
+    "grade": 5,
+    "alternative": 12,
+    "preference": 8
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 37,
+  "fields": {
+    "grade": 1,
+    "alternative": 13,
+    "preference": 8
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 38,
+  "fields": {
+    "grade": 3,
+    "alternative": 10,
+    "preference": 9
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 39,
+  "fields": {
+    "grade": 2,
+    "alternative": 11,
+    "preference": 9
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 40,
+  "fields": {
+    "grade": 3,
+    "alternative": 12,
+    "preference": 9
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 41,
+  "fields": {
+    "grade": 4,
+    "alternative": 13,
+    "preference": 9
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 42,
+  "fields": {
+    "grade": 5,
+    "alternative": 10,
+    "preference": 10
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 43,
+  "fields": {
+    "grade": 1,
+    "alternative": 11,
+    "preference": 10
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 44,
+  "fields": {
+    "grade": 1,
+    "alternative": 12,
+    "preference": 10
+  }
+},
+{
+  "model": "polls.majorityopinionjudgement",
+  "pk": 45,
+  "fields": {
+    "grade": 3,
+    "alternative": 13,
+    "preference": 10
   }
 }
 ]

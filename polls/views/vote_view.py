@@ -36,9 +36,9 @@ class VotingView(View):
             raise BadRequest(self.NO_ALTERNATIVES_POLL_MSG)
     
     def __dispatch_view(self, poll: Poll) -> Callable:
-        if poll.get_type()=='Preferenza singola':
+        if poll.get_type() == 'Preferenza singola':
             return VoteSinglePreferenceView.as_view()
-        elif poll.get_type()=='Giudizio maggioritario':
+        elif poll.get_type() == 'Giudizio maggioritario':
             return VoteMajorityJudgmentView.as_view()
         else:
             return VoteShultzeView.as_view()

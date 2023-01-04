@@ -33,11 +33,10 @@ class SearchPollQueryBuilder:
 
     def __init__(self) -> None:
         self.__status_filter = lambda p: True
-        self.__type_filter = lambda p: True
         self.__query_filter: Q = Q()
 
     def title_filter(self, title: str):
-        self.__query_filter = self.__query_filter & Q(title__startswith=title)
+        self.__query_filter = self.__query_filter & Q(title__icontains=title)
         return self
 
     def status_filter(self, state: str):
@@ -51,12 +50,7 @@ class SearchPollQueryBuilder:
         return self
 
     def type_filter(self, type: int):
-        action = {
-            k: lambda p, label=v: p.get_type() == label  # type: ignore
-            for k, v in Poll.PollType.choices
-        }
-
-        self.__type_filter = action.get(type, self.__type_filter)
+        self.__query_filter = self.__query_filter & Q(default_type=type)
         return self
 
     def start_range_filter(self, start=None, end=None):
@@ -75,11 +69,15 @@ class SearchPollQueryBuilder:
         return self
 
     def search(self) -> list[Poll]:
-        return [
+        q = Poll.objects.filter(self.__query_filter)
+
+        l =  [
             poll
-            for poll in Poll.objects.filter(self.__query_filter)
-            if self.__status_filter(poll) and self.__type_filter(poll) and poll.alternative_set.count() > 0
+            for poll in q
+            if self.__status_filter(poll) and poll.alternative_set.count() > 0
         ]
+
+        return l
 
 
 class SearchPollService:

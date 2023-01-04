@@ -34,9 +34,9 @@ class ResultView(View):
             raise http.Http404(self.POLL_DOES_NOT_EXISTS_MSG)
     
     def __dispatch_view(self, poll: Poll) -> Callable:
-        if poll.get_type()=='Preferenza singola':
+        if poll.get_type() == 'Preferenza singola':
             return SinglePreferenceListView.as_view()
-        elif poll.get_type()=='Giudizio maggioritario':
+        elif poll.get_type() == 'Giudizio maggioritario':
             return MajorityJudgementListView.as_view()
         else:
             return ShultzePreferenceListView.as_view()
@@ -68,7 +68,7 @@ class SinglePreferenceListView(TemplateView):
         return super().render_to_response(context, **response_kwargs)
     
 
-class ShultzePreferenceListView(ListView):
+class ShultzePreferenceListView(TemplateView):
     model: type[models.Model] = Preference
     template_name: str = 'result_GM.html'
 
@@ -82,25 +82,20 @@ class ShultzePreferenceListView(ListView):
         return context
     
 
-class MajorityJudgementListView(ListView):
+class MajorityJudgementListView(TemplateView):
     
     model: type[models.Model] = Preference
     template_name: str = 'results/result_GM.html'
 
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self.__poll_results_service = MajorityJudgementService()
-        
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        poll_service = self.__poll_results_service.search_by_poll_id(self.kwargs['id'])
         poll = SearchPollService().search_by_id(self.kwargs['id'])
+        result_service = MajorityJudgementService(poll)
 
-        classifica = poll_service.get_classifica()
-        winners = poll_service.get_winners()
-        vote_list = poll_service.get_voti_alternativa()
+        classifica = result_service.get_classifica()
+        winners = result_service.get_winners()
+        vote_list = result_service.get_voti_alternativa()
 
         context['poll_id'] = self.kwargs['id']
         context.update(classifica)
