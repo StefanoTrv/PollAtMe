@@ -96,7 +96,6 @@ class TestPollEditView(TestCase):
             assert_that(alt.text).is_equal_to(text)
 
     def test_edit_poll_after_start(self):
-        
         url = reverse('polls:edit_poll', kwargs={'id': self.poll.pk})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -145,4 +144,3 @@ class TestPollEditView(TestCase):
         
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, 403)
-

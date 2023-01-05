@@ -47,6 +47,11 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
             'form': PollFormAdditionalOptions(instance=f_poll)
         })
     else:
+        formset_alternatives._non_form_errors[0]=str(formset_alternatives._non_form_errors[0]).replace("Please submit at least 2 forms.","Inserisci almeno due alternative.") # type: ignore
+        print(formset_alternatives.errors)
+        for dict in formset_alternatives.errors:
+            if 'This field is required.' in str(dict):
+                dict['text']='' # type: ignore
         return render(request, f'create_poll/main_page_{action}.html', {
             'form': form,
             'formset': formset_alternatives,
@@ -115,7 +120,6 @@ class EditPollView(TemplateView):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request: HttpRequest, *args, **kwargs):
-
         return render(request, 'create_poll/main_page_edit.html', {
             'form': PollFormMain(instance=self.__poll),
             'formset': BaseAlternativeFormSet.get_formset_class()(queryset=self.__poll.alternative_set.all())

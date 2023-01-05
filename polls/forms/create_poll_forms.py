@@ -5,9 +5,8 @@ from django.utils import timezone
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 
 from polls.models import Poll, Alternative
+
 # Form per la pagina principale della pagina di creazione di nuovi sondaggi, contenente i dati principali
-
-
 class BaseAlternativeFormSet(forms.BaseModelFormSet):
     deletion_widget = forms.HiddenInput
     
