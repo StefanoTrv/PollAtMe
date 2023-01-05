@@ -25,8 +25,6 @@ class ResultView(View):
         """
         Questo metodo viene invocato quando viene fatta una richiesta
         HTTP (di qualunque tipo).
-        Il dispatching avviene verificando gli attributi della poll
-        (non funziona il polimorfismo)
         """
         try:
             poll = SearchPollService().search_by_id(kwargs['id'])
@@ -36,9 +34,9 @@ class ResultView(View):
             raise http.Http404(self.POLL_DOES_NOT_EXISTS_MSG)
     
     def __dispatch_view(self, poll: Poll) -> Callable:
-        if hasattr(poll, 'singlepreferencepoll'):
+        if poll.get_type() == 'Preferenza singola':
             return SinglePreferenceListView.as_view()
-        elif hasattr(poll, 'majorityopinionpoll'):
+        elif poll.get_type() == 'Giudizio maggioritario':
             return MajorityJudgementListView.as_view()
         else:
             return ShultzePreferenceListView.as_view()
@@ -52,7 +50,7 @@ class SinglePreferenceListView(TemplateView):
         context = super().get_context_data(**kwargs)
         poll = SearchPollService().search_by_id(self.kwargs['id'])
         results = SinglePreferencePollResultsService().set_poll(poll).as_list()
-        
+
         tot_votes = sum([votes['count'] for votes in results])
         for res in results:
             if tot_votes == 0:
@@ -62,17 +60,17 @@ class SinglePreferenceListView(TemplateView):
         
         context['results'] = results
         context['unique_winner'] = results[0]['position'] != results[1]['position']
-        context['tot_votes'] = tot_votes
-        context['poll_title'] = poll.title
+        context['poll'] = poll
+
         return context
     
     def render_to_response(self, context: dict[str, Any], **response_kwargs: Any) -> http.HttpResponse:
         return super().render_to_response(context, **response_kwargs)
     
 
-class ShultzePreferenceListView(ListView):
+class ShultzePreferenceListView(TemplateView):
     model: type[models.Model] = Preference
-    template_name: str = 'result_GM.html' ##qui al limite si deciderà se ritornare tutti la stessa pagina
+    template_name: str = 'result_GM.html'
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -84,31 +82,24 @@ class ShultzePreferenceListView(ListView):
         return context
     
 
-class MajorityJudgementListView(ListView):
+class MajorityJudgementListView(TemplateView):
     
     model: type[models.Model] = Preference
-    template_name: str = 'result_GM.html' ##qui al limite si deciderà se ritornare tutti la stessa pagina
-
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self.__poll_results_service = MajorityJudgementService()
-        
+    template_name: str = 'results/result_GM.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        poll_service = self.__poll_results_service.search_by_poll_id(self.kwargs['id'])
+        poll = SearchPollService().search_by_id(self.kwargs['id'])
+        result_service = MajorityJudgementService(poll)
 
-        classifica = poll_service.get_classifica()
-        winners = poll_service.get_winners()
-        vote_list = poll_service.get_voti_alternativa()
-        numero_alternative = poll_service.get_numero_alternative()
-        numero_giudizi = poll_service.get_numero_numero_giudizi()
+        classifica = result_service.get_classifica()
+        winners = result_service.get_winners()
+        vote_list = result_service.get_voti_alternativa()
 
         context['poll_id'] = self.kwargs['id']
         context.update(classifica)
         context.update(winners)
         context.update(vote_list)
-        context.update(numero_alternative)
-        context.update(numero_giudizi)
+        context['poll'] = poll
         return context

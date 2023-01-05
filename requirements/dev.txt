@@ -21,4 +21,6 @@ types-pytz==2022.5.0.0
 types-PyYAML==6.0.12.1
 typing_extensions==4.4.0
 django-cookiebanner==0.2.7
+django-bootstrap5==22.1
+django-bootstrap-datepicker-plus==5.0.2
 whitenoise

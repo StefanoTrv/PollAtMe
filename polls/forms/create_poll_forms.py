@@ -1,81 +1,151 @@
+from datetime import timedelta
 from django import forms
-from polls.models import SinglePreferencePoll, MajorityOpinionPoll
+from django.utils import timezone
 
-#Form per la pagina principale della pagina di creazione di nuovi sondaggi, contenente i dati principali
-class CreatePollFormMain(forms.Form):
-    poll_title = forms.CharField(label = 'Titolo', max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Inserisci il titolo del sondaggio'}))
-    poll_type = forms.ChoiceField(label = 'Tipo di sondaggio', choices=[
-        ('Giudizio maggioritario', 'Giudizio maggioritario'),
-        ('Preferenza singola', 'Preferenza singola'),
-    ], widget=forms.Select(attrs={'class':'form-select'}))
-    poll_text = forms.CharField(label = 'Testo', widget=forms.Textarea(attrs={'class':'form-control', 'rows':'4', 'placeholder':'Inserisci il testo della domanda del sondaggio'}))
-    hidden_alternative_count = forms.IntegerField(widget=forms.HiddenInput())#sia quelle attive che quelle che l'utente ha cancellato, ma che in realtà sono solo nascoste
+from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 
-    #Senza argomenti i campi sono tutti vuoti.
-    #Può ricevere i parametri 'poll_title', 'poll_text', 'poll_type', 'alternatives' e 'poll'. Se quest'ultimo è presente, sovrascrive tutti i precedenti.
-    def __init__(self, *args, **kwargs):
-        number_of_alternatives = int(kwargs.pop('count', 2))
+from polls.models import Poll, Alternative
 
-        poll_title = kwargs.pop('poll_title',None)
-        poll_text = kwargs.pop('poll_text',None)
-        poll_type = kwargs.pop('poll_type',None)
-
-        alternatives = kwargs.pop('alternatives',[])
-
-        if 'poll' in kwargs:
-            poll = kwargs.pop('poll')
-            #è necessario fare query sul db per scoprire il tipo del sondaggio
-            if len(SinglePreferencePoll.objects.filter(id=poll.id)) == 1:
-                poll_type= 'Preferenza singola'
-            elif len(MajorityOpinionPoll.objects.filter(id=poll.id)) == 1:
-                poll_type='Giudizio maggioritario'
-            else:
-                raise TypeError
-            poll_title=poll.title
-            poll_text=poll.text
-            poll_type=poll_type
-            alternatives=[a.text for a in poll.alternative_set.all()]
-
-        super(CreatePollFormMain, self).__init__(*args, **kwargs)
-        self.fields['hidden_alternative_count'].initial = max(number_of_alternatives,len(alternatives))
-
-        self.fields['poll_title'].initial = poll_title
-        self.fields['poll_text'].initial = poll_text
-        self.fields['poll_type'].initial = poll_type
-
-        for index in range(max(number_of_alternatives,len(alternatives))):
-            # generate extra fields in the number specified via hidden_alternative_count and enough for all the alternatives passed as input (that is, the max of the two)
-            self.fields['alternative'+str(index+1)] = forms.CharField(label = 'Alternativa', max_length=100, required=False, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Inserisci il testo dell\'alternativa'}))
-        
-        for index in range(len(alternatives)):
-            self.fields['alternative'+str(index+1)].initial=alternatives[index]
+# Form per la pagina principale della pagina di creazione di nuovi sondaggi, contenente i dati principali
+class BaseAlternativeFormSet(forms.BaseModelFormSet):
+    deletion_widget = forms.HiddenInput
     
+    def get_not_empty_alternatives(self):
+        return [
+            alt
+            for alt in self.cleaned_data if len(alt) > 0
+        ]
+
+    def get_form_for_session(self) -> dict:
+        cleaned_data = self.get_not_empty_alternatives()
+        data = {
+            'form-TOTAL_FORMS': len(cleaned_data),	
+            'form-INITIAL_FORMS': self.data['form-INITIAL_FORMS'],
+            'form-MIN_NUM_FORMS': self.data['form-MIN_NUM_FORMS'],
+            'form-MAX_NUM_FORMS': self.data['form-MAX_NUM_FORMS'],
+        }
+
+        for i, alt in enumerate(cleaned_data):
+            obj = alt.get('id', None)
+            text = '_' if alt['DELETE'] else alt.get('text', '')
+            data = data | {
+                f'form-{i}-text': text,
+                f'form-{i}-id': obj.id if obj is not None else '',
+                f'form-{i}-DELETE': 'true' if alt['DELETE'] else '',
+            }
+
+        return data
+    
+    def get_alternatives_text_list(self) -> list:
+        return [
+            alt['text'] for alt in self.get_not_empty_alternatives() if alt['DELETE'] is False
+        ]
+
+    @staticmethod
+    def get_formset_class():
+        return forms.modelformset_factory(
+            model=Alternative,
+            formset=BaseAlternativeFormSet,
+            fields=['text'],
+            widgets={
+                'text': forms.TextInput(attrs={'class': 'form-control', 'placeholder': "Inserisci il testo dell'alternativa"}),
+            },
+            labels={
+                'text': ""
+            },
+            error_messages={
+                'too_few_forms': 'Inserisci almeno %(num)d alternative valide per proseguire'
+            },
+            can_order=False, can_delete=True,
+            extra=0,
+            min_num=2, max_num=10,
+            validate_max=True, validate_min=True,
+        )
+
+
+class PollFormMain(forms.ModelForm):
+    class Meta:
+        model = Poll
+        fields = ['title', 'default_type', 'text']
+        labels = {
+            'title': 'Titolo',
+            'default_type': 'Tipo di sondaggio',
+            'text': 'Testo'
+        }
+        error_messages = {
+            'title': {
+                'required': 'Il testo del sondaggio non può essere vuoto.'
+            },
+            'text': {
+                'required': 'Il testo del sondaggio non può essere vuoto.'
+            }
+        }
+
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'placeholder': 'Inserisci il titolo del sondaggio'
+            }),
+            'text': forms.Textarea(attrs={
+                'rows': 4,
+                'placeholder': 'Inserisci il testo della domanda del sondaggio'
+            })
+        }
+
+
+# Form per la seconda pagina della creazione di nuovi sondaggi, contenente opzioni secondarie
+class PollFormAdditionalOptions(forms.ModelForm):
+    class Meta:
+        model = Poll
+        fields = "__all__"
+        labels = {
+            'start': 'Data inizio votazioni',
+            'end': 'Data fine votazioni'
+        } | PollFormMain.Meta.labels
+
+        error_messages = {} | PollFormMain.Meta.error_messages
+        
+        widgets = {
+            'start': DateTimePickerInput(
+                options={"format": "DD-MM-YYYY HH:mm"}
+            ),
+            'end': DateTimePickerInput(
+                range_from='start',
+                options={"format": "DD-MM-YYYY HH:mm"}
+            ),
+            'default_type': forms.Select(
+                attrs={'disabled': True}
+            ),
+            'text': forms.Textarea(attrs={
+                'style': 'resize: none;',
+                'rows': 4
+            })
+        }
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        
+        for f_name in self.fields:
+            if f_name in PollFormMain.Meta.fields:
+                self.fields[f_name].widget.attrs['readonly'] = True
+
     def clean(self):
-        form_data = self.cleaned_data
+        if self.errors:
+            return
 
-        #rimuovo le alternative vuote
-        alternatives=[]
-        for i in range(1,form_data['hidden_alternative_count']+1):
-            if form_data['alternative'+str(i)].strip()!="":
-                alternatives.append(form_data['alternative'+str(i)].strip())
-            del form_data['alternative'+str(i)]
-        form_data['hidden_alternative_count']=len(alternatives)
-        for i in range(len(alternatives)):
-            form_data['alternative'+str(i+1)]=alternatives[i]
-        
-        #errore se il campo del titolo è vuoto
-        if 'poll_title' not in form_data:
-            self.add_error(None, "Il titolo non può essere vuoto.")
+        start = self.cleaned_data['start']
+        end = self.cleaned_data['end']
 
-        #errore se non ci sono abbastanza alternative
-        if form_data['hidden_alternative_count'] not in range (2,10):
-            self.add_error(None, "Il numero di alternative deve essere compreso tra 2 e 10.")
-        
-        #errore se il campo del testo è vuoto
-        if 'poll_text' not in form_data:
-            self.add_error(None, "Il testo del sondaggio non può essere vuoto.")
-        return form_data
+        now = timezone.localtime(timezone.now())
 
-#Form per la seconda pagina della creazione di nuovi sondaggi, contenente opzioni secondarie
-class CreatePollAdditionalOptions(forms.Form):#per ora vuota, sarà da riempire con le opzioni
-    pass
+        if end - start < timedelta(0):
+            self.add_error('end', 'La data di fine è precedente alla data di inizio')
+
+        # il sondaggio deve iniziare almeno 5 minuti da adesso
+        if start - now < timedelta(minutes=5):
+            self.add_error('start', 'Il sondaggio deve iniziare almeno 5 minuti da adesso')
+
+        # il sondaggio deve durare almeno 15 minuti
+        if end - start < timedelta(minutes=15):
+            self.add_error('end', 'Il sondaggio deve durare almeno 15 minuti')
+
+        return self.cleaned_data

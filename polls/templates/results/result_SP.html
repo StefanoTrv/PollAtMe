@@ -25,48 +25,7 @@
     </div>
     <!-- [ breadcrumb ] end -->
     <!-- [ Main Content ] start -->
-    <h5 class="mt-4">Riepilogo</h5>
-    <hr>
-    <div class="row">
-      <div class="col-md-6 col-xl-3">
-        <div class="card bg-c-blue order-card">
-          <div class="card-body">
-            <h6 class="text-white">Data di apertura del sondaggio:</h6>
-            <h2 class="text-end text-white"><em class="feather icon-calendar float-start"></em><span>{% now "SHORT_DATE_FORMAT" %}</span>
-            </h2>
-            <p class="m-b-0">Data di chiusura<span class="float-end">{% now "SHORT_DATE_FORMAT" %}</span></p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6 col-xl-3">
-        <div class="card bg-c-green order-card">
-          <div class="card-body">
-            <h6 class="text-white">Sondaggio creato da:</h6>
-            <h2 class="text-end text-white"><em class="feather icon-user float-start"></em><span>User</span>
-            </h2>
-            <p class="m-b-0">Sondaggio creato il giorno<span class="float-end">{% now "SHORT_DATE_FORMAT" %}</span></p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6 col-xl-3">
-        <div class="card bg-c-yellow order-card">
-          <div class="card-body">
-            <h6 class="text-white">Tipo di sondaggio</h6>
-            <h2 class="text-end text-white"><em class="feather icon-lock float-start"></em><span>Pubblico</span></h2>
-            <p class="m-b-0">Tipo di risposte<span class="float-end">anonime</span></p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6 col-xl-3">
-        <div class="card bg-c-red order-card">
-          <div class="card-body">
-            <h6 class="text-white">Numero di risposte</h6>
-            <h2 class="text-end text-white"><em class="feather icon-edit float-start"></em><span>{{ tot_votes }}</span></h2>
-            <p class="m-b-0">Numero di alternative<span class="float-end">{{ results|length }}</span></p>
-          </div>
-        </div>
-      </div>
-    </div>
+    {% include 'includes/riepilogo.html'%}
 
     <h5 class="mt-4">Numero di preferenze per alternativa</h5>
     <hr>
@@ -78,36 +37,36 @@
           <div class="card-body text-white">
             <h3 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.position }}° posizione</span></h3>
             <h4 class="card-title text-white">{{ alternative.text|upper }}</h4>
-            <h4 class="card-text text-white">{{ alternative.count }}</h4>
-          </div>
-          <div class="card-footer">
-            <p class="text-white">{{ alternative.percentage }}%</p>
+            <div class="row">
+              <div class="col h4 card-text text-white text-start">{{ alternative.count }}<span class="fw-normal"> {%if alternative.count == 1%}voto{%else%}voti{%endif%}</span></div>
+              <div class="col h4 fw-normal text-white text-end">({{ alternative.percentage }}%)</div>
+            </div>
           </div>
         </div>
       </div>
-      {% elif alternative.position == 1 and tot_votes > 0 %}
+      {% elif alternative.position == 1 %}
       <div class="col">
         <div class="card bg-warning h-100">
           <div class="card-body">
             <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.position }}° posizione</span></h4>
             <h5 class="card-title">{{ alternative.text|upper }}</h5>
-            <h5 class="card-text">{{ alternative.count }}</h5>
-          </div>
-          <div class="card-footer">
-            <p class="card-text">{{ alternative.percentage }}%</p>
+            <div class="row">
+              <div class="col h5 card-text text-start">{{ alternative.count }}<span class="fw-normal"> {%if alternative.count == 1%}voto{%else%}voti{%endif%}</span></div>
+              <div class="col h5 fw-normal text-end">({{ alternative.percentage }}%)</div>
+            </div>
           </div>
         </div>
       </div>
       {% else %}
       <div class="col">
-        <div class="card border border-dark h-100">
+        <div class="card h-100">
           <div class="card-body">
             <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.position }}° posizione</span></h4>
             <h5 class="card-title">{{ alternative.text|upper }}</h5>
-            <h5 class="card-text">{{ alternative.count }}</h5>
-          </div>
-          <div class="card-footer">
-            <p class="card-text">{{ alternative.percentage }}%</p>
+            <div class="row">
+              <div class="col h5 card-text text-start">{{ alternative.count }}<span class="fw-normal"> {%if alternative.count == 1%}voto{%else%}voti{%endif%}</span></div>
+              <div class="col h5 fw-normal text-end">({{ alternative.percentage }}%)</div>
+            </div>
           </div>
         </div>
       </div>
@@ -137,6 +96,11 @@
             <div id="pie-chart"></div>
           </div>
         </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col text-center">
+        <a href="{% url 'polls:index' %}"><button type="button" class="btn btn-block btn-primary">Torna alla home</button></a>
       </div>
     </div>
     <!-- [ Main Content ] end -->
@@ -171,7 +135,11 @@
     },
   },
   dataLabels: {
-    enabled: false
+    enabled: true,
+        style: {
+          fontSize: '12px',
+          colors: ["#FFFFFF"]
+        }
   },
   stroke: {
     show: true,
@@ -183,7 +151,7 @@
   },
   yaxis: {
     title: {
-      text: '# preferenze'
+      text: 'numero di preferenze'
     }
   },
   fill: {

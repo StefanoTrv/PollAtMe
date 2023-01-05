@@ -1,7 +1,6 @@
 from __future__ import annotations
-from enum import Enum
 
-from polls.models import SinglePreferencePoll, Alternative, SinglePreference
+from polls.models import Poll, Alternative, SinglePreference
 from django.db.models import QuerySet, Count
 
 class SinglePreferencePollResultsService():
@@ -9,14 +8,14 @@ class SinglePreferencePollResultsService():
     Classe per il calcolo dei risultati dei sondaggi a preferenza singola
     """
 
-    def set_poll(self, poll: SinglePreferencePoll) -> SinglePreferencePollResultsService:
+    def set_poll(self, poll: Poll) -> SinglePreferencePollResultsService:
         """
         Imposta il sondaggio da cui ottenere i risultati
         Torna l'oggetto corrente per utilizzare il method chaining
         Va chiamato per primo
 
             Parameters:
-                poll (SinglePreferencePoll): il sondaggio
+                poll (Poll): il sondaggio
             Returns:
                 self
         """

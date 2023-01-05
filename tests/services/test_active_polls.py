@@ -1,38 +1,95 @@
+from datetime import timedelta
+
+from assertpy import assert_that  # type: ignore
+from django.db.models import Q
+from django.http import Http404
 from django.test import TestCase
-from polls.services import ActivePollsService, SearchPollService
-from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
+
 from polls.exceptions import PollWithoutAlternativesException
 from polls.models import Poll
-from assertpy import assert_that #type: ignore
+from polls.services import ActivePollsService, SearchPollService
+
 
 class TestActivePollsService(TestCase):
     
-    fixtures: list[str] = ['polls.json']
+    def setUp(self) -> None:
+        polls = [
+            {'title': 'A', 'text': 'A', 'start': timezone.now() - timedelta(weeks=2), 'end': timezone.now() - timedelta(weeks=1)},  # concluso   
+            {'title': 'B', 'text': 'B', 'start': timezone.now() - timedelta(weeks=2), 'end': timezone.now() - timedelta(weeks=1)},  # concluso
+            {'title': 'C', 'text': 'C', 'start': timezone.now() - timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2)},  # attivo
+            {'title': 'D', 'text': 'D', 'start': timezone.now() - timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2)},  # attivo
+            {'title': 'E', 'text': 'E', 'start': timezone.now() + timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2)},  # non ancora attivo
+            {'title': 'F', 'text': 'F', 'start': timezone.now(), 'end': timezone.now()},  # senza opzioni
+        ]
 
-    def test_sondaggi_pref_singola_ordine_crescente(self):
-        queryset = ActivePollsService().get_ordered_queryset(asc=False)[0]
-        excluded = Poll.objects.get(id=3)
-        self.assertNotIn(excluded,queryset)
-        assert_that(queryset).is_sorted(lambda x: x.text, reverse=True)
+        for p_dict in polls:
+            Poll.objects.create(**p_dict)
+        
+        for poll in Poll.objects.filter(~Q(title='F')):
+            poll.alternative_set.create(text="Prova1")
+            poll.alternative_set.create(text="Prova2")
+
+    def test_sondaggi_ordine_crescente(self):
+        queryset = ActivePollsService().get_ordered_queryset()
+        excluded = Poll.objects.filter(Q(title__in = ['E', 'F']))
+        
+        # Esclude sondaggi senza alternative o non ancora attivi 
+        for poll in excluded:
+            assert_that(queryset).does_not_contain(poll)
+        
+        # Mostra prima i sondaggi attivi
+        assert_that(queryset).is_sorted(lambda x: x.is_active(), reverse=True)
+        assert_that([poll for poll in queryset if poll.is_active()]).is_sorted(lambda x: x.title)
+        assert_that([poll for poll in queryset if not poll.is_active()]).is_sorted(lambda x: x.title)
+        
     
-    def test_sondaggi_pref_singola_ordine_decrescente(self):
-        queryset = ActivePollsService().get_ordered_queryset(asc=True)[0]
-        excluded = Poll.objects.get(id=3)
-        self.assertNotIn(excluded,queryset)
-        assert_that(queryset).is_sorted(lambda x: x.text, reverse=False)
-
+    def test_sondaggi_ordine_decrescente(self):
+        queryset = ActivePollsService().get_ordered_queryset(desc=True)
+        excluded = Poll.objects.filter(Q(title__in = ['E', 'F']))
+        
+        # Esclude sondaggi senza alternative o non ancora attivi 
+        for poll in excluded:
+            assert_that(queryset).does_not_contain(poll)
+        
+        # Mostra prima i sondaggi attivi
+        assert_that(queryset).is_sorted(lambda x: x.is_active(), reverse=True)
+        assert_that([poll for poll in queryset if poll.is_active()]).is_sorted(lambda x: x.title, reverse=True)
+        assert_that([poll for poll in queryset if not poll.is_active()]).is_sorted(lambda x: x.title, reverse=True)
+    
+    def test_order_by_text(self):
+        queryset = ActivePollsService().get_ordered_queryset(by_field='text')
+        assert_that(queryset).is_sorted(lambda x: x.is_active(), reverse=True)
+        assert_that([poll for poll in queryset if poll.is_active()]).is_sorted(lambda x: x.text)
+        assert_that([poll for poll in queryset if not poll.is_active()]).is_sorted(lambda x: x.text)
 
 class TestSearchPollService(TestCase):
     
-    fixtures: list[str] = ['polls.json']
+    def setUp(self) -> None:
+        polls = [
+            {'title': 'A', 'text': 'A', 'start': timezone.now() - timedelta(weeks=2), 'end': timezone.now() - timedelta(weeks=1)},  # concluso   
+            {'title': 'B', 'text': 'B', 'start': timezone.now() - timedelta(weeks=2), 'end': timezone.now() - timedelta(weeks=1)},  # concluso
+            {'title': 'C', 'text': 'C', 'start': timezone.now() - timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2)},  # attivo
+            {'title': 'D', 'text': 'D', 'start': timezone.now() - timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2)},  # attivo
+            {'title': 'E', 'text': 'E', 'start': timezone.now() + timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2)},  # non ancora attivo
+            {'title': 'F', 'text': 'F', 'start': timezone.now(), 'end': timezone.now()},  # senza opzioni
+        ]
+
+        for p_dict in polls:
+            p = Poll(**p_dict)
+            p.save()
+        
+        for poll in Poll.objects.filter(~Q(title='F')):
+            poll.alternative_set.create(text="Prova1")
+            poll.alternative_set.create(text="Prova2")
 
     def test_search_by_id(self):
-        expected_poll = Poll.objects.get(id=1)
-        poll = SearchPollService().search_by_id(1)
+        expected_poll = Poll.objects.get(title='A')
+        poll = SearchPollService().search_by_id(expected_poll.id)
         assert_that(poll).is_equal_to(expected_poll)
         assert_that(poll.alternative_set).is_equal_to(expected_poll.alternative_set)
     
     def test_search_by_error(self):
         last_id = Poll.objects.all().order_by('-id').first().id
-        self.assertRaises(ObjectDoesNotExist,SearchPollService().search_by_id,last_id+1)
-        self.assertRaises(PollWithoutAlternativesException,SearchPollService().search_by_id,3)
+        self.assertRaises(Http404, SearchPollService().search_by_id, last_id+1)
+        self.assertRaises(PollWithoutAlternativesException, SearchPollService().search_by_id, Poll.objects.get(title='F').id)

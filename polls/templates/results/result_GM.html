@@ -15,6 +15,12 @@
   .pill-content > .active {
   height: auto;       /* let the content decide it  */
   } /* bootstrap hack end */
+
+  #textbox {
+    display: flex;
+    justify-content: space-between;
+  }
+
 </style>
 {% endblock stylesheets %}
 
@@ -41,59 +47,31 @@
 
 
     <!-- [ Riepilogo ] start -->
-    <div class="row">
-      <h5>Riepilogo</h5>
-      <hr>
-      <div class="col-md-6 col-xl-3">
-        <div class="card bg-c-blue order-card">
-          <div class="card-body">
-            <h6 class="text-white">Data di apertura del sondaggio:</h6>
-            <h2 class="text-end text-white"><em class="feather icon-calendar float-start"></em><span>{% now "SHORT_DATE_FORMAT" %}</span>
-            </h2>
-            <p class="m-b-0">Data di chiusura<span class="float-end">{% now "SHORT_DATE_FORMAT" %}</span></p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6 col-xl-3">
-        <div class="card bg-c-green order-card">
-          <div class="card-body">
-            <h6 class="text-white">Sondaggio creato da:</h6>
-            <h2 class="text-end text-white"><em class="feather icon-user float-start"></em><span>User</span>
-            </h2>
-            <p class="m-b-0">Sondaggio creato il giorno<span class="float-end">{% now "SHORT_DATE_FORMAT" %}</span></p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6 col-xl-3">
-        <div class="card bg-c-yellow order-card">
-          <div class="card-body">
-            <h6 class="text-white">Tipo di sondaggio</h6>
-            <h2 class="text-end text-white"><em class="feather icon-lock float-start"></em><span>Pubblico</span></h2>
-            <p class="m-b-0">Tipo di risposte<span class="float-end">anonime</span></p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6 col-xl-3">
-        <div class="card bg-c-red order-card">
-          <div class="card-body">
-            <h6 class="text-white">Numero di giudizi</h6>
-            <h2 class="text-end text-white">{{ numero_preferenze }}<em class="feather icon-edit float-start"></em><span>{{ tot_votes }}</span></h2>
-            <p class="m-b-0">Numero di alternative<span class="float-end">{{ numero_alternative }}</span></p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <h5 class="mt-4">Numero di preferenze per alternativa</h5>
+    {% include 'includes/riepilogo.html'%}
+    <h5 class="mt-4">
+      Classifica e giudizi per alternativa 
+      <button type="button" class="btn  btn-icon btn-outline-info" data-bs-toggle="modal" data-bs-target="#modal-majority-explanation" href="spiegazione_giudizio_maggioritario.html">
+        <i class="feather icon-info">
+        </i>
+      </button>
+    </h5>
     <hr>
     <div class="row row-cols-md-3 row-cols-sm-1 g-4">
       {% for alternative in classifica %}
+      <!-- Commento per i test: {{ alternative.alternative}}-{{ alternative.place }} -->
       {% if alternative.place == 1 and winners|length == 1 %}
       <div class="col-md-12">
         <div class="card bg-success">
           <div class="card-body text-white">
             <h3 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.place }}° posizione</span></h3>
             <h4 class="card-title text-white">{{ alternative.alternative|upper }}</h4>
+          </div>
+          <div class="card-footer">
+            <div class="row">
+              <div class="col-12 col-lg-4"><p class="text-lg-start text-white"><b>Voto</b>: {{ alternative.judgment.grade|stringformat:'s'}}</p></div>  
+              <div class="col-12 col-lg-4"><p class="text-lg-center text-white"><b>Migliori</b>: {{ alternative.judgment.giudizi_migliori|stringformat:'s'}}</p></div>
+              <div class="col-12 col-lg-4"><p class="text-lg-end text-white"><b>Peggiori</b>: {{ alternative.judgment.giudizi_peggiori|stringformat:'s'}}</p></div>  
+            </div>
           </div>
         </div>
       </div>
@@ -104,14 +82,28 @@
             <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.place }}° posizione</span></h4>
             <h5 class="card-title">{{ alternative.alternative|upper }}</h5>
           </div>
+          <div class="card-footer">
+            <div class="row">
+              <div class="col-12 col-lg-4"><p class="text-lg-start"><b>Voto</b>: {{ alternative.judgment.grade|stringformat:'s'}}</p></div>  
+              <div class="col-12 col-lg-4"><p class="text-lg-center"><b>Migliori</b>: {{ alternative.judgment.giudizi_migliori|stringformat:'s'}}</p></div>
+              <div class="col-12 col-lg-4"><p class="text-lg-end"><b>Peggiori</b>: {{ alternative.judgment.giudizi_peggiori|stringformat:'s'}}</p></div>  
+            </div>
+          </div>
         </div>
       </div>
       {% else %}
       <div class="col">
-        <div class="card">
+        <div class="card h-100">
           <div class="card-body">
             <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.place }}° posizione</span></h4>
             <h5 class="card-title">{{ alternative.alternative|upper }}</h5>
+          </div>
+          <div class="card-footer">
+            <div class="row">
+              <div class="col-12 col-lg-4"><p class="text-lg-start"><b>Voto</b>: {{ alternative.judgment.grade|stringformat:'s'}}</p></div>  
+              <div class="col-12 col-lg-4"><p class="text-lg-center"><b>Migliori</b>: {{ alternative.judgment.giudizi_migliori|stringformat:'s'}}</p></div>
+              <div class="col-12 col-lg-4"><p class="text-lg-end"><b>Peggiori</b>: {{ alternative.judgment.giudizi_peggiori|stringformat:'s'}}</p></div>  
+            </div>
           </div>
         </div>
       </div>
@@ -125,7 +117,7 @@
       <div class="col-md-6 h-100">
         <div class="card">
           <div class="card-header">
-            <h5>Barplot orizzontale</h5>
+            <h5>Distribuzione giudizi per alternativa (in percentuale) </h5>
           </div>
           <div class="card-body">
             <div id="chart"></div>
@@ -134,6 +126,9 @@
       </div>
       <div class="col-md-6 h-100">
         <div class="card">
+          <div class="card-header">
+            <h5>Istogramma giudizi per alternativa </h5>
+          </div>
           <div class="card-body">
             <ul class="nav nav-tabs" id="myTab" role="tablist">
               {%for alternativa in voti_alternativa%}
@@ -150,7 +145,7 @@
             </ul>
             <div class="tab-content" id='tab1content'>
               {%for alternativa in voti_alternativa%}
-                {%if forloop.first%}
+                {% if forloop.first %}
                 <div class="tab-pane show active" id="tab_{{forloop.counter}}" role="tabpanel">
                     <div id="bar_{{forloop.counter}}"></div>
                 </div>
@@ -165,19 +160,26 @@
         </div>
       </div>
     </div>
+    <div class="row">
+      <div class="col text-center">
+        <a href="{% url 'polls:index' %}"><button type="button" class="btn btn-block btn-primary">Torna alla home</button></a>
+      </div>
+    </div>
   </div>
 </div>
+
+{% include 'includes/spiegazione_giudizio_maggioritario.html'%}
+
 {% endblock content %}
 
 
 {% block javascripts %}
-<script src="/static/js/plugins/bootstrap.min.js"></script>
 <script src="/static/js/plugins/apexcharts.min.js"></script>
 <script>
 
   var options = {
     series: [
-    {%for vote in ordered_votes%}
+    {% for vote in ordered_votes %}
     {
     name: '{{vote}}',
     data: [{% for alternativa in voti_alternativa %}
@@ -200,9 +202,6 @@
   stroke: {
     width: 1,
     colors: ['#fff']
-  },
-  title: {
-    text: 'Giudizi per alternativa'
   },
   xaxis: {
     categories: [{% for alternativa in voti_alternativa %}
@@ -253,11 +252,7 @@
       bar: {
         horizontal: false,
           columnWidth: '55%',
-            endingShape: 'rounded',
-            borderRadius: 10,
-            dataLabels : {
-              position : 'top',
-            }
+            endingShape: 'rounded'
       },
     },
     dataLabels: {
@@ -277,7 +272,7 @@
     },
     yaxis: {
       title: {
-        text: '#giudizi'
+        text: 'numero di giudizi'
       }
     },
     fill: {

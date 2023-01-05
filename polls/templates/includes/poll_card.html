@@ -1,14 +1,65 @@
 <div class="card mb-3" style="text-align:center">
+    {% if poll.is_active %}
+    <span class="badge rounded-pill position-absolute top-0 start-50 translate-middle bg-success">
+        Votazione in corso
+    </span>
+    {% elif poll.is_ended %}
+    <span class="badge rounded-pill position-absolute top-0 start-50 translate-middle bg-danger">
+        Votazione conclusa
+    </span>
+    {% elif poll.is_not_started %}
+    <span class="badge rounded-pill position-absolute top-0 start-50 translate-middle bg-warning">
+        Votazione non avviata
+    </span>
+    {% endif %}
     <img class="img-fluid card-img-top" src="https://appsrv1-147a1.kxcdn.com/gradient/images/slider/img-slide-3.jpg" alt="Card Image cap">
     <div class="card-body">
-        <h6 class="card-title"> {{ poll.title }} </h6>
+        <h5 class="card-title"> {{ poll.title }} </h6>
+        <p class="card-subtitle mb-2 text-muted">
+            {% if poll.is_not_started %} Parte il {{ poll.start | date:"d E Y, H:i" }} {% endif %}
+            {% if poll.is_active %} Termina il {{ poll.end | date:"d/m/Y, H:i" }} {% endif %}
+            {% if poll.is_ended %} Terminato il {{ poll.end | date:"d/m/Y, H:i" }} {% endif %}
+        </p>
+        {% if poll.is_active %}
         <a class="btn btn-block btn-primary mb-4" href={% url 'polls:vote' id=poll.id %}>Vota</a>
-        <a class="btn btn-block btn-secondary mb-4" href={% url 'polls:result' id=poll.id %}>Risultati</a>
-        {% if poll.id > 6%} <!--- Temporaneo per impedire cancellazione e modifica dei poll "civetta" -->
-            <a class="btn btn-block btn-warning mb-4" href={% url 'polls:edit_poll' id=poll.id %}><em class="feather icon-edit-2"></em></a>
-            <button type="button" class="btn btn-block btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#modalDeletePollConfirm" data-bs-poll="{{ poll.id }}">
-                <em class="feather icon-trash-2"></em>
-            </button>
-        {% endif%}
+        {% endif %}
+        
+        {% if poll.is_active or poll.is_ended %}
+            <a class="btn btn-block btn-secondary mb-4" href={% url 'polls:result' id=poll.id %}>Risultati</a>      
+        {% endif %}
+
+        {% if poll.is_not_started %}
+        <a class="btn btn-block btn-warning mb-4" href={% url 'polls:edit_poll' id=poll.id %} data-bs-toggle="tooltip" data-bs-placement="top" title="Modifica il sondaggio">
+            Modifica
+        </a>
+        <button type="button" class="btn btn-block btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#modalDeletePollConfirm" data-bs-poll="{{ poll.id }}">
+            Cancella
+        </button>
+        {% endif %}
+    </div>
+    <div class="card-footer">
+        <div class="row">
+            <div class = "col">
+                <div  class="text-start">
+                    <small class="text-muted">
+                        ID: {{ poll.pk }}
+                    </small>
+                </div>
+            </div>
+            <div class = "col">
+                <div  class="text-end">
+                    <small class="text-muted">{{ poll.get_type }}
+                        {% if poll.get_type == "Giudizio maggioritario" %}
+                        <button type="button" class="btn-md  btn-icon btn-outline-info" data-bs-toggle="modal" data-bs-target="#modal-majority-explanation" href="spiegazione_giudizio_maggioritario.html">
+                            <i class="feather icon-info">
+                            </i>
+                        </button>
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+{% include 'includes/spiegazione_giudizio_maggioritario.html'%}

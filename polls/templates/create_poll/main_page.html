@@ -1,6 +1,7 @@
 {% extends 'layouts/base.html' %}
+{% load django_bootstrap5 %}
 
-{% block title %} {{block.super}} | Crea nuovo sondaggio {% endblock title %}
+{% block title %} {{block.super}} | {{ page_title }} {% endblock title %}
 
 {% block content %}
 <div class="pcoded-main-container">
@@ -10,109 +11,107 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h3 class="m-b-10"> Crea un sondaggio </h3>
+                            <h3 class="m-b-10"> {{ header }} </h3>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/"><em class="feather icon-home"></em></a></li>
-                            <li class="breadcrumb-item"><a href="#"> Crea un sondaggio </a></li>
+                            <li class="breadcrumb-item"><em class="feather icon-home"></em></li>
+                            <li class="breadcrumb-item"> {{ header }} </li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="page-block">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5>Inserisci i dati del tuo sondaggio</h5>
-                        <br>
-                        <form method="post">
-                            <div class="form-group">
-                                {% csrf_token %}
-                                {{ form.non_field_errors }}
-                                <div class="table-responsive">
-                                    <table class="table" style="width:100%">
-                                        <tbody id="formtablebody">
-                                        {% for field in form %}
-                                            <tr id="{{field.name}}row" {% if 'hidden' in field.name %}style="visibility:collapse;"{% endif%}><!-- Nasconde completamente i campi con "hidden" nel nome -->
-                                                <td>
-                                                    <label for="{{ field.label }}">{{ field.label_tag }}</label>
-                                                </td>
-                                                <td>
-                                                    {{ field }}
-                                                </td>
-                                                <td style="text-align:right">
-                                                    {% if 'alternative' in field.name and 'hidden' not in field.name%}
-                                                        <input type="button" name="btn" class="btn btn-danger" value="-" onclick="remove_row(parseInt('{{field.name|slice:"11:12"}}'))"/>
-                                                    {% endif %}
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                        </tbody> 
-                                    </table>
+        <form method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-sm-12 col-xl-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Informazioni generali</h4>
+                            {% bootstrap_form form %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-xl-6">
+                    <div class="card">
+                        <div class="card-body {% if formset.non_form_errors %}border border-danger rounded{% endif %}">
+                            <h4 class="card-title">Alternative (minimo 2, massimo 10)</h4>
+                            {{ formset.management_form }}
+                            {% bootstrap_formset_errors formset %}
+                            <div id="alternatives-rows">
+                                {% for f in formset %}
+                                <div id="form-{{forloop.counter0}}" class="input-group mb-3 {% if f.errors %}is-invalid border border-danger rounded{% endif %} {% if f.DELETE.value %}d-none{% endif %}">
+                                    {% for field in f %}
+                                        {{ field }}
+                                    {% endfor %}
+                                    <input type="button" class="btn btn-danger" value="-" onclick="remove_row(this)"/>
                                 </div>
-                                <div class="row">
-                                    <div class="col-sm-12" style="text-align:center">
-                                        <input type="button" id="add-another" class="btn btn-secondary" onclick="add_alternative()" value="+"/>
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="row">
-                                    <div class="col-sm-8">
-                                        <button type="button" class="btn btn-block btn-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal">Torna alla home</button>
-                                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                              <div class="modal-content">
-                                                <div class="modal-header">
-                                                  <h5 class="modal-title" id="exampleModalLabel">Attenzione!</h5>
-                                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <p> Il sondaggio che stavi creando non verrà salvato!</p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <a href="{% url 'polls:index' %}">
-                                                        <button type="button" class="btn btn-primary">Home</button>
-                                                    </a>
-                                                </div>
-                                              </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-4" style="text-align:right">
-                                        <input type="submit" id="submitformbutton" class="btn btn-primary" value="Prossimo">
-                                    </div>
-                                </div>
+                                {% bootstrap_form_errors f %}
+                                {% endfor %}
                             </div>
-                        </form>
+                            <div class="text-center">
+                                <input type="button" id="add-another" class="btn btn-secondary" onclick="add_alternative()" value="Aggiungi alternativa"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <div class="card text-center">
+                      <div class="card-body">
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modal-return-home">Torna alla home</button>
+                        <button type="submit" name="summary" class="btn btn-primary">Prossimo</button>
+                      </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
+        {% include 'includes/footer.html' %}
     </div>
 </div>
+
+<div id='empty-form' class="input-group mb-3 d-none">
+    {{ formset.empty_form }}
+    <input type="button" class="btn btn-danger" value="-" onclick="remove_row(this)"/>
+</div>
+{% include 'includes/modal.html' with id_modal='modal-return-home' %}
 
 {% endblock content %}
 
 {% block javascripts %}
 <script>
-    let form_count = document.getElementById("{{form.hidden_alternative_count.auto_id }}").value;
+    const totalForms = document.getElementById('id_form-TOTAL_FORMS')
+    const alternativesRows = document.querySelector("#alternatives-rows")
+    let totalFormsCount = totalForms.value
+    const prototype = document.getElementById("empty-form")
+    const regex = /__prefix__/g
 
-    function add_alternative(){
-        form_count ++;
-        console.log(form_count);
-        var element = document.createElement("tr");
-        element.id="alternative"+form_count+"row";
-        element.innerHTML="<td>\n <label for=\"Alternativa " + form_count +"\" style=\"display:inline-block;vertical-align:middle\">Alternativa:</label>\n </td>\n <td>\n <input type=\"text\" class=\"form-control\" placeholder=\"Inserisci il testo dell'alternativa\"/ name=\"alternative"+form_count+"\" id=\"id_alternative"+form_count+"\"> <td style=\"text-align:right\"><input type=\"button\" name=\"btn\" value=\"-\" class=\"btn btn-danger\" onclick=\"remove_row("+form_count+")\"\/></td>\n </td>";
-        document.getElementById("formtablebody").append(element);
-        // build element and append it to our forms container
-        document.getElementById("{{form.hidden_alternative_count.auto_id }}").value=form_count;       
+    function add_alternative() {
+        if (alternativesRows.querySelectorAll('div:not(.d-none)').length >= 10)
+            return
+
+        const copyEmptyForm = prototype.cloneNode(true)
+        copyEmptyForm.innerHTML = copyEmptyForm.innerHTML.replace(regex, totalFormsCount)
+        copyEmptyForm.setAttribute('id', `form-${totalFormsCount}`)
+        copyEmptyForm.classList.remove('d-none')
+        
+        totalForms.setAttribute('value', ++totalFormsCount)
+        alternativesRows.append(copyEmptyForm)
     }
 
-    function remove_row(row_number){
-        document.getElementById("{{form.alternative1.auto_id|slice:":-1"}}"+row_number).value="";
-        document.getElementById("alternative"+row_number+"row").style.visibility = "collapse";
+    function remove_row(button) {
+        let parentDiv = button.parentNode
+        if (alternativesRows.querySelectorAll('div:not(.d-none)').length <= 2) {
+            parentDiv.querySelector('input[type="text"]').value = ""
+            return
+        }
+        else {
+            const id = parentDiv.id
+            parentDiv.classList.add('d-none')
+            document.querySelector(`#id_${id}-DELETE`).value = true
+        }
     }
 </script>
+
+{% include 'includes/lock_sidebar.html' with id_modal='modal-return-home' %}
 
 {% endblock javascripts %}

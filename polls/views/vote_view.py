@@ -1,7 +1,7 @@
 from typing import Any, Callable, Optional, Type
 
 from django import forms, http
-from django.core.exceptions import BadRequest, ObjectDoesNotExist
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render
 from django.views import View
 from django.views.generic.edit import CreateView
@@ -18,35 +18,33 @@ class VotingView(View):
     Class view che sceglie quale view mostrare in base al tipo di sondaggio
     scelto nel link.
     """
-    POLL_DOES_NOT_EXISTS_MSG = "Il sondaggio ricercato non esiste"
-    NO_ALTERNATIVES_POLL_MSG = "Il sondaggio ricercato non ha opzioni di risposta"
 
     def dispatch(self, request, *args, **kwargs):
         """
         Questo metodo viene invocato quando viene fatta una richiesta
         HTTP (di qualunque tipo).
-        Il dispatching avviene verificando gli attributi della poll
-        (non funziona il polimorfismo)
         """
         try:
             poll = SearchPollService().search_by_id(kwargs['id'])
+
+            if not poll.is_active():
+                raise PermissionDenied('Non è possibile votare questo sondaggio')
+
             view = self.__dispatch_view(poll)
             return view(request, *args, **kwargs)
-        except ObjectDoesNotExist:
-            raise http.Http404(self.POLL_DOES_NOT_EXISTS_MSG)
         except PollWithoutAlternativesException:
-            raise BadRequest(self.NO_ALTERNATIVES_POLL_MSG)
+            raise http.Http404("Il sondaggio ricercato non ha opzioni di risposta")
     
     def __dispatch_view(self, poll: Poll) -> Callable:
-        if hasattr(poll, 'singlepreferencepoll'):
-            return CreateSinglePreferenceView.as_view()
-        elif hasattr(poll, 'majorityopinionpoll'):
-            return CreateMajorityPreferenceView.as_view()
+        if poll.get_type() == 'Preferenza singola':
+            return VoteSinglePreferenceView.as_view()
+        elif poll.get_type() == 'Giudizio maggioritario':
+            return VoteMajorityJudgmentView.as_view()
         else:
-            return CreateShultzePreferenceView.as_view()
+            return VoteShultzeView.as_view()
 
 
-class CreateSinglePreferenceView(CreateView):
+class VoteSinglePreferenceView(CreateView):
 
     form_class: Optional[Type[forms.BaseForm]] = SinglePreferenceForm
     template_name: str = 'vote_create_form.html'
@@ -79,7 +77,7 @@ class CreateSinglePreferenceView(CreateView):
         return render(self.request, 'vote_success.html', {'poll_id': self.poll.id})
 
 
-class CreateMajorityPreferenceView(CreateView):
+class VoteMajorityJudgmentView(CreateView):
     """
     Class view per l'inserimento delle risposte ai sondaggi a risposta singola
     """
@@ -117,7 +115,7 @@ class CreateMajorityPreferenceView(CreateView):
         
 
 
-class CreateShultzePreferenceView(View):
+class VoteShultzeView(View):
     """
     Class view per l'inserimento delle risposte ai sondaggi a risposta singola
     """

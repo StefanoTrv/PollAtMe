@@ -1,4 +1,5 @@
 {% extends 'layouts/base_form.html' %}
+{% load django_bootstrap5 %}
 
 {% block breadcrumb %}
 <li class="breadcrumb-item"><a href="#!">{{ poll.title }}</a></li>
@@ -9,42 +10,52 @@
 {% block title %} {{block.super}} | {{ poll.title }} {% endblock title %}
 
 {% block form_card %}
-<div class="card">
+<div class="card col-sm-12">
     <div class="card-body">
         {{ poll.text }}
     </div>
 </div>
 
-<form class="needs-validation" method="post" novalidate>
+<form method="post">
     {% csrf_token %}
     {{ form.management_form }}
-    {% for f in form %}
-    <div class="card">
-        <div class="card-body">
-            {% for error in f.grade.errors %}
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <div>{{ error }}</div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="row">
+        {% for f in form %}
+        <div class="col-sm-12 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <p class="fs-4 p-2">{{ f.grade.label }}</p>
+                    <div class="d-grid gap-2 d-xl-flex justify-content-xl-center flex-xl-fill {% if f.errors %}is-invalid{% endif %}">
+                        {% for radio in f.grade %}
+                        {{ radio.tag }}
+                        <label class="{% if f.errors %}btn btn-outline-danger is-invalid{% else %}btn btn-outline-secondary{% endif %} w-100" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                        {% endfor %}
+                    </div>
+                    {% if f.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in f.grade.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
             </div>
-            {% endfor %}
-            <legend>{{ f.grade.label }}</legend>
-            {% for radio in f.grade %}
-            <div class="form-check form-check-inline">
-                {{ radio.tag }}
-                <label
-                    class="{% if f.errors %}btn btn-outline-danger is-invalid{% else %}btn btn-outline-secondary{% endif %}"
-                    for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
-            </div>
-            {% endfor %}
         </div>
+        <div class="col-md-6"></div>
+        {% endfor %}
     </div>
-    {% endfor %}
     <div class="card">
         <div class="card-body">
             <button type="submit" class="btn btn-primary">Salva</button>
             <button type="reset" class="btn btn-secondary">Cancella</button>
+            <button type="button" class="btn  btn-icon btn-outline-info" data-bs-toggle="modal" data-bs-target="#modal-majority-explanation" href="spiegazione_giudizio_maggioritario.html">
+                <i class="feather icon-info">
+                </i>
+            </button>
         </div>
     </div>
 </form>
+
+{% include 'includes/spiegazione_giudizio_maggioritario.html'%}
 
 {% endblock form_card %}

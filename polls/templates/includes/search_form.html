@@ -1,0 +1,22 @@
+{% load django_bootstrap5 %}
+<form method="POST" class="row g-4 needs-validation" onsubmit="return search(this)" novalidate>
+    {% csrf_token %}
+    <div class="col-xl-4 col-sm-12">
+        {% bootstrap_field form.title placeholder="" %}
+    </div>
+    <div class="col-xl-4 col-md-6 col-sm-12">
+        {% bootstrap_field form.status %}
+    </div>
+    <div class="col-xl-4 col-md-6 col-sm-12">
+        {% bootstrap_field form.type %}
+    </div>
+    {% for field in form.range_group %}
+    <div class="col-md-6 col-sm-12 ">
+        {% bootstrap_field field placeholder="" %}
+    </div>
+    {% endfor %}
+    <div class="col-12">
+        {% bootstrap_button button_type="submit" content="Cerca" %}
+        {% bootstrap_button button_type="reset" content="Reset" button_class="btn-secondary" %}
+    </div>
+</form>

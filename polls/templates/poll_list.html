@@ -3,8 +3,10 @@
 {% block title %} {{block.super}} | Sondaggi attivi {% endblock title %}
 
 {% block content %}
+{% load django_bootstrap5 %}
 <div class="pcoded-main-container">
     <div class="pcoded-content">
+        {% bootstrap_alert "<h4>Attenzione!</h4> <h6>La visualizzazione dei sondaggi nella home page è cambiata, per trovare un sondaggio utilizza la funzione di ricerca presente nella barra laterale a sinistra dello schermo</h6>" alert_type="warning"%}
         <div class="page-header">
             <div class="page-block">
                 <div class="row align-items-center">
@@ -19,52 +21,9 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-            {% for type, polls in object_list %}
-            <div class="col-sm-12 col-xl-4">
-                <h5>{{ type }}</h5>
-                <hr>
-                {% for poll in polls %}
-                    {% include 'includes/poll_card.html' with poll=poll %}
-                {% empty %}
-                    {% include 'includes/no_poll_card.html' %}
-                {% endfor %}
-            </div>
-            {% endfor %}
-        </div>
-        <div class="modal fade" id="modalDeletePollConfirm" tabindex="-1" aria-labelledby="modalDeletePollConfirmLabel" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLabel">Attenzione!</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p> Vuoi veramente cancellare il sondaggio?</p>
-                </div>
-                <div class="modal-footer">
-                    <form method="POST" action="{% url 'polls:delete_poll' pk=0 %}" id="deletePollForm">
-                        {% csrf_token %}
-                        <input type="submit" class="btn btn-danger" value="Elimina">
-                    </form>
-                </div>
-              </div>
-            </div>
-        </div>
+        {% include 'includes/poll_list.html' with object_list=object_list %}
+        {% include 'includes/pagination.html' with page_obj=page_obj %}
+        {% include 'includes/footer.html' %}
     </div>
 </div>
 {% endblock content %}
-
-{% block javascripts %}
-
-<script>
-    var confirmModal = document.getElementById('modalDeletePollConfirm')
-    confirmModal.addEventListener('show.bs.modal', function(event) {
-        var button = event.relatedTarget
-        var pollId = button.getAttribute('data-bs-poll')
-        var form = confirmModal.querySelector('#deletePollForm')
-        form.action = form.action.replace(/\/\d+$/gm, `/${pollId}`)
-    })
-</script>
-
-{% endblock javascripts %}

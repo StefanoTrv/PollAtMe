@@ -1,1 +1,0 @@
-from .poll_no_alternative import PollWithoutAlternativesException
