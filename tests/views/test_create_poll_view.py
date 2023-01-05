@@ -36,6 +36,7 @@ class CreatePollViewTest(TestCase):
         response = self.client.post(self.url, data=step_1_data | {'summary': ''})
         assert_that(response.status_code).is_equal_to(200)
         self.assertTemplateUsed('create_poll/summary_and_options_create.html')
+        self.assertContains(response,'Lorem ipsum')
 
         assert_that(self.client.session.has_key('create')).is_true()
         assert_that(self.client.session['create']).is_length(2)
@@ -117,3 +118,4 @@ class CreatePollViewTest(TestCase):
         response = self.client.post(self.url, data={'go_back': ''})
         assert_that(response.status_code).is_equal_to(200)
         self.assertTemplateUsed('create_poll/main_page_create.html')
+        self.assertContains(response,'Lorem ipsum')
