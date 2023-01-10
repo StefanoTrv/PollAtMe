@@ -1,0 +1,7 @@
+<div class="row">
+    {% for poll in object_list %}
+    <div class="col-sm-12 col-xl-4 col-md-6">
+        {% include 'polls/includes/poll_card.html' with poll=poll %}
+    </div>
+    {% endfor %}
+</div>

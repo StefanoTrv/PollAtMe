@@ -1,0 +1,92 @@
+{% extends 'polls/layouts/base.html' %}
+
+{% block title %} {{block.super}} | Ricerca {% endblock title %}
+
+{% block stylesheets %}
+{{ form.media.css }}
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h3 class="m-b-10">Cerca sondaggi</h3>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/"><em class="feather icon-home"></em></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <a href="#!" onclick="bsCollapse.toggle()">Mostra/Nascondi</a>
+                    </div>
+                    <div class="card-body collapse show" id="search-accordion-body">
+                        {% include 'polls/includes/search_form.html' with form=form %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="results">
+        </div>
+        {% include 'polls/includes/footer.html' %}
+    </div>
+</div>
+
+{% include 'polls/includes/modal-delete.html' %}
+
+{% endblock content %}
+
+{% block javascripts %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.slim.min.js"></script>
+{{ form.media.js }}
+
+<script>
+    const accordion = document.querySelector('#search-accordion-body')
+    var bsCollapse = new bootstrap.Collapse(accordion, {
+        toggle: false
+    })
+
+    loaded = event => {
+        const html = event.target.responseText
+
+        if (html.includes('form')) {
+            document.querySelector('#search-accordion-body').innerHTML = html
+            document.querySelector('#results').innerHTML = ""
+        } else {
+            bsCollapse.hide()
+            document.querySelectorAll('.is-invalid').forEach(x => {
+                x.classList.remove("is-invalid");
+            })
+            document.querySelector('#results').innerHTML = html
+        }
+            
+    }
+
+    search = form => {
+        document.querySelector('#results').innerHTML = 
+            `
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border m-5 text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+            `
+        const data = new FormData(form)
+        const request = new XMLHttpRequest()
+        request.open(form.method, form.action)
+        request.send(data)
+        request.onload = loaded
+        return false
+    }
+</script>
+{% endblock javascripts %}

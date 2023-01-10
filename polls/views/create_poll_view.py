@@ -42,7 +42,7 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
             'poll': form.cleaned_data,
             'alternatives': formset_alternatives.get_form_for_session()
         }
-        return render(request, f'create_poll/summary_and_options_{action}.html', {
+        return render(request, f'polls/create_poll/summary_and_options_{action}.html', {
             'alternatives': formset_alternatives.get_alternatives_text_list(),
             'form': PollFormAdditionalOptions(instance=f_poll)
         })
@@ -52,14 +52,14 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
         for dict in formset_alternatives.errors:
             if 'This field is required.' in str(dict):
                 dict['text']='' # type: ignore
-        return render(request, f'create_poll/main_page_{action}.html', {
+        return render(request, f'polls/create_poll/main_page_{action}.html', {
             'form': form,
             'formset': formset_alternatives,
         })
 
 
 def go_back(request: HttpRequest, action: str, alternatives: QuerySet, poll: Optional[Poll] = None):
-    return render(request, f'create_poll/main_page_{action}.html', {
+    return render(request, f'polls/create_poll/main_page_{action}.html', {
         'form': PollFormMain(request.session[action]['poll'], instance=poll),
         'formset': ALTERNATIVE_FORMSET(request.session[action]['alternatives'], queryset=alternatives)
     })
@@ -84,9 +84,9 @@ def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Option
         for alt in formset_alternatives.deleted_objects:
             alt.delete()
 
-        return render(request, f'{action}_poll_success.html')
+        return render(request, f'polls/{action}_poll_success.html')
     else:
-        return render(request, f'create_poll/summary_and_options_{action}.html', {
+        return render(request, f'polls/create_poll/summary_and_options_{action}.html', {
             'form': form,
             'alternatives': formset_alternatives.get_alternatives_text_list()
         })
@@ -95,7 +95,7 @@ def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Option
 class CreatePollView(TemplateView):
 
     def get(self, request: HttpRequest, *args, **kwargs):
-        return render(request, 'create_poll/main_page_create.html', {
+        return render(request, 'polls/create_poll/main_page_create.html', {
             'form': PollFormMain(),
             'formset': BaseAlternativeFormSet.get_formset_class()(queryset=Poll.objects.none())
         })
@@ -120,7 +120,7 @@ class EditPollView(TemplateView):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request: HttpRequest, *args, **kwargs):
-        return render(request, 'create_poll/main_page_edit.html', {
+        return render(request, 'polls/create_poll/main_page_edit.html', {
             'form': PollFormMain(instance=self.__poll),
             'formset': BaseAlternativeFormSet.get_formset_class()(queryset=self.__poll.alternative_set.all())
         })

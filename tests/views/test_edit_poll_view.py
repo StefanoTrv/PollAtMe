@@ -41,7 +41,7 @@ class TestPollEditView(TestCase):
         url = reverse('polls:edit_poll', kwargs={'id': self.poll.pk})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'create_poll/main_page_edit.html')
+        self.assertTemplateUsed(response, 'polls/create_poll/main_page_edit.html')
 
         data={
             'title': 'Lorem',
@@ -67,7 +67,7 @@ class TestPollEditView(TestCase):
 
         response = self.client.post(url, data=data | {'summary': ''})
         assert_that(response.status_code).is_equal_to(200)
-        self.assertTemplateUsed('create_poll/summary_and_options_edit.html')
+        self.assertTemplateUsed('polls/create_poll/summary_and_options_edit.html')
         assert_that(self.client.session.has_key('edit')).is_true()
 
         start = (timezone.now() + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')
@@ -82,7 +82,7 @@ class TestPollEditView(TestCase):
         }
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'edit_poll_success.html')
+        self.assertTemplateUsed(response, 'polls/edit_poll_success.html')
 
         last_poll = Poll.objects.last()
         assert_that(last_poll.title).is_equal_to(data['title'])
@@ -99,7 +99,7 @@ class TestPollEditView(TestCase):
         url = reverse('polls:edit_poll', kwargs={'id': self.poll.pk})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'create_poll/main_page_edit.html')
+        self.assertTemplateUsed(response, 'polls/create_poll/main_page_edit.html')
 
         data={
             'title': 'Lorem',

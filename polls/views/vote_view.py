@@ -47,7 +47,7 @@ class VotingView(View):
 class VoteSinglePreferenceView(CreateView):
 
     form_class: Optional[Type[forms.BaseForm]] = SinglePreferenceForm
-    template_name: str = 'vote_create_form.html'
+    template_name: str = 'polls/vote_create_form.html'
     poll: Poll = Poll()
 
     def dispatch(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.response.HttpResponseBase:
@@ -74,14 +74,14 @@ class VoteSinglePreferenceView(CreateView):
     def form_valid(self, form: forms.BaseModelForm) -> http.HttpResponse:
         form.instance.poll = self.poll
         form.save()
-        return render(self.request, 'vote_success.html', {'poll_id': self.poll.id})
+        return render(self.request, 'polls/vote_success.html', {'poll_id': self.poll.id})
 
 
 class VoteMajorityJudgmentView(CreateView):
     """
     Class view per l'inserimento delle risposte ai sondaggi a risposta singola
     """
-    template_name: str = 'formset_dummy.html'
+    template_name: str = 'polls/formset_dummy.html'
 
     def dispatch(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.response.HttpResponseBase:
         self.poll = SearchPollService().search_by_id(kwargs['id'])
@@ -102,7 +102,7 @@ class VoteMajorityJudgmentView(CreateView):
             instance.preference = preference
             instance.save()
         
-        return render(self.request, 'vote_success.html', {'poll_id': self.poll.id})
+        return render(self.request, 'polls/vote_success.html', {'poll_id': self.poll.id})
 
     def get_form_kwargs(self) -> dict[str, Any]:
         kwargs = super().get_form_kwargs()

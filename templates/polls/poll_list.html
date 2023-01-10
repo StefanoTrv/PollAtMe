@@ -1,0 +1,29 @@
+{% extends 'polls/layouts/base.html' %}
+
+{% block title %} {{block.super}} | Sondaggi attivi {% endblock title %}
+
+{% block content %}
+{% load django_bootstrap5 %}
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        {% bootstrap_alert "<h4>Attenzione!</h4> <h6>La visualizzazione dei sondaggi nella home page è cambiata, per trovare un sondaggio utilizza la funzione di ricerca presente nella barra laterale a sinistra dello schermo</h6>" alert_type="warning"%}
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h3 class="m-b-10">Sondaggi attivi</h3>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/"><em class="feather icon-home"></em></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% include 'polls/includes/poll_list.html' with object_list=object_list %}
+        {% include 'polls/includes/pagination.html' with page_obj=page_obj %}
+        {% include 'polls/includes/footer.html' %}
+    </div>
+</div>
+{% endblock content %}

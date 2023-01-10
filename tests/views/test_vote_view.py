@@ -36,7 +36,7 @@ class TestCreateSinglePreferenceView(TestCase):
         self.assertEqual(resp.status_code,200)
         self.assertTemplateUsed(
             response=resp,
-            template_name='vote_success.html'
+            template_name='polls/vote_success.html'
         )
 
         last_vote = models.SinglePreference.objects.last()
@@ -69,7 +69,7 @@ class TestCreateSinglePreferenceView(TestCase):
         self.assertEqual(resp.status_code,200)
         self.assertTemplateUsed(
             response=resp,
-            template_name='vote_success.html'
+            template_name='polls/vote_success.html'
         )
         last_vote = models.SinglePreference.objects.last()
         self.assertNotEqual(last_vote.id,last_vote_old.id)
@@ -128,7 +128,7 @@ class TestCreateMajorityPreferenceView(TestCase):
         self.assertEqual(resp.status_code,200)
         self.assertTemplateUsed(
             response=resp,
-            template_name='vote_success.html'
+            template_name='polls/vote_success.html'
         )
 
         last_vote = models.MajorityPreference.objects.last()
