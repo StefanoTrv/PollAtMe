@@ -179,8 +179,6 @@ SITE_ID = 1
 
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
-LOGIN_REDIRECT_URL = 'polls:index'
-
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'SCOPE': [
@@ -194,4 +192,7 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-ACCOUNT_USER_DISPLAY = lambda u : u.get_full_name() if hasattr(u, 'get_full_name') else ''
+ACCOUNT_USER_DISPLAY = lambda u : u.get_full_name() if hasattr(u, 'get_full_name') else 'ANONIMO'
+
+ACCOUNT_ADAPTER = 'pollatme.account_adapter.JustSocialLogin'
+

@@ -1,0 +1,42 @@
+{% extends "layouts/base-fullscreen.html" %}
+
+{% load static %}
+{% load socialaccount %}
+
+{% block title %} Login {% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{% static 'css/bootstrap-social.css' %}">
+<script src="https://kit.fontawesome.com/72fc943b42.js" crossorigin="anonymous"></script>
+{% endblock stylesheets %}
+
+{% block content %} 
+	<!-- [ auth-signin ] start -->
+	<div class="auth-wrapper">
+		<div class="auth-content">
+			<div class="card">
+				<div class="row align-items-center text-center">
+					<div class="col-md-12">
+						<div class="card-body">
+                            <img src="{% static 'img/vote.png' %}" alt="" class="img-fluid mb-4">
+                            <span> <strong style="font-size: 15px"> Scegli </strong> <strong style="font-size: 20px"> Meglio </strong> </span>
+							<h4 class="mb-3 f-w-400">Login</h4>
+							<br /><br />
+
+							<form role="form" method="post" action="{% provider_login_url "google" %}">
+								{% csrf_token %}
+                                <button type='submit' class="btn btn-block btn-social btn-google">
+                                    <span class="fa fa-google"></span> Sign in with google
+                                </a>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- [ auth-signin ] end -->
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %} 

@@ -1,0 +1,30 @@
+{% extends "layouts/base-fullscreen.html" %}
+
+{% load static %}
+
+{% block title %} Logout {% endblock %}
+
+{% block content %} 
+	<!-- [ auth-signin ] start -->
+	<div class="auth-wrapper">
+		<div class="auth-content">
+			<div class="card">
+				<div class="row align-items-center text-center">
+					<div class="col-md-12">
+						<div class="card-body">
+                            <img src="{% static 'img/vote.png' %}" alt="" class="img-fluid mb-4">
+                            <span> <strong style="font-size: 15px"> Scegli </strong> <strong style="font-size: 20px"> Meglio </strong> </span>
+							<h4 class="mb-3 f-w-400">Logout</h4>
+							<br /><br />
+							<form role="form" method="post" action="{% url 'account_logout' %}?next={{request.GET.next}}">
+								{% csrf_token %}
+                                <button type="submit" class="btn btn-primary">Logout</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- [ auth-signin ] end -->
+{% endblock content %}

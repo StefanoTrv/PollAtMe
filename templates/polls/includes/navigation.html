@@ -31,27 +31,28 @@
         </ul>
         <ul class="navbar-nav ms-auto">
             <li>
+                {% if user.is_authenticated %}
+                {% with user.socialaccount_set.all.0.get_avatar_url as avatar_url %}
                 <div class="dropdown drp-user">
                     <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
-                        <img src="{% static '/img/absent.jpg' %}" class="img-radius wid-40"
+                        <img src="{{ avatar_url }}" class="img-radius wid-40"
                             alt="User-Profile-Image">
                     </a>
                     <div class="dropdown-menu dropdown-menu-end profile-notification">
                         <div class="pro-head">
-                            <img src="{% static '/img/absent.jpg' %}" class="img-radius"
-                                alt="User-Profile-Image">
+                            <img src="{{ avatar_url }}" class="img-radius" alt="User-Profile-Image">
                             <span>{% user_display user %}</span>
+                            <form id="logout-form" method="post" action="{% url 'account_logout' %}?next={{ request.get_full_path }}">
+                                {% csrf_token %}
+                                <a href="javascript:{}" onclick="document.getElementById('logout-form').submit()" class="dud-logout" title="Logout"><i class="feather icon-log-out"></i></a>
+                            </form>
                         </div>
-                        <ul class="pro-body">
-                            <li>
-                                <a href="{% url 'account_logout' %}" class="dropdown-item"><i class="feather icon-lock"></i> Logout</a>
-                            </li>
-                            <li>
-                                <a href="{% provider_login_url 'google' %}" class="dropdown-item"><i class="feather icon-lock"></i> Login</a>
-                            </li>
-                        </ul>
                     </div>
                 </div>
+                {% endwith %}
+                {% else %}
+                <a href="{% url 'account_login' %}?next={{ request.get_full_path }}">Login</a>
+                {% endif %}
             </li>
         </ul>
     </div>
