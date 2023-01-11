@@ -47,7 +47,7 @@ class VotingView(View):
 class VoteSinglePreferenceView(CreateView):
 
     form_class: Optional[Type[forms.BaseForm]] = SinglePreferenceForm
-    template_name: str = 'polls/vote_create_form.html'
+    template_name: str = 'polls/vote/vote_SP.html'
     poll: Poll = Poll()
 
     def dispatch(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.response.HttpResponseBase:
@@ -81,7 +81,7 @@ class VoteMajorityJudgmentView(CreateView):
     """
     Class view per l'inserimento delle risposte ai sondaggi a risposta singola
     """
-    template_name: str = 'polls/formset_dummy.html'
+    template_name: str = 'polls/vote/vote_GM.html'
 
     def dispatch(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.response.HttpResponseBase:
         self.poll = SearchPollService().search_by_id(kwargs['id'])
