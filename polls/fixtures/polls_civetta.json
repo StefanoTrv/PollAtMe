@@ -7,7 +7,9 @@
         "text": "Dai un giudizio ai seguenti giocatori",
         "default_type": 1,
         "start": "2022-12-22T16:42:00Z",
-        "end": "2022-01-04T16:42:00Z"
+        "end": "2022-01-04T16:42:00Z",
+        "creation_date": "2022-12-22T16:37:00Z",
+        "last_update": "2022-12-22T16:37:00Z"
     }
 },
 {
@@ -18,7 +20,9 @@
         "text": "Dai un giudizio ai seguenti quotidiani",
         "default_type": 1,
         "start": "2022-12-22T16:42:00Z",
-        "end": "2022-01-04T16:42:00Z"
+        "end": "2022-01-04T16:42:00Z",
+        "creation_date": "2022-12-22T16:37:00Z",
+        "last_update": "2022-12-22T16:37:00Z"
     }
 },
 {
@@ -29,7 +33,9 @@
         "text": "Come passerai capodanno 2023?",
         "default_type": 3,
         "start": "2022-12-22T16:42:00Z",
-        "end": "2022-01-04T16:42:00Z"
+        "end": "2022-01-04T16:42:00Z",
+        "creation_date": "2022-12-22T16:37:00Z",
+        "last_update": "2022-12-22T16:37:00Z"
     }
 },
 {
@@ -40,7 +46,9 @@
         "text": "Quale ritieni il miglior dolce natalizio?",
         "default_type": 3,
         "start": "2022-12-22T16:42:00Z",
-        "end": "2022-01-04T16:42:00Z"
+        "end": "2022-01-04T16:42:00Z",
+        "creation_date": "2022-12-22T16:37:00Z",
+        "last_update": "2022-12-22T16:37:00Z"
     }
 },
 {
@@ -51,7 +59,9 @@
         "text": "Quale è secondo te il miglior metodo di pagamento?",
         "default_type": 3,
         "start": "2022-12-22T16:42:00Z",
-        "end": "2022-01-04T16:42:00Z"
+        "end": "2022-01-04T16:42:00Z",
+        "creation_date": "2022-12-22T16:37:00Z",
+        "last_update": "2022-12-22T16:37:00Z"
     }
 },
 {
@@ -73,7 +83,9 @@
         "text": "Pizza o frico?",
         "default_type": 3,
         "start": "2022-12-22T16:42:00Z",
-        "end": "2022-01-04T16:42:00Z"
+        "end": "2022-01-04T16:42:00Z",
+        "creation_date": "2022-12-22T16:37:00Z",
+        "last_update": "2022-12-22T16:37:00Z"
     }
 },
 {
