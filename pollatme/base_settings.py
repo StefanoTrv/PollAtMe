@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "bootstrap_datepicker_plus",
     
     "django.contrib.sites",
+    "justsocialauth.apps.JustSocialAuthConfig",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
@@ -192,7 +193,7 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-ACCOUNT_USER_DISPLAY = lambda u : u.get_full_name() if hasattr(u, 'get_full_name') else 'ANONIMO'
+ACCOUNT_USER_DISPLAY = lambda u : u.get_full_name()
 
 ACCOUNT_ADAPTER = 'pollatme.account_adapter.JustSocialLogin'
 
