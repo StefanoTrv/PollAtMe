@@ -72,7 +72,9 @@
         "text": "Qual è secondo te la migliore città per la carriera in IT",
         "default_type": 3,
         "start": "2022-12-22T16:42:00Z",
-        "end": "2022-01-04T16:42:00Z"
+        "end": "2022-01-04T16:42:00Z",
+        "creation_date": "2022-12-22T16:37:00Z",
+        "last_update": "2022-12-22T16:37:00Z"
     }
 },
 {
