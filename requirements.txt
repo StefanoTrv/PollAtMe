@@ -1,5 +1,5 @@
 Django==4.1.2
-psycopg2-binary
+psycopg2==2.9.5
 django-cookiebanner==0.2.7
 django-bootstrap5==22.1
 django-bootstrap-datepicker-plus==5.0.2
