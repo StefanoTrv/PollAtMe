@@ -1,6 +1,9 @@
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class Poll(models.Model):
     class PollType(models.IntegerChoices):
@@ -11,7 +14,8 @@ class Poll(models.Model):
     title = models.CharField(max_length=100)
     text = models.TextField()
     default_type = models.IntegerField(choices=PollType.choices, default=PollType.MAJORITY_JUDGMENT)
-    
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+
     start = models.DateTimeField(auto_now_add = False, auto_now = False)
     end = models.DateTimeField(auto_now_add = False, auto_now = False)
 

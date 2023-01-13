@@ -1,18 +1,25 @@
 from datetime import timedelta
 
 from assertpy import assert_that  # type: ignore
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.utils import timezone
 
-from polls.models import SinglePreference, Poll
+from polls.models import Poll, SinglePreference
 from polls.services import SinglePreferencePollResultsService
 
 
 class TestPollResultsService(TestCase):
 
     def setUp(self) -> None:
-        self.__poll = Poll(title="Prova", text="Domanda di prova", default_type=Poll.PollType.SINGLE_PREFERENCE,
-            start=timezone.now(), end=timezone.now() + timedelta(weeks=1))
+        self.__poll = Poll(
+            title="Prova", 
+            text="Domanda di prova", 
+            default_type=Poll.PollType.SINGLE_PREFERENCE,
+            start=timezone.now(), 
+            end=timezone.now() + timedelta(weeks=1),
+            author=User.objects.create_user('test')
+        )
         self.__poll.save()
         self.__a1 = self.__poll.alternative_set.create(text="Risposta 1")
         self.__poll.alternative_set.create(text="Risposta 2")

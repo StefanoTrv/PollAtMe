@@ -1,8 +1,10 @@
-from django.test import TestCase
-from polls.forms import SinglePreferenceForm
-from polls.models import Poll, SinglePreference, Alternative
 from django import forms
+from django.contrib.auth.models import User
+from django.test import TestCase
 from django.utils import timezone
+
+from polls.forms import SinglePreferenceForm
+from polls.models import Alternative, Poll, SinglePreference
 
 
 class TestSinglePreferenceForm(TestCase):
@@ -13,7 +15,8 @@ class TestSinglePreferenceForm(TestCase):
             text="Dolor sit amet",
             default_type=Poll.PollType.SINGLE_PREFERENCE,
             start=timezone.now(),
-            end=timezone.now() + timezone.timedelta(weeks=1)
+            end=timezone.now() + timezone.timedelta(weeks=1),
+            author=User.objects.create_user(username='test')
         )
         poll.save()
         poll.alternative_set.create(text="Lorem")

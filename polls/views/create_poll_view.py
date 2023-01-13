@@ -37,7 +37,9 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
         f_poll: Poll = form.save(commit=False)
         if f_poll.start is None:
             f_poll.start = timezone.now() + timedelta(minutes=10)
-            f_poll.end = f_poll.start + timedelta(weeks=1)
+            f_poll.end = f_poll.start + timedelta(weeks=2)
+        if f_poll.author_id is None:
+            f_poll.author = request.user
         request.session[action] = {
             'poll': form.cleaned_data,
             'alternatives': formset_alternatives.get_form_for_session()

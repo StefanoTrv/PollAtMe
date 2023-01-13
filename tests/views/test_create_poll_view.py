@@ -4,12 +4,16 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 from assertpy import assert_that  # type: ignore
+from django.contrib.auth.models import User
 
 from polls.models import Poll, Alternative
 
 class CreatePollViewTest(TestCase):
     
     url = reverse('polls:create_poll')
+    def setUp(self) -> None:
+        self.u = User.objects.create_user(username='test', password='test')
+        self.client.login(username='test', password='test')
 
     def test_empty(self):
         response = self.client.get(self.url)
@@ -45,6 +49,7 @@ class CreatePollViewTest(TestCase):
         step_2_data = step_1_data | {
             'start': (now + timedelta(minutes=20)).strftime('%Y-%m-%d %H:%M:%S'),
             'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
+            'author': self.u.id,
             'save': ''
         }
         response = self.client.post(self.url, data=step_2_data)

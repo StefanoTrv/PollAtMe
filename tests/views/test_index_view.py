@@ -3,15 +3,21 @@ from polls.models import Poll
 from django.utils import timezone
 from datetime import timedelta
 from django.urls import reverse
+from django.contrib.auth.models import User
 
 class IndexViewTest(TestCase):
     
     url = reverse('polls:index')
 
     def setUp(self):
-        self.client = Client()
-        self.poll = Poll(title="Titolo test", text = "Sondaggio di prova",
-            start = timezone.now(), end = timezone.now() + timedelta(weeks=1))
+        self.u = User.objects.create_user(username='test')
+        self.poll = Poll(
+            title="Titolo test", 
+            text = "Sondaggio di prova",
+            start = timezone.now(), 
+            end = timezone.now() + timedelta(weeks=1),
+            author=self.u
+        )
         self.poll.save()
 
     def test_sondaggi_attivi(self):

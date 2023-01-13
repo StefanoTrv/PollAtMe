@@ -4,6 +4,7 @@ from assertpy import assert_that  # type: ignore
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 from polls.models import Poll
 
@@ -11,14 +12,18 @@ from polls.models import Poll
 class TestPollEditView(TestCase):
 
     def setUp(self) -> None:
+        self.u = User.objects.create_user(username='test', password='test')
         self.poll = Poll()
         self.poll.title = 'Sondaggio di prova'
         self.poll.text = 'Sondaggio di prova'
         self.poll.start = timezone.now() + timedelta(weeks=1)
         self.poll.end = timezone.now() + timedelta(weeks=2)
+        self.poll.author = self.u
         self.poll.save()
         self.poll.alternative_set.create(text='Alternativa di prova 1')
         self.poll.alternative_set.create(text='Alternativa di prova 2')
+
+        self.client.login(username='test', password='test')
     
     def test_mostra_pagina_edit(self):
         response = self.client.get(
@@ -78,6 +83,7 @@ class TestPollEditView(TestCase):
             'default_type': 1,
             'start': start,
             'end': end,
+            'author': self.u.id,
             'save': ''
         }
         response = self.client.post(url, data=data)
@@ -136,6 +142,7 @@ class TestPollEditView(TestCase):
             'default_type': 1,
             'start': start,
             'end': end,
+            'author': self.u.id,
             'save': ''
         }
         

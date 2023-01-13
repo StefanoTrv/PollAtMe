@@ -1,11 +1,12 @@
 from datetime import timedelta
 
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
-from assertpy import assert_that  # type: ignore
 
-from polls.models import Poll, Alternative
+from polls.models import Poll
+
 
 class NewPollSessionCleanerTest(TestCase):
     
@@ -28,11 +29,15 @@ class NewPollSessionCleanerTest(TestCase):
     poll : Poll|None = None
     
     def setUp(self) -> None:
+        self.user = User.objects.create_user(username='test', password='test')
+        self.client.login(username='test', password='test')
+
         self.poll = Poll()
         self.poll.title = 'Sondaggio di prova'
         self.poll.text = 'Sondaggio di prova'
         self.poll.start = timezone.now() + timedelta(weeks=1)
         self.poll.end = timezone.now() + timedelta(weeks=2)
+        self.poll.author = self.user
         self.poll.save()
         self.poll.alternative_set.create(text='Alternativa di prova 1')
         self.poll.alternative_set.create(text='Alternativa di prova 2')
