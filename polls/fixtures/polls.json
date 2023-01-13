@@ -7,7 +7,9 @@
     "text": "Come passerai capodanno 2023?",
     "default_type": 3,
     "start": "2023-01-03T16:42:00Z",
-    "end": "2024-01-10T16:42:34Z"
+    "end": "2025-01-10T16:42:34Z",
+    "creation_date": "2023-01-03T16:37:00Z",
+    "last_update": "2023-01-10T16:37:34Z"
   }
 },
 {
@@ -18,7 +20,9 @@
     "text": "Dai un giudizio ai seguenti giocatori",
     "default_type": 1,
     "start": "2023-01-03T16:44:27Z",
-    "end": "2024-01-10T16:44:27Z"
+    "end": "2025-01-10T16:44:27Z",
+    "creation_date": "2023-01-03T16:37:00Z",
+    "last_update": "2023-01-10T16:37:34Z"
   }
 },
 {
@@ -29,7 +33,9 @@
     "text": "Dai un giudizio ai seguenti quotidiani",
     "default_type": 1,
     "start": "2023-01-03T16:45:32Z",
-    "end": "2024-01-10T16:45:32Z"
+    "end": "2025-01-10T16:45:32Z",
+    "creation_date": "2023-01-03T16:37:00Z",
+    "last_update": "2023-01-10T16:37:34Z"
   }
 },
 {
@@ -40,7 +46,9 @@
     "text": "Quale ritieni il miglior dolce natalizio?",
     "default_type": 3,
     "start": "2023-01-03T16:48:47Z",
-    "end": "2024-01-10T16:48:47Z"
+    "end": "2025-01-10T16:48:47Z",
+    "creation_date": "2023-01-03T16:37:00Z",
+    "last_update": "2023-01-10T16:37:34Z"
   }
 },
 {
@@ -51,7 +59,9 @@
     "text": "Quale è secondo te il miglior metodo di pagamento?",
     "default_type": 3,
     "start": "2023-01-03T16:49:27Z",
-    "end": "2024-01-10T16:49:27Z"
+    "end": "2025-01-10T16:49:27Z",
+    "creation_date": "2023-01-03T16:37:00Z",
+    "last_update": "2023-01-10T16:37:34Z"
   }
 },
 {
