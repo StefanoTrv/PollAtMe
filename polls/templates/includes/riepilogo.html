@@ -31,7 +31,7 @@
             <h6 class="text-white">Sondaggio creato da:</h6>
             <h2 class="text-end text-white"><em class="feather icon-user float-start"></em><span>User</span>
             </h2>
-            <p class="m-b-0">Sondaggio creato il giorno<span class="float-end">{% now "SHORT_DATE_FORMAT" %}</span></p>
+            <p class="m-b-0">Sondaggio creato il giorno<span class="float-end">{{poll.creation_date |  date:"d/m/Y h:i"}}</span></p>
           </div>
         </div>
       </div>

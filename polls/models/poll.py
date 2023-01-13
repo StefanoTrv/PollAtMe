@@ -15,6 +15,9 @@ class Poll(models.Model):
     start = models.DateTimeField(auto_now_add = False, auto_now = False)
     end = models.DateTimeField(auto_now_add = False, auto_now = False)
 
+    creation_date = models.DateTimeField(auto_now_add = True)
+    last_update = models.DateTimeField(auto_now = True)
+
     def is_active(self) -> bool:
         return self.start <= timezone.now() < self.end
 
