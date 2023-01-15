@@ -19,7 +19,7 @@ class MajorityPreference(Preference):
     responses = models.ManyToManyField(Alternative, through="MajorityOpinionJudgement")
 
 class MajorityOpinionJudgement(models.Model):
-    class JudgeType(models.IntegerChoices):
+    class JudgementType(models.IntegerChoices):
         """
         Possibili valori per grade
         """
@@ -29,6 +29,6 @@ class MajorityOpinionJudgement(models.Model):
         BUONO = 4
         OTTIMO = 5
     
-    grade = models.IntegerField(choices=JudgeType.choices)
+    grade = models.IntegerField(choices=JudgementType.choices)
     alternative = models.ForeignKey(Alternative, on_delete=models.CASCADE)
     preference = models.ForeignKey(MajorityPreference, on_delete=models.CASCADE)

@@ -49,7 +49,7 @@ class Grade:
 
     def __str__(self):
 
-        vote_string =  MajorityOpinionJudgement.JudgeType(self._vote).name
+        vote_string =  MajorityOpinionJudgement.JudgementType(self._vote).name
         sign = '-'
         if self._positive:
             sign = '+'
@@ -64,7 +64,7 @@ class VoteTuple:
         self._grade = grade
         self._giudizi_peggiori = giudizi_peggiori
 
-    ##properietà
+    ##proprietà
     def choice_id(self) -> int:
         return self._choice_id
     
@@ -230,14 +230,14 @@ class GiudizioMaggioritario:
         for result in results_list:
             alternativa = Alternative.objects.get(id = result['choice_id']).text
             votes = result['voti']
-            different_votes = [e.value for e in MajorityOpinionJudgement.JudgeType]
+            different_votes = [e.value for e in MajorityOpinionJudgement.JudgementType]
             different_votes.sort(reverse=True) #abbiamo i voti in ordine di valore
 
             lista_voti = {}
             #produciamo le tuple
             for i in range(0, len(different_votes), 1):
                 amount = votes.count(different_votes[i])
-                vote_name = MajorityOpinionJudgement.JudgeType(different_votes[i])
+                vote_name = MajorityOpinionJudgement.JudgementType(different_votes[i])
                 vote_name = vote_name.name
                 lista_voti.update({vote_name : amount})
 
@@ -364,12 +364,12 @@ class MajorityJudgementService:
 
     def __get_all_votes(self):
         self.giudizio_maggioritario = GiudizioMaggioritario(self.__poll.id)
-        different_votes = [e.value for e in MajorityOpinionJudgement.JudgeType]
+        different_votes = [e.value for e in MajorityOpinionJudgement.JudgementType]
         different_votes.sort(reverse=True)
 
         ordered_votes = []
         for i in range(0, len(different_votes), 1):
-            ordered_votes.append(MajorityOpinionJudgement.JudgeType(different_votes[i]).name)
+            ordered_votes.append(MajorityOpinionJudgement.JudgementType(different_votes[i]).name)
 
         return ordered_votes
 
@@ -386,4 +386,3 @@ class MajorityJudgementService:
         preferenze = Preference.objects.filter(poll = self.__poll.id)
         context = {'numero_preferenze' : len(preferenze)} 
         return context
-

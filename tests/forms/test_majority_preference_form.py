@@ -29,7 +29,7 @@ class TestMajorityOpinionForm(TestCase):
         self.assertEqual(form.fields['grade'].label,alternative.text)
         self.assertIsInstance(form.fields['grade'].widget,forms.RadioSelect)
 
-        for option in MajorityOpinionJudgement.JudgeType.choices:
+        for option in MajorityOpinionJudgement.JudgementType.choices:
             self.assertIn(option,form.fields['grade'].choices)
         
     
