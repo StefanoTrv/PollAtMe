@@ -6,6 +6,7 @@ from .poll import Poll
 
 class Preference(models.Model):
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
+    synthetic = models.BooleanField(default=False)
     
     class Meta:
         abstract = True

@@ -1,4 +1,4 @@
-from polls.models import Poll, Alternative, Preference
+from polls.models import Poll, Alternative
 from polls.models.preference import MajorityOpinionJudgement
 import math
 from django.db.models import QuerySet, Count
@@ -383,6 +383,6 @@ class MajorityJudgementService:
     #ritorna un dict {'numero_preferenze' : numero_preferenze}, dove numero_preferenze è un intero
     # che indica il numero di preferenze date per questa domanda
     def get_numero_numero_giudizi(self) :
-        preferenze = Preference.objects.filter(poll = self.__poll.id)
+        preferenze = MajorityOpinionJudgement.objects.filter(poll = self.__poll.id)
         context = {'numero_preferenze' : len(preferenze)} 
         return context
