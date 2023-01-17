@@ -11,6 +11,9 @@ from datetime import timedelta
 from polls.models import Poll
 from polls.forms import PollFormAdditionalOptions, PollFormMain, BaseAlternativeFormSet
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+
 ALTERNATIVE_FORMSET = BaseAlternativeFormSet.get_formset_class()
 
 
@@ -94,7 +97,7 @@ def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Option
         })
 
 
-class CreatePollView(TemplateView):
+class CreatePollView(LoginRequiredMixin, TemplateView):
 
     def get(self, request: HttpRequest, *args, **kwargs):
         return render(request, 'polls/create_poll/main_page_create.html', {
