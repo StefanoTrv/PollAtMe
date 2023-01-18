@@ -27,6 +27,7 @@
         </div>
         <form method="post" id="additional-options">
             {% csrf_token %}
+            {{ form.author }}
             <div class="row">
                 <div class="col-sm-12 col-xl-6">
                     <div class="card">

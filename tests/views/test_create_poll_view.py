@@ -3,10 +3,12 @@ from datetime import timedelta
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
+from django import forms
 from assertpy import assert_that  # type: ignore
 from django.contrib.auth.models import User
 
 from polls.models import Poll, Alternative
+from polls.forms import PollFormMain, PollFormAdditionalOptions, BaseAlternativeFormSet
 
 class CreatePollViewTest(TestCase):
     
@@ -19,8 +21,10 @@ class CreatePollViewTest(TestCase):
         response = self.client.get(self.url)
         assert_that(response.status_code).is_equal_to(200)
 
-        self.assertTemplateUsed('polls/create_poll/main_page_create.html')
-
+        self.assertTemplateUsed(response, 'polls/create_poll/main_page_create.html')
+        assert_that(response).contains_form(PollFormMain)
+        assert_that(response).contains_formset(BaseAlternativeFormSet.get_formset_class())
+        
     def test_aggiunta_poll(self):
         step_1_data = {
             'title': 'Lorem ipsum',
@@ -39,8 +43,10 @@ class CreatePollViewTest(TestCase):
         }
         response = self.client.post(self.url, data=step_1_data | {'summary': ''})
         assert_that(response.status_code).is_equal_to(200)
-        self.assertTemplateUsed('polls/create_poll/summary_and_options_create.html')
-        self.assertContains(response,'Lorem ipsum')
+        self.assertTemplateUsed(response, 'polls/create_poll/summary_and_options_create.html')
+
+        # Verifichiamo che ci siano tutti i campi del form
+        assert_that(response).contains_form(PollFormAdditionalOptions)
 
         assert_that(self.client.session.has_key('create')).is_true()
         assert_that(self.client.session['create']).is_length(2)
@@ -54,7 +60,7 @@ class CreatePollViewTest(TestCase):
         }
         response = self.client.post(self.url, data=step_2_data)
         assert_that(response.status_code).is_equal_to(200)
-        self.assertTemplateUsed('polls/create_poll_success.html')
+        self.assertTemplateUsed(response, 'polls/create_poll_success.html')
 
         assert_that(Poll.objects.count()).is_equal_to(1)
         assert_that(Alternative.objects.count()).is_equal_to(2)
@@ -77,7 +83,7 @@ class CreatePollViewTest(TestCase):
         }
         response = self.client.post(self.url, data=step_1_data | {'summary': ''})
         assert_that(response.status_code).is_equal_to(200)
-        self.assertTemplateUsed('polls/create_poll/main_page_create.html')
+        self.assertTemplateUsed(response, 'polls/create_poll/main_page_create.html')
     
     def test_error_on_second_page(self):
         step_1_data = {
@@ -98,7 +104,7 @@ class CreatePollViewTest(TestCase):
         self.client.post(self.url, data=step_1_data | {'summary': ''})
         response = self.client.post(self.url, data={'save': ''})
         assert_that(response.status_code).is_equal_to(200)
-        self.assertTemplateUsed('polls/create_poll/summary_and_options_create.html')
+        self.assertTemplateUsed(response, 'polls/create_poll/summary_and_options_create.html')
 
     def test_going_back(self):
         step_1_data = {
@@ -122,5 +128,5 @@ class CreatePollViewTest(TestCase):
 
         response = self.client.post(self.url, data={'go_back': ''})
         assert_that(response.status_code).is_equal_to(200)
-        self.assertTemplateUsed('polls/create_poll/main_page_create.html')
+        self.assertTemplateUsed(response, 'polls/create_poll/main_page_create.html')
         self.assertContains(response,'Lorem ipsum')
