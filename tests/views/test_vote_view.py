@@ -6,8 +6,7 @@ from django.utils import timezone
 from polls import forms as pollforms
 from polls import models
 
-
-
+    
 class TestCreateSinglePreferenceView(TestCase):
     fixtures = ['polls.json']
     URL = 'polls:vote_single_preference'

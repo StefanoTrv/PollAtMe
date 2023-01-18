@@ -2,10 +2,11 @@ from typing import Any, Callable, Optional, Type
 
 from django import forms, http
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
 from django.views.generic.edit import CreateView
 from django.db.models.query import QuerySet
+from django.urls import reverse
 
 from polls.exceptions import PollWithoutAlternativesException
 from polls.forms import (MajorityPreferenceFormSet,
@@ -14,9 +15,23 @@ from polls.models import (MajorityOpinionJudgement,
                           MajorityPreference, Poll)
 from polls.services import SearchPollService
 
-class VotingView(CreateView):
+#se si accede alla pagina di voto generica, si viene reindirizzati alla pagina di voto del metodo principale
+def vote_redirect_view(request, id):
+    try:
+        poll = SearchPollService().search_by_id(id)
+        if not poll.is_active():
+            raise PermissionDenied('Non è possibile votare questo sondaggio',args=[id])
+        if poll.get_type()=="Preferenza singola":
+            return redirect(reverse('polls:vote_single_preference', args=[id]))
+        else:
+            return redirect(reverse('polls:vote_MJ', args=[id]))
+    except PollWithoutAlternativesException:
+        raise http.Http404("Il sondaggio ricercato non ha opzioni di risposta")
+
+
+class _VotingView(CreateView):
     """
-    Class view che incorpora ciò che hanno in comune le diverse pagine di voto
+    Class view (de facto astratta) che incorpora ciò che hanno in comune le diverse pagine di voto
     """
     poll: Poll
     alternatives: QuerySet
@@ -44,7 +59,7 @@ class VotingView(CreateView):
         return context
 
 
-class VoteSinglePreferenceView(VotingView):
+class VoteSinglePreferenceView(_VotingView):
 
     form_class: Optional[Type[forms.BaseForm]] = SinglePreferenceForm
     template_name: str = 'polls/vote/vote_SP.html'
@@ -64,7 +79,7 @@ class VoteSinglePreferenceView(VotingView):
         return render(self.request, 'polls/vote_success.html', {'poll_id': self.poll.id})
 
 
-class VoteMajorityJudgmentView(VotingView):
+class VoteMajorityJudgmentView(_VotingView):
     """
     Class view per l'inserimento delle risposte ai sondaggi a risposta singola
     """
