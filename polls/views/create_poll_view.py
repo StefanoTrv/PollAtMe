@@ -109,7 +109,7 @@ class CreatePollView(LoginRequiredMixin, TemplateView):
         return select_action(request)
 
 
-class EditPollView(TemplateView):
+class EditPollView(LoginRequiredMixin, TemplateView):
 
     def dispatch(self, request: HttpRequest, *args, **kwargs):
         self.__poll: Poll = get_object_or_404(Poll, id=kwargs['id'])
@@ -121,6 +121,10 @@ class EditPollView(TemplateView):
         if self.__poll.is_ended():
             raise PermissionDenied(
                 "Questo sondaggio è concluso e non può essere modificato")
+
+        if not self.__poll.author.__eq__(request.user):
+            raise PermissionDenied(
+                "Non hai i permessi per modificare questo sondaggio")
 
         return super().dispatch(request, *args, **kwargs)
 
