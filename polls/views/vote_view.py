@@ -5,6 +5,7 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import render
 from django.views import View
 from django.views.generic.edit import CreateView
+from django.db.models.query import QuerySet
 
 from polls.exceptions import PollWithoutAlternativesException
 from polls.forms import (MajorityPreferenceFormSet,
@@ -13,11 +14,12 @@ from polls.models import (MajorityOpinionJudgement,
                           MajorityPreference, Poll)
 from polls.services import SearchPollService
 
-class VotingView(View):
+class VotingView(CreateView):
     """
-    Class view che sceglie quale view mostrare in base al tipo di sondaggio
-    scelto nel link.
+    Class view che incorpora ciò che hanno in comune le diverse pagine di voto
     """
+    poll: Poll
+    alternatives: QuerySet
 
     def dispatch(self, request, *args, **kwargs):
         """
@@ -25,34 +27,27 @@ class VotingView(View):
         HTTP (di qualunque tipo).
         """
         try:
-            poll = SearchPollService().search_by_id(kwargs['id'])
-
-            if not poll.is_active():
+            self.poll = SearchPollService().search_by_id(kwargs['id'])
+            self.alternatives = self.poll.alternative_set.all()
+            if not self.poll.is_active():
                 raise PermissionDenied('Non è possibile votare questo sondaggio')
-
-            view = self.__dispatch_view(poll)
-            return view(request, *args, **kwargs)
+            return super().dispatch(request, *args, **kwargs)
         except PollWithoutAlternativesException:
             raise http.Http404("Il sondaggio ricercato non ha opzioni di risposta")
-    
-    def __dispatch_view(self, poll: Poll) -> Callable:
-        if poll.get_type() == 'Preferenza singola':
-            return VoteSinglePreferenceView.as_view()
-        elif poll.get_type() == 'Giudizio maggioritario':
-            return VoteMajorityJudgmentView.as_view()
-        else:
-            return VoteShultzeView.as_view()
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        """
+        Metodo per l'inserimento delle variabili dalla view al template
+        """
+        context = super().get_context_data(**kwargs)
+        context['poll'] = self.poll
+        return context
 
 
-class VoteSinglePreferenceView(CreateView):
+class VoteSinglePreferenceView(VotingView):
 
     form_class: Optional[Type[forms.BaseForm]] = SinglePreferenceForm
     template_name: str = 'polls/vote/vote_SP.html'
-    poll: Poll = Poll()
-
-    def dispatch(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.response.HttpResponseBase:
-        self.poll = SearchPollService().search_by_id(kwargs['id'])
-        return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self) -> dict[str, Any]:
         """
@@ -63,35 +58,17 @@ class VoteSinglePreferenceView(CreateView):
         kwargs['poll'] = self.poll
         return kwargs
 
-    def get_context_data(self, **kwargs: Any):
-        """
-        Metodo per l'inserimento delle variabili dalla view al template
-        """
-        context = super().get_context_data(**kwargs)
-        context['poll'] = self.poll
-        return context
-
     def form_valid(self, form: forms.BaseModelForm) -> http.HttpResponse:
         form.instance.poll = self.poll
         form.save()
         return render(self.request, 'polls/vote_success.html', {'poll_id': self.poll.id})
 
 
-class VoteMajorityJudgmentView(CreateView):
+class VoteMajorityJudgmentView(VotingView):
     """
     Class view per l'inserimento delle risposte ai sondaggi a risposta singola
     """
     template_name: str = 'polls/vote/vote_GM.html'
-
-    def dispatch(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.response.HttpResponseBase:
-        self.poll = SearchPollService().search_by_id(kwargs['id'])
-        self.alternatives = self.poll.alternative_set.all()
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context['poll'] = self.poll
-        return context
 
     def form_valid(self, form: forms.BaseInlineFormSet) -> http.HttpResponse:
         preference = MajorityPreference(poll = self.poll)

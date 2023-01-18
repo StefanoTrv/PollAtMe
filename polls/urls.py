@@ -6,7 +6,8 @@ from . import views
 app_name = 'polls'
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
-    path('vote/<int:id>/', views.VotingView.as_view(), name = 'vote'),
+    path('vote_single_preference/<int:id>/', views.VoteSinglePreferenceView.as_view(), name = 'vote_single_preference'),
+    path('vote_majority_judgment/<int:id>/', views.VoteMajorityJudgmentView.as_view(), name = 'vote_MJ'),
     path('result/<int:id>/', views.ResultView.as_view(), name = 'result'),
     path('new/', views.CreatePollView.as_view(), name='create_poll'),
     path('delete/<int:pk>/', views.PollDeleteView.as_view(), name='delete_poll'),

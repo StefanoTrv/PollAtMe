@@ -1,4 +1,4 @@
-from .vote_view import VotingView
+from .vote_view import VoteSinglePreferenceView, VoteMajorityJudgmentView, VoteShultzeView
 from .result_view import SinglePreferenceListView
 from .result_view import MajorityJudgementListView
 from .result_view import ResultView

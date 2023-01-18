@@ -21,7 +21,11 @@
             {% if poll.is_ended %} Terminato il {{ poll.end | date:"d/m/Y, H:i" }} {% endif %}
         </p>
         {% if poll.is_active %}
-        <a class="btn btn-block btn-primary mb-4" href={% url 'polls:vote' id=poll.id %}>Vota</a>
+        <a class="btn btn-block btn-primary mb-4" href={% if poll.get_type == "Preferenza singola"%}
+                                                            {% url  'polls:vote_single_preference' id=poll.id %}
+                                                        {% else %}
+                                                            {% url  'polls:vote_MJ' id=poll.id %}
+                                                        {% endif %}>Vota</a>
         {% endif %}
         
         {% if poll.is_active or poll.is_ended %}

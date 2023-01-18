@@ -6,19 +6,20 @@ from django.utils import timezone
 from polls import forms as pollforms
 from polls import models
 
-URL = 'polls:vote'
+
 
 class TestCreateSinglePreferenceView(TestCase):
     fixtures = ['polls.json']
+    URL = 'polls:vote_single_preference'
     
     def setUp(self) -> None:
         self.poll = models.Poll.objects.first()
         if self.poll is not None:
-            self.url = reverse(URL, args=[self.poll.pk])
+            self.poll_url = reverse('polls:vote_single_preference', args=[self.poll.pk])
             self.form = pollforms.SinglePreferenceForm(poll=self.poll)
 
     def test_show_single_preference_poll_form(self):
-        res = self.client.get(self.url)
+        res = self.client.get(self.poll_url)
         self.assertIsInstance(res.context['form'], pollforms.SinglePreferenceForm)
         
         self.assertContains(
@@ -31,7 +32,7 @@ class TestCreateSinglePreferenceView(TestCase):
     def test_submit_and_save_in_db(self):
         last_vote_old = models.SinglePreference.objects.last()
         alternative_count_old = len(models.SinglePreference.objects.filter(alternative = 1))
-        resp = self.client.post(self.url, data = {
+        resp = self.client.post(self.poll_url, data = {
             'alternative' : 1,
         })
         self.assertEqual(resp.status_code,200)
@@ -46,9 +47,9 @@ class TestCreateSinglePreferenceView(TestCase):
         self.assertEqual(len(models.SinglePreference.objects.filter(alternative = 1)),alternative_count_old+1)
             
     def test_404_sondaggio_inesistente(self):
-        url = reverse(URL, args=[100])
+        url = reverse(self.URL, args=[100])
         resp = self.client.get(url)
-        self.assertEqual(resp.status_code,404)      
+        self.assertEqual(resp.status_code,404)
 
     def test_sondaggio_senza_scelte(self):
         empty_poll = models.Poll()
@@ -58,13 +59,13 @@ class TestCreateSinglePreferenceView(TestCase):
         empty_poll.end = timezone.now()
         empty_poll.author = User.objects.get(username='test')
         empty_poll.save()
-        url = reverse(URL, args=[empty_poll.id])
+        url = reverse(self.URL, args=[empty_poll.id])
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 404)
 
     def test_if_submit_and_save_in_db(self):
         last_vote_old = models.SinglePreference.objects.last()
-        resp = self.client.post(self.url, {
+        resp = self.client.post(self.poll_url, {
             'alternative': 2
         })
 
@@ -80,12 +81,13 @@ class TestCreateSinglePreferenceView(TestCase):
 
 class TestCreateMajorityPreferenceView(TestCase):
     fixtures = ['polls.json']
+    URL = 'polls:vote_MJ'
 
     def setUp(self) -> None:
         self.poll = models.Poll.objects.filter(default_type=models.Poll.PollType.MAJORITY_JUDGMENT).first()
         if self.poll is not None:
-            self.url = reverse(URL, args=[self.poll.pk])
-            self.resp = self.client.get(self.url)
+            self.poll_url = reverse(self.URL, args=[self.poll.pk])
+            self.resp = self.client.get(self.poll_url)
             self.formset_class = pollforms.MajorityPreferenceFormSet.get_formset_class(
                 self.poll.alternative_set.count())
             self.form = self.formset_class(queryset=self.poll.alternative_set.all())
@@ -116,7 +118,7 @@ class TestCreateMajorityPreferenceView(TestCase):
     
     def test_submit_and_save_in_db(self):
         last_vote_old = models.MajorityPreference.objects.last()
-        resp = self.client.post(self.url, {
+        resp = self.client.post(self.poll_url, {
             'majorityopinionjudgement_set-TOTAL_FORMS': 5,
             'majorityopinionjudgement_set-INITIAL_FORMS': 0,
             'majorityopinionjudgement_set-MIN_NUM_FORMS': 5,
@@ -136,6 +138,6 @@ class TestCreateMajorityPreferenceView(TestCase):
         last_vote = models.MajorityPreference.objects.last()
         self.assertNotEqual(last_vote.id,last_vote_old.id)
 
-        judge: models.MajorityOpinionJudgement
-        for judge in last_vote.majorityopinionjudgement_set.all():
-            self.assertEqual(judge.grade,1)
+        judgement: models.MajorityOpinionJudgement
+        for judgement in last_vote.majorityopinionjudgement_set.all():
+            self.assertEqual(judgement.grade,1)
