@@ -15,7 +15,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect
 from django.urls import reverse
 
-POLL_DOES_NOT_EXISTS_MSG = "Il sondaggio ricercato non esiste"
+POLL_DOES_NOT_EXISTS_MSG = "Il sondaggio cercato non esiste"
 
 # se si accede alla pagina dei risultati generica, si viene reindirizzati alla pagina dei risultati del metodo principale
 def result_redirect_view(request, id):

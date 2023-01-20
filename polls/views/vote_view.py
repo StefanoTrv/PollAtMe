@@ -17,16 +17,11 @@ from polls.services import SearchPollService
 
 #se si accede alla pagina di voto generica, si viene reindirizzati alla pagina di voto del metodo principale
 def vote_redirect_view(request, id):
-    try:
-        poll = SearchPollService().search_by_id(id)
-        if not poll.is_active():
-            raise PermissionDenied('Non è possibile votare questo sondaggio',args=[id])
-        if poll.get_type()=="Preferenza singola":
-            return redirect(reverse('polls:vote_single_preference', args=[id]))
-        else:
-            return redirect(reverse('polls:vote_MJ', args=[id]))
-    except PollWithoutAlternativesException:
-        raise http.Http404("Il sondaggio ricercato non ha opzioni di risposta")
+    poll = SearchPollService().search_by_id(id)
+    if poll.get_type()=="Preferenza singola":
+        return redirect(reverse('polls:vote_single_preference', args=[id]))
+    else:
+        return redirect(reverse('polls:vote_MJ', args=[id]))
 
 
 class _VotingView(CreateView):
