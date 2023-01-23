@@ -1,25 +1,46 @@
-{% load i18n %}
-
-<div id="cookiebannerModal" class="hidden" tabindex="-1" role="dialog" aria-labelledby="cookiebannerModalLabel" aria-hidden="true">
-  <div id="cookiebannerModalDialog">
-    <div id="cookiebannerModalHeader">
-      <h3 id="cookiebannerModalTitle"> Informativa sui cookie </h3>
-      <p> Questo sito utilizza i cookie. I cookie aiutano a migliorare l'esperienza dell'utente e il nostro sito. </p>
-      <p> Per continuare a usare il sito, accetta la nostra Informativa sui cookie. </p>
-    </div>
-    <div id="cookiebannerModalBody">
-      <form id="cookiebannerForm">
+<div class="modal fade" id="cookiebannerModal" tabindex="-1" role="dialog" aria-labelledby="cookiebannerModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="cookiebannerModalLabel">{{ cb_settings.title }}</h3>
+      </div>
+      <div class="modal-body">
+        {% if cb_settings.header_text %}
+        <p>{{ cb_settings.header_text|safe }}</p>
+        {% endif %}
+        <form id="cookiebannerForm">
+          {% for cookiegroup in cb_settings.groups %}
+          <div id="cookiegroup_{{ cookiegroup.id }}" style="margin-bottom: 10px;">
             <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckCheckedDisabled" checked disabled>
-                <h5>Essenziali</h6>
+              <input class="form-check-input" type="checkbox" role="switch" name="{{ cookiegroup.id }}" id="id_{{ cookiegroup.id }}" 
+                {% if not cookiegroup.optional %}checked disabled{% endif %}>
+                <label class="form-check-label" for="id_{{ cookiegroup.id }}">{{ cookiegroup.name }}</label>
             </div>
-            <hr>
-      </form>
-    </div>
-    <div id="cookiebannerModalFooter" style="text-align:center">
-      <input type="submit" name="enable_all" class="cookiebannerSubmit btn" value="{% trans 'Accetto tutti i cookie' %}">
-      <br>
-      <input type="submit" name="save" class="cookiebannerSubmit btn" value="{% trans 'Accetto solo i cookie selezionati' %}">
+            <p>{{ cookiegroup.description }}</p>
+            <a data-bs-toggle="collapse" href="#detailCollapse{{ cookiegroup.id }}" role="button">Mostra dettagli sui cookie</a>
+            <div class="collapse" id="detailCollapse{{ cookiegroup.id }}">
+              <ul class="list-group">
+              {% for cookie in cookiegroup.cookies %}
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                  <div class="fw-bold">{{ cookie.pattern }}</div>
+                  {{ cookie.description }}
+                </div>
+              </li>
+              {% endfor %}
+              </ul>
+            </div>
+          </div>
+          {% endfor %}
+        </form>
+      </div>
+      <div class="modal-footer">
+        {% if cb_settings.footer_text %}
+          <p class="text-left">{{ cb_settings.footer_text|safe }}</p>
+        {% endif %}
+        <input type="submit" name="enable_all" class="cookiebannerSubmit btn btn-primary" value="Accetta tutti">
+        <input type="submit" name="save" class="cookiebannerSubmit btn btn-secondary" value="Salva">
+      </div>
     </div>
   </div>
 </div>
@@ -32,13 +53,11 @@
     let cookiebannerCookie = keyValue ? decodeURIComponent(keyValue[2]) : null;
     if (cookiebannerCookie) return;
   
-    document.getElementById("cookiebannerModal").classList.remove('hidden');
-  
-    document.querySelectorAll("a[data-toggle='cookiebannerCollapse']").forEach((a) => {
-      a.addEventListener("click", () =>
-        document.querySelector(a.hash).classList.toggle('show')
-      )
-    })
+    let modal = new bootstrap.Modal(document.getElementById("cookiebannerModal"), {
+      backdrop: 'static',
+      keyboard: false
+    });
+    modal.show()
   
     document.querySelectorAll("input.cookiebannerSubmit").forEach((inp) => {
       inp.addEventListener("click", () => {
