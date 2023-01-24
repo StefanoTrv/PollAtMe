@@ -19,7 +19,8 @@ class TestPollDeleteView(TestCase):
         self.poll.text = "Sondaggio di prova"
         self.poll.start = timezone.now() + timedelta(weeks=1)
         self.poll.end = timezone.now() + timedelta(weeks=2)
-        self.poll.author = User.objects.create_user(username='test')
+        self.poll.author = User.objects.create_user(username='test', password='test')
+        self.client.login(username='test', password='test')
         self.poll.save()
         self.poll.alternative_set.create(text="Alternativa di prova")
     

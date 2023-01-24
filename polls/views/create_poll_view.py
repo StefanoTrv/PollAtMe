@@ -11,6 +11,9 @@ from datetime import timedelta
 from polls.models import Poll
 from polls.forms import PollFormAdditionalOptions, PollFormMain, BaseAlternativeFormSet
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+
 ALTERNATIVE_FORMSET = BaseAlternativeFormSet.get_formset_class()
 
 
@@ -94,7 +97,7 @@ def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Option
         })
 
 
-class CreatePollView(TemplateView):
+class CreatePollView(LoginRequiredMixin, TemplateView):
 
     def get(self, request: HttpRequest, *args, **kwargs):
         return render(request, 'polls/create_poll/main_page_create.html', {
@@ -106,7 +109,7 @@ class CreatePollView(TemplateView):
         return select_action(request)
 
 
-class EditPollView(TemplateView):
+class EditPollView(LoginRequiredMixin, TemplateView):
 
     def dispatch(self, request: HttpRequest, *args, **kwargs):
         self.__poll: Poll = get_object_or_404(Poll, id=kwargs['id'])
@@ -118,6 +121,10 @@ class EditPollView(TemplateView):
         if self.__poll.is_ended():
             raise PermissionDenied(
                 "Questo sondaggio è concluso e non può essere modificato")
+
+        if not self.__poll.author.__eq__(request.user):
+            raise PermissionDenied(
+                "Non hai i permessi per modificare questo sondaggio")
 
         return super().dispatch(request, *args, **kwargs)
 
