@@ -8,8 +8,8 @@ User = get_user_model()
 class Poll(models.Model):
     class PollType(models.IntegerChoices):
         MAJORITY_JUDGMENT = 1, _("Giudizio maggioritario")
-        SHULTZE_METHOD = 2, _("Metodo Shultze")
-        SINGLE_PREFERENCE = 3, _("Preferenza singola")
+        SINGLE_PREFERENCE = 2, _("Preferenza singola")
+        #SHULTZE_METHOD = 2, _("Metodo Shultze")
 
     title = models.CharField(max_length=100)
     text = models.TextField()
