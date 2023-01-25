@@ -1,8 +1,11 @@
-from django.test import TestCase
-from polls.forms import BaseAlternativeFormSet, PollFormMain, PollFormAdditionalOptions
 from assertpy import assert_that  # type: ignore
-from polls.models import Poll, Alternative
+from django.contrib.auth.models import User
+from django.test import TestCase
 from django.utils import timezone
+
+from polls.forms import (BaseAlternativeFormSet, PollFormAdditionalOptions,
+                         PollFormMain)
+from polls.models import Alternative, Poll
 
 
 class TestBaseAlternativeFormSet(TestCase):
@@ -12,6 +15,7 @@ class TestBaseAlternativeFormSet(TestCase):
         p.text = "Dolor sit amet"
         p.start = timezone.now()
         p.end = p.start + timezone.timedelta(weeks=1)
+        p.author = User.objects.create_user(username='test')
         p.save()
         self.p = p
         p.alternative_set.create(text='Lorem')
@@ -194,10 +198,13 @@ class TestPollFormMain(TestCase):
 
 
 class TestPollFormAdditionalOptions(TestCase):
+    def setUp(self) -> None:
+        self.u = User.objects.create_user(username="test")
+
     def test_errore(self):
         form = PollFormAdditionalOptions({})
         assert_that(form.is_valid()).is_false()
-        assert_that(form.errors).is_length(5)
+        assert_that(form.errors).is_length(6)
     
     def test_fine_precedente_inizio(self):
         form = PollFormAdditionalOptions({
@@ -205,7 +212,8 @@ class TestPollFormAdditionalOptions(TestCase):
             'text': 'ipsum',
             'default_type': 1,
             'start': timezone.now() + timezone.timedelta(days=2),
-            'end': timezone.now() + timezone.timedelta(days=1)
+            'end': timezone.now() + timezone.timedelta(days=1),
+            'author': self.u.id
         })
 
         assert_that(form.has_error('end')).is_true()
@@ -217,7 +225,8 @@ class TestPollFormAdditionalOptions(TestCase):
             'text': 'ipsum',
             'default_type': 1,
             'start': timezone.now() + timezone.timedelta(minutes=4),
-            'end': timezone.now() + timezone.timedelta(days=1)
+            'end': timezone.now() + timezone.timedelta(days=1),
+            'author': self.u.id
         })
 
         assert_that(form.has_error('start')).is_true()
@@ -229,7 +238,8 @@ class TestPollFormAdditionalOptions(TestCase):
             'text': 'ipsum',
             'default_type': 1,
             'start': timezone.now() + timezone.timedelta(hours=1),
-            'end': timezone.now() + timezone.timedelta(hours=1, minutes=14)
+            'end': timezone.now() + timezone.timedelta(hours=1, minutes=14),
+            'author': self.u.id
         })
 
         assert_that(form.has_error('end')).is_true()

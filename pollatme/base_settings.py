@@ -35,9 +35,18 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    
     "cookiebanner",
+    
     "django_bootstrap5",
-    "bootstrap_datepicker_plus"
+    "bootstrap_datepicker_plus",
+    
+    "django.contrib.sites",
+    "justsocialauth.apps.JustSocialAuthConfig",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google"
 ]
 
 MIDDLEWARE = [
@@ -57,7 +66,7 @@ ROOT_URLCONF = "pollatme.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [ BASE_DIR / 'templates' ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -65,17 +74,13 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.request",
             ],
         },
     },
 ]
 
 WSGI_APPLICATION = "pollatme.wsgi.application"
-
-
-# Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -113,7 +118,11 @@ USE_L10N = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = "/static/"
+STATIC_URL = "/assets/"
+
+STATICFILES_DIRS = [
+    BASE_DIR / "assets",
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -121,30 +130,26 @@ STATIC_URL = "/static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 COOKIEBANNER = {
-    "title": _("Cookie settings"),
-    "header_text": _("We are using cookies on this website. A few are essential, others are not."),
-    "footer_text": _("Please accept our cookies"),
-    "footer_links": [
-        {"title": _("Imprint"), "href": "/imprint"},
-        {"title": _("Privacy"), "href": "/privacy"},
-    ],
+    "title": _("Informativa sui cookie"),
+    "header_text": _("Questo sito utilizza i cookie. I cookie aiutano a migliorare l'esperienza dell'utente e il nostro sito. "),
+    "footer_text": _("Continuando a usare questo sito accetti la nostra <a href='/privacy'>informativa sulla privacy.</a>"),
     "groups": [
         {
             "id": "essential",
-            "name": _("Essential"),
-            "description": _("Essential cookies allow this page to work."),
+            "name": _("Essenziali"),
+            "description": _("Cookie essenziali al funzionamento del sito"),
             "cookies": [
                 {
                     "pattern": "cookiebanner",
-                    "description": _("Meta cookie for the cookies that are set."),
+                    "description": _("Cookie per il funzionamento di questo banner."),
                 },
                 {
                     "pattern": "csrftoken",
-                    "description": _("This cookie prevents Cross-Site-Request-Forgery attacks."),
+                    "description": _("Cookie per prevenire attacchi Cross-Site-Request-Forgery."),
                 },
                 {
                     "pattern": "sessionid",
-                    "description": _("This cookie is necessary to allow logging in, for example."),
+                    "description": _("Questo cookie è necessario, ad esempio, per il login."),
                 },
             ],
         },
@@ -155,9 +160,36 @@ COOKIEBANNER = {
             "cookies": [
                 {
                     "pattern": "_pk_.*",
-                    "description": _("Google Analytics cookie for website analysis."),
+                    "description": _("Questo sito utilizza Google Analytics per raccogliere informazioni sull'utilizzo in forma anonima"),
                 },
             ],
         },
     ],
 }
+
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
+
+SITE_ID = 1
+
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        'OAUTH_PKCE_ENABLED': True,
+    }
+}
+
+ACCOUNT_USER_DISPLAY = lambda u : u.get_full_name()
+
+ACCOUNT_ADAPTER = 'pollatme.account_adapter.JustSocialLogin'
+

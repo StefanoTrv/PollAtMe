@@ -1,6 +1,8 @@
-from django.test import Client, TestCase
+from django.contrib.auth.models import User
+from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
+
 from polls import forms as pollforms
 from polls import models
 
@@ -14,7 +16,6 @@ class TestCreateSinglePreferenceView(TestCase):
         if self.poll is not None:
             self.url = reverse(URL, args=[self.poll.pk])
             self.form = pollforms.SinglePreferenceForm(poll=self.poll)
-        return super().setUp()
 
     def test_show_single_preference_poll_form(self):
         res = self.client.get(self.url)
@@ -36,7 +37,7 @@ class TestCreateSinglePreferenceView(TestCase):
         self.assertEqual(resp.status_code,200)
         self.assertTemplateUsed(
             response=resp,
-            template_name='vote_success.html'
+            template_name='polls/vote_success.html'
         )
 
         last_vote = models.SinglePreference.objects.last()
@@ -55,6 +56,7 @@ class TestCreateSinglePreferenceView(TestCase):
         empty_poll.text = 'Text'
         empty_poll.start = timezone.now()
         empty_poll.end = timezone.now()
+        empty_poll.author = User.objects.get(username='test')
         empty_poll.save()
         url = reverse(URL, args=[empty_poll.id])
         resp = self.client.get(url)
@@ -69,7 +71,7 @@ class TestCreateSinglePreferenceView(TestCase):
         self.assertEqual(resp.status_code,200)
         self.assertTemplateUsed(
             response=resp,
-            template_name='vote_success.html'
+            template_name='polls/vote_success.html'
         )
         last_vote = models.SinglePreference.objects.last()
         self.assertNotEqual(last_vote.id,last_vote_old.id)
@@ -128,7 +130,7 @@ class TestCreateMajorityPreferenceView(TestCase):
         self.assertEqual(resp.status_code,200)
         self.assertTemplateUsed(
             response=resp,
-            template_name='vote_success.html'
+            template_name='polls/vote_success.html'
         )
 
         last_vote = models.MajorityPreference.objects.last()

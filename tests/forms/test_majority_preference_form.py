@@ -1,9 +1,11 @@
-from django.test import TestCase
-from polls.forms import MajorityOpinionForm, MajorityPreferenceFormSet
-from polls.models import MajorityOpinionJudgement, Alternative, Poll
 from django import forms
-from django.db.models import QuerySet
+from django.contrib.auth.models import User
+from django.test import TestCase
 from django.utils import timezone
+
+from polls.forms import MajorityOpinionForm, MajorityPreferenceFormSet
+from polls.models import Alternative, MajorityOpinionJudgement, Poll
+
 
 class TestMajorityOpinionForm(TestCase):
     def setUp(self) -> None:
@@ -12,7 +14,8 @@ class TestMajorityOpinionForm(TestCase):
             text="Dolor sit amet",
             default_type=Poll.PollType.MAJORITY_JUDGMENT,
             start=timezone.now(),
-            end=timezone.now() + timezone.timedelta(weeks=1)
+            end=timezone.now() + timezone.timedelta(weeks=1),
+            author=User.objects.create_user(username='test')
         )
         self.poll.save()
         self.poll.alternative_set.create(text="Lorem")
@@ -37,7 +40,8 @@ class TestMajorityPreferenceForm(TestCase):
             text="Dolor sit amet",
             default_type=Poll.PollType.MAJORITY_JUDGMENT,
             start=timezone.now(),
-            end=timezone.now() + timezone.timedelta(weeks=1)
+            end=timezone.now() + timezone.timedelta(weeks=1),
+            author=User.objects.create_user(username='test')
         )
         self.poll.save()
         self.poll.alternative_set.create(text="Lorem")

@@ -105,6 +105,7 @@ class PollFormAdditionalOptions(forms.ModelForm):
         error_messages = {} | PollFormMain.Meta.error_messages
         
         widgets = {
+            'author': forms.HiddenInput(),
             'start': DateTimePickerInput(
                 options={"format": "DD-MM-YYYY HH:mm"}
             ),

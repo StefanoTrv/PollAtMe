@@ -24,3 +24,4 @@ django-cookiebanner==0.2.7
 django-bootstrap5==22.1
 django-bootstrap-datepicker-plus==5.0.2
 whitenoise
+django-allauth

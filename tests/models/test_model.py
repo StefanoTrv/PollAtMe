@@ -1,10 +1,10 @@
 from datetime import timedelta
 
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.utils import timezone
 
-from polls.models import (Alternative, Poll,
-                          SinglePreference)
+from polls.models import Alternative, Poll, SinglePreference
 
 
 class Modeltest(TestCase):
@@ -13,10 +13,15 @@ class Modeltest(TestCase):
     poll_text = "Quanti anni hai?"
 
     def setUp(self):
-        poll = Poll(title=self.poll_title, text=self.poll_text,
+        self.u = User.objects.create_user(username='test')
+        poll = Poll(
+            title=self.poll_title, 
+            text=self.poll_text,
             default_type=Poll.PollType.SINGLE_PREFERENCE,
             start=timezone.now() - timedelta(weeks=1), 
-            end=timezone.now() + timedelta(weeks=1))
+            end=timezone.now() + timedelta(weeks=1),
+            author=self.u
+            )
         poll.save()
         alternative1 = Alternative(poll = poll, text = "32")
         alternative1.save()
@@ -59,19 +64,25 @@ class Modeltest(TestCase):
 
     
     def test_poll_type_preferenza_singola(self):
-        poll = Poll(title=self.poll_title, text=self.poll_text,
+        poll = Poll(
+            title=self.poll_title, 
+            text=self.poll_text,
             default_type=Poll.PollType.SINGLE_PREFERENCE,
             start=timezone.now() - timedelta(weeks=1), 
-            end=timezone.now() + timedelta(weeks=1))
+            end=timezone.now() + timedelta(weeks=1),
+            author=self.u)
         poll.save()
 
         self.assertEqual(poll.get_type(), 'Preferenza singola')
     
     def test_poll_type_giudizio_maggioritario(self):
-        poll = Poll(title=self.poll_title, text=self.poll_text,
+        poll = Poll(
+            title=self.poll_title, 
+            text=self.poll_text,
             default_type=Poll.PollType.MAJORITY_JUDGMENT,
             start=timezone.now() - timedelta(weeks=1), 
-            end=timezone.now() + timedelta(weeks=1))
+            end=timezone.now() + timedelta(weeks=1),
+            author=self.u)
         poll.save()
         
         self.assertEqual(poll.get_type(), 'Giudizio maggioritario')

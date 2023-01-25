@@ -7,8 +7,10 @@ from django.views.generic.edit import DeleteView
 
 from polls.models import Poll
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-class PollDeleteView(DeleteView):
+
+class PollDeleteView(LoginRequiredMixin, DeleteView):
     model = Poll
     success_url = reverse_lazy('polls:index')
     http_method_names = ['post']
@@ -18,5 +20,8 @@ class PollDeleteView(DeleteView):
 
         if not poll.is_not_started():
             raise PermissionDenied('Non è possibile eliminare un sondaggio dopo che la votazione è iniziata')
+
+        if not poll.author.__eq__(self.request.user):
+            raise PermissionDenied('Non hai i permessi per cancellare questo sondaggio')
 
         return poll

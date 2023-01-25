@@ -15,7 +15,7 @@ from polls.services import ActivePollsService
 class IndexView(ListView):
     model: Optional[Type[Model]] = Poll
     paginate_by: int = 6
-    template_name: str = 'poll_list.html'
+    template_name: str = 'polls/poll_list.html'
 
     def __init__(self, **kwargs: Any) -> None:
         self.__active_poll_service = ActivePollsService()
@@ -26,16 +26,16 @@ class IndexView(ListView):
 
 
 class SearchView(FormView):
-    template_name: str = 'search_poll.html'
+    template_name: str = 'polls/search_poll.html'
     form_class = SearchPollForm
 
     def form_valid(self, form: SearchPollForm) -> http.HttpResponse:
-        return render(self.request, 'includes/poll_list.html', {
+        return render(self.request, 'polls/includes/poll_list.html', {
             'object_list': form.to_query().search()
         })
 
     def form_invalid(self, form: SearchPollForm) -> http.HttpResponse:
-        return render(self.request, 'includes/search_form.html', {
+        return render(self.request, 'polls/includes/search_form.html', {
             'form': form
         })
 

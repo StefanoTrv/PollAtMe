@@ -11,6 +11,9 @@ from datetime import timedelta
 from polls.models import Poll
 from polls.forms import PollFormAdditionalOptions, PollFormMain, BaseAlternativeFormSet
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+
 ALTERNATIVE_FORMSET = BaseAlternativeFormSet.get_formset_class()
 
 
@@ -37,12 +40,14 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
         f_poll: Poll = form.save(commit=False)
         if f_poll.start is None:
             f_poll.start = timezone.now() + timedelta(minutes=10)
-            f_poll.end = f_poll.start + timedelta(weeks=1)
+            f_poll.end = f_poll.start + timedelta(weeks=2)
+        if f_poll.author_id is None:
+            f_poll.author = request.user
         request.session[action] = {
             'poll': form.cleaned_data,
             'alternatives': formset_alternatives.get_form_for_session()
         }
-        return render(request, f'create_poll/summary_and_options_{action}.html', {
+        return render(request, f'polls/create_poll/summary_and_options_{action}.html', {
             'alternatives': formset_alternatives.get_alternatives_text_list(),
             'form': PollFormAdditionalOptions(instance=f_poll)
         })
@@ -52,14 +57,14 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
         for dict in formset_alternatives.errors:
             if 'This field is required.' in str(dict):
                 dict['text']='' # type: ignore
-        return render(request, f'create_poll/main_page_{action}.html', {
+        return render(request, f'polls/create_poll/main_page_{action}.html', {
             'form': form,
             'formset': formset_alternatives,
         })
 
 
 def go_back(request: HttpRequest, action: str, alternatives: QuerySet, poll: Optional[Poll] = None):
-    return render(request, f'create_poll/main_page_{action}.html', {
+    return render(request, f'polls/create_poll/main_page_{action}.html', {
         'form': PollFormMain(request.session[action]['poll'], instance=poll),
         'formset': ALTERNATIVE_FORMSET(request.session[action]['alternatives'], queryset=alternatives)
     })
@@ -84,18 +89,18 @@ def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Option
         for alt in formset_alternatives.deleted_objects:
             alt.delete()
 
-        return render(request, f'{action}_poll_success.html')
+        return render(request, f'polls/{action}_poll_success.html')
     else:
-        return render(request, f'create_poll/summary_and_options_{action}.html', {
+        return render(request, f'polls/create_poll/summary_and_options_{action}.html', {
             'form': form,
             'alternatives': formset_alternatives.get_alternatives_text_list()
         })
 
 
-class CreatePollView(TemplateView):
+class CreatePollView(LoginRequiredMixin, TemplateView):
 
     def get(self, request: HttpRequest, *args, **kwargs):
-        return render(request, 'create_poll/main_page_create.html', {
+        return render(request, 'polls/create_poll/main_page_create.html', {
             'form': PollFormMain(),
             'formset': BaseAlternativeFormSet.get_formset_class()(queryset=Poll.objects.none())
         })
@@ -104,7 +109,7 @@ class CreatePollView(TemplateView):
         return select_action(request)
 
 
-class EditPollView(TemplateView):
+class EditPollView(LoginRequiredMixin, TemplateView):
 
     def dispatch(self, request: HttpRequest, *args, **kwargs):
         self.__poll: Poll = get_object_or_404(Poll, id=kwargs['id'])
@@ -117,10 +122,14 @@ class EditPollView(TemplateView):
             raise PermissionDenied(
                 "Questo sondaggio è concluso e non può essere modificato")
 
+        if not self.__poll.author.__eq__(request.user):
+            raise PermissionDenied(
+                "Non hai i permessi per modificare questo sondaggio")
+
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request: HttpRequest, *args, **kwargs):
-        return render(request, 'create_poll/main_page_edit.html', {
+        return render(request, 'polls/create_poll/main_page_edit.html', {
             'form': PollFormMain(instance=self.__poll),
             'formset': BaseAlternativeFormSet.get_formset_class()(queryset=self.__poll.alternative_set.all())
         })

@@ -44,7 +44,7 @@ class ResultView(View):
 class SinglePreferenceListView(TemplateView):
 
     model: type[models.Model] = Preference
-    template_name: str = 'results/result_SP.html'
+    template_name: str = 'polls/results/result_SP.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -64,9 +64,6 @@ class SinglePreferenceListView(TemplateView):
 
         return context
     
-    def render_to_response(self, context: dict[str, Any], **response_kwargs: Any) -> http.HttpResponse:
-        return super().render_to_response(context, **response_kwargs)
-    
 
 class ShultzePreferenceListView(TemplateView):
     model: type[models.Model] = Preference
@@ -85,7 +82,7 @@ class ShultzePreferenceListView(TemplateView):
 class MajorityJudgementListView(TemplateView):
     
     model: type[models.Model] = Preference
-    template_name: str = 'results/result_GM.html'
+    template_name: str = 'polls/results/result_GM.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

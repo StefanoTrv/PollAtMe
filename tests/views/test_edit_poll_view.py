@@ -4,6 +4,7 @@ from assertpy import assert_that  # type: ignore
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 from polls.models import Poll
 
@@ -11,14 +12,18 @@ from polls.models import Poll
 class TestPollEditView(TestCase):
 
     def setUp(self) -> None:
+        self.u = User.objects.create_user(username='test', password='test')
         self.poll = Poll()
         self.poll.title = 'Sondaggio di prova'
         self.poll.text = 'Sondaggio di prova'
         self.poll.start = timezone.now() + timedelta(weeks=1)
         self.poll.end = timezone.now() + timedelta(weeks=2)
+        self.poll.author = self.u
         self.poll.save()
         self.poll.alternative_set.create(text='Alternativa di prova 1')
         self.poll.alternative_set.create(text='Alternativa di prova 2')
+
+        self.client.login(username='test', password='test')
     
     def test_mostra_pagina_edit(self):
         response = self.client.get(
@@ -41,7 +46,7 @@ class TestPollEditView(TestCase):
         url = reverse('polls:edit_poll', kwargs={'id': self.poll.pk})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'create_poll/main_page_edit.html')
+        self.assertTemplateUsed(response, 'polls/create_poll/main_page_edit.html')
 
         data={
             'title': 'Lorem',
@@ -67,7 +72,7 @@ class TestPollEditView(TestCase):
 
         response = self.client.post(url, data=data | {'summary': ''})
         assert_that(response.status_code).is_equal_to(200)
-        self.assertTemplateUsed('create_poll/summary_and_options_edit.html')
+        self.assertTemplateUsed('polls/create_poll/summary_and_options_edit.html')
         assert_that(self.client.session.has_key('edit')).is_true()
 
         start = (timezone.now() + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')
@@ -78,11 +83,12 @@ class TestPollEditView(TestCase):
             'default_type': 1,
             'start': start,
             'end': end,
+            'author': self.u.id,
             'save': ''
         }
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'edit_poll_success.html')
+        self.assertTemplateUsed(response, 'polls/edit_poll_success.html')
 
         last_poll = Poll.objects.last()
         assert_that(last_poll.title).is_equal_to(data['title'])
@@ -99,7 +105,7 @@ class TestPollEditView(TestCase):
         url = reverse('polls:edit_poll', kwargs={'id': self.poll.pk})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'create_poll/main_page_edit.html')
+        self.assertTemplateUsed(response, 'polls/create_poll/main_page_edit.html')
 
         data={
             'title': 'Lorem',
@@ -136,6 +142,7 @@ class TestPollEditView(TestCase):
             'default_type': 1,
             'start': start,
             'end': end,
+            'author': self.u.id,
             'save': ''
         }
         

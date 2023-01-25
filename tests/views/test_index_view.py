@@ -3,15 +3,21 @@ from polls.models import Poll
 from django.utils import timezone
 from datetime import timedelta
 from django.urls import reverse
+from django.contrib.auth.models import User
 
 class IndexViewTest(TestCase):
     
     url = reverse('polls:index')
 
     def setUp(self):
-        self.client = Client()
-        self.poll = Poll(title="Titolo test", text = "Sondaggio di prova",
-            start = timezone.now(), end = timezone.now() + timedelta(weeks=1))
+        self.u = User.objects.create_user(username='test')
+        self.poll = Poll(
+            title="Titolo test", 
+            text = "Sondaggio di prova",
+            start = timezone.now(), 
+            end = timezone.now() + timedelta(weeks=1),
+            author=self.u
+        )
         self.poll.save()
 
     def test_sondaggi_attivi(self):
@@ -44,9 +50,9 @@ class SearchPollViewTest(TestCase):
     def test_pagina_default(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'search_poll.html')
-        self.assertTemplateNotUsed(response, 'includes/poll_list.html')
-        self.assertTemplateUsed(response, 'includes/search_form.html')
+        self.assertTemplateUsed(response, 'polls/search_poll.html')
+        self.assertTemplateNotUsed(response, 'polls/includes/poll_list.html')
+        self.assertTemplateUsed(response, 'polls/includes/search_form.html')
     
     def test_form_valido(self):
         response = self.client.post(self.url, {
@@ -59,9 +65,9 @@ class SearchPollViewTest(TestCase):
             'range_end_b': '',
         })
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateNotUsed(response, 'search_poll.html')
-        self.assertTemplateUsed(response, 'includes/poll_list.html')
-        self.assertTemplateNotUsed(response, 'includes/search_form.html')
+        self.assertTemplateNotUsed(response, 'polls/search_poll.html')
+        self.assertTemplateUsed(response, 'polls/includes/poll_list.html')
+        self.assertTemplateNotUsed(response, 'polls/includes/search_form.html')
     
     def test_form_non_valido(self):
         response = self.client.post(self.url, {
@@ -74,6 +80,6 @@ class SearchPollViewTest(TestCase):
             'range_end_b': '',
         })
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateNotUsed(response, 'search_poll.html')
-        self.assertTemplateNotUsed(response, 'includes/poll_list.html')
-        self.assertTemplateUsed(response, 'includes/search_form.html')
+        self.assertTemplateNotUsed(response, 'polls/search_poll.html')
+        self.assertTemplateNotUsed(response, 'polls/includes/poll_list.html')
+        self.assertTemplateUsed(response, 'polls/includes/search_form.html')

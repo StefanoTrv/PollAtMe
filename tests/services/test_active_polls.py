@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from assertpy import assert_that  # type: ignore
+from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import Http404
 from django.test import TestCase
@@ -14,13 +15,14 @@ from polls.services import ActivePollsService, SearchPollService
 class TestActivePollsService(TestCase):
     
     def setUp(self) -> None:
+        u = User.objects.create_user(username='test')
         polls = [
-            {'title': 'A', 'text': 'A', 'start': timezone.now() - timedelta(weeks=2), 'end': timezone.now() - timedelta(weeks=1)},  # concluso   
-            {'title': 'B', 'text': 'B', 'start': timezone.now() - timedelta(weeks=2), 'end': timezone.now() - timedelta(weeks=1)},  # concluso
-            {'title': 'C', 'text': 'C', 'start': timezone.now() - timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2)},  # attivo
-            {'title': 'D', 'text': 'D', 'start': timezone.now() - timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2)},  # attivo
-            {'title': 'E', 'text': 'E', 'start': timezone.now() + timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2)},  # non ancora attivo
-            {'title': 'F', 'text': 'F', 'start': timezone.now(), 'end': timezone.now()},  # senza opzioni
+            {'title': 'A', 'text': 'A', 'start': timezone.now() - timedelta(weeks=2), 'end': timezone.now() - timedelta(weeks=1), 'author': u},  # concluso   
+            {'title': 'B', 'text': 'B', 'start': timezone.now() - timedelta(weeks=2), 'end': timezone.now() - timedelta(weeks=1), 'author': u},  # concluso
+            {'title': 'C', 'text': 'C', 'start': timezone.now() - timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2), 'author': u},  # attivo
+            {'title': 'D', 'text': 'D', 'start': timezone.now() - timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2), 'author': u},  # attivo
+            {'title': 'E', 'text': 'E', 'start': timezone.now() + timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2), 'author': u},  # non ancora attivo
+            {'title': 'F', 'text': 'F', 'start': timezone.now(), 'end': timezone.now(), 'author': u},  # senza opzioni
         ]
 
         for p_dict in polls:
@@ -66,13 +68,14 @@ class TestActivePollsService(TestCase):
 class TestSearchPollService(TestCase):
     
     def setUp(self) -> None:
+        u = User.objects.create_user(username='test')
         polls = [
-            {'title': 'A', 'text': 'A', 'start': timezone.now() - timedelta(weeks=2), 'end': timezone.now() - timedelta(weeks=1)},  # concluso   
-            {'title': 'B', 'text': 'B', 'start': timezone.now() - timedelta(weeks=2), 'end': timezone.now() - timedelta(weeks=1)},  # concluso
-            {'title': 'C', 'text': 'C', 'start': timezone.now() - timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2)},  # attivo
-            {'title': 'D', 'text': 'D', 'start': timezone.now() - timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2)},  # attivo
-            {'title': 'E', 'text': 'E', 'start': timezone.now() + timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2)},  # non ancora attivo
-            {'title': 'F', 'text': 'F', 'start': timezone.now(), 'end': timezone.now()},  # senza opzioni
+            {'title': 'A', 'text': 'A', 'start': timezone.now() - timedelta(weeks=2), 'end': timezone.now() - timedelta(weeks=1), 'author': u},  # concluso   
+            {'title': 'B', 'text': 'B', 'start': timezone.now() - timedelta(weeks=2), 'end': timezone.now() - timedelta(weeks=1), 'author': u},  # concluso
+            {'title': 'C', 'text': 'C', 'start': timezone.now() - timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2), 'author': u},  # attivo
+            {'title': 'D', 'text': 'D', 'start': timezone.now() - timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2), 'author': u},  # attivo
+            {'title': 'E', 'text': 'E', 'start': timezone.now() + timedelta(weeks=1), 'end': timezone.now() + timedelta(weeks=2), 'author': u},  # non ancora attivo
+            {'title': 'F', 'text': 'F', 'start': timezone.now(), 'end': timezone.now(), 'author': u},  # senza opzioni
         ]
 
         for p_dict in polls:

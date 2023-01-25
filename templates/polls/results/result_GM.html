@@ -1,0 +1,297 @@
+{% extends 'layouts/base.html' %}
+{% load lookup_filter %}
+{% load static %}
+
+{% block title %} {{block.super}} | Risultati MJ {% endblock title %}
+
+{% block stylesheets %} 
+<style>
+  /* bootstrap hack: fix content width inside hidden tabs */
+  .tab-content > .tab-pane,
+  .pill-content > .pill-pane {
+  display: block;     /* undo display:none          */
+  height: 0;          /* height:0 is also invisible */ 
+  overflow-y: hidden; /* no-overflow                */
+  }
+  .tab-content > .active,
+  .pill-content > .active {
+  height: auto;       /* let the content decide it  */
+  } /* bootstrap hack end */
+
+  #textbox {
+    display: flex;
+    justify-content: space-between;
+  }
+
+</style>
+{% endblock stylesheets %}
+
+
+{% block content %}
+<div class="pcoded-main-container">
+  <div class="pcoded-content">
+    <div class="page-header">
+      <div class="page-block">
+        <div class="row align-items-center">
+          <div class="col-md-12">
+            <div class="page-header-title">
+              <h5 class="m-b-10">Risultati sondaggio</h5>
+            </div>
+            <ul class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/"><em class="feather icon-home"></em></a></li>
+              <li class="breadcrumb-item">Risultati</li>
+              <li class="breadcrumb-item"><strong>{{ poll_title }}</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- [ Riepilogo ] start -->
+    {% include 'polls/includes/riepilogo.html'%}
+    <h5 class="mt-4">
+      Classifica e giudizi per alternativa 
+      <button type="button" class="btn  btn-icon btn-outline-info" data-bs-toggle="modal" data-bs-target="#modal-majority-explanation" href="spiegazione_giudizio_maggioritario.html">
+        <i class="feather icon-info">
+        </i>
+      </button>
+    </h5>
+    <hr>
+    <div class="row row-cols-md-3 row-cols-sm-1 g-4">
+      {% for alternative in classifica %}
+      <!-- Commento per i test: {{ alternative.alternative}}-{{ alternative.place }} -->
+      {% if alternative.place == 1 and winners|length == 1 %}
+      <div class="col-md-12">
+        <div class="card bg-success">
+          <div class="card-body text-white">
+            <h3 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.place }}° posizione</span></h3>
+            <h4 class="card-title text-white">{{ alternative.alternative|upper }}</h4>
+          </div>
+          <div class="card-footer">
+            <div class="row">
+              <div class="col-12 col-lg-4"><p class="text-lg-start text-white"><b>Voto</b>: {{ alternative.judgment.grade|stringformat:'s'}}</p></div>  
+              <div class="col-12 col-lg-4"><p class="text-lg-center text-white"><b>Migliori</b>: {{ alternative.judgment.giudizi_migliori|stringformat:'s'}}</p></div>
+              <div class="col-12 col-lg-4"><p class="text-lg-end text-white"><b>Peggiori</b>: {{ alternative.judgment.giudizi_peggiori|stringformat:'s'}}</p></div>  
+            </div>
+          </div>
+        </div>
+      </div>
+      {% elif alternative.place == 1 and winners|length > 0 %}
+      <div class="col">
+        <div class="card bg-warning h-100">
+          <div class="card-body">
+            <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.place }}° posizione</span></h4>
+            <h5 class="card-title">{{ alternative.alternative|upper }}</h5>
+          </div>
+          <div class="card-footer">
+            <div class="row">
+              <div class="col-12 col-lg-4"><p class="text-lg-start"><b>Voto</b>: {{ alternative.judgment.grade|stringformat:'s'}}</p></div>  
+              <div class="col-12 col-lg-4"><p class="text-lg-center"><b>Migliori</b>: {{ alternative.judgment.giudizi_migliori|stringformat:'s'}}</p></div>
+              <div class="col-12 col-lg-4"><p class="text-lg-end"><b>Peggiori</b>: {{ alternative.judgment.giudizi_peggiori|stringformat:'s'}}</p></div>  
+            </div>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-body">
+            <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.place }}° posizione</span></h4>
+            <h5 class="card-title">{{ alternative.alternative|upper }}</h5>
+          </div>
+          <div class="card-footer">
+            <div class="row">
+              <div class="col-12 col-lg-4"><p class="text-lg-start"><b>Voto</b>: {{ alternative.judgment.grade|stringformat:'s'}}</p></div>  
+              <div class="col-12 col-lg-4"><p class="text-lg-center"><b>Migliori</b>: {{ alternative.judgment.giudizi_migliori|stringformat:'s'}}</p></div>
+              <div class="col-12 col-lg-4"><p class="text-lg-end"><b>Peggiori</b>: {{ alternative.judgment.giudizi_peggiori|stringformat:'s'}}</p></div>  
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+    
+    <h5 class="mt-4">Grafici</h5>
+    <hr>
+    <div class="row row-cols-md-2 row-cols-sm-1 g-4">
+      <div class="col-md-6 h-100">
+        <div class="card">
+          <div class="card-header">
+            <h5>Distribuzione giudizi per alternativa (in percentuale) </h5>
+          </div>
+          <div class="card-body">
+            <div id="chart"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 h-100">
+        <div class="card">
+          <div class="card-header">
+            <h5>Istogramma giudizi per alternativa </h5>
+          </div>
+          <div class="card-body">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+              {%for alternativa in voti_alternativa%}
+                  {%if forloop.first%}
+                    <li class="nav-item" role="presentation">
+                      <a class="nav-link active" id='{{alternativa.alternativa}}' data-bs-toggle="tab" data-bs-target="#tab_{{forloop.counter}}" type="button" role="tab">{{alternativa.alternativa|upper}}</a>
+                    </li>
+                  {%else%}
+                    <li class="nav-item" role="presentation">
+                      <a class="nav-link" id='{{alternativa.alternativa}}' data-bs-toggle="tab" data-bs-target="#tab_{{forloop.counter}}" type="button" role="tab">{{alternativa.alternativa|upper}}</a>
+                    </li>
+                  {%endif%}
+                {%endfor%}
+            </ul>
+            <div class="tab-content" id='tab1content'>
+              {%for alternativa in voti_alternativa%}
+                {% if forloop.first %}
+                <div class="tab-pane show active" id="tab_{{forloop.counter}}" role="tabpanel">
+                    <div id="bar_{{forloop.counter}}"></div>
+                </div>
+                {%else%}
+                <div class="tab-pane" id="tab_{{forloop.counter}}" role="tabpanel">
+                  <div id="bar_{{forloop.counter}}"></div> 
+                </div>
+                {%endif%}
+              {%endfor%}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col text-center">
+        <a href="{% url 'polls:index' %}"><button type="button" class="btn btn-block btn-primary">Torna alla home</button></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% include 'polls/includes/spiegazione_giudizio_maggioritario.html'%}
+
+{% endblock content %}
+
+
+{% block javascripts %}
+<script src={% static 'js/plugins/apexcharts.min.js' %}></script>
+<script>
+
+  var options = {
+    series: [
+    {% for vote in ordered_votes %}
+    {
+    name: '{{vote}}',
+    data: [{% for alternativa in voti_alternativa %}
+              {{ alternativa.lista_voti|get_value:vote }},
+          {% endfor %}]
+    },
+    {%endfor%}
+  ],
+    chart: {
+    type: 'bar',
+    height: 275,
+    stacked: true,
+    stackType: '100%'
+  },
+  plotOptions: {
+    bar: {
+      horizontal: true,
+    },
+  },
+  stroke: {
+    width: 1,
+    colors: ['#fff']
+  },
+  xaxis: {
+    categories: [{% for alternativa in voti_alternativa %}
+                    '{{alternativa.alternativa}}',
+                  {% endfor %}]
+  },
+  tooltip: {
+    y: {
+      formatter: function (val) {
+        return val + " voti"
+      }
+    }
+  },
+  fill: {
+    opacity: 1
+  
+  },
+  legend: {
+    position: 'top',
+    horizontalAlign: 'center',
+    offsetX: 40
+  }
+  };
+
+  var chart = new ApexCharts(document.querySelector("#chart"), options);
+  chart.render();
+
+</script>
+
+{%for alternativa in voti_alternativa%}
+<script>
+
+    var options = {
+      series: [{
+        name: 'Preferenze {{alternativa.al}}',
+        data: [{% for voto, amount in alternativa.lista_voti.items%}
+                {
+                x: '{{voto}}',
+                y: {{amount}},
+                },
+              {%endfor%}]
+      }],
+    chart: {
+      type: 'bar',
+      redrawOnWindowResize: true
+    },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+          columnWidth: '55%',
+            endingShape: 'rounded'
+      },
+    },
+    dataLabels: {
+      enabled: true,
+          style: {
+            fontSize: '12px',
+            colors: ["#FFFFFF"]
+          }
+    },
+    stroke: {
+      show: true,
+        width: 2,
+          colors: ['transparent']
+    },
+    xaxis: {
+      type: 'category'
+    },
+    yaxis: {
+      title: {
+        text: 'numero di giudizi'
+      }
+    },
+    fill: {
+      opacity: 1
+    },
+    tooltip: {
+      y: {
+        formatter: function (val) {
+          return val
+        }
+      }
+    },
+    };
+
+    var chart = new ApexCharts(document.querySelector("#bar_{{forloop.counter}}"), options);
+    chart.render();
+</script>
+{% endfor %}
+
+{% endblock javascripts %}

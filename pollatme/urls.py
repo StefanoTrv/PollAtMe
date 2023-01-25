@@ -15,8 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from privacy import views as privacy_views
 
 urlpatterns = [
     path('', include('polls.urls')),
     path("admin/", admin.site.urls),
+    path('accounts/', include('justsocialauth.urls')),
+    path('privacy/', privacy_views.privacy_policy, name="privacy_policy")
 ]

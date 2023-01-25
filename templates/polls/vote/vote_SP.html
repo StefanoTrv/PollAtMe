@@ -1,0 +1,61 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} {{block.super}} | {{ poll.title }} {% endblock title %}
+
+{% block content %}
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">{{ poll.title }}</h5>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'polls:index' %}"><em class="feather icon-home"></em></a></li>
+                            <li class="breadcrumb-item"><a href="#!">{{ poll.title }}</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+        <!-- [ Main Content ] start -->
+        <div class="row">
+            <!-- [ sample-page ] start -->
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        {{ poll.text }}
+                    </div>
+                </div>
+                <form method="post" needs-validation>
+                    {% csrf_token %}
+                    <div class="card">
+                        <div class="card-body">
+                        {% for radio in form.alternative %}
+                            <div class="alert alert-info" role="alert">
+                                <div class="form-check">
+                                    {{ radio.tag }}
+                                    <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label}}</label>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <button type="submit" class="btn btn-primary">Salva</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- [ sample-page ] end -->
+        </div>
+        <!-- [ Main Content ] end -->
+    </div>
+</div>
+{% endblock content %}
+
