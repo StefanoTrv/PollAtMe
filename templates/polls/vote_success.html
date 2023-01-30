@@ -40,7 +40,7 @@
                                                 Vince l'alternativa con il giudizio complessivo migliore.
                                             </p>
                                         <form action={% url 'polls:index' %} class="text-center"><!-- IMPORTANTE: CAMBIARE IL LINK QUANDO LA PAGINA È CREATA! -->
-                                            <button type="button" class="btn btn-link">Scopri di più sul giudizio maggioritario</button>
+                                            <button class="btn btn-link">Scopri di più sul giudizio maggioritario</button>
                                         </form>
                                     {% else %}
                                         <form action={% url 'polls:vote_single_preference' id=poll.id %} class="text-center">

@@ -1,0 +1,32 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} {{block.super}} | Grazie per la risposta! {% endblock title %}
+
+{% block content %}
+    <div class="pcoded-main-container">
+        <div class="pcoded-content">
+            <div class="row">
+                <div class="col">
+                    <div class="card">
+                        <div class="row align-items-center text-center">
+                            <div class="col-md-12">
+                                <div class="card-body">
+                                    <h1>Grazie!</h1>
+                                    <br>
+                                    <h5>La tua risposta è stata registrata!</h5>
+                                    <br>
+                                    <form action="/">
+                                        <button class="btn btn-block btn-primary mb-4"> Torna alla HOME </button>
+                                    </form>
+                                    <form action={% url 'polls:result' id=poll.id %}>
+                                        <button class="btn btn-block btn-primary mb-4"> Risultati sondaggio </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

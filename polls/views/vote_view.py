@@ -50,7 +50,7 @@ class _VotingView(CreateView):
         if self.poll.get_type()!=self.voteType:
             if 'preference_id' not in request.session:
                 raise PermissionDenied('Il voto con metodi alternativi è concesso solo durante il rivoto')
-            syntethic_preference = SinglePreference.objects.get(id=request.session['preference_id'])
+            syntethic_preference = SinglePreference.objects.get(id=request.session['preference_id']) if self.voteType=="Preferenza singola" else MajorityPreference.objects.get(id=request.session['preference_id'])
             if syntethic_preference.poll!=self.poll:
                 raise PermissionDenied('Il voto con metodi alternativi è concesso solo durante il rivoto\n(Dettagli dell\'errore: la preferenza sintetica è riferita ad un poll diverso)')
         
@@ -87,26 +87,33 @@ class VoteSinglePreferenceView(_VotingView):
         form.instance.poll = self.poll
         new_preference = form.save()
 
-        #crea voto sintetico
-        synthetic_preference = MajorityPreference()
-        synthetic_preference.poll=self.poll
-        synthetic_preference.synthetic=True
-        synthetic_preference.save()
-        for alternative in self.alternatives:
-            moj = MajorityOpinionJudgement()
-            moj.alternative=alternative
-            moj.preference=synthetic_preference
-            if alternative == new_preference.alternative:
-                moj.grade=5 # type: ignore
-            else:
-                moj.grade=1 # type: ignore
-            moj.save()
-            synthetic_preference.majorityopinionjudgement_set.add(moj) # type: ignore
-        synthetic_preference.save()#serve? Forse no
+        if self.poll.get_type()==self.voteType:
+            #crea voto sintetico
+            synthetic_preference = MajorityPreference()
+            synthetic_preference.poll=self.poll
+            synthetic_preference.synthetic=True
+            synthetic_preference.save()
+            for alternative in self.alternatives:
+                moj = MajorityOpinionJudgement()
+                moj.alternative=alternative
+                moj.preference=synthetic_preference
+                if alternative == new_preference.alternative:
+                    moj.grade=5 # type: ignore
+                else:
+                    moj.grade=1 # type: ignore
+                moj.save()
+                synthetic_preference.majorityopinionjudgement_set.add(moj) # type: ignore
+            synthetic_preference.save()#serve? Forse no
 
-        self.request.session['preference_id']=synthetic_preference.id
+            self.request.session['preference_id']=synthetic_preference.id
 
-        return render(self.request, 'polls/vote_success.html', {'poll': self.poll})
+            return render(self.request, 'polls/vote_success.html', {'poll': self.poll})
+        else:
+            #cancello la preferenza sintetica
+            SinglePreference.objects.get(id=self.request.session['preference_id']).delete()
+            del self.request.session['preference_id']
+
+            return render(self.request, 'polls/vote_success_simple.html', {'poll': self.poll})
 
 
 class VoteMajorityJudgmentView(_VotingView):
@@ -128,18 +135,25 @@ class VoteMajorityJudgmentView(_VotingView):
             instance.preference = preference
             instance.save()
         
-        #crea voto sintetico
-        synthetic_preference = SinglePreference()
-        synthetic_preference.poll=self.poll
-        synthetic_preference.synthetic=True
-        best_grade = max([opinion.grade for opinion in preference.majorityopinionjudgement_set.all()])
-        top_options = [opinion.alternative for opinion in preference.majorityopinionjudgement_set.all() if opinion.grade==best_grade]
-        synthetic_preference.alternative=top_options[random.randint(0,len(top_options)-1)]#se ci sono più preferenze con lo stesso voto, ne sceglie una a caso
-        synthetic_preference.save()
+        if self.poll.get_type()==self.voteType:
+            #crea voto sintetico
+            synthetic_preference = SinglePreference()
+            synthetic_preference.poll=self.poll
+            synthetic_preference.synthetic=True
+            best_grade = max([opinion.grade for opinion in preference.majorityopinionjudgement_set.all()])
+            top_options = [opinion.alternative for opinion in preference.majorityopinionjudgement_set.all() if opinion.grade==best_grade]
+            synthetic_preference.alternative=top_options[random.randint(0,len(top_options)-1)]#se ci sono più preferenze con lo stesso voto, ne sceglie una a caso
+            synthetic_preference.save()
 
-        self.request.session['preference_id']=synthetic_preference.id
-        
-        return render(self.request, 'polls/vote_success.html', {'poll': self.poll})
+            self.request.session['preference_id']=synthetic_preference.id
+            
+            return render(self.request, 'polls/vote_success.html', {'poll': self.poll})
+        else:
+            #cancello la preferenza sintetica
+            MajorityPreference.objects.get(id=self.request.session['preference_id']).delete()
+            del self.request.session['preference_id']
+
+            return render(self.request, 'polls/vote_success_simple.html', {'poll': self.poll})
 
     def get_form_kwargs(self) -> dict[str, Any]:
         kwargs = super().get_form_kwargs()
