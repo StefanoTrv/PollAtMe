@@ -21,7 +21,7 @@ class PollDeleteView(LoginRequiredMixin, DeleteView):
         if not poll.is_not_started():
             raise PermissionDenied('Non è possibile eliminare un sondaggio dopo che la votazione è iniziata')
 
-        if not poll.author.__eq__(self.request.user):
+        if poll.author != self.request.user:
             raise PermissionDenied('Non hai i permessi per cancellare questo sondaggio')
 
         return poll

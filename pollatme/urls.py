@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from privacy import views as privacy_views
+from django.conf.urls import handler404, handler403, handler500
 
 urlpatterns = [
     path('', include('polls.urls')),
