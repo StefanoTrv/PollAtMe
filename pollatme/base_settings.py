@@ -132,7 +132,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 COOKIEBANNER = {
     "title": _("Informativa sui cookie"),
     "header_text": _("Questo sito utilizza i cookie. I cookie aiutano a migliorare l'esperienza dell'utente e il nostro sito. "),
-    "footer_text": _("Continuando a usare questo sito accetti la nostra <a href='/privacy'>informativa sulla privacy.</a>"),
+    "footer_text": _("Continuando a usare questo sito accetti la nostra "),
     "groups": [
         {
             "id": "essential",
