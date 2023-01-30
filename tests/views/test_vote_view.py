@@ -6,6 +6,8 @@ from django.utils import timezone
 from polls import forms as pollforms
 from polls import models
 
+from assertpy import assert_that  # type: ignore
+
     
 class TestCreateSinglePreferenceView(TestCase):
     fixtures = ['polls.json']
@@ -30,7 +32,7 @@ class TestCreateSinglePreferenceView(TestCase):
 
     def test_submit_and_save_in_db(self):
         last_vote_old = models.SinglePreference.objects.last()
-        alternative_count_old = len(models.SinglePreference.objects.filter(alternative = 1))
+        preference_count_old = len(models.SinglePreference.objects.filter(alternative = 1))
         resp = self.client.post(self.poll_url, data = {
             'alternative' : 1,
         })
@@ -43,7 +45,7 @@ class TestCreateSinglePreferenceView(TestCase):
         last_vote = models.SinglePreference.objects.last()
         self.assertNotEqual(last_vote.id,last_vote_old.id)
 
-        self.assertEqual(len(models.SinglePreference.objects.filter(alternative = 1)),alternative_count_old+1)
+        self.assertEqual(len(models.SinglePreference.objects.filter(alternative = 1)),preference_count_old+1)
             
     def test_404_sondaggio_inesistente(self):
         url = reverse(self.URL, args=[100])
@@ -76,6 +78,24 @@ class TestCreateSinglePreferenceView(TestCase):
         last_vote = models.SinglePreference.objects.last()
         self.assertNotEqual(last_vote.id,last_vote_old.id)
         self.assertEqual(last_vote.alternative.id,2)
+    
+    def test_creates_synthetic_MJ_vote(self):
+        last_preference_old = models.MajorityPreference.objects.last()
+        preference_count_old = len(models.MajorityPreference.objects.all())
+        self.client.post(self.poll_url, data = {
+            'alternative' : 1,
+        })
+
+        last_preference = models.MajorityPreference.objects.last()
+        self.assertNotEqual(last_preference.id,last_preference_old.id)
+        assert_that(last_preference.synthetic).is_equal_to(True)
+        self.assertEqual(len(models.MajorityPreference.objects.all()),preference_count_old+1)
+
+        for opinion in last_preference.majorityopinionjudgement_set.all():
+            if opinion.alternative.id==1:
+                assert_that(opinion.grade).is_equal_to(5)
+            else:
+                assert_that(opinion.grade).is_equal_to(1)
 
 
 class TestCreateMajorityPreferenceView(TestCase):
@@ -140,3 +160,24 @@ class TestCreateMajorityPreferenceView(TestCase):
         judgement: models.MajorityOpinionJudgement
         for judgement in last_vote.majorityopinionjudgement_set.all():
             self.assertEqual(judgement.grade,1)
+    
+    def test_creates_synthetic_single_preference_vote(self):
+        last_preference_old = models.SinglePreference.objects.last()
+        preference_count_old = len(models.SinglePreference.objects.all())
+        self.client.post(self.poll_url, {
+            'majorityopinionjudgement_set-TOTAL_FORMS': 5,
+            'majorityopinionjudgement_set-INITIAL_FORMS': 0,
+            'majorityopinionjudgement_set-MIN_NUM_FORMS': 5,
+            'majorityopinionjudgement_set-MAX_NUM_FORMS': 5,
+            'majorityopinionjudgement_set-0-grade': 5,
+            'majorityopinionjudgement_set-1-grade': 1,
+            'majorityopinionjudgement_set-2-grade': 1,
+            'majorityopinionjudgement_set-3-grade': 1,
+            'majorityopinionjudgement_set-4-grade': 1,
+        })
+
+        last_preference = models.SinglePreference.objects.last()
+        self.assertNotEqual(last_preference.id,last_preference_old.id)
+        assert_that(last_preference.synthetic).is_equal_to(True)
+        self.assertEqual(len(models.SinglePreference.objects.all()),preference_count_old+1)
+        assert_that(last_preference.alternative.id).is_equal_to(5)

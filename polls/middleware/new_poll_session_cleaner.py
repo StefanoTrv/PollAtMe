@@ -16,7 +16,6 @@ class NewPollSessionCleaner:
                 del request.session['create']
             return HttpResponseRedirect(reverse('polls:create_poll'))
 
-
         if NEW_PREFIX not in request.get_full_path() and NEW_PREFIX in request.session:
             del request.session[NEW_PREFIX]
         
