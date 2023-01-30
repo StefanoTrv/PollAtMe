@@ -23,3 +23,7 @@ urlpatterns = [
     path('accounts/', include('justsocialauth.urls')),
     path('privacy/', privacy_views.privacy_policy, name="privacy_policy")
 ]
+
+handler403 = 'polls.views.error_pages.error_403'
+handler404 = 'polls.views.error_pages.error_404'
+handler500 = 'polls.views.error_pages.error_500'

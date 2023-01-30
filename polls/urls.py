@@ -14,7 +14,3 @@ urlpatterns = [
     path('search/', views.SearchView.as_view(), name='search_poll'),
     path('code/', views.VoteWithCodeView.as_view(), name='vote_code')
 ]
-
-handler403 = 'polls.views.error_pages.error_403'
-handler404 = 'polls.views.error_pages.error_404'
-handler500 = 'polls.views.error_pages.error_500'
