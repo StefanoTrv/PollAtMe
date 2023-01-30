@@ -106,7 +106,7 @@ class VoteSinglePreferenceView(_VotingView):
 
         self.request.session['preference_id']=synthetic_preference.id
 
-        return render(self.request, 'polls/vote_success.html', {'poll_id': self.poll.id})
+        return render(self.request, 'polls/vote_success.html', {'poll': self.poll})
 
 
 class VoteMajorityJudgmentView(_VotingView):
@@ -139,7 +139,7 @@ class VoteMajorityJudgmentView(_VotingView):
 
         self.request.session['preference_id']=synthetic_preference.id
         
-        return render(self.request, 'polls/vote_success.html', {'poll_id': self.poll.id})
+        return render(self.request, 'polls/vote_success.html', {'poll': self.poll})
 
     def get_form_kwargs(self) -> dict[str, Any]:
         kwargs = super().get_form_kwargs()
