@@ -11,6 +11,8 @@ from polls.forms import SearchPollForm
 from polls.models import Poll
 from polls.services import ActivePollsService
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 
 class IndexView(ListView):
     model: Optional[Type[Model]] = Poll
@@ -52,3 +54,15 @@ class VoteWithCodeView(View):
         url = reverse('polls:vote', kwargs={'id': poll_id})
 
         return http.HttpResponseRedirect(url)
+
+class PersonalPollsView(LoginRequiredMixin, ListView):
+    model: Optional[Type[Model]] = Poll
+    paginate_by: int = 6
+    template_name: str = 'polls/personal_polls.html'
+
+    def __init__(self, **kwargs: Any) -> None:
+        self.__active_poll_service = ActivePollsService()
+        super().__init__(**kwargs)
+
+    def get_queryset(self) -> QuerySet[Poll]:
+        return self.__active_poll_service.get_ordered_queryset()
