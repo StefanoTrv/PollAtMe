@@ -1,0 +1,150 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} {{block.super}} | Il giudizio maggioritario! {% endblock title %}
+
+{% block content %}
+    <div class="pcoded-main-container">
+        <div class="pcoded-content">
+            <div class="card">
+                <div class="row align-items-center text-left">
+                    <div class="col-md-12">
+                        <div class="card-body">
+                            <p>
+                              <h2>Il voto a giudizio maggioritario</h2>
+                                Il giudizio maggioritario è una metodologia di voto alternativa al metodo a preferenza singola, 
+                                a differenza di quest'ultima il votante non esprime una preferenza singola, bensì assegna a ciascuna alternativa
+                                un giudizio su una scala di un certo numero di giudizi.<br>
+                                Per esempio la scala potrebbe essere di cinque valori e questi potrebbero essere: "Ottimo", "Buono", "Sufficiente", "Scarso" e "Pessimo".
+                              </p>
+                              <p>
+                                Il metodo per calcolare il vincitore è più complesso di quello della preferenza singola, 
+                                dove basta trovare l'alternativa che ha ottenuto il maggior numero di voti, 
+                                ma è necessario utilizzare un particolare algoritmo che per semplicità possiamo dividere in due parti:
+                                <ol>
+                                  <li>
+                                    Prima si sintetizzano i voti in una tripla di valori (voti migliori, giudizio mediano con segno, voti peggiori)
+                                  </li>
+                                  <li>
+                                    Quando si hanno le triple di ogni alternativa si può selezionare il vincitore prendendo la tripla migliore di tutte le altre
+                                  </li>
+                                </ol>
+                              </p>
+                              <p> 
+                                <h6>Sintesi dei voti</h6>
+                                  Il primo passo per trovare il vincitore in una votazione a giudizio maggioritario consiste nel calcolare la tripla di valori per ciascuna alternativa:
+                                  <ol>
+                                    <li>
+                                      Per ogni alternativa si raccolgono tutti i giudizi ottenuti durante il voto e si ordinano in ordine decrescente di importanza.
+                                    </li>
+                                    <li>
+                                      Si prende il voto al centro della sequenza ordinata se questi sono in numero dispari, altrimenti se sono in numero pari si prende il peggiore dei due possibili. Questo voto in particolare prende il nome di <b>giudizio mediano</b>
+                                    </li>
+                                    <li>
+                                      Poi si calcola il numero di voti strettamente migliori ed il numero di voti strettamente peggiori al giudizio mediano per ciascuna alternativa. Inoltre viene assegnato un segno al giudizio mediano, 
+                                      questo è poitivo se il numero di voti strettamente migliori è maggiore del numero di voti strettamente peggiori, negativo altrimenti (in caso di pareggio è negativo).
+                                    </li>
+                                    <li>
+                                      Per ogni alternativa si scrive la terna di valori (voti migliori, giudizio mediano con segno, voti peggiori), con i dati ottenuti nello step precedente
+                                    </li>
+                                  </ol>
+                                </p>
+                                  <p>
+                                    <h6>Calcolo del vincitore</h6>
+                                    A partire dai valori calcolati nel passaggio precedente si seleziona l'alternativa migliore di tutte.
+                                    Una alternativa A è migliore di un'altra alternativa B se:
+                                      <ul>
+                                      <li>
+                                        Il giudizio mediano di A è migliore del giudizio mediano di B
+                                      </li>
+                                      <li>
+                                        In caso di stesso giudizio mediano, si compara il segno:
+                                      </li>
+                                      <ul>
+                                        <li>
+                                          Se una delle due ha segno positivo e l'altra ha segno negativo vince quella con segno positivo
+                                        </li>
+                                        <li>
+                                          A parità di segno si comparano i giudizi migliori/peggiori del giudizio mediano:
+                                        </li>
+                                        <ul>
+                                          <li>
+                                            Se il segno è negativo allora vince quella con il numero inferiore di voti strettamente peggiori del giudizio mediano
+                                          </li>
+                                          <li>
+                                            Se il segno è positivo allora vince quella con il numero maggiore di voti strettamente migliori del giudizio mediano
+                                          </li>
+                                        </ul>
+                                      </ul>
+                                    </ul>
+                                  </p>
+                                <p>
+                                  <h5> Esempio </h5>
+                                  Prendiamo un caso di sondaggio molto semplice con solamente tre alternative, nel quale al votante viene richiesto di 
+                                  giudicare tre possibili mete per una vacanza, le alternative potrebbero essere "Mare", "Montagna" e "Città d'arte".
+                                  <br>
+                                  Al sondaggio partecipano 5 persone dando a ciascuna alternativa un giudizio, raccolto nella tabella seguente.
+                                  <br>
+
+                                  <table class="table">
+                                    <thead>
+                                      <th>Votante</th><th>Mare</th><th>Montagna</th><th>Città d'arte</th>
+                                    </thead>
+                                    <tbody>
+                                      <tr><td>Stefano</td><td>Buono</td><td>Sufficiente</td><td>Pessimo</td></tr>
+                                      <tr><td>Giuseppe</td><td>Ottimo</td><td>Pessimo</td><td>Pessimo</td></tr>
+                                      <tr><td>Carlo</td><td>Buono</td><td>Scarso</td><td>Buono</td></tr>
+                                      <tr><td>Paolo</td><td>Scarso</td><td>Buono</td><td>Scarso</td></tr>
+                                      <tr><td>Agostino</td><td>Buono</td><td>Scarso</td><td>Buono</td></tr>
+                                    </tbody>
+                                  </table>
+
+                                  Per ogni alternativa si ordinano tutti i giudizi che questa ha ottenuto, se prendiamo per esempio l'alternativa Mare, l'ordinamento dei voti risulta essere:
+                                  <ul>
+                                    <li>
+                                      Ottimo, Buono, Buono, Buono, Scarso
+                                    </li>
+                                  </ul>
+
+                                  Dobbiamo prendere il voto a metà della sequenza ordinata, ovvero il giudizio mediano, che in questo caso risulta essere "Buono".
+                                  <br>
+                                  Bisogna poi calcolare i giudizi strettamente migliori e strettamente peggiori del giudizio mediano. Di giudizi strettamente migliori di "buono" 
+                                  l'alternativa "Mare" ha ottenuto un unico "Ottimo", di conseguenza il numero di voti strettamente migliori del giudizio mediano risultano essere solamente 1.
+                                  Analogamente per i giudizi peggiori ce n'è solamente 1. 
+                                  <br>
+                                  L'ultima cosa da fare è ottenere il segno, dato che il numero di giudizi strettamente migliori del giudizio mediano non è maggiore del numero di voti strettamente
+                                  peggiori si ottiene il segno risulta essere "-".
+                                  <br>
+                                  Di conseguenza la tripla per l'alternativa "Mare" risulta essere (1,Buono -,1)
+                                  <br>
+                                  Se ripetiamo per ciascuna questo processo per ciascuna delle alternative otteniamo le seguenti triple:
+                                  <ul>
+                                    <li>
+                                      Mare : (1, Buono-, 1)
+                                    </li>
+                                    <li>
+                                      Montagna : (2, Scarso+, 1)
+                                    </li>
+                                    <li>
+                                      Città d'arte : (2, Scarso-, 2)
+                                    </li>
+                                  </ul>
+                                  </p>   
+
+                                  Seguendo compariamo le triple secondo il criterio descritto in precedenza otteniamo che:
+                                <ul>
+                                  <li>
+                                    Mare batte Montagna e Città d'arte dato che ha un giudizio mediano migliore delle altre due alternative.
+                                  </li>
+                                  <li>
+                                    Montagna batte Città d'arte dato che a parità di giudizio mediano l'alternativa Montagna ha segno positivo a differenza di Città d'arte che ha segno negativo.
+                                  </li>
+                                </ul>
+                                Di conseguenza la classifica finale consiste in Mare al primo posto, seguito da Montagna ed infine Città d'arte
+                              </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

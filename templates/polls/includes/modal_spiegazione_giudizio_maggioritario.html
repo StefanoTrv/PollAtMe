@@ -1,0 +1,24 @@
+<div class="modal fade" id="modal-majority-explanation" tabindex="-1" aria-labelledby="modal-majority-explanation" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modal-return-home-label">Il giudizio maggioritario</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <p>
+              Il metodo di giudizio maggioritario è un metodo di voto alternativo, 
+              si differenzia dal metodo a preferenza singola dal fatto che viene 
+              richiesto al votante di dare un giudizio su una scala di 5 o 7 possibili giudizi.<br>
+              L'alternativa vincitrice sarà quella che avrà ottenuto il maggior consenso complessivo.
+            </p>
+        </div>
+        <div class="modal-footer">
+          <a href = {% url 'polls:explain_gm'%}>
+            <button type="button" class="btn btn-primary">Spiegazione</button>
+          </a>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+        </div>
+      </div>
+    </div>
+  </div>
