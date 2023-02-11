@@ -1,5 +1,5 @@
 from polls.models import Poll, Alternative
-from polls.models.preference import MajorityOpinionJudgement
+from polls.models.preference import MajorityOpinionJudgement, MajorityPreference
 import math
 from django.db.models import QuerySet, Count
 from typing import Any
@@ -138,9 +138,10 @@ class VoteTuple:
 class GiudizioMaggioritario:
 
     ##istanziatore della classe 
-    def __init__(self, id:int) -> None:
+    def __init__(self, id:int, include_synthetic:bool=True) -> None:
         self.tuple_list  = None
         self._question_id = id
+        self.include_synthetic=include_synthetic
 
     def question_id(self) -> int:
         return self._question_id
@@ -206,6 +207,8 @@ class GiudizioMaggioritario:
         for alternative_key in alternative_all.values_list('pk', flat=True):
             #dobbiamo andare a prendere i giudizi
             giudizi = MajorityOpinionJudgement.objects.filter(alternative = alternative_key)
+            if (not self.include_synthetic):
+                giudizi=giudizi.filter(preference__synthetic=False)
             #abbiamo i giudizi per questa alternativa, dobbiamo costruire la lista
             lista_giudizi = []
             for giudizio in giudizi:
@@ -306,8 +309,10 @@ def produce_vote_tuple_list(result_query: list) -> list:
 ##Servizio per ottenere il risultato dei giudizi maggioritari, per coerenza con il servizio a scelta singola
 class MajorityJudgementService:
 
-    def __init__(self, poll: Poll) -> None:
+    def __init__(self, poll: Poll, include_synthetic:bool=True) -> None:
         self.__poll = poll
+        self.include_synthetic=include_synthetic
+        self.giudizio_maggioritario = GiudizioMaggioritario(self.__poll.id,include_synthetic=self.include_synthetic)
     
     """
     Metodi per ottenere informazioni sul risultato del sondaggio a giudizio
@@ -324,7 +329,6 @@ class MajorityJudgementService:
         return context
 
     def __get_classifica(self):
-        self.giudizio_maggioritario = GiudizioMaggioritario(self.__poll.id)
         classifica  = self.giudizio_maggioritario.get_classifica()            
         return classifica
 
@@ -336,7 +340,6 @@ class MajorityJudgementService:
         return context
 
     def __get_winners(self):
-        self.giudizio_maggioritario = GiudizioMaggioritario(self.__poll.id)
         classifica = self.__get_classifica()
 
         #filtriamo la classifica per prendere i vincitori
@@ -358,12 +361,10 @@ class MajorityJudgementService:
         return context
 
     def __get_voti_alternativa(self):
-        self.giudizio_maggioritario = GiudizioMaggioritario(self.__poll.id)
         lista_voti = self.giudizio_maggioritario.get_vote_list()
         return lista_voti
 
     def __get_all_votes(self):
-        self.giudizio_maggioritario = GiudizioMaggioritario(self.__poll.id)
         different_votes = [e.value for e in MajorityOpinionJudgement.JudgementType]
         different_votes.sort(reverse=True)
 
@@ -380,9 +381,9 @@ class MajorityJudgementService:
         context = {'numero_alternative' : len(alternative)} 
         return context
 
-    #ritorna un dict {'numero_preferenze' : numero_preferenze}, dove numero_preferenze è un intero
-    # che indica il numero di preferenze date per questa domanda
-    def get_numero_numero_giudizi(self) :
-        preferenze = MajorityOpinionJudgement.objects.filter(poll = self.__poll.id)
-        context = {'numero_preferenze' : len(preferenze)} 
-        return context
+    #ritorna il numero di preferenze date per questa domanda
+    def get_numero_numero_preferenze(self) :
+        preferenze = MajorityPreference.objects.filter(poll = self.__poll.id)
+        if(not self.include_synthetic):
+            preferenze=preferenze.filter(synthetic=False)
+        return len(preferenze)

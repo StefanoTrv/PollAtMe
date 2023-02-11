@@ -55,7 +55,10 @@ class SinglePreferenceResultView(_ResultView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         poll = SearchPollService().search_by_id(self.kwargs['id'])
-        results = SinglePreferencePollResultsService().set_poll(poll).as_list()
+        include_synthetic=True
+        if('include_synthetic' in self.kwargs):
+            include_synthetic= self.kwargs['include_synthetic']!="realonly"
+        results = SinglePreferencePollResultsService().set_poll(poll).as_list(include_synthetic=include_synthetic)
 
         tot_votes = sum([votes['count'] for votes in results])
         for res in results:
@@ -67,6 +70,8 @@ class SinglePreferenceResultView(_ResultView):
         context['results'] = results
         context['unique_winner'] = results[0]['position'] != results[1]['position']
         context['poll'] = poll
+        context['responses_count']=tot_votes
+        context['include_synthetic']=include_synthetic
 
         return context
     
@@ -94,7 +99,10 @@ class MajorityJudgementListView(_ResultView):
         context = super().get_context_data(**kwargs)
 
         poll = SearchPollService().search_by_id(self.kwargs['id'])
-        result_service = MajorityJudgementService(poll)
+        include_synthetic=True
+        if('include_synthetic' in self.kwargs):
+            include_synthetic= self.kwargs['include_synthetic']!="realonly"
+        result_service = MajorityJudgementService(poll,include_synthetic=include_synthetic)
 
         classifica = result_service.get_classifica()
         winners = result_service.get_winners()
@@ -105,4 +113,6 @@ class MajorityJudgementListView(_ResultView):
         context.update(winners)
         context.update(vote_list)
         context['poll'] = poll
+        context['responses_count']=result_service.get_numero_numero_preferenze()
+        context['include_synthetic']=include_synthetic
         return context
