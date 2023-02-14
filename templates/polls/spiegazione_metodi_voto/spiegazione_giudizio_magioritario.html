@@ -11,15 +11,34 @@
                         <div class="card-body">
                             <p>
                               <h2>Il voto a giudizio maggioritario</h2>
-                                Il giudizio maggioritario è una metodologia di voto alternativa al metodo a preferenza singola, 
-                                a differenza di quest'ultima il votante non esprime una preferenza singola, bensì assegna a ciascuna alternativa
-                                un giudizio su una scala di un certo numero di giudizi.<br>
-                                Per esempio la scala potrebbe essere di cinque valori e questi potrebbero essere: "Ottimo", "Buono", "Sufficiente", "Scarso" e "Pessimo".
-                              </p>
+                                Il giudizio maggioritario è una metodologia di voto alternativa al metodo a preferenza singola che permette di ottenere un risultato che rispecchia
+                                più approfonditamente le preferenze dei votanti.
+                                Nel giudizio mediano ogni utente, invece che assegnare una preferenza, assegna ad ogni possibile alternativa un giudizio su una scala di un certo numero di giudizi.<br>
+                                Per esempio la scala potrebbe essere di cinque giudizi: "Ottimo", "Buono", "Sufficiente", "Scarso" e "Pessimo".
+                            </p>
+                            <p>
+                              <h5>Prova a votare</h5>
+                              Giudica l'alternativa montagna.<br><br>
+                              <form>
+                                <div class="row">                   
+                                  <div class="d-grid gap-2 d-xl-flex justify-content-xl-center flex-xl-fill">
+                                    <input type="radio" name="example" class="btn-check" id="example_1">
+                                    <label class="btn btn-outline-secondary w-100" for="example_1">Ottimo</label>
+                                    <input type="radio" name="example" class="btn-check" id="example_2">
+                                    <label class="btn btn-outline-secondary w-100" for="example_2">Buono</label>
+                                    <input type="radio" name="example" class="btn-check" id="example_3">
+                                    <label class="btn btn-outline-secondary w-100" for="example_3">Sufficiente</label>
+                                    <input type="radio" name="example" class="btn-check" id="example_4">
+                                    <label class="btn btn-outline-secondary w-100" for="example_4">Scarso</label>
+                                    <input type="radio" name="example" class="btn-check" id="example_5">
+                                    <label class="btn btn-outline-secondary w-100" for="example_5">Pessimo</label>
+                                  </div>
+                                </div>
+                              </form>
+                            </p>
                               <p>
-                                Il metodo per calcolare il vincitore è più complesso di quello della preferenza singola, 
-                                dove basta trovare l'alternativa che ha ottenuto il maggior numero di voti, 
-                                ma è necessario utilizzare un particolare algoritmo che per semplicità possiamo dividere in due parti:
+                                <h5>Come si decide il vincitore?</h5>
+                                Il metodo per calcolare il vincitore è più complesso di quello della preferenza singola e richiede di applicare un particolare algoritmo diviso in due parti:
                                 <ol>
                                   <li>
                                     Prima si sintetizzano i voti in una tripla di valori (voti migliori, giudizio mediano con segno, voti peggiori)
@@ -31,10 +50,11 @@
                               </p>
                               <p> 
                                 <h6>Sintesi dei voti</h6>
+                                  Come per il metodo a preferenza singola il primo passo è quello di sintetizzare i voti degli utenti, in questo caso però non basta contare le preferenze, è necessario svolgere qualche passo in più:
                                   Il primo passo per trovare il vincitore in una votazione a giudizio maggioritario consiste nel calcolare la tripla di valori per ciascuna alternativa:
                                   <ol>
                                     <li>
-                                      Per ogni alternativa si raccolgono tutti i giudizi ottenuti durante il voto e si ordinano in ordine decrescente di importanza.
+                                      Per ogni alternativa si raccolgono tutti i giudizi ottenuti durante il voto e si ordinano in ordine decrescente di importanza (Ottimo > Buono > Sufficiente > Scarso > Pessimo).
                                     </li>
                                     <li>
                                       Si prende il voto al centro della sequenza ordinata se questi sono in numero dispari, altrimenti se sono in numero pari si prende il peggiore dei due possibili. Questo voto in particolare prende il nome di <b>giudizio mediano</b>
@@ -51,7 +71,7 @@
                                   <p>
                                     <h6>Calcolo del vincitore</h6>
                                     A partire dai valori calcolati nel passaggio precedente si seleziona l'alternativa migliore di tutte.
-                                    Una alternativa A è migliore di un'altra alternativa B se:
+                                    Una alternativa, chiamiamola "A", è migliore di un'altra alternativa "B" se:
                                       <ul>
                                       <li>
                                         Il giudizio mediano di A è migliore del giudizio mediano di B
@@ -78,11 +98,11 @@
                                     </ul>
                                   </p>
                                 <p>
-                                  <h5> Esempio </h5>
+                                  <h5> Esempio di calcolo dei risultati</h5>
                                   Prendiamo un caso di sondaggio molto semplice con solamente tre alternative, nel quale al votante viene richiesto di 
-                                  giudicare tre possibili mete per una vacanza, le alternative potrebbero essere "Mare", "Montagna" e "Città d'arte".
+                                  giudicare tre possibili mete per una vacanza, ovvero "Mare", "Montagna" e "Città d'arte".
                                   <br>
-                                  Al sondaggio partecipano 5 persone dando a ciascuna alternativa un giudizio, raccolto nella tabella seguente.
+                                  Al sondaggio partecipano 5 persone dando a ciascuna alternativa un giudizio, mostrato nella tabella seguente.
                                   <br>
 
                                   <table class="table">
@@ -97,22 +117,23 @@
                                       <tr><td>Agostino</td><td>Buono</td><td>Scarso</td><td>Buono</td></tr>
                                     </tbody>
                                   </table>
+                                  <br>
 
-                                  Per ogni alternativa si ordinano tutti i giudizi che questa ha ottenuto, se prendiamo per esempio l'alternativa Mare, l'ordinamento dei voti risulta essere:
+                                  Partiamo dalla prima alternativa: "Mare". Il primo passo consiste nell'ordinare i giudizi ricevuti in ordine decresente di importanza:
                                   <ul>
                                     <li>
                                       Ottimo, Buono, Buono, Buono, Scarso
                                     </li>
                                   </ul>
 
-                                  Dobbiamo prendere il voto a metà della sequenza ordinata, ovvero il giudizio mediano, che in questo caso risulta essere "Buono".
+                                  Il secondo punto ci dice di prendere il voto centrale alla sequenza ordinata di valori, visto che questi sono in numero dispari prendiamo "Buono", che diventa il giudizio mediano per l'alternativa "Mare".
                                   <br>
-                                  Bisogna poi calcolare i giudizi strettamente migliori e strettamente peggiori del giudizio mediano. Di giudizi strettamente migliori di "buono" 
-                                  l'alternativa "Mare" ha ottenuto un unico "Ottimo", di conseguenza il numero di voti strettamente migliori del giudizio mediano risultano essere solamente 1.
-                                  Analogamente per i giudizi peggiori ce n'è solamente 1. 
+                                  Bisogna poi calcolare i giudizi strettamente migliori e strettamente peggiori del giudizio mediano. Di giudizi strettamente migliori di "Buono" 
+                                  l'alternativa "Mare" ha ottenuto solamente un "Ottimo", mentre di voti peggiori "Mare" ha ottenuto solamente uno "Scarso".
+                                  Di conseguenza per l'alternativa "Mare" il numero di voti strettamente migliori del giudizio mediano è 1, stessa cosa per i voti strettamente peggiori.
                                   <br>
                                   L'ultima cosa da fare è ottenere il segno, dato che il numero di giudizi strettamente migliori del giudizio mediano non è maggiore del numero di voti strettamente
-                                  peggiori si ottiene il segno risulta essere "-".
+                                  il segno è "-".
                                   <br>
                                   Di conseguenza la tripla per l'alternativa "Mare" risulta essere (1,Buono -,1)
                                   <br>
@@ -130,7 +151,7 @@
                                   </ul>
                                   </p>   
 
-                                  Seguendo compariamo le triple secondo il criterio descritto in precedenza otteniamo che:
+                                  Se compariamo le triple secondo il criterio descritto in precedenza otteniamo che:
                                 <ul>
                                   <li>
                                     Mare batte Montagna e Città d'arte dato che ha un giudizio mediano migliore delle altre due alternative.
