@@ -4,7 +4,7 @@
 			<ul class="nav pcoded-inner-navbar">
 				<li class="nav-item">
 					<a href="/" class="nav-link "><span class="pcoded-micon"><em
-								class="feather icon-home"></em></span><span class="pcoded-mtext"> Dashboard </span></a>
+								class="feather icon-home"></em></span><span class="pcoded-mtext"> Sondaggi pubblici </span></a>
 				</li>
 				<li class="nav-item">
 					<a href="{% url 'polls:create_poll' %}?clean=" class="nav-link"><span class="pcoded-micon"><em
@@ -15,6 +15,10 @@
 					<a href={% url 'polls:search_poll' %} class="nav-link"><span class="pcoded-micon"><em
 								class="feather icon-filter"></em></span><span class="pcoded-mtext"> Cerca sondaggi
 						</span></a>
+				</li>
+				<li class="nav-item">
+					<a href={% url 'polls:personal_polls' %} class="nav-link "><span class="pcoded-micon"><em
+								class="feather icon-folder"></em></span><span class="pcoded-mtext"> Sondaggi personali </span></a>
 				</li>
 			</ul>
 		</div>
