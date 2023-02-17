@@ -131,30 +131,26 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 COOKIEBANNER = {
-    "title": _("Cookie settings"),
-    "header_text": _("We are using cookies on this website. A few are essential, others are not."),
-    "footer_text": _("Please accept our cookies"),
-    "footer_links": [
-        {"title": _("Imprint"), "href": "/imprint"},
-        {"title": _("Privacy"), "href": "/privacy"},
-    ],
+    "title": _("Informativa sui cookie"),
+    "header_text": _("Questo sito utilizza i cookie. I cookie aiutano a migliorare l'esperienza dell'utente e il nostro sito. "),
+    "footer_text": _("Continuando a usare questo sito accetti la nostra "),
     "groups": [
         {
             "id": "essential",
-            "name": _("Essential"),
-            "description": _("Essential cookies allow this page to work."),
+            "name": _("Essenziali"),
+            "description": _("Cookie essenziali al funzionamento del sito"),
             "cookies": [
                 {
                     "pattern": "cookiebanner",
-                    "description": _("Meta cookie for the cookies that are set."),
+                    "description": _("Cookie per il funzionamento di questo banner."),
                 },
                 {
                     "pattern": "csrftoken",
-                    "description": _("This cookie prevents Cross-Site-Request-Forgery attacks."),
+                    "description": _("Cookie per prevenire attacchi Cross-Site-Request-Forgery."),
                 },
                 {
                     "pattern": "sessionid",
-                    "description": _("This cookie is necessary to allow logging in, for example."),
+                    "description": _("Questo cookie è necessario, ad esempio, per il login."),
                 },
             ],
         },
@@ -165,7 +161,7 @@ COOKIEBANNER = {
             "cookies": [
                 {
                     "pattern": "_pk_.*",
-                    "description": _("Google Analytics cookie for website analysis."),
+                    "description": _("Questo sito utilizza Google Analytics per raccogliere informazioni sull'utilizzo in forma anonima"),
                 },
             ],
         },

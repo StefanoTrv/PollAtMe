@@ -6,22 +6,13 @@ services:
       context: ..
       dockerfile: .devcontainer/Dockerfile
       args:
-        # Update 'VARIANT' to pick a version of Python: 3, 3.10, 3.9, 3.8, 3.7, 3.6
-        # Append -bullseye or -buster to pin to an OS version.
-        # Use -bullseye variants on local arm64/Apple Silicon.
-        VARIANT: 3.10-bullseye
+        - BUILDKIT_INLINE_CACHE=0
 
     volumes:
-      - ..:/workspace:cached
+      - ../..:/workspaces:cached
     
-    environment:
-      DB_HOST: ${DB_HOST}
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_ENGINE: ${DB_ENGINE}
-      TIME_ZONE: ${TIME_ZONE}
-      USE_TZ: ${USE_TZ}
+    env_file:
+      - .env
 
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
@@ -29,14 +20,11 @@ services:
     # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
     network_mode: service:db
 
-    # Uncomment the next line to use a non-root user for all processes.
-    # user: vscode
-
     # Use "forwardPorts" in **devcontainer.json** to forward an app port locally.
     # (Adding the "ports" property to this file will not forward from a Codespace.)
 
   db:
-    image: postgres:15.0
+    image: postgres:latest
     restart: unless-stopped
     volumes:
       - postgres-data:/var/lib/postgresql/data

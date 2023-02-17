@@ -19,9 +19,7 @@ urlpatterns = [
     path('edit/<int:id>/', views.EditPollView.as_view(), name='edit_poll'),
     path('search/', views.SearchView.as_view(), name='search_poll'),
     path('code/', views.VoteWithCodeView.as_view(), name='vote_code'),
-    path('help/simulated_results', views.HelpSimulatedResultsView.as_view(), name='help_simulated_results')
+    path('help/simulated_results', views.HelpSimulatedResultsView.as_view(), name='help_simulated_results'),
+    path('explanation/GM/', views.ExplanationGMView.as_view(), name='explain_gm'),
+    path('personal/', views.PersonalPollsView.as_view(), name='personal_polls')
 ]
-
-handler403 = 'polls.views.error_pages.error_403'
-handler404 = 'polls.views.error_pages.error_404'
-handler500 = 'polls.views.error_pages.error_500'

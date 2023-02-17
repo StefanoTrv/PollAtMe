@@ -15,9 +15,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from privacy import views as privacy_views
+from django.conf.urls import handler404, handler403, handler500
 
 urlpatterns = [
     path('', include('polls.urls')),
     path("admin/", admin.site.urls),
     path('accounts/', include('justsocialauth.urls')),
+    path('privacy/', privacy_views.privacy_policy, name="privacy_policy")
 ]
+
+handler403 = 'polls.views.error_pages.error_403'
+handler404 = 'polls.views.error_pages.error_404'
+handler500 = 'polls.views.error_pages.error_500'

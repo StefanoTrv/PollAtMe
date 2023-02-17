@@ -50,7 +50,7 @@ class TestCreateSinglePreferenceView(TestCase):
     def test_404_sondaggio_inesistente(self):
         url = reverse(self.URL, args=[100])
         resp = self.client.get(url)
-        self.assertEqual(resp.status_code,404)
+        self.assertEqual(resp.status_code, 404)      
 
     def test_sondaggio_senza_scelte(self):
         empty_poll = models.Poll()
