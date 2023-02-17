@@ -20,6 +20,6 @@ urlpatterns = [
     path('search/', views.SearchView.as_view(), name='search_poll'),
     path('code/', views.VoteWithCodeView.as_view(), name='vote_code'),
     path('help/simulated_results', views.HelpSimulatedResultsView.as_view(), name='help_simulated_results'),
-    path('explanation/GM/', views.ExplanationGMView.as_view(), name='explain_gm'),
+    path('help/majorityjudgment/', views.ExplanationGMView.as_view(), name='explain_gm'),
     path('personal/', views.PersonalPollsView.as_view(), name='personal_polls')
 ]
