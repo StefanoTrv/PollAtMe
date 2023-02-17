@@ -1,0 +1,137 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} {{block.super}} | Help - Il calcolo dei risultati simulati {% endblock title %}
+
+{% block content %}
+    <div class="pcoded-main-container">
+        <div class="pcoded-content">
+            <div class="card bg-white">
+                <div class="card-header h2">Il calcolo dei risultati simulati</div>
+                <div class="card-body">
+                    Quando si visualizzano i risultati di un sondaggio, si può visualizzare anche una simulazione dei risultati che si sarebbero ottenuti usando un metodo di voto diverso da quello scelto dal creatore del sondaggio.
+                    Ad esempio, se il metodo di voto principale del sondaggio è la preferenza singola, è possibile vedere quali sarebbero potuti essere i risultati se si avesse votato con il giudizio maggioritario.
+                    In questa pagina viene spiegato come viene calcolata questa simulazione.
+                    <hr>
+                    <h5>Voti reali e voti sintetici</h5>
+                    Dopo aver votato con il metodo di voto principale, all'utente viene proposto di votare nuovamente con un metodo alternativo.
+                    Se l'utente vota con un metodo alternativo, la sua preferenza viene registrata come un <b>voto reale</b> per il nuovo metodo.
+                    In caso contrario, il sistema genera un <b>voto sintetico</b> per il metodo alternativo basandosi sulla preferenza che l'utente ha espresso usando il metodo principale.
+                    Nei prossimi paragrafi viene spiegato in dettaglio come vengono creati questi voti sintetici.
+                    <br>
+                    Quando si visualizzano i risultati di un sondaggio secondo un metodo alternativo, è possibile scegliere se includere nel calcolo dei risultati solo i voti reali (cioè le preferenze espresse esplicitamente dagli utenti) o anche i voti sintentici (cioè quelli generati dal sistema quando l'utente non rivota con un altro metodo).
+                    <hr>
+                    <h5>Dalla preferenza singola al giudizio maggioritario</h5>
+                    Per creare un voto sintetico per il giudizio maggioritario a partire da un voto espresso con la preferenza singola, all'alternativa scelta con la preferenza singola viene dato il giudizio migliore, mentre alle altre viene dato il giudizio peggiore.
+                    <br>
+                    Ad esempio, se il sondaggio "<i>Qual è il colore più bello?</i>" ha le alternative "<i>blu</i>", "<i>verde</i>" e "<i>rosso</i>" e l'utente ha votato per "<i>verde</i>" con il metodo a preferenza singola, verrà creato il seguente voto sintetico:
+                    <style type="text/css">
+                        .tg  {border-collapse:collapse;border-spacing:0;}
+                        .tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+                          overflow:hidden;padding:10px 5px;word-break:normal;}
+                        .tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+                          font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+                        .tg .tg-uszq{background-color:#ffffff;border-color:inherit;color:#000000;font-weight:bold;text-align:left;vertical-align:top}
+                        .tg .tg-y698{background-color:#efefef;border-color:inherit;text-align:left;vertical-align:top}
+                        .tg .tg-c6of{background-color:#ffffff;border-color:inherit;text-align:left;vertical-align:top}
+                        </style>
+                        <table class="tg">
+                        <thead>
+                          <tr>
+                            <th class="tg-uszq">Alternativa</th>
+                            <th class="tg-uszq">Giudizio</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td class="tg-y698">blu</td>
+                            <td class="tg-y698">Pessimo</td>
+                          </tr>
+                          <tr>
+                            <td class="tg-c6of">verde<br></td>
+                            <td class="tg-c6of">Ottimo</td>
+                          </tr>
+                          <tr>
+                            <td class="tg-y698">rosso<br></td>
+                            <td class="tg-y698">Pessimo</td>
+                          </tr>
+                        </tbody>
+                        </table>
+                    <hr>
+                    <h5>Dal giudizio maggioritario alla preferenza singola</h5>
+                    Per creare un voto per la preferenza singola a partire da un voto espresso con il giudizio maggioritario, l'alternativa scelta come preferenza è quella che ha ricevuto il grado di giudizio più alto nel voto con il giudizio maggioritario.
+                    In caso ci siano più di una alternativa con il grado di giudizio più alto, viene scelta a caso una di queste alternative.
+                    <br>
+                    Prendiamo per esempio il sondaggio "<i>Il piatto più buono</i>" con le alternative "<i>bistecca</i>", "<i>pizza</i>" e "<i>pasta</i>". L'utente ha espresso queste preferenze:
+                    <style type="text/css">
+                        .tg  {border-collapse:collapse;border-spacing:0;}
+                        .tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+                          overflow:hidden;padding:10px 5px;word-break:normal;}
+                        .tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+                          font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+                        .tg .tg-uszq{background-color:#ffffff;border-color:inherit;color:#000000;font-weight:bold;text-align:left;vertical-align:top}
+                        .tg .tg-y698{background-color:#efefef;border-color:inherit;text-align:left;vertical-align:top}
+                        .tg .tg-c6of{background-color:#ffffff;border-color:inherit;text-align:left;vertical-align:top}
+                        </style>
+                        <table class="tg">
+                        <thead>
+                          <tr>
+                            <th class="tg-uszq">Alternativa</th>
+                            <th class="tg-uszq">Giudizio</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td class="tg-y698">Bistecca</td>
+                            <td class="tg-y698">Scarso<br></td>
+                          </tr>
+                          <tr>
+                            <td class="tg-c6of">Pizza<br></td>
+                            <td class="tg-c6of">Buono<br></td>
+                          </tr>
+                          <tr>
+                            <td class="tg-y698">Pasta<br></td>
+                            <td class="tg-y698">Accettabile<br></td>
+                          </tr>
+                        </tbody>
+                        </table>
+                    In questo caso viene generato un voto sintetico a favore di "<i>pizza</i>".
+                    <br>
+                    Prendiamo un esempio in cui ci sono più di una alternativa con il migliore grado di giudizio:
+                    <style type="text/css">
+                        .tg  {border-collapse:collapse;border-spacing:0;}
+                        .tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+                          overflow:hidden;padding:10px 5px;word-break:normal;}
+                        .tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+                          font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+                        .tg .tg-uszq{background-color:#ffffff;border-color:inherit;color:#000000;font-weight:bold;text-align:left;vertical-align:top}
+                        .tg .tg-y698{background-color:#efefef;border-color:inherit;text-align:left;vertical-align:top}
+                        .tg .tg-c6of{background-color:#ffffff;border-color:inherit;text-align:left;vertical-align:top}
+                        </style>
+                        <table class="tg">
+                        <thead>
+                          <tr>
+                            <th class="tg-uszq">Alternativa</th>
+                            <th class="tg-uszq">Giudizio</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td class="tg-y698">Bistecca</td>
+                            <td class="tg-y698">Scarso<br></td>
+                          </tr>
+                          <tr>
+                            <td class="tg-c6of">Pizza<br></td>
+                            <td class="tg-c6of">Buono<br></td>
+                          </tr>
+                          <tr>
+                            <td class="tg-y698">Pasta<br></td>
+                            <td class="tg-y698">Buono</td>
+                          </tr>
+                        </tbody>
+                        </table>
+                    In questo caso verrà creato in modo casuale un voto sintetico o a favore di "<i>pasta</i>" o a favore di "<i>pizza</i>".
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
