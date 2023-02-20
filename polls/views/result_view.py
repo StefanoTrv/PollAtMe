@@ -1,7 +1,6 @@
 from typing import Any, Callable
 
 from django.db import models
-from django.views import View
 from django import http
 from django.views.generic.list import ListView
 from django.views.generic import TemplateView
@@ -13,13 +12,28 @@ from polls.services import SearchPollService
 
 from django.core.exceptions import ObjectDoesNotExist
 
+from django.shortcuts import redirect
+from django.urls import reverse
 
-class ResultView(View):
+POLL_DOES_NOT_EXISTS_MSG = "Il sondaggio cercato non esiste"
+
+# se si accede alla pagina dei risultati generica, si viene reindirizzati alla pagina dei risultati del metodo principale
+def result_redirect_view(request, id):
+    try:
+        poll = SearchPollService().search_by_id(id)
+        if poll.get_type() == "Preferenza singola":
+            return redirect(reverse('polls:result_single_preference', args=[id]))
+        else:
+            return redirect(reverse('polls:result_MJ', args=[id]))
+    except ObjectDoesNotExist:
+        raise http.Http404(POLL_DOES_NOT_EXISTS_MSG)
+
+class _ResultView(TemplateView):
+    model: type[models.Model] = Preference
+    template_name: str = ''
     """
-    Class view che sceglie quale view mostrare in base al tipo di sondaggio
-    scelto nel link.
+    Class view (de facto astratta) che incorpora ciò che hanno in comune le diverse pagine dei risultati
     """
-    POLL_DOES_NOT_EXISTS_MSG = "Il sondaggio ricercato non esiste"
 
     def dispatch(self, request, *args, **kwargs):
         """
@@ -27,29 +41,24 @@ class ResultView(View):
         HTTP (di qualunque tipo).
         """
         try:
-            poll = SearchPollService().search_by_id(kwargs['id'])
-            view = self.__dispatch_view(poll)
-            return view(request, *args, **kwargs)
+            SearchPollService().search_by_id(kwargs['id']) #per assicurarsi che il sondaggio esista
+            return super().dispatch(request, *args, **kwargs)
         except ObjectDoesNotExist:
-            raise http.Http404(self.POLL_DOES_NOT_EXISTS_MSG)
-    
-    def __dispatch_view(self, poll: Poll) -> Callable:
-        if poll.get_type() == 'Preferenza singola':
-            return SinglePreferenceListView.as_view()
-        elif poll.get_type() == 'Giudizio maggioritario':
-            return MajorityJudgementListView.as_view()
-        else:
-            return ShultzePreferenceListView.as_view()
+            raise http.Http404(POLL_DOES_NOT_EXISTS_MSG)
 
-class SinglePreferenceListView(TemplateView):
+class SinglePreferenceResultView(_ResultView):
 
-    model: type[models.Model] = Preference
-    template_name: str = 'polls/results/result_SP.html'
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.template_name = 'polls/results/result_SP.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         poll = SearchPollService().search_by_id(self.kwargs['id'])
-        results = SinglePreferencePollResultsService().set_poll(poll).as_list()
+        include_synthetic=True
+        if('include_synthetic' in self.kwargs):
+            include_synthetic= self.kwargs['include_synthetic']!="realonly"
+        results = SinglePreferencePollResultsService().set_poll(poll).as_list(include_synthetic=include_synthetic)
 
         tot_votes = sum([votes['count'] for votes in results])
         for res in results:
@@ -61,16 +70,17 @@ class SinglePreferenceListView(TemplateView):
         context['results'] = results
         context['unique_winner'] = results[0]['position'] != results[1]['position']
         context['poll'] = poll
+        context['responses_count']=tot_votes
+        context['include_synthetic']=include_synthetic
 
         return context
     
 
-class ShultzePreferenceListView(TemplateView):
-    model: type[models.Model] = Preference
-    template_name: str = 'result_GM.html'
+class ShultzePreferenceResultView(_ResultView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
+        self.template_name = 'result_GM.html'
         
 
     def get_context_data(self, **kwargs):
@@ -79,16 +89,20 @@ class ShultzePreferenceListView(TemplateView):
         return context
     
 
-class MajorityJudgementListView(TemplateView):
-    
-    model: type[models.Model] = Preference
-    template_name: str = 'polls/results/result_GM.html'
+class MajorityJudgementListView(_ResultView):
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.template_name = 'polls/results/result_GM.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         poll = SearchPollService().search_by_id(self.kwargs['id'])
-        result_service = MajorityJudgementService(poll)
+        include_synthetic=True
+        if('include_synthetic' in self.kwargs):
+            include_synthetic= self.kwargs['include_synthetic']!="realonly"
+        result_service = MajorityJudgementService(poll,include_synthetic=include_synthetic)
 
         classifica = result_service.get_classifica()
         winners = result_service.get_winners()
@@ -99,4 +113,6 @@ class MajorityJudgementListView(TemplateView):
         context.update(winners)
         context.update(vote_list)
         context['poll'] = poll
+        context['responses_count']=result_service.get_numero_numero_preferenze()
+        context['include_synthetic']=include_synthetic
         return context

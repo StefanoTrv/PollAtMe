@@ -21,7 +21,7 @@
             {% if poll.is_ended %} Terminato il {{ poll.end | date:"d/m/Y, H:i" }} {% endif %}
         </p>
         {% if poll.is_active %}
-        <a class="btn btn-block btn-primary mb-4" href={% url 'polls:vote' id=poll.id %}>Vota</a>
+        <a class="btn btn-block btn-primary mb-4" href={% url  'polls:vote' id=poll.id %}>Vota</a>
         {% endif %}
         
         {% if poll.is_active or poll.is_ended %}

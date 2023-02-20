@@ -22,7 +22,7 @@ class SinglePreferencePollResultsService():
         self.__poll = poll
         return self
 
-    def as_list(self, desc=True) -> list[dict]:
+    def as_list(self, desc=True,include_synthetic=True) -> list[dict]:
         """
         Ritorna i risultati del sondaggio come lista di dictionary
 
@@ -36,7 +36,7 @@ class SinglePreferencePollResultsService():
                     'positition': posizione in classifica (rispetto all'ordine richiesto)
                 }
         """
-        results_as_dict = dict(sorted(self.__get_results().items(), reverse=desc))
+        results_as_dict = dict(sorted(self.__get_results(include_synthetic=include_synthetic).items(), reverse=desc))
         results_as_list = []
         position = 1
         for n_votes, alternatives in results_as_dict.items():
@@ -52,10 +52,15 @@ class SinglePreferencePollResultsService():
 
 
     # privato, deve costruire gli oggetti da ritornare
-    def __get_results(self):
+    def __get_results(self,include_synthetic=True):
         # prendiamo le preferenze dal database e facciamo l'aggregazione
-        preferences: QuerySet[SinglePreference] = SinglePreference.objects.filter(poll=self.__poll).values(
-            'alternative').annotate(count=Count('alternative')).order_by('-count')  # preferenze per la scelta
+        if(include_synthetic):
+            preferences: QuerySet[SinglePreference] = SinglePreference.objects.filter(poll=self.__poll).values(
+                'alternative').annotate(count=Count('alternative')).order_by('-count')  # preferenze per la scelta
+        else:
+            preferences: QuerySet[SinglePreference] = SinglePreference.objects.filter(poll=self.__poll).filter(synthetic=False).values(
+                'alternative').annotate(count=Count('alternative')).order_by('-count')  # preferenze per la scelta
+        
         all_alternatives: QuerySet[Alternative] = Alternative.objects.filter(
             poll=self.__poll)  # tutte le scelte possibili
         

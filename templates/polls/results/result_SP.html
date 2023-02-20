@@ -18,7 +18,7 @@
             <ul class="breadcrumb">
               <li class="breadcrumb-item"><a href="/"><em class="feather icon-home"></em></a></li>
               <li class="breadcrumb-item">Risultati</li>
-              <li class="breadcrumb-item"><strong>{{ poll_title }}</strong></li>
+              <li class="breadcrumb-item"><strong>{{ poll.title }}</strong></li>
             </ul>
           </div>
         </div>
@@ -26,6 +26,32 @@
     </div>
     <!-- [ breadcrumb ] end -->
     <!-- [ Main Content ] start -->
+    {% if poll.get_type != "Preferenza singola" %}
+    <div class="card bg-white">
+      <div class="card-body">
+        <h5 class="card-header text-warning">Stai vedendo una simulazione dei risultati</h5>
+        <div class="card-body">
+          <p>Questa pagina simula i risultati che si sarebbero potuti ottenere usando un metodo di voto diverso, la <b>preferenza singola</b>.</br>
+            Per visualizzare i risultati reali, <a href="{% url 'polls:result_MJ' id=poll.id %}" class="link-warning">premi su questo collegamento</a>.</br></p>
+            {% if include_synthetic %}
+            <a href="{% url 'polls:result_single_preference_realonly' id=poll.id include_synthetic="realonly" %}" class="lead">
+              <i class="bi bi-check-square-fill link-warning"></i>
+              <label class="text-black">Includi i voti sintetici nel calcolo dei risultati</label>
+            </a>
+            {% else %}
+            <a href="{% url 'polls:result_single_preference' id=poll.id %}" class="lead">
+              <i class="bi bi-square link-warning"></i>
+              <label class="text-black">Includi i voti sintetici nel calcolo dei risultati</label>
+            </a>
+            {% endif %}
+          </div>
+        <div class="card-footer">
+          <p>Se vuoi sapere come è stata calcolata questa simulazione e cosa sono i voti sintetici, <a href="{% url 'polls:help_simulated_results' %}" class="link-info">qui trovi la spiegazione</a>.</p>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
     {% include 'polls/includes/riepilogo.html'%}
 
     <h5 class="mt-4">Numero di preferenze per alternativa</h5>
@@ -99,6 +125,26 @@
         </div>
       </div>
     </div>
+    <hr>
+    {% if poll.get_type == "Preferenza singola" %}
+    <div class="card bg-white">
+      <div class="card-body">
+        <h5 class="card-header text-info">E se avessimo votato con un altro metodo?</h5>
+        <div class="card-body">
+          <p>Scopri quale alternativa sarebbe stata scelta se il metodo di voto fosse stato diverso.</p>
+          <div class="row align-items-center text-center">
+            <div class="col">
+              <form action={% url 'polls:result_MJ' id=poll.id %}>
+                <button class="btn btn-block btn-info mb-4"> Risultati usando il giudizio maggioritario </button>
+              </form>
+            </div>
+          </div>
+          <p>Se vuoi sapere come questi risultati vengono calcolati, <a href="{% url 'polls:help_simulated_results' %}" class="text-info">qui trovi la spiegazione</a>.</p>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
     <div class="row">
       <div class="col text-center">
         <a href="{% url 'polls:index' %}"><button type="button" class="btn btn-block btn-primary">Torna alla home</button></a>

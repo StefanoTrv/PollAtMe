@@ -10,7 +10,7 @@ class ResultsViewTest(TestCase):
     fixtures: list[str] = ['polls.json']
 
     def test_preferenza_singola_mostra_alternative_con_voti_totali(self):
-        url = reverse('polls:result', args=[1])
+        url = reverse('polls:result_single_preference', args=[1])
         results = {}
         poll = Poll.objects.get(id = 1)
         for item in SinglePreferencePollResultsService().set_poll(poll).as_list():
@@ -23,7 +23,7 @@ class ResultsViewTest(TestCase):
 
     
     def test_giudizio_maggioritario_mostra_alternative_in_classifica(self):
-        url = reverse('polls:result', args=[2])
+        url = reverse('polls:result_MJ', args=[2])
         results = {}
         poll = Poll.objects.get(id=2)
         for item in MajorityJudgementService(poll).get_classifica()['classifica']:
