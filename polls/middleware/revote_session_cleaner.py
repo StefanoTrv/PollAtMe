@@ -6,6 +6,6 @@ class RevoteSessionCleaner:
         self.get_response = get_response
 
     def __call__(self, request: HttpRequest):
-        if 'preference_id' in request.session and 'vote/singlepreference' not in request.get_full_path() and 'vote/majorityjudgment' not in request.get_full_path():
+        if 'preference_id' in request.session and 'vote/singlepreference' not in request.get_full_path() and 'vote/majorityjudgment' not in request.get_full_path() and 'help/majorityjudgment' not in request.get_full_path():
             del request.session['preference_id']
         return self.get_response(request)
