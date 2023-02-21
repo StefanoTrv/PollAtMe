@@ -114,10 +114,21 @@
 
 <script>
     document.querySelector('#id_default_type').onchange = () => {
-        let val = document.querySelector('#id_default_type').value
-        if (val == 1)
+        const select = document.querySelector('#id_default_type')
+        const val = select.value
+        if (val == 1 || document.querySelector('#alert-default-type') != null)
+            return
         
-        console.log("Changed")
+        const alertDiv = document.createElement('div')
+        alertDiv.className = "alert alert-primary alert-dismissible fade show"
+        alertDiv.setAttribute('id', 'alert-default-type')
+        alertDiv.setAttribute('role', 'alert')
+        alertDiv.innerHTML = 
+            `Vuoi ottenere più informazioni dal tuo sondaggio? Prova il <a href={% url 'polls:explain_gm' %} class='alert-link'>giudizio maggioritario</a>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`
+
+        const parentDiv = select.parentNode
+        parentDiv.insertBefore(alertDiv, select)
     }
 </script>
 
