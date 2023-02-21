@@ -113,10 +113,10 @@
 </script>
 
 <script>
-    document.querySelector('#id_default_type').onchange = () => {
+    create_alert = () => {
         const select = document.querySelector('#id_default_type')
         const val = select.value
-        if (val == 1 || document.querySelector('#alert-default-type') != null)
+        if (document.querySelector('#alert-default-type') != null)
             return
         
         const alertDiv = document.createElement('div')
@@ -130,6 +130,9 @@
         const parentDiv = select.parentNode
         parentDiv.insertBefore(alertDiv, select)
     }
+
+    document.querySelector('#id_default_type').onchange = create_alert
+    create_alert()
 </script>
 
 {% include 'polls/includes/lock_sidebar.html' with id_modal='modal-return-home' %}
