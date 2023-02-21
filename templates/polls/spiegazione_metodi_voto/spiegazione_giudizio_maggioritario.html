@@ -1,0 +1,168 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} {{block.super}} | Il giudizio maggioritario! {% endblock title %}
+
+{% block content %}
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">Il voto a giudizio maggioritario</h2>
+                        <p class="card-text">
+                            Il giudizio maggioritario è una metodologia di voto alternativa al metodo a preferenza singola che permette di ottenere un risultato che rispecchia
+                            più approfonditamente le preferenze dei votanti.
+                            Nel giudizio mediano ogni utente, invece che assegnare una preferenza, assegna ad ogni possibile alternativa un giudizio su una scala di un certo numero di giudizi.<br>
+                            Per esempio la scala potrebbe essere di cinque giudizi: "Ottimo", "Buono", "Sufficiente", "Scarso" e "Pessimo".
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Prova a votare</h5>
+                        <p class="card-subtitle mb-2 text-muted">Giudica l'alternativa "Montagna"</p>
+                        <p class="fs-4 p-2">Montagna</p>
+                        <div class="d-grid gap-2 d-xl-flex justify-content-xl-center flex-xl-fill">
+                            <input type="radio" name="example" class="btn-check" id="example_1">
+                            <label class="btn btn-outline-secondary w-100" for="example_1">Pessimo</label>
+                            <input type="radio" name="example" class="btn-check" id="example_2">
+                            <label class="btn btn-outline-secondary w-100" for="example_2">Scarso</label>
+                            <input type="radio" name="example" class="btn-check" id="example_3">
+                            <label class="btn btn-outline-secondary w-100" for="example_3">Sufficiente</label>
+                            <input type="radio" name="example" class="btn-check" id="example_4">
+                            <label class="btn btn-outline-secondary w-100" for="example_4">Buono</label>
+                            <input type="radio" name="example" class="btn-check" id="example_5">
+                            <label class="btn btn-outline-secondary w-100" for="example_5">Ottimo</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Come si decide il vincitore?</h5>
+                        <p class="card-text">Il metodo per calcolare il vincitore è più complesso di quello della preferenza singola e richiede di applicare un particolare algoritmo diviso in due parti:</p>
+                        <ol>
+                            <li>
+                                Prima si sintetizzano i voti in una tripla di valori (voti migliori, giudizio mediano con segno, voti peggiori)
+                            </li>
+                            <li>
+                                Quando si hanno le triple di ogni alternativa si può selezionare il vincitore prendendo la tripla migliore di tutte le altre
+                            </li>
+                        </ol>
+
+                        <h6 class="card-title">Sintesi dei voti</h5>
+                        <p class="card-text">
+                            Il primo passo per trovare il vincitore in una votazione a giudizio maggioritario consiste nel calcolare per ciascuna alternativa una tripla di valori:
+                        </p>
+                        <ol>
+                            <li>
+                                Per ogni alternativa si raccolgono tutti i giudizi ottenuti durante il voto e si ordinano in ordine decrescente di importanza (Ottimo > Buono > Sufficiente > Scarso > Pessimo).
+                            </li>
+                            <li>
+                                Si prende il voto al centro della sequenza ordinata se questi sono in numero dispari, altrimenti se sono in numero pari si prende il peggiore dei due possibili. Questo voto in particolare prende il nome di <b>giudizio mediano</b>
+                            </li>
+                            <li>
+                                Poi si calcola il numero di voti <b>strettamente migliori</b> ed il numero di voti <b>strettamente peggiori</b> al giudizio mediano per ciascuna alternativa. Viene inoltre assegnato un segno al giudizio mediano, positivo se <i>il numero di voti strettamente migliori è maggiore del numero di voti strettamente peggiori</i>, negativo <i>altrimenti</i> (in caso di pareggio è negativo).
+                            </li>
+                            <li>
+                                Per ogni alternativa si costruisce corrispondente tripla (voti migliori, giudizio mediano con segno, voti peggiori) con i dati ottenuti nello step precedente
+                            </li>
+                        </ol>
+
+                        <h6 class="card-title">Calcolo del vincitore</h5>
+                        <p class="card-text">
+                            A partire dai valori calcolati in fase di sintesi si seleziona l'alternativa migliore di tutte.
+                            Una alternativa, chiamiamola "A", è migliore di un'altra alternativa "B" se:
+                        </p>
+                        <ul>
+                            <li>Il giudizio mediano di A è migliore del giudizio mediano di B</li>
+                            <li>In caso di stesso giudizio mediano, prevale l'alternativa con segno positivo</li>
+                            <li>A parità di segno si comparano il numero di giudizi migliori/peggiori del giudizio mediano:</li>
+                            <ul>
+                                <li>
+                                Se il segno è negativo allora vince quella con il numero inferiore di voti strettamente peggiori del giudizio mediano
+                                </li>
+                                <li>
+                                    Se il segno è positivo allora vince quella con il numero maggiore di voti strettamente migliori del giudizio mediano
+                                </li>
+                            </ul>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"> Esempio di calcolo dei risultati</h5>
+                        <p class="card-text">
+                            Prendiamo un caso di sondaggio molto semplice con solamente tre alternative, nel quale al votante viene richiesto di giudicare tre possibili mete per una vacanza, ovvero "Mare", "Montagna" e "Città d'arte".
+                        </p>
+                        <p class="card-text">
+                            Al sondaggio partecipano 5 persone dando a ciascuna alternativa un giudizio, mostrato nella tabella seguente.
+                        </p>
+                        <div class="table-responsive-md">
+                            <table class="table">
+                                <thead>
+                                    <th>Votante</th><th>Mare</th><th>Montagna</th><th>Città d'arte</th>
+                                </thead>
+                                <tbody>
+                                    <tr><td>Stefano</td><td>Buono</td><td>Sufficiente</td><td>Pessimo</td></tr>
+                                    <tr><td>Giuseppe</td><td>Ottimo</td><td>Pessimo</td><td>Pessimo</td></tr>
+                                    <tr><td>Carlo</td><td>Buono</td><td>Scarso</td><td>Buono</td></tr>
+                                    <tr><td>Paolo</td><td>Scarso</td><td>Buono</td><td>Scarso</td></tr>
+                                    <tr><td>Agostino</td><td>Buono</td><td>Scarso</td><td>Buono</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="card-text">
+                            Partiamo dalla prima alternativa: "Mare". Il primo passo consiste nell'ordinare i giudizi ricevuti in ordine decresente di importanza:
+                        </p>
+                        <ul>
+                            <li>Ottimo, Buono, Buono, Buono, Scarso</li>
+                        </ul>
+                        <p class="card-text">
+                            Il secondo punto ci dice di prendere il voto centrale alla sequenza ordinata di valori, visto che questi sono in numero dispari prendiamo "Buono", che diventa il giudizio mediano per l'alternativa "Mare".
+                        </p>
+                        <p class="card-text">
+                            Bisogna poi calcolare i giudizi strettamente migliori e strettamente peggiori del giudizio mediano. Di giudizi strettamente migliori di "Buono" l'alternativa "Mare" ha ottenuto solamente un "Ottimo", mentre di voti peggiori "Mare" ha ottenuto solamente uno "Scarso".
+                            Di conseguenza per l'alternativa "Mare" il numero di voti strettamente migliori del giudizio mediano è 1, stessa cosa per i voti strettamente peggiori.
+                        </p>
+                        <p class="card-text"> 
+                            L'ultima cosa da fare è calcolare il segno.
+                            Dato che il numero di giudizi strettamente migliori del giudizio mediano non è maggiore del numero di voti strettamente il segno è negativo.
+                        </p>
+                        <p class="card-text">
+                            Ripetendo per ciascuna alternative questo processo otteniamo le seguenti triple:
+                        </p>
+                        <ul>
+                            <li>Mare : (1, Buono-, 1)</li>
+                            <li>Montagna : (2, Scarso+, 1)</li>
+                            <li>Città d'arte : (2, Scarso-, 2)</li>
+                        </ul>
+
+                        <p class="card-text">Se compariamo le triple secondo il criterio descritto in precedenza otteniamo che:</p>
+                        <ul>
+                            <li>
+                                Mare batte Montagna e Città d'arte dato che ha il giudizio mediano maggiore dei tre
+                            </li>
+                            <li>
+                                Montagna batte Città d'arte dato che a parità di giudizio mediano l'alternativa Montagna ha segno positivo a differenza di Città d'arte che ha segno negativo.
+                            </li>
+                        </ul>
+                        <p class="card-text">
+                            Di conseguenza la classifica finale consiste in Mare al primo posto, seguito da Montagna ed infine Città d'arte
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <button type="button" class="btn btn-primary" onclick="window.history.back()">Torna indietro</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

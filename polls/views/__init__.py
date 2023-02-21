@@ -3,5 +3,4 @@ from .result_view import SinglePreferenceResultView, MajorityJudgementListView, 
 from .poll_list import *
 from .create_poll_view import *
 from .delete_poll_view import PollDeleteView
-from .help_view import HelpSimulatedResultsView
-from .explaining_view import ExplanationGMView
+from .help_view import *

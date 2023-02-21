@@ -85,7 +85,7 @@
     const prototype = document.getElementById("empty-form")
     const regex = /__prefix__/g
 
-    function add_alternative() {
+    add_alternative = () => {
         if (alternativesRows.querySelectorAll('div:not(.d-none)').length >= 10)
             return
 
@@ -98,7 +98,7 @@
         alternativesRows.append(copyEmptyForm)
     }
 
-    function remove_row(button) {
+    remove_row = (button) => {
         let parentDiv = button.parentNode
         if (alternativesRows.querySelectorAll('div:not(.d-none)').length <= 2) {
             parentDiv.querySelector('input[type="text"]').value = ""
@@ -109,6 +109,15 @@
             parentDiv.classList.add('d-none')
             document.querySelector(`#id_${id}-DELETE`).value = true
         }
+    }
+</script>
+
+<script>
+    document.querySelector('#id_default_type').onchange = () => {
+        let val = document.querySelector('#id_default_type').value
+        if (val == 1)
+        
+        console.log("Changed")
     }
 </script>
 

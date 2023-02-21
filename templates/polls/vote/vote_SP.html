@@ -12,11 +12,8 @@
                     <div class="col-md-12">
                         <div class="page-header-title">
                             <h5 class="m-b-10">{{ poll.title }}</h5>
+                            {{ poll.text }}
                         </div>
-                        <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{% url 'polls:index' %}"><em class="feather icon-home"></em></a></li>
-                            <li class="breadcrumb-item"><a href="#!">{{ poll.title }}</a></li>
-                        </ul>
                     </div>
                 </div>
             </div>
@@ -26,11 +23,6 @@
         <div class="row">
             <!-- [ sample-page ] start -->
             <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-body">
-                        {{ poll.text }}
-                    </div>
-                </div>
                 <form method="post" needs-validation>
                     {% csrf_token %}
                     <div class="card">
