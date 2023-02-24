@@ -24,7 +24,7 @@ class IndexView(ListView):
         super().__init__(**kwargs)
 
     def get_queryset(self) -> QuerySet[Poll]:
-        return self.__active_poll_service.get_ordered_queryset(by_field = 'end', desc = True)
+        return self.__active_poll_service.get_ordered_queryset(desc = True)
 
 
 class SearchView(FormView):
