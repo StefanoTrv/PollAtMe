@@ -26,13 +26,13 @@ class PollsListService:
     def get_ordered_queryset(self, desc: bool = False):
         """
         Return active polls as ordered list by given field, with active polls before ended polls
-        Default: descendending order by poll title
+        Default: descendending order by time
         """
         active_polls = [poll for poll in self.__polls if poll.is_active()]
         ended_polls = [poll for poll in self.__polls if poll.is_ended()]
         return [
             *sorted(active_polls, key=lambda p: getattr(p, 'end') - tz.now(), reverse = desc), 
-            *sorted(ended_polls, key=lambda p: tz.now() - getattr(p, 'end'), reverse = desc)
+            *sorted(ended_polls, key=lambda p: getattr(p, 'end') - tz.now(), reverse = not desc)
         ]
 
 
