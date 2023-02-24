@@ -89,3 +89,23 @@ class SearchPollService:
         except Poll.DoesNotExist:
             raise Http404("Il sondaggio ricercato non esiste")
         return poll
+    
+
+class AllPollsService:
+    def __init__(self) -> None:
+        self.__polls = Poll.objects.filter(id__in=[
+            poll.id
+            for poll in Poll.objects.all()
+            if poll.alternative_set.count() > 0
+        ])
+
+    def get_ordered_queryset(self, by_field: str = 'title', desc: bool = False):
+
+        active_polls = [poll for poll in self.__polls if poll.is_active()]
+        ended_polls = [poll for poll in self.__polls if poll.is_ended()]
+        not_started_polls = [poll for poll in self.__polls if poll.is_not_started()]
+        return [
+            *sorted(active_polls, key=lambda p: getattr(p, by_field), reverse=desc), 
+            *sorted(ended_polls, key=lambda p: getattr(p, by_field), reverse=desc),
+            *sorted(not_started_polls, key=lambda p: getattr(p, by_field), reverse=desc)
+        ]
