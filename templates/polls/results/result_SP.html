@@ -134,9 +134,7 @@
           <p>Scopri quale alternativa sarebbe stata scelta se il metodo di voto fosse stato diverso.</p>
           <div class="row align-items-center text-center">
             <div class="col">
-              <form action={% url 'polls:result_MJ' id=poll.id %}>
-                <button class="btn btn-block btn-info mb-4"> Risultati usando il giudizio maggioritario </button>
-              </form>
+              <a role="button" href={% url 'polls:result_MJ' id=poll.id %} class="btn btn-block btn-info mb-4"> Risultati usando il giudizio maggioritario </a>
             </div>
           </div>
           <p>Se vuoi sapere come questi risultati vengono calcolati, <a href="{% url 'polls:help_simulated_results' %}" class="text-info">qui trovi la spiegazione</a>.</p>
@@ -147,7 +145,7 @@
 
     <div class="row">
       <div class="col text-center">
-        <a href="{% url 'polls:index' %}"><button type="button" class="btn btn-block btn-primary">Torna alla home</button></a>
+        <a role="button" href="{% url 'polls:index' %}" class="btn btn-block btn-primary">Torna alla home</a>
       </div>
     </div>
     <!-- [ Main Content ] end -->
@@ -172,8 +170,25 @@
       ]
     }],
   chart: {
-    type: 'bar'
+    height: 350,
+    type: 'bar',
+    toolbar: {
+      show: true
+    },
+    zoom: {
+      enabled: true
+    }
   },
+  responsive: [{
+    breakpoint: 480,
+    options: {
+      legend: {
+        position: 'bottom',
+        offsetX: -10,
+        offsetY: 0
+      }
+    }
+  }],
   plotOptions: {
     bar: {
       horizontal: false,
@@ -220,6 +235,7 @@
 <script>
   var options = {
     chart: {
+      height: 320,
       type: 'pie',
     },
     series: [{% for vote in results %}{{ vote.count }}, {% endfor %}],
