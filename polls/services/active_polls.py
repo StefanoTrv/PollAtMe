@@ -19,7 +19,23 @@ class PollsListService:
         ])
 
     def get_my_polls(self, author, by_field: str = 'last_update', desc: bool = True):
-        return self.__polls.filter(author = author).order_by(by_field if not desc else f'-{by_field}')
+
+        """
+        Return polls as ordered list by given field, with starting poll before active polls before ended polls
+        Default: descendending order by distance from date depending on the state of the poll
+        """
+
+        user_polls = self.__polls.filter(author = author).order_by(by_field if not desc else f'-{by_field}')
+
+        to_start = [poll for poll in user_polls if poll.is_not_started()]
+        active_polls = [poll for poll in user_polls if poll.is_active()]
+        ended_polls = [poll for poll in user_polls if poll.is_ended()]
+
+        return [
+            *to_start, 
+            *sorted(active_polls, key=lambda p: getattr(p, 'end') - tz.now(), reverse = not desc), 
+            *sorted(ended_polls, key=lambda p: tz.now() - getattr(p, 'end'), reverse = not desc)
+        ]
 
     def get_ordered_queryset(self, desc: bool = False):
         """
