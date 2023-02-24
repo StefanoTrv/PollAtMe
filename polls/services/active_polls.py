@@ -5,18 +5,23 @@ from django.db.models import Q
 from polls.exceptions import PollWithoutAlternativesException
 from datetime import datetime, timezone
 from django.http import Http404
+from django.utils import timezone as tz
 
-class ActivePollsService:
+
+class PollsListService:
     """Service to get all active polls from database"""
 
     def __init__(self) -> None:
         self.__polls = Poll.objects.filter(id__in=[
             poll.id
             for poll in Poll.objects.all()
-            if not poll.is_not_started() and poll.alternative_set.count() > 0
+            if poll.alternative_set.count() > 0
         ])
 
-    def get_ordered_queryset(self, by_field: str = 'title', desc: bool = False):
+    def get_my_polls(self, author, by_field: str = 'last_update', desc: bool = True):
+        return self.__polls.filter(author = author).order_by(by_field if not desc else f'-{by_field}')
+
+    def get_ordered_queryset(self, desc: bool = False):
         """
         Return active polls as ordered list by given field, with active polls before ended polls
         Default: descendending order by poll title
@@ -24,8 +29,8 @@ class ActivePollsService:
         active_polls = [poll for poll in self.__polls if poll.is_active()]
         ended_polls = [poll for poll in self.__polls if poll.is_ended()]
         return [
-            *sorted(active_polls, key=lambda p: getattr(p, by_field), reverse=desc), 
-            *sorted(ended_polls, key=lambda p: getattr(p, by_field), reverse=desc)
+            *sorted(active_polls, key=lambda p: getattr(p, 'end') - tz.now(), reverse = desc), 
+            *sorted(ended_polls, key=lambda p: tz.now() - getattr(p, 'end'), reverse = desc)
         ]
 
 
@@ -89,23 +94,3 @@ class SearchPollService:
         except Poll.DoesNotExist:
             raise Http404("Il sondaggio ricercato non esiste")
         return poll
-    
-
-class AllPollsService:
-    def __init__(self) -> None:
-        self.__polls = Poll.objects.filter(id__in=[
-            poll.id
-            for poll in Poll.objects.all()
-            if poll.alternative_set.count() > 0
-        ])
-
-    def get_ordered_queryset(self, by_field: str = 'title', desc: bool = False):
-
-        active_polls = [poll for poll in self.__polls if poll.is_active()]
-        ended_polls = [poll for poll in self.__polls if poll.is_ended()]
-        not_started_polls = [poll for poll in self.__polls if poll.is_not_started()]
-        return [
-            *sorted(active_polls, key=lambda p: getattr(p, by_field), reverse=desc), 
-            *sorted(ended_polls, key=lambda p: getattr(p, by_field), reverse=desc),
-            *sorted(not_started_polls, key=lambda p: getattr(p, by_field), reverse=desc)
-        ]

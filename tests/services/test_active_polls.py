@@ -9,7 +9,7 @@ from django.utils import timezone
 
 from polls.exceptions import PollWithoutAlternativesException
 from polls.models import Poll
-from polls.services import ActivePollsService, SearchPollService
+from polls.services import PollsListService, SearchPollService
 
 
 class TestActivePollsService(TestCase):
@@ -33,7 +33,7 @@ class TestActivePollsService(TestCase):
             poll.alternative_set.create(text="Prova2")
 
     def test_sondaggi_ordine_crescente(self):
-        queryset = ActivePollsService().get_ordered_queryset()
+        queryset = PollsListService().get_ordered_queryset()
         excluded = Poll.objects.filter(Q(title__in = ['E', 'F']))
         
         # Esclude sondaggi senza alternative o non ancora attivi 
@@ -47,7 +47,7 @@ class TestActivePollsService(TestCase):
         
     
     def test_sondaggi_ordine_decrescente(self):
-        queryset = ActivePollsService().get_ordered_queryset(desc=True)
+        queryset = PollsListService().get_ordered_queryset(desc=True)
         excluded = Poll.objects.filter(Q(title__in = ['E', 'F']))
         
         # Esclude sondaggi senza alternative o non ancora attivi 
@@ -60,7 +60,7 @@ class TestActivePollsService(TestCase):
         assert_that([poll for poll in queryset if not poll.is_active()]).is_sorted(lambda x: x.title, reverse=True)
     
     def test_order_by_text(self):
-        queryset = ActivePollsService().get_ordered_queryset(by_field='text')
+        queryset = PollsListService().get_ordered_queryset(by_field='text')
         assert_that(queryset).is_sorted(lambda x: x.is_active(), reverse=True)
         assert_that([poll for poll in queryset if poll.is_active()]).is_sorted(lambda x: x.text)
         assert_that([poll for poll in queryset if not poll.is_active()]).is_sorted(lambda x: x.text)
