@@ -1,3 +1,3 @@
-from .active_polls import ActivePollsService, SearchPollService, SearchPollQueryBuilder, AllPollsService
+from .active_polls import PollsListService, SearchPollService, SearchPollQueryBuilder
 from .preferenza_singola import SinglePreferencePollResultsService
 from .giudizio_maggioritario import MajorityJudgementService

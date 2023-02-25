@@ -9,7 +9,7 @@ from django.views.generic.list import ListView
 
 from polls.forms import SearchPollForm
 from polls.models import Poll
-from polls.services import ActivePollsService, AllPollsService
+from polls.services import PollsListService
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -20,11 +20,11 @@ class IndexView(ListView):
     template_name: str = 'polls/poll_list.html'
 
     def __init__(self, **kwargs: Any) -> None:
-        self.__active_poll_service = ActivePollsService()
+        self.__active_poll_service = PollsListService()
         super().__init__(**kwargs)
 
     def get_queryset(self) -> QuerySet[Poll]:
-        return self.__active_poll_service.get_ordered_queryset()
+        return self.__active_poll_service.get_ordered_queryset(desc = False)
 
 
 class SearchView(FormView):
@@ -61,8 +61,8 @@ class PersonalPollsView(LoginRequiredMixin, ListView):
     template_name: str = 'polls/personal_polls.html'
 
     def __init__(self, **kwargs: Any) -> None:
-        self.__active_poll_service = AllPollsService()
+        self.__active_poll_service = PollsListService()
         super().__init__(**kwargs)
 
     def get_queryset(self) -> QuerySet[Poll]:
-        return self.__active_poll_service.get_ordered_queryset()
+        return self.__active_poll_service.get_my_polls(self.request.user)
