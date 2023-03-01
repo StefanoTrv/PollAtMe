@@ -102,6 +102,8 @@ class SearchPollForm(forms.Form):
     def to_query(self) -> SearchPollQueryBuilder:
         builder = SearchPollQueryBuilder()
 
+        builder.public_filter()
+
         if self.cleaned_data['title'] != '':
             builder.title_filter(self.cleaned_data['title'])
         
