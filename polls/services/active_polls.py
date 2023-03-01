@@ -23,13 +23,15 @@ class PollsListService:
         return self.__polls.filter(author = author).order_by(by_field if not desc else f'-{by_field}')
 
 
-    def get_ordered_queryset(self, desc: bool = False):
+    def get_ordered_queryset(self, desc: bool = False, include_hidden: bool = False):
         """
         Return active polls as ordered list by given field, with active polls before ended polls
         Default: descendending order by time
+                 hidden polls are not included
         """
-        active_polls = [poll for poll in self.__polls if poll.is_active()]
-        ended_polls = [poll for poll in self.__polls if poll.is_ended()]
+
+        active_polls = [poll for poll in self.__polls if (poll.is_active() and (poll.is_public() or include_hidden))]
+        ended_polls = [poll for poll in self.__polls if (poll.is_ended() and (poll.is_public() or include_hidden))]
         return [
             *sorted(active_polls, key=lambda p: getattr(p, 'end') - tz.now(), reverse = desc), 
             *sorted(ended_polls, key=lambda p: getattr(p, 'end') - tz.now(), reverse = not desc)

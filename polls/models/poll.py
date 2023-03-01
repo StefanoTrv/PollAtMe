@@ -43,3 +43,6 @@ class Poll(models.Model):
 
     def __str__(self) -> str:
         return self.title
+    
+    def is_public(self) -> bool:
+        return self.visibility == Poll.PollVisibility.PUBLIC
