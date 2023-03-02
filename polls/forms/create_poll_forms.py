@@ -121,8 +121,14 @@ class PollFormAdditionalOptions(forms.ModelForm):
                 'style': 'resize: none;',
                 'rows': 4
             }),
-            'visibility': forms.Select(
-                attrs={'selected': Poll.PollVisibility.PUBLIC}
+            'visibility': forms.RadioSelect(
+                choices=[
+                    ('1', 'Nascosto'),
+                    ('2', 'Pubblico'),
+                ],
+                attrs={
+                    'class': 'btn-check'
+                }
             ),
         }
 

@@ -36,7 +36,6 @@
                             {% bootstrap_field form.title %}
                             {% bootstrap_field form.default_type %}
                             {% bootstrap_field form.text %}
-
                             <div class="mb-3">
                                 <label class="form-label">Alternative</label>
                                 <ul class="list-group">
@@ -54,7 +53,20 @@
                             <h4 class="card-title">Opzioni avanzate</h4>
                             {% bootstrap_field form.start %}
                             {% bootstrap_field form.end %}
-                            {% bootstrap_field form.visibility %}
+                            <p>{{ form.visibility.label }}</p>
+                            <div class="d-grid gap-2 d-xl-flex justify-content-xl-center flex-xl-fill {% if f.errors %}is-invalid{% endif %}">
+                                {% for radio in form.visibility %}
+                                    {{ radio.tag }}
+                                    <label class="{% if f.errors %}btn btn-outline-danger is-invalid{% else %}btn btn-outline-secondary{% endif %} w-100" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                {% endfor %}
+                            </div>
+                            <br>
+                            <div class="alert alert-primary" role="alert">
+								<b>Pubblico</b>: i sondaggi saranno visibili sia nella ricerca sia nella pagina principale, tutti potranno votare ed accedere ai risultati.
+                                <hr>
+                                <b>Privato</b>: i sondaggi <b>Non</b> saranno visibili né  nella ricerca né nella pagina principale, l'accesso sarà possibile solamente a chi possiede il codice.<br>
+							</div>
+                            <!-- {% bootstrap_field form.visibility %} -->
                         </div>
                     </div>
                 </div>
