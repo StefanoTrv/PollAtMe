@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
             model_name="poll",
             name="visibility",
             field=models.IntegerField(
-                choices=[(1, "Pubblico"), (2, "Nascosto")], default=2
+                choices=[(1, "Pubblico"), (2, "Nascosto")], default=1
             ),
         ),
     ]
