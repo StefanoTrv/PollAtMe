@@ -41,20 +41,6 @@ class SearchView(FormView):
             'form': form
         })
 
-class VoteWithCodeView(View):
-    http_method_names = ['post']
-
-    def post(self, request: http.HttpRequest, *args, **kwargs):
-        code = request.POST.get('code', 0)
-        try:
-            poll_id = int(code)
-        except ValueError:
-            raise http.Http404("Il sondaggio ricercato non esiste")
-
-        url = reverse('polls:vote', kwargs={'id': poll_id})
-
-        return http.HttpResponseRedirect(url)
-
 class PersonalPollsView(LoginRequiredMixin, ListView):
     model: Optional[Type[Model]] = Poll
     paginate_by: int = 6
