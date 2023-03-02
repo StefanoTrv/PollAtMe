@@ -190,24 +190,6 @@
     </div>
 
     <hr>
-    {% if poll.get_type == "Giudizio maggioritario" %}
-    <div class="card bg-white">
-      <div class="card-body">
-        <h5 class="card-header text-info">E se avessimo votato con un altro metodo?</h5>
-        <div class="card-body">
-          <p>Scopri quale alternativa sarebbe stata scelta se il metodo di voto fosse stato diverso.</p>
-          <div class="row align-items-center text-center">
-            <div class="col">
-              <form action={% url 'polls:result_single_preference' id=poll.id %}>
-                <button class="btn btn-block btn-info mb-4"> Risultati usando la preferenza singola </button>
-              </form>
-            </div>
-          </div>
-          <p>Se vuoi sapere come questi risultati vengono calcolati, <a href="{% url 'polls:help_simulated_results' %}" class="text-info">qui trovi la spiegazione</a>.</p>
-        </div>
-      </div>
-    </div>
-    {% endif %}
 
     <div class="row">
       <div class="col text-center">
