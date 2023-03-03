@@ -9,7 +9,7 @@
             <div class="row align-items-center text-center">
                 <div class="col-md-12">
                     <div class="card-body">
-                        <h5>Perfetto! Il tuo sondaggio è stato creato.</h5>
+                        <h5>Perfetto! La tua scelta è stata creata.</h5>
                         <br>
                         <a class="btn btn-block btn-primary mb-4" href="/" data-bs-toggle="tooltip" data-bs-placement="top" title="" data-bs-original-title="Torna alla home">
                             Torna alla home
@@ -21,6 +21,63 @@
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-3 xl-3"></div>
+            <div class="col-md-6 xl-6">
+                <div class="card">
+                    <div class="row align-items-center text-center">
+                        <div class="col-md-12">
+                            <div class="card-header">
+                                <h4>Vuoi condividere la scelta?</h4>
+                            </div>
+                            <div class="card-body">
+                                <p>
+                                    Puoi condividere la scelta appena creata, tuttavia gli utenti se proveranno a votare, otterranno un messaggio d'errore fino a quando le votazioni non saranno 
+                                    partite. Puoi condividere la scelta copiando il link sottostante
+                                </p>
+                                <div class="input-group mb-3">
+                                    <button type="button" class="btn btn-block btn-primary" onclick="copyText()"> 
+                                        <em class="feather icon-copy"></em> 
+                                    </button>
+                                    {% if poll.get_type == 'Giudizio maggioritario' %}
+                                        <input type="text" class="form-control" id="pollLink" value="https://sceglimeglio.azurewebsites.net/vote/majorityjudgment/{{poll.id}}">
+                                    {% else %}
+                                        <input type="text" class="form-control" id="pollLink" value="https://sceglimeglio.azurewebsites.net/vote/singlepreference/{{poll.id}}">
+                                    {% endif %}
+                                </div>
+                                <!--
+                                <br>
+                                <p> Oppure attraverso le seguenti piattaforme social </p>
+                                <a href="#" class="me-4">
+                                    <em class="fab fa-facebook fa-4x" style="color: #3b5998;"></em>
+                                </a>
+                                <a href="#" class="me-4">
+                                    <em class="fab fa-twitter fa-4x" style="color: #55acee;"></em>
+                                </a>
+                                <a href="#" class="me-4">
+                                    <em class="fab fa-instagram fa-4x" style="color: #ac2bac;"></em>
+                                </a>
+                                --->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 xl-3"></div>
+        </div>
     </div>
 </div>
 {% endblock content %}
+
+{% block javascripts %}
+<script>
+    function copyText() {
+      var input = document.getElementById('pollLink');
+      input.select();
+      document.execCommand('copy');
+      setTimeout(function(){
+        window.getSelection().removeAllRanges();
+      }, 1500);
+    }
+</script>
+{% endblock javascripts %}

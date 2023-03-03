@@ -1,0 +1,70 @@
+<div class="modal fade" id="modalPollSharing" tabindex="-1" aria-labelledby="modalPollSharinglabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Come vuoi condividere la scelta?</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center">
+            <p> Scegli se condividere la scelta copiando il link </p>
+            <div class="input-group mb-3">
+              <button type="button" class="btn btn-block btn-primary" onclick="copyText()"> 
+                <em class="feather icon-copy"></em> 
+              </button>
+                <input type="text" class="form-control" id="pollLink" value="">
+            </div>
+            <!--
+            <br>
+            <p> Oppure attraverso le seguenti piattaforme social </p>
+            <a href="#" class="me-4">
+                <em class="fab fa-facebook fa-4x" style="color: #3b5998;"></em>
+            </a>
+            <a href="#" class="me-4">
+                <em class="fab fa-twitter fa-4x" style="color: #55acee;"></em>
+            </a>
+            <a href="#" class="me-4">
+                <em class="fab fa-instagram fa-4x" style="color: #ac2bac;"></em>
+            </a>
+            -->
+        </div>
+      </div>
+    </div>
+</div>
+
+<script>
+  function copyText() {
+    var input = document.getElementById('pollLink');
+    input.select();
+    document.execCommand('copy');
+    setTimeout(function(){
+      window.getSelection().removeAllRanges();
+    }, 1500);
+  }
+</script>
+
+<script>
+  var shareModal = document.getElementById('modalPollSharing')
+  var link = "https://sceglimeglio.azurewebsites.net/"
+  shareModal.addEventListener('show.bs.modal', event => {
+      var button = event.relatedTarget
+      var pollType = button.getAttribute('data-bs-type')
+      var pollId = button.getAttribute('data-bs-poll')
+      var is_ended = button.getAttribute('data-bs-status')
+      var text = document.getElementById('pollLink')
+      if (pollType == 'Giudizio maggioritario') {
+          pollType = 'majorityjudgment/'
+        } else {
+          pollType = 'singlepreference/'
+        }
+      console.log(is_ended)
+      if (is_ended == 'True') {
+          text.value = link + 'result/' + pollType + pollId + '/'
+        } else { 
+          text.value = link + 'vote/' + pollType + pollId + '/'
+        }
+  })
+  shareModal.addEventListener('hide.bs.modal', event => {
+    var text = document.getElementById('pollLink')
+    text.value = link
+  })
+</script>
