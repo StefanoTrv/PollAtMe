@@ -12,7 +12,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 class PollDeleteView(LoginRequiredMixin, DeleteView):
     model = Poll
-    success_url = reverse_lazy('polls:index')
+    success_url = reverse_lazy('polls:personal_polls')
     http_method_names = ['post']
 
     def get_object(self, queryset: Optional[models.query.QuerySet[Any]] = None) -> models.Model:
