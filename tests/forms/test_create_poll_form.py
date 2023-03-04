@@ -186,7 +186,7 @@ class TestPollFormMain(TestCase):
     def test_errore(self):
         form = PollFormMain({})
         assert_that(form.is_valid()).is_false()
-        assert_that(form.errors).is_length(3)
+        assert_that(form.errors).is_length(2)
     
     def test_corretto(self):
         form = PollFormMain({'title': 'Lorem', 'text': 'ipsum', 'default_type': 1})
@@ -204,7 +204,7 @@ class TestPollFormAdditionalOptions(TestCase):
     def test_errore(self):
         form = PollFormAdditionalOptions({})
         assert_that(form.is_valid()).is_false()
-        assert_that(form.errors).is_length(6)
+        assert_that(form.errors).is_length(5)
     
     def test_fine_precedente_inizio(self):
         form = PollFormAdditionalOptions({

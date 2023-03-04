@@ -12,7 +12,7 @@ class Poll(models.Model):
         SINGLE_PREFERENCE = 3, _("Preferenza singola")
 
     title = models.CharField(max_length=100)
-    text = models.TextField()
+    text = models.TextField(default="")
     default_type = models.IntegerField(choices=PollType.choices, default=PollType.MAJORITY_JUDGMENT)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
 
