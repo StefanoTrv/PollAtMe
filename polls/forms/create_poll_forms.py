@@ -189,7 +189,7 @@ class PollMappingForm(forms.ModelForm):
         return self.cleaned_data
     
     def _code_is_valid(self, code):
-        pattern = re.compile("([a-z]|[A-Z]|[0-1])*")
+        pattern = re.compile("([a-z]|[A-Z]|\d)*")
         result = bool(pattern.fullmatch(code))
         return result
     
