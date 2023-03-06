@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %} {{block.super}} | Sondaggio aggiornato! {% endblock title %}
+{% block title %} {{block.super}} | Scelta aggiornata! {% endblock title %}
 
 {% block content %}
 <div class="pcoded-main-container">
@@ -9,13 +9,13 @@
             <div class="row align-items-center text-center">
                 <div class="col-md-12">
                     <div class="card-body">
-                        <h5>Fatto! Il tuo sondaggio è stato modificato.</h5>
+                        <h5>Fatto! La tua scelta è stata modificata.</h5>
                         <br>
                         <a class="btn btn-block btn-primary mb-4" href="/" data-bs-toggle="tooltip" data-bs-placement="top" title="" data-bs-original-title="Torna alla home">
                             Torna alla home
                         </a>
                         <a class="btn btn-block btn-secondary mb-4" href="{% url 'polls:personal_polls' %}" data-bs-toggle="tooltip" data-bs-placement="top" title="" data-bs-original-title="Sondaggi personali">
-                            Sondaggi personali
+                            Scelte personali
                         </a>
                     </div>
                 </div>

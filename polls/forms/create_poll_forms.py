@@ -69,25 +69,25 @@ class PollFormMain(forms.ModelForm):
         fields = ['title', 'default_type', 'text']
         labels = {
             'title': 'Titolo',
-            'default_type': 'Tipo di sondaggio',
+            'default_type': 'Tipo di scelta',
             'text': 'Testo'
         }
         error_messages = {
             'title': {
-                'required': 'Il testo del sondaggio non può essere vuoto.'
+                'required': 'Il titolo della scelta non può essere vuoto.'
             },
             'text': {
-                'required': 'Il testo del sondaggio non può essere vuoto.'
+                'required': 'Il testo della scelta non può essere vuoto.'
             }
         }
 
         widgets = {
             'title': forms.TextInput(attrs={
-                'placeholder': 'Inserisci il titolo del sondaggio'
+                'placeholder': 'Inserisci il titolo della scelta'
             }),
             'text': forms.Textarea(attrs={
                 'rows': 4,
-                'placeholder': 'Inserisci il testo della domanda del sondaggio'
+                'placeholder': 'Inserisci il testo della domanda della scelta'
             })
         }
 
@@ -153,10 +153,10 @@ class PollFormAdditionalOptions(forms.ModelForm):
 
         # il sondaggio deve iniziare almeno 5 minuti da adesso
         if start - now < timedelta(minutes=5):
-            self.add_error('start', 'Il sondaggio deve iniziare almeno 5 minuti da adesso')
+            self.add_error('start', 'La scelta deve iniziare almeno 5 minuti da adesso')
 
         # il sondaggio deve durare almeno 15 minuti
         if end - start < timedelta(minutes=15):
-            self.add_error('end', 'Il sondaggio deve durare almeno 15 minuti')
+            self.add_error('end', 'La scelta deve durare almeno 15 minuti')
 
         return self.cleaned_data

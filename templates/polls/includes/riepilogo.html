@@ -7,7 +7,7 @@
       <div class="col-12">
         <div class="card text-white bg-info">
           <div class="card-body">
-            <h6 class="text-white">Info sondaggio:</h6>
+            <h6 class="text-white">Info scelta:</h6>
             <h2 class="text-end text-white"><em class="feather icon-info float-start"></em><span>{{poll.title}}</span>
             </h2>
             <p class="m-b-0"><span class="float-end">{{poll.text}}</span></p>
@@ -20,7 +20,7 @@
       <div class="col-md-6 col-xl-3">
         <div class="card bg-c-blue order-card">
           <div class="card-body">
-            <h6 class="text-white">Data di apertura del sondaggio:</h6>
+            <h6 class="text-white">Data di apertura della scelta:</h6>
             <h2 class="text-end text-white"><em class="feather icon-calendar float-start"></em><span>{{ poll.start | date:"d/m/Y h:i" }}</span>
             </h2>
             <p class="m-b-0">Data di chiusura<span class="float-end">{{ poll.end |  date:"d/m/Y h:i" }}</span></p>
@@ -30,7 +30,7 @@
       <div class="col-md-6 col-xl-3">
         <div class="card bg-c-green order-card">
           <div class="card-body">
-            <h6 class="text-white">Sondaggio creato da:</h6>
+            <h6 class="text-white">Scelta creata da:</h6>
             <h2 class="text-end text-white">
               <em class="feather icon-user float-start"></em><span>{% user_display poll.author %}</span>
             </h2>
@@ -41,7 +41,7 @@
       <div class="col-md-6 col-xl-3">
         <div class="card bg-c-yellow order-card">
           <div class="card-body">
-            <h6 class="text-white">Tipo di sondaggio</h6>
+            <h6 class="text-white">Tipo di scelta</h6>
             <h2 class="text-end text-white"><em class="feather icon-lock float-start"></em><span>Pubblico</span></h2>
             <p class="m-b-0">Tipo di risposte<span class="float-end">anonime</span></p>
           </div>
