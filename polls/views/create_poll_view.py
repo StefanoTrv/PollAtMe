@@ -89,7 +89,9 @@ def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Option
         for alt in formset_alternatives.deleted_objects:
             alt.delete()
 
-        return render(request, f'polls/{action}_poll_success.html')
+        return render(request, f'polls/{action}_poll_success.html', {
+            'poll' : saved_poll
+        })
     else:
         return render(request, f'polls/create_poll/summary_and_options_{action}.html', {
             'form': form,

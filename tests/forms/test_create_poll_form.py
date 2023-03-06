@@ -204,7 +204,7 @@ class TestPollFormAdditionalOptions(TestCase):
     def test_errore(self):
         form = PollFormAdditionalOptions({})
         assert_that(form.is_valid()).is_false()
-        assert_that(form.errors).is_length(5)
+        assert_that(form.errors).is_length(6)
     
     def test_fine_precedente_inizio(self):
         form = PollFormAdditionalOptions({
@@ -213,7 +213,8 @@ class TestPollFormAdditionalOptions(TestCase):
             'default_type': 1,
             'start': timezone.now() + timezone.timedelta(days=2),
             'end': timezone.now() + timezone.timedelta(days=1),
-            'author': self.u.id
+            'author': self.u.id,
+            'visibility': 1
         })
 
         assert_that(form.has_error('end')).is_true()
@@ -226,7 +227,8 @@ class TestPollFormAdditionalOptions(TestCase):
             'default_type': 1,
             'start': timezone.now() + timezone.timedelta(minutes=4),
             'end': timezone.now() + timezone.timedelta(days=1),
-            'author': self.u.id
+            'author': self.u.id,
+            'visibility': 1
         })
 
         assert_that(form.has_error('start')).is_true()
@@ -239,7 +241,8 @@ class TestPollFormAdditionalOptions(TestCase):
             'default_type': 1,
             'start': timezone.now() + timezone.timedelta(hours=1),
             'end': timezone.now() + timezone.timedelta(hours=1, minutes=14),
-            'author': self.u.id
+            'author': self.u.id,
+            'visibility': 1
         })
 
         assert_that(form.has_error('end')).is_true()

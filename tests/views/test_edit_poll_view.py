@@ -22,6 +22,7 @@ class TestPollEditView(TestCase):
         self.poll.save()
         self.poll.alternative_set.create(text='Alternativa di prova 1')
         self.poll.alternative_set.create(text='Alternativa di prova 2')
+        self.poll.visibility = 1
 
         self.client.login(username='test', password='test')
     
@@ -84,6 +85,7 @@ class TestPollEditView(TestCase):
             'start': start,
             'end': end,
             'author': self.u.id,
+            'visibility': 2,
             'save': ''
         }
         response = self.client.post(url, data=data)
@@ -95,6 +97,7 @@ class TestPollEditView(TestCase):
         assert_that(last_poll.default_type).is_equal_to(data['default_type'])
         assert_that(last_poll.text).is_equal_to(data['text'])
         assert_that(last_poll.alternative_set.count()).is_equal_to(2)
+        assert_that(last_poll.visibility).is_equal_to(2)
 
         alternatives = last_poll.alternative_set.all()
         expected_texts = ['Alternativa di prova 2', 'Alternativa di prova 3']

@@ -11,6 +11,11 @@ class Poll(models.Model):
         #SHULTZE_METHOD = 2, _("Metodo Shultze")
         SINGLE_PREFERENCE = 3, _("Preferenza singola")
 
+    class PollVisibility(models.IntegerChoices):
+        PUBLIC = 1, _("Pubblico")
+        HIDDEN = 2, _("Nascosto")
+
+
     title = models.CharField(max_length=100)
     text = models.TextField(default="")
     default_type = models.IntegerField(choices=PollType.choices, default=PollType.MAJORITY_JUDGMENT)
@@ -21,6 +26,8 @@ class Poll(models.Model):
 
     creation_date = models.DateTimeField(auto_now_add = True)
     last_update = models.DateTimeField(auto_now = True)
+
+    visibility = models.IntegerField(choices=PollVisibility.choices, default=PollVisibility.HIDDEN)
 
     def is_active(self) -> bool:
         return self.start <= timezone.now() < self.end
@@ -36,3 +43,6 @@ class Poll(models.Model):
 
     def __str__(self) -> str:
         return self.title
+    
+    def is_public(self) -> bool:
+        return self.visibility == Poll.PollVisibility.PUBLIC

@@ -56,6 +56,7 @@ class CreatePollViewTest(TestCase):
             'start': (now + timedelta(minutes=20)).strftime('%Y-%m-%d %H:%M:%S'),
             'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
             'author': self.u.id,
+            'visibility': 1,
             'save': ''
         }
         response = self.client.post(self.url, data=step_2_data)

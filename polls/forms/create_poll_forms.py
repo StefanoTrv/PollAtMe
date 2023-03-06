@@ -100,7 +100,8 @@ class PollFormAdditionalOptions(forms.ModelForm):
         fields = "__all__"
         labels = {
             'start': 'Data inizio votazioni',
-            'end': 'Data fine votazioni'
+            'end': 'Data fine votazioni',
+            'visibility': "Visibilità"
         } | PollFormMain.Meta.labels
 
         error_messages = {} | PollFormMain.Meta.error_messages
@@ -120,7 +121,16 @@ class PollFormAdditionalOptions(forms.ModelForm):
             'text': forms.Textarea(attrs={
                 'style': 'resize: none;',
                 'rows': 4
-            })
+            }),
+            'visibility': forms.RadioSelect(
+                choices=[
+                    ('1', 'Nascosto'),
+                    ('2', 'Pubblico'),
+                ],
+                attrs={
+                    'class': 'btn-check'
+                }
+            ),
         }
 
     def __init__(self, *args, **kwargs) -> None:
