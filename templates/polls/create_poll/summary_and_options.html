@@ -70,7 +70,14 @@
                             <div class="alert alert-info" role="alert" id="hidden_alert_id" {% if form.visibility.value == 1 %} style="display: none" {%else%} style="display: block" {%endif%}>
                                 <b>Nascosto</b>: le scelte <b>non</b> saranno visibili né nella pagina principale né durante la ricerca, l'accesso sarà possibile solamente a chi possiede il link.<br>
 							</div>
+                            <br>
+                            <hr>
+                            <br>
                             <!-- {% bootstrap_field form.visibility %} -->
+                            {% bootstrap_field mapping_form.code %}
+                            <div class="alert alert-info" role="alert">
+								Seleziona un codice composto da maiuscole, minuscole e cifre decimali per identificare la scelta. Se lasciato vuoto ne verrà generao uno automaticamente!
+							</div>
                         </div>
                     </div>
                 </div>

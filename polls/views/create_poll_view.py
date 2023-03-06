@@ -9,7 +9,7 @@ from django.utils import timezone
 from datetime import timedelta
 
 from polls.models import Poll
-from polls.forms import PollFormAdditionalOptions, PollFormMain, BaseAlternativeFormSet
+from polls.forms import PollFormAdditionalOptions, PollFormMain, BaseAlternativeFormSet, PollMappingForm
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -49,7 +49,8 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
         }
         return render(request, f'polls/create_poll/summary_and_options_{action}.html', {
             'alternatives': formset_alternatives.get_alternatives_text_list(),
-            'form': PollFormAdditionalOptions(instance=f_poll)
+            'form': PollFormAdditionalOptions(instance=f_poll),
+            'mapping_form': PollMappingForm()
         })
     else:
         formset_alternatives._non_form_errors[0]=str(formset_alternatives._non_form_errors[0]).replace("Please submit at least 2 forms.","Inserisci almeno due alternative.") # type: ignore
@@ -74,8 +75,9 @@ def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Option
     form = PollFormAdditionalOptions(request.POST, instance=poll)
     formset_alternatives: BaseAlternativeFormSet = ALTERNATIVE_FORMSET(
         request.session[action]['alternatives'], queryset=alternatives)
+    form_mapping: PollMappingForm = PollMappingForm(request.POST)
 
-    if form.is_valid() and formset_alternatives.is_valid():
+    if form.is_valid() and formset_alternatives.is_valid() and form_mapping.is_valid():
         saved_poll = form.save()
 
         formset_alternatives.save(commit=False)
@@ -89,13 +91,18 @@ def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Option
         for alt in formset_alternatives.deleted_objects:
             alt.delete()
 
+        mapping = form_mapping.save(commit=False)
+        mapping.poll = saved_poll
+        mapping.save()
+
         return render(request, f'polls/{action}_poll_success.html', {
             'poll' : saved_poll
         })
     else:
         return render(request, f'polls/create_poll/summary_and_options_{action}.html', {
             'form': form,
-            'alternatives': formset_alternatives.get_alternatives_text_list()
+            'alternatives': formset_alternatives.get_alternatives_text_list(),
+            'mapping_form': form_mapping
         })
 
 
