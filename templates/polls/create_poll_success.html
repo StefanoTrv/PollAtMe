@@ -11,9 +11,12 @@
                     <div class="card-body">
                         <h5>Perfetto! Il tuo sondaggio è stato creato.</h5>
                         <br>
-                        <form action="/">
-                            <button class="btn btn-block btn-primary mb-4"> Torna alla home </button>
-                        </form>
+                        <a class="btn btn-block btn-primary mb-4" href="/" data-bs-toggle="tooltip" data-bs-placement="top" title="" data-bs-original-title="Torna alla home">
+                            Torna alla home
+                        </a>
+                        <a class="btn btn-block btn-secondary mb-4" href="{% url 'polls:personal_polls' %}" data-bs-toggle="tooltip" data-bs-placement="top" title="" data-bs-original-title="Sondaggi personali">
+                            Sondaggi personali
+                        </a>
                     </div>
                 </div>
             </div>
