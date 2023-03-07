@@ -50,12 +50,14 @@
                 <div class="col-sm-12 col-xl-6">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="card-title">Opzioni avanzate</h4>
+                            <h4 class="card-title">Data votazioni</h4>
                             {% bootstrap_field form.start %}
                             {% bootstrap_field form.end %}
-                            <br>
-                            <hr>
-                            <br>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Altre opzioni</h4>
                             <p>{{ form.visibility.label }}</p>
                             <div class="d-grid gap-2 d-xl-flex justify-content-xl-center flex-xl-fill {% if f.errors %}is-invalid{% endif %}">
                                 {% for radio in form.visibility %}
@@ -76,7 +78,9 @@
                             <!-- {% bootstrap_field form.visibility %} -->
                             {% bootstrap_field mapping_form.code %}
                             <div class="alert alert-info" role="alert">
-								Seleziona un codice composto da maiuscole, minuscole e cifre decimali per identificare la scelta. Se lasciato vuoto ne verrà generao uno automaticamente!
+								Seleziona un codice composto da maiuscole, minuscole e cifre decimali per identificare la scelta. Se lasciato vuoto ne verrà generao uno <b>automaticamente</b>!<br>
+                                Il codice viene utilizzato per genarare un link personalizzato alla scelta secondo il template:<br><br>
+                                <p class="text-center"> <i>{{ request.get_host }}/s/"Codice" </i></p> 
 							</div>
                         </div>
                     </div>

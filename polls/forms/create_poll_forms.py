@@ -169,7 +169,7 @@ class PollMappingForm(forms.ModelForm):
         model = Mapping
         fields = ['code']
         labels = {
-            'code': 'Codice'
+            'code': 'Codice link personalizzato'
         }
 
         widgets = {
