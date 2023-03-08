@@ -21,5 +21,5 @@ urlpatterns = [
     path('help/simulated_results/', views.HelpSimulatedResultsView.as_view(), name='help_simulated_results'),
     path('help/majorityjudgment/', views.ExplanationGMView.as_view(), name='explain_gm'),
     path('personal/', views.PersonalPollsView.as_view(), name='personal_polls'),
-    path('s/<str:code>', views.AccessPollView.as_view(), name='access_poll')
+    path('<str:code>', views.AccessPollView.as_view(), name='access_poll')
 ]
