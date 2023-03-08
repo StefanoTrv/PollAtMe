@@ -13,6 +13,8 @@ from polls.forms import PollFormAdditionalOptions, PollFormMain, BaseAlternative
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+from polls.models.mapping import Mapping
+
 
 ALTERNATIVE_FORMSET = BaseAlternativeFormSet.get_formset_class()
 
@@ -47,10 +49,16 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
             'poll': form.cleaned_data,
             'alternatives': formset_alternatives.get_form_for_session()
         }
+
+        existing_mapping = None
+        if poll != None:
+            if Mapping.objects.filter(poll=poll).count() > 0:
+                existing_mapping = Mapping.objects.filter(poll=poll).get()
+
         return render(request, f'polls/create_poll/summary_and_options_{action}.html', {
             'alternatives': formset_alternatives.get_alternatives_text_list(),
             'form': PollFormAdditionalOptions(instance=f_poll),
-            'mapping_form': PollMappingForm()
+            'mapping_form': PollMappingForm(instance=existing_mapping)
         })
     else:
         formset_alternatives._non_form_errors[0]=str(formset_alternatives._non_form_errors[0]).replace("Please submit at least 2 forms.","Inserisci almeno due alternative.") # type: ignore
@@ -91,9 +99,15 @@ def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Option
         for alt in formset_alternatives.deleted_objects:
             alt.delete()
 
-        mapping = form_mapping.save(commit=False)
-        mapping.poll = saved_poll
-        mapping.save()
+        if Mapping.objects.filter(poll=poll).count() > 0:
+                existing_mapping = Mapping.objects.filter(poll=poll).get()
+                existing_mapping.code = form_mapping.cleaned_data['code']
+                existing_mapping.save()
+            
+        else:
+            mapping = form_mapping.save(commit=False)
+            mapping.poll = saved_poll
+            mapping.save()
 
         return render(request, f'polls/{action}_poll_success.html', {
             'poll' : saved_poll
