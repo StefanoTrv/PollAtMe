@@ -44,24 +44,12 @@
 
 <script>
   var shareModal = document.getElementById('modalPollSharing')
-  var link = "https://sceglimeglio.azurewebsites.net/"
+  var link = "{{ request.get_host }}/";
   shareModal.addEventListener('show.bs.modal', event => {
       var button = event.relatedTarget
-      var pollType = button.getAttribute('data-bs-type')
-      var pollId = button.getAttribute('data-bs-poll')
-      var is_ended = button.getAttribute('data-bs-status')
       var text = document.getElementById('pollLink')
-      if (pollType == 'Giudizio maggioritario') {
-          pollType = 'majorityjudgment/'
-        } else {
-          pollType = 'singlepreference/'
-        }
-      console.log(is_ended)
-      if (is_ended == 'True') {
-          text.value = link + 'result/' + pollType + pollId + '/'
-        } else { 
-          text.value = link + 'vote/' + pollType + pollId + '/'
-        }
+      var pollCode = button.getAttribute('data-bs-code')
+      text.value = link + pollCode
   })
   shareModal.addEventListener('hide.bs.modal', event => {
     var text = document.getElementById('pollLink')

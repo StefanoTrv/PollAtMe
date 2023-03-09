@@ -110,7 +110,7 @@ def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Option
             mapping.save()
 
         return render(request, f'polls/{action}_poll_success.html', {
-            'poll' : saved_poll
+            'code' : mapping.code
         })
     else:
         return render(request, f'polls/create_poll/summary_and_options_{action}.html', {
