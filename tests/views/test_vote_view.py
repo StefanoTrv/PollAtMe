@@ -185,49 +185,31 @@ class TestCreateMajorityPreferenceView(TestCase):
         judgement: models.MajorityOpinionJudgement
         for judgement in last_vote.majorityopinionjudgement_set.all():
             self.assertEqual(judgement.grade,1)
-    
-    def test_creates_synthetic_single_preference_vote(self):
-        last_preference_old = models.SinglePreference.objects.last()
-        preference_count_old = len(models.SinglePreference.objects.all())
-        self.client.post(self.poll_url, {
-            'majorityopinionjudgement_set-TOTAL_FORMS': 5,
-            'majorityopinionjudgement_set-INITIAL_FORMS': 0,
-            'majorityopinionjudgement_set-MIN_NUM_FORMS': 5,
-            'majorityopinionjudgement_set-MAX_NUM_FORMS': 5,
-            'majorityopinionjudgement_set-0-grade': 5,
-            'majorityopinionjudgement_set-1-grade': 1,
-            'majorityopinionjudgement_set-2-grade': 1,
-            'majorityopinionjudgement_set-3-grade': 1,
-            'majorityopinionjudgement_set-4-grade': 1,
-        })
-
-        last_preference = models.SinglePreference.objects.last()
-        self.assertNotEqual(last_preference.id,last_preference_old.id)
-        assert_that(last_preference.synthetic).is_equal_to(True)
-        self.assertEqual(len(models.SinglePreference.objects.all()),preference_count_old+1)
-        assert_that(last_preference.alternative.id).is_equal_to(5)
         
     def test_revote(self):
-        self.client.post(self.poll_url, {
-            'majorityopinionjudgement_set-TOTAL_FORMS': 5,
+        poll_url = reverse('polls:vote_single_preference', args=[1])
+        resp = self.client.post(poll_url, {
+            'alternative' : 3,
+        })
+
+        synthetic_vote_id = models.MajorityPreference.objects.last().id
+        revote_url=reverse('polls:vote_MJ', args=[1])
+        resp = self.client.get(revote_url)
+        self.assertEqual(resp.status_code,200)
+        self.client.post(revote_url, {
+            'majorityopinionjudgement_set-TOTAL_FORMS': 4,
             'majorityopinionjudgement_set-INITIAL_FORMS': 0,
-            'majorityopinionjudgement_set-MIN_NUM_FORMS': 5,
-            'majorityopinionjudgement_set-MAX_NUM_FORMS': 5,
+            'majorityopinionjudgement_set-MIN_NUM_FORMS': 4,
+            'majorityopinionjudgement_set-MAX_NUM_FORMS': 4,
             'majorityopinionjudgement_set-0-grade': 1,
             'majorityopinionjudgement_set-1-grade': 1,
             'majorityopinionjudgement_set-2-grade': 5,
             'majorityopinionjudgement_set-3-grade': 1,
-            'majorityopinionjudgement_set-4-grade': 1,
-        })
-
-        synthetic_vote_id = models.SinglePreference.objects.last().id
-        revote_url=reverse('polls:vote_single_preference', args=[self.poll.pk])
-        resp = self.client.get(revote_url)
-        self.assertEqual(resp.status_code,200)
-        resp = self.client.post(revote_url, {
-            'alternative' : 5,
         })
         self.assertEqual(resp.status_code,200)
-        assert_that(models.SinglePreference.objects.filter(id=synthetic_vote_id)).is_empty()
-        assert_that(models.SinglePreference.objects.last().poll).is_equal_to(self.poll)
-        assert_that(models.SinglePreference.objects.last().alternative).is_equal_to(self.poll.alternative_set.first())
+        assert_that(models.MajorityPreference.objects.filter(id=synthetic_vote_id)).is_empty()
+        assert_that(models.MajorityPreference.objects.last().poll.pk).is_equal_to(1)
+        assert_that(models.MajorityPreference.objects.last().majorityopinionjudgement_set.all()[0].grade).is_equal_to(1)
+        assert_that(models.MajorityPreference.objects.last().majorityopinionjudgement_set.all()[1].grade).is_equal_to(1)
+        assert_that(models.MajorityPreference.objects.last().majorityopinionjudgement_set.all()[2].grade).is_equal_to(5)
+        assert_that(models.MajorityPreference.objects.last().majorityopinionjudgement_set.all()[3].grade).is_equal_to(1)

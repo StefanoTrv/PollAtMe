@@ -1,10 +1,12 @@
+import re
+
 from datetime import timedelta
 from django import forms
 from django.utils import timezone
 
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 
-from polls.models import Poll, Alternative
+from polls.models import Poll, Mapping, Alternative
 
 # Form per la pagina principale della pagina di creazione di nuovi sondaggi, contenente i dati principali
 class BaseAlternativeFormSet(forms.BaseModelFormSet):
@@ -69,27 +71,28 @@ class PollFormMain(forms.ModelForm):
         fields = ['title', 'default_type', 'text']
         labels = {
             'title': 'Titolo',
-            'default_type': 'Tipo di sondaggio',
+            'default_type': 'Tipo di scelta',
             'text': 'Testo'
         }
         error_messages = {
             'title': {
-                'required': 'Il testo del sondaggio non può essere vuoto.'
-            },
-            'text': {
-                'required': 'Il testo del sondaggio non può essere vuoto.'
+                'required': 'Il titolo della scelta non può essere vuoto.'
             }
         }
 
         widgets = {
             'title': forms.TextInput(attrs={
-                'placeholder': 'Inserisci il titolo del sondaggio'
+                'placeholder': 'Inserisci il titolo della scelta'
             }),
             'text': forms.Textarea(attrs={
                 'rows': 4,
-                'placeholder': 'Inserisci il testo della domanda del sondaggio'
+                'placeholder': 'Inserisci il testo della domanda della scelta (opzionale)'
             })
         }
+
+    def __init__(self, *args, **kwargs):
+        super(PollFormMain, self).__init__(*args, **kwargs)
+        self.fields['text'].required = False
 
 
 # Form per la seconda pagina della creazione di nuovi sondaggi, contenente opzioni secondarie
@@ -99,7 +102,8 @@ class PollFormAdditionalOptions(forms.ModelForm):
         fields = "__all__"
         labels = {
             'start': 'Data inizio votazioni',
-            'end': 'Data fine votazioni'
+            'end': 'Data fine votazioni',
+            'visibility': "Visibilità"
         } | PollFormMain.Meta.labels
 
         error_messages = {} | PollFormMain.Meta.error_messages
@@ -119,11 +123,21 @@ class PollFormAdditionalOptions(forms.ModelForm):
             'text': forms.Textarea(attrs={
                 'style': 'resize: none;',
                 'rows': 4
-            })
+            }),
+            'visibility': forms.RadioSelect(
+                choices=[
+                    ('1', 'Nascosto'),
+                    ('2', 'Pubblico'),
+                ],
+                attrs={
+                    'class': 'btn-check'
+                }
+            ),
         }
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+        self.fields['text'].required = False
         
         for f_name in self.fields:
             if f_name in PollFormMain.Meta.fields:
@@ -143,10 +157,51 @@ class PollFormAdditionalOptions(forms.ModelForm):
 
         # il sondaggio deve iniziare almeno 5 minuti da adesso
         if start - now < timedelta(minutes=5):
-            self.add_error('start', 'Il sondaggio deve iniziare almeno 5 minuti da adesso')
+            self.add_error('start', 'La scelta deve iniziare almeno 5 minuti da adesso')
 
         # il sondaggio deve durare almeno 15 minuti
         if end - start < timedelta(minutes=15):
-            self.add_error('end', 'Il sondaggio deve durare almeno 15 minuti')
+            self.add_error('end', 'La scelta deve durare almeno 15 minuti')
 
         return self.cleaned_data
+
+
+class PollMappingForm(forms.ModelForm):
+    class Meta:
+        model = Mapping
+        fields = ['code']
+        labels = {
+            'code': 'Codice link personalizzato'
+        }
+
+        widgets = {
+            'code': forms.Textarea(attrs={
+                'style': 'resize: none;',
+                'rows': 1
+            })
+        }
+
+    def clean(self):
+        if self.errors:
+            return
+
+        form_code = self.cleaned_data['code']
+
+        #controlliamo se il codice rispetta il vincolo sulla forma
+        if not self._code_is_valid(self.cleaned_data['code']):
+            self.add_error('code', 'Questo codice non è valido')
+
+        elif Mapping.objects.filter(code=form_code).count() > 0:
+            self.add_error('code', 'Questo codice è già stato utilizzato, prova un altro')
+
+        #se nullo generiamo un codice
+        elif not self.cleaned_data['code']:
+            self.cleaned_data['code'] = Mapping.generate_code()
+
+        return self.cleaned_data
+    
+    def _code_is_valid(self, code):
+        pattern = re.compile("([a-z]|[A-Z]|\d)*")
+        result = bool(pattern.fullmatch(code))
+        return result
+    

@@ -19,7 +19,7 @@
                                         <button class="btn btn-block btn-primary mb-4"> Torna alla HOME </button>
                                     </form>
                                     <form action={% url 'polls:result' id=poll.id %}>
-                                        <button class="btn btn-block btn-primary mb-4"> Risultati sondaggio </button>
+                                        <button class="btn btn-block btn-primary mb-4"> Risultati scelta </button>
                                     </form>
                                 </div>
                             </div>
@@ -28,11 +28,11 @@
                 </div>
                 <div class="col-3">
                 </div>
+                {% if poll.get_type == "Preferenza singola" %}
                 <div class="col-6">
                     <div class="card">
                                 <div class="card-body">
                                     <h5 class="text-center">Vuoi esprimere la tua preferenza con un metodo diverso?</h5>
-                                    {% if poll.get_type == "Preferenza singola" %}
                                         <form action={% url 'polls:vote_MJ' id=poll.id %} class="text-center">
                                             <button class="btn btn-block btn-primary mb-4"> Vota di nuovo con il giudizio maggioritario </button>
                                         </form>
@@ -44,16 +44,10 @@
                                         <form action={% url 'polls:explain_gm' %} class="text-center">
                                             <button class="btn btn-link">Scopri di più sul giudizio maggioritario</button>
                                         </form>
-                                    {% else %}
-                                        <form action={% url 'polls:vote_single_preference' id=poll.id %} class="text-center">
-                                            <button class="btn btn-block btn-primary mb-4"> Vota di nuovo con la preferenza singola</button>
-                                        </form>
-                                            <p class="card-text m-2 text-left">La <b>preferenza singola</b> è il metodo di scelta molto semplice in cui ogni votante esprime la sua alternativa preferita e l'alternativa con più voti vince.
-                                            </p>
-                                    {% endif %}
                                 </div>
                     </div>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -16,6 +16,7 @@ class IndexViewTest(TestCase):
             text = "Sondaggio di prova",
             start = timezone.now(), 
             end = timezone.now() + timedelta(weeks=1),
+            visibility = Poll.PollVisibility.PUBLIC,
             author=self.u
         )
         self.poll.save()

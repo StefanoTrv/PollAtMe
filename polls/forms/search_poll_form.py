@@ -20,7 +20,7 @@ class SearchPollForm(forms.Form):
         required=False
     )
     range_start_a = forms.DateTimeField(
-        label='Data inizio sondaggio da',
+        label='Data inizio scelta da',
         required=False,
         widget=widgets.DatePickerInput(
             options={
@@ -30,7 +30,7 @@ class SearchPollForm(forms.Form):
         error_messages=ERROR_MESSAGES
     )
     range_start_b = forms.DateTimeField(
-        label='Data inizio sondaggio a',
+        label='Data inizio scelta a',
         required=False,
         widget=widgets.DatePickerInput(
             options={
@@ -41,7 +41,7 @@ class SearchPollForm(forms.Form):
         error_messages=ERROR_MESSAGES
     )
     range_end_a = forms.DateTimeField(
-        label='Data fine sondaggio da',
+        label='Data fine scelta da',
         required=False,
         widget=widgets.DatePickerInput(
             options={
@@ -51,7 +51,7 @@ class SearchPollForm(forms.Form):
         error_messages=ERROR_MESSAGES
     )
     range_end_b = forms.DateTimeField(
-        label='Data fine sondaggio a',
+        label='Data fine scelta a',
         required=False,
         widget=widgets.DatePickerInput(
             options={
@@ -73,7 +73,7 @@ class SearchPollForm(forms.Form):
     )
     type = forms.TypedChoiceField(
         coerce=int,
-        label="Tipo di sondaggio",
+        label="Tipo di scelta",
         required=False,
         choices=[(None, '-------'), *Poll.PollType.choices]
     )
@@ -101,6 +101,8 @@ class SearchPollForm(forms.Form):
     
     def to_query(self) -> SearchPollQueryBuilder:
         builder = SearchPollQueryBuilder()
+
+        builder.public_filter()
 
         if self.cleaned_data['title'] != '':
             builder.title_filter(self.cleaned_data['title'])

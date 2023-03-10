@@ -30,7 +30,7 @@ class TestPollDeleteView(TestCase):
             reverse('polls:delete_poll', kwargs={'pk': poll_id}),
         )
 
-        assert_that(response.url).is_equal_to(reverse('polls:index'))
+        assert_that(response.url).is_equal_to(reverse('polls:personal_polls'))
         assert_that(Poll.objects.get).raises(ObjectDoesNotExist).when_called_with(pk=poll_id)
         assert_that(Alternative.objects.filter(poll=poll_id)).is_length(0)
 

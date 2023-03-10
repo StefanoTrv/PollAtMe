@@ -19,7 +19,7 @@
                         </div>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><i class="feather icon-home"></i></li>
-                            <li class="breadcrumb-item"> Crea un sondaggio </li>
+                            <li class="breadcrumb-item"> Crea una scelta </li>
                         </ul>
                     </div>
                 </div>
@@ -36,7 +36,6 @@
                             {% bootstrap_field form.title %}
                             {% bootstrap_field form.default_type %}
                             {% bootstrap_field form.text %}
-
                             <div class="mb-3">
                                 <label class="form-label">Alternative</label>
                                 <ul class="list-group">
@@ -51,9 +50,38 @@
                 <div class="col-sm-12 col-xl-6">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="card-title">Opzioni avanzate</h4>
+                            <h4 class="card-title">Data votazioni</h4>
                             {% bootstrap_field form.start %}
                             {% bootstrap_field form.end %}
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Altre opzioni</h4>
+                            <p>{{ form.visibility.label }}</p>
+                            <div class="d-grid gap-2 d-xl-flex justify-content-xl-center flex-xl-fill {% if f.errors %}is-invalid{% endif %}">
+                                {% for radio in form.visibility %}
+                                    {{ radio.tag }}
+                                    <label class="{% if f.errors %}btn btn-outline-danger is-invalid{% else %}btn btn-outline-secondary{% endif %} w-100" for="{{ radio.id_for_label }}" onclick="switchAlert()">{{ radio.choice_label }}</label>
+                                {% endfor %}
+                            </div>
+                            <br>
+                            <div class="alert alert-info" role="alert" id="public_alert_id" {% if form.visibility.value == 2 %} style="display: none" {%else%} style="display: block" {%endif%} >
+								<b>Pubblico</b>: le scelte saranno mostrate sia nella pagina principale sia durante la ricerca, tutti potranno votare ed accedere ai risultati.
+                            </div>
+                            <div class="alert alert-info" role="alert" id="hidden_alert_id" {% if form.visibility.value == 1 %} style="display: none" {%else%} style="display: block" {%endif%}>
+                                <b>Nascosto</b>: le scelte <b>non</b> saranno visibili né nella pagina principale né durante la ricerca, l'accesso sarà possibile solamente a chi possiede il link.<br>
+							</div>
+                            <br>
+                            <hr>
+                            <br>
+                            <!-- {% bootstrap_field form.visibility %} -->
+                            {% bootstrap_field mapping_form.code %}
+                            <div class="alert alert-info" role="alert">
+								Seleziona un codice composto da maiuscole, minuscole e cifre decimali per identificare la scelta. Se lasciato vuoto ne verrà generao uno <b>automaticamente</b>!<br>
+                                Il codice viene utilizzato per genarare un link personalizzato alla scelta secondo il template:<br><br>
+                                <p class="text-center"> <i>{{ request.get_host }}/"Codice" </i></p> 
+							</div>
                         </div>
                     </div>
                 </div>
@@ -88,5 +116,27 @@
         document.querySelector("#{{ form.default_type.auto_id }}").removeAttribute('disabled')
     }
 </script>
+
+<script>
+
+    var public_alert = document.getElementById(`public_alert_id`)
+    var hidden_alert = document.getElementById(`hidden_alert_id`)
+
+    function switchAlert(){
+        if(public_alert.style.display == "none"){
+            public_alert.style.display = "block";
+        }else{
+            public_alert.style.display = "none";
+        }
+
+        if(hidden_alert.style.display == "none"){
+            hidden_alert.style.display = "block";
+        }else{
+            hidden_alert.style.display = "none";
+        }
+    }
+
+</script>
+
 {% include 'polls/includes/lock_sidebar.html' with id_modal='exampleModal' %}
 {% endblock javascripts%}

@@ -16,6 +16,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 
 POLL_DOES_NOT_EXISTS_MSG = "Il sondaggio cercato non esiste"
+WRONG_POLL_TYPE_MSG = "Il sondaggio non è a preferenza singola, quindi non sono disponibili risultati di questo tipo."
 
 # se si accede alla pagina dei risultati generica, si viene reindirizzati alla pagina dei risultati del metodo principale
 def result_redirect_view(request, id):
@@ -55,10 +56,9 @@ class SinglePreferenceResultView(_ResultView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         poll = SearchPollService().search_by_id(self.kwargs['id'])
-        include_synthetic=True
-        if('include_synthetic' in self.kwargs):
-            include_synthetic= self.kwargs['include_synthetic']!="realonly"
-        results = SinglePreferencePollResultsService().set_poll(poll).as_list(include_synthetic=include_synthetic)
+        if(poll.get_type()!="Preferenza singola"): # 404 se il tipo del sondaggio non è preferenza singola
+            raise http.Http404(WRONG_POLL_TYPE_MSG)
+        results = SinglePreferencePollResultsService().set_poll(poll).as_list()
 
         tot_votes = sum([votes['count'] for votes in results])
         for res in results:
@@ -71,7 +71,6 @@ class SinglePreferenceResultView(_ResultView):
         context['unique_winner'] = results[0]['position'] != results[1]['position']
         context['poll'] = poll
         context['responses_count']=tot_votes
-        context['include_synthetic']=include_synthetic
 
         return context
     
