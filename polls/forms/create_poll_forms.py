@@ -1,10 +1,12 @@
+import re
+
 from datetime import timedelta
 from django import forms
 from django.utils import timezone
 
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 
-from polls.models import Poll, Alternative
+from polls.models import Poll, Mapping, Alternative
 
 # Form per la pagina principale della pagina di creazione di nuovi sondaggi, contenente i dati principali
 class BaseAlternativeFormSet(forms.BaseModelFormSet):
@@ -75,9 +77,6 @@ class PollFormMain(forms.ModelForm):
         error_messages = {
             'title': {
                 'required': 'Il titolo della scelta non può essere vuoto.'
-            },
-            'text': {
-                'required': 'Il testo della scelta non può essere vuoto.'
             }
         }
 
@@ -87,9 +86,13 @@ class PollFormMain(forms.ModelForm):
             }),
             'text': forms.Textarea(attrs={
                 'rows': 4,
-                'placeholder': 'Inserisci il testo della domanda della scelta'
+                'placeholder': 'Inserisci il testo della domanda della scelta (opzionale)'
             })
         }
+
+    def __init__(self, *args, **kwargs):
+        super(PollFormMain, self).__init__(*args, **kwargs)
+        self.fields['text'].required = False
 
 
 # Form per la seconda pagina della creazione di nuovi sondaggi, contenente opzioni secondarie
@@ -134,6 +137,7 @@ class PollFormAdditionalOptions(forms.ModelForm):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+        self.fields['text'].required = False
         
         for f_name in self.fields:
             if f_name in PollFormMain.Meta.fields:
@@ -160,3 +164,44 @@ class PollFormAdditionalOptions(forms.ModelForm):
             self.add_error('end', 'La scelta deve durare almeno 15 minuti')
 
         return self.cleaned_data
+
+
+class PollMappingForm(forms.ModelForm):
+    class Meta:
+        model = Mapping
+        fields = ['code']
+        labels = {
+            'code': 'Codice link personalizzato'
+        }
+
+        widgets = {
+            'code': forms.Textarea(attrs={
+                'style': 'resize: none;',
+                'rows': 1
+            })
+        }
+
+    def clean(self):
+        if self.errors:
+            return
+
+        form_code = self.cleaned_data['code']
+
+        #controlliamo se il codice rispetta il vincolo sulla forma
+        if not self._code_is_valid(self.cleaned_data['code']):
+            self.add_error('code', 'Questo codice non è valido')
+
+        elif Mapping.objects.filter(code=form_code).count() > 0:
+            self.add_error('code', 'Questo codice è già stato utilizzato, prova un altro')
+
+        #se nullo generiamo un codice
+        elif not self.cleaned_data['code']:
+            self.cleaned_data['code'] = Mapping.generate_code()
+
+        return self.cleaned_data
+    
+    def _code_is_valid(self, code):
+        pattern = re.compile("([a-z]|[A-Z]|\d)*")
+        result = bool(pattern.fullmatch(code))
+        return result
+    

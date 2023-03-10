@@ -39,11 +39,7 @@
                                     <button type="button" class="btn btn-block btn-primary" onclick="copyText()"> 
                                         <em class="feather icon-copy"></em> 
                                     </button>
-                                    {% if poll.get_type == 'Giudizio maggioritario' %}
-                                        <input type="text" class="form-control" id="pollLink" value="https://sceglimeglio.azurewebsites.net/vote/majorityjudgment/{{poll.id}}">
-                                    {% else %}
-                                        <input type="text" class="form-control" id="pollLink" value="https://sceglimeglio.azurewebsites.net/vote/singlepreference/{{poll.id}}">
-                                    {% endif %}
+                                    <input type="text" class="form-control" id="pollLink" value="{{ request.get_host }}/{{code}}">
                                 </div>
                                 <!--
                                 <br>

@@ -1,3 +1,4 @@
+from datetime import timedelta
 from assertpy import assert_that  # type: ignore
 from django.contrib.auth.models import User
 from django.test import TestCase
@@ -5,7 +6,9 @@ from django.utils import timezone
 
 from polls.forms import (BaseAlternativeFormSet, PollFormAdditionalOptions,
                          PollFormMain)
+from polls.forms.create_poll_forms import PollMappingForm
 from polls.models import Alternative, Poll
+from polls.models.mapping import Mapping
 
 
 class TestBaseAlternativeFormSet(TestCase):
@@ -21,6 +24,7 @@ class TestBaseAlternativeFormSet(TestCase):
         p.alternative_set.create(text='Lorem')
         p.alternative_set.create(text='ipsum')
         p.alternative_set.create(text='dolor')
+
 
     def test_form_vuoto(self):
         formset = BaseAlternativeFormSet.get_formset_class()(
@@ -186,7 +190,7 @@ class TestPollFormMain(TestCase):
     def test_errore(self):
         form = PollFormMain({})
         assert_that(form.is_valid()).is_false()
-        assert_that(form.errors).is_length(3)
+        assert_that(form.errors).is_length(2)
     
     def test_corretto(self):
         form = PollFormMain({'title': 'Lorem', 'text': 'ipsum', 'default_type': 1})
@@ -200,11 +204,35 @@ class TestPollFormMain(TestCase):
 class TestPollFormAdditionalOptions(TestCase):
     def setUp(self) -> None:
         self.u = User.objects.create_user(username="test")
+        self.poll =  Poll(
+            title="Sondaggio in attesa", 
+            text = "Sondaggio in attesa",
+            start = timezone.now() + timedelta(days=1), 
+            end = timezone.now() + timedelta(weeks=1),
+            visibility = Poll.PollVisibility.PUBLIC,
+            author=self.u
+        )
+        self.poll2 =  Poll(
+            title="Sondaggio in attesa 2", 
+            text = "Sondaggio in attesa 2",
+            start = timezone.now() + timedelta(days=1), 
+            end = timezone.now() + timedelta(weeks=1),
+            visibility = Poll.PollVisibility.PUBLIC,
+            author=self.u
+        )
+        self.poll.save()
+        self.poll2.save()
+
+        Mapping(
+            poll = self.poll2,
+            code = "CodiceTest"
+        ).save()
+        
 
     def test_errore(self):
         form = PollFormAdditionalOptions({})
         assert_that(form.is_valid()).is_false()
-        assert_that(form.errors).is_length(7)
+        assert_that(form.errors).is_length(6)
     
     def test_fine_precedente_inizio(self):
         form = PollFormAdditionalOptions({
@@ -247,3 +275,35 @@ class TestPollFormAdditionalOptions(TestCase):
 
         assert_that(form.has_error('end')).is_true()
         assert_that(form.has_error('start')).is_false()
+
+    def test_codice_non_valido(self):
+        codeForm = PollMappingForm(
+            {
+                'poll' : self.poll,
+                'code' : "...++a"
+            }
+        )
+
+        assert_that(codeForm.has_error('code')).is_true()
+
+    def test_codice_valido(self):
+        codeForm = PollMappingForm(
+            {
+                'poll' : self.poll,
+                'code' : "00aaAAp9jJ"
+            }
+        )
+
+        assert_that(codeForm.has_error('code')).is_false()
+
+    def test_no_duplicazioni_codice(self):
+
+        codeForm = PollMappingForm(
+            {
+                'poll' : self.poll2,
+                'code' : "CodiceTest"
+            }
+        )
+
+        assert_that(codeForm.has_error('code')).is_true()
+

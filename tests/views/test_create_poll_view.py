@@ -1,4 +1,5 @@
 from datetime import timedelta
+import re
 
 from django.test import TestCase
 from django.urls import reverse
@@ -9,6 +10,7 @@ from django.contrib.auth.models import User
 
 from polls.models import Poll, Alternative
 from polls.forms import PollFormMain, PollFormAdditionalOptions, BaseAlternativeFormSet
+from polls.models.mapping import Mapping
 
 class CreatePollViewTest(TestCase):
     
@@ -131,3 +133,89 @@ class CreatePollViewTest(TestCase):
         assert_that(response.status_code).is_equal_to(200)
         self.assertTemplateUsed(response, 'polls/create_poll/main_page_create.html')
         self.assertContains(response,'Lorem ipsum')
+
+
+    def test_aggiunta_poll_custom_code(self):
+        step_1_data = {
+            'title': 'Lorem ipsum',
+            'text': 'dolor sit amet',
+            'default_type': 1,
+            'form-TOTAL_FORMS': 2,
+            'form-INITIAL_FORMS': 0,
+            'form-MIN_NUM_FORMS': 2,
+            'form-MAX_NUM_FORMS': 10,
+            'form-0-text': 'lorem',
+            'form-0-id': '',
+            'form-0-DELETE': '',
+            'form-1-text': 'ipsum',
+            'form-1-id': '',
+            'form-1-DELETE': '',
+        }
+        response = self.client.post(self.url, data=step_1_data | {'summary': ''})
+        assert_that(response.status_code).is_equal_to(200)
+        self.assertTemplateUsed('polls/create_poll/summary_and_options_create.html')
+
+        now = timezone.localtime(timezone.now())
+
+        step_2_data = step_1_data | {
+            'start': (now + timedelta(minutes=20)).strftime('%Y-%m-%d %H:%M:%S'),
+            'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
+            'author': self.u.id,
+            'visibility': 1,
+            'save': '',
+            'code': 'TestCode',
+        }
+
+        response = self.client.post(self.url, data=step_2_data)
+        assert_that(response.status_code).is_equal_to(200)
+
+        #testiamo che sia stato salvato il mapping
+        assert_that(Mapping.objects.filter(code='TestCode').count()).is_equal_to(1)
+
+
+
+    def test_aggiunta_poll_automatic_code(self):
+        step_1_data = {
+            'title': 'Lorem ipsum',
+            'text': 'dolor sit amet',
+            'default_type': 1,
+            'form-TOTAL_FORMS': 2,
+            'form-INITIAL_FORMS': 0,
+            'form-MIN_NUM_FORMS': 2,
+            'form-MAX_NUM_FORMS': 10,
+            'form-0-text': 'lorem',
+            'form-0-id': '',
+            'form-0-DELETE': '',
+            'form-1-text': 'ipsum',
+            'form-1-id': '',
+            'form-1-DELETE': '',
+        }
+        response = self.client.post(self.url, data=step_1_data | {'summary': ''})
+        assert_that(response.status_code).is_equal_to(200)
+        self.assertTemplateUsed('polls/create_poll/summary_and_options_create.html')
+
+        now = timezone.localtime(timezone.now())
+
+        step_2_data = step_1_data | {
+            'start': (now + timedelta(minutes=20)).strftime('%Y-%m-%d %H:%M:%S'),
+            'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
+            'author': self.u.id,
+            'visibility': 1,
+            'save': '',
+            'code': '',
+        }
+
+        response = self.client.post(self.url, data=step_2_data)
+        assert_that(response.status_code).is_equal_to(200)
+
+        #testiamo che sia stato salvato il mapping
+
+        poll_created = Poll.objects.filter(title = 'Lorem ipsum').get()
+
+        #viene creato il mapping
+        assert_that(Mapping.objects.filter(poll=poll_created).count()).is_equal_to(1)
+
+        #viene generato un codice alfanumerico lungo 6
+        code = Mapping.objects.filter(poll=poll_created).get().code
+        result = bool((re.compile("([a-z]|[A-Z]|\d)*")).fullmatch(code)) and (len(code) == 6)
+        assert_that(result).is_true()
