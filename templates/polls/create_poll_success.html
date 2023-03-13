@@ -11,10 +11,13 @@
                     <div class="card-body">
                         <h5>Perfetto! La tua scelta è stata creata.</h5>
                         <br>
-                        <a class="btn btn-block btn-primary mb-4" href="/" data-bs-toggle="tooltip" data-bs-placement="top" title="" data-bs-original-title="Torna alla home">
+                        <a class="btn btn-block btn-primary mb-4" href="/" data-bs-toggle="tooltip"
+                            data-bs-placement="top" title="" data-bs-original-title="Torna alla home">
                             Torna alla home
                         </a>
-                        <a class="btn btn-block btn-secondary mb-4" href="{% url 'polls:personal_polls' %}" data-bs-toggle="tooltip" data-bs-placement="top" title="" data-bs-original-title="Sondaggi personali">
+                        <a class="btn btn-block btn-secondary mb-4" href="{% url 'polls:personal_polls' %}"
+                            data-bs-toggle="tooltip" data-bs-placement="top" title=""
+                            data-bs-original-title="Sondaggi personali">
                             Scelte personali
                         </a>
                     </div>
@@ -22,44 +25,42 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-3 xl-3"></div>
-            <div class="col-md-6 xl-6">
-                <div class="card">
-                    <div class="row align-items-center text-center">
-                        <div class="col-md-12">
-                            <div class="card-header">
-                                <h4>Vuoi condividere la scelta?</h4>
-                            </div>
-                            <div class="card-body">
-                                <p>
-                                    Puoi condividere la scelta appena creata, tuttavia gli utenti se proveranno a votare, otterranno un messaggio d'errore fino a quando le votazioni non saranno 
-                                    partite. Puoi condividere la scelta copiando il link sottostante
-                                </p>
-                                <div class="input-group mb-3">
-                                    <button type="button" class="btn btn-block btn-primary" onclick="copyText()"> 
-                                        <em class="feather icon-copy"></em> 
-                                    </button>
-                                    <input type="text" class="form-control" id="pollLink" value="{{ request.get_host }}/{{code}}">
-                                </div>
-                                <!--
-                                <br>
-                                <p> Oppure attraverso le seguenti piattaforme social </p>
-                                <a href="#" class="me-4">
-                                    <em class="fab fa-facebook fa-4x" style="color: #3b5998;"></em>
-                                </a>
-                                <a href="#" class="me-4">
-                                    <em class="fab fa-twitter fa-4x" style="color: #55acee;"></em>
-                                </a>
-                                <a href="#" class="me-4">
-                                    <em class="fab fa-instagram fa-4x" style="color: #ac2bac;"></em>
-                                </a>
-                                --->
-                            </div>
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <div class="card align-items-center text-center">
+                    <div class="card-header">
+                        <h4>Vuoi condividere la scelta?</h4>
+                    </div>
+                    <div class="card-body">
+                        <p>
+                            Puoi condividere la scelta appena creata, tuttavia gli utenti se proveranno a votare,
+                            otterranno un messaggio d'errore fino a quando le votazioni non saranno
+                            partite. Puoi condividere la scelta copiando il link sottostante
+                        </p>
+                        <div class="input-group mb-3">
+                            <button type="button" class="btn btn-block btn-primary" onclick="copyText()">
+                                <em class="feather icon-copy"></em>
+                            </button>
+                            <input type="text" class="form-control" id="pollLink"
+                                value="{{ request.get_host }}/{{code}}">
                         </div>
+                        <!--
+                        <br>
+                        <p> Oppure attraverso le seguenti piattaforme social </p>
+                        <a href="#" class="me-4">
+                            <em class="fab fa-facebook fa-4x" style="color: #3b5998;"></em>
+                        </a>
+                        <a href="#" class="me-4">
+                            <em class="fab fa-twitter fa-4x" style="color: #55acee;"></em>
+                        </a>
+                        <a href="#" class="me-4">
+                            <em class="fab fa-instagram fa-4x" style="color: #ac2bac;"></em>
+                        </a>
+                        --->
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 xl-3"></div>
+            <div class="col-md-3"></div>
         </div>
     </div>
 </div>
@@ -68,12 +69,12 @@
 {% block javascripts %}
 <script>
     function copyText() {
-      var input = document.getElementById('pollLink');
-      input.select();
-      document.execCommand('copy');
-      setTimeout(function(){
-        window.getSelection().removeAllRanges();
-      }, 1500);
+        var input = document.getElementById('pollLink');
+        input.select();
+        document.execCommand('copy');
+        setTimeout(function () {
+            window.getSelection().removeAllRanges();
+        }, 1500);
     }
 </script>
 {% endblock javascripts %}

@@ -83,10 +83,20 @@ def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Option
     form = PollFormAdditionalOptions(request.POST, instance=poll)
     formset_alternatives: BaseAlternativeFormSet = ALTERNATIVE_FORMSET(
         request.session[action]['alternatives'], queryset=alternatives)
-    form_mapping: PollMappingForm = PollMappingForm(request.POST)
+    
+    if poll is None:
+        mapping = None
+    else:
+        mapping = poll.mapping_set.first()
+
+    form_mapping: PollMappingForm = PollMappingForm(request.POST, instance=mapping)
 
     if form.is_valid() and formset_alternatives.is_valid() and form_mapping.is_valid():
         saved_poll = form.save()
+
+        saved_mapping = form_mapping.save(commit=False)
+        saved_mapping.poll = saved_poll
+        saved_mapping.save()
 
         formset_alternatives.save(commit=False)
         for alt in formset_alternatives.new_objects:
@@ -99,18 +109,8 @@ def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Option
         for alt in formset_alternatives.deleted_objects:
             alt.delete()
 
-        if Mapping.objects.filter(poll=poll).count() > 0:
-                existing_mapping = Mapping.objects.filter(poll=poll).get()
-                existing_mapping.code = form_mapping.cleaned_data['code']
-                existing_mapping.save()
-            
-        else:
-            mapping = form_mapping.save(commit=False)
-            mapping.poll = saved_poll
-            mapping.save()
-
         return render(request, f'polls/{action}_poll_success.html', {
-            'code' : mapping.code
+            'code' : saved_mapping.code
         })
     else:
         return render(request, f'polls/create_poll/summary_and_options_{action}.html', {

@@ -3,52 +3,58 @@
 {% block title %} {{block.super}} | Grazie per la risposta! {% endblock title %}
 
 {% block content %}
-    <div class="pcoded-main-container">
-        <div class="pcoded-content">
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="row align-items-center text-center">
-                            <div class="col-md-12">
-                                <div class="card-body">
-                                    <h1>Grazie!</h1>
-                                    <br>
-                                    <h5>La tua risposta è stata registrata!</h5>
-                                    <br>
-                                    <form action="/">
-                                        <button class="btn btn-block btn-primary mb-4"> Torna alla HOME </button>
-                                    </form>
-                                    <form action={% url 'polls:result' id=poll.id %}>
-                                        <button class="btn btn-block btn-primary mb-4"> Risultati scelta </button>
-                                    </form>
-                                </div>
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="row align-items-center text-center">
+                        <div class="col-md-12">
+                            <div class="card-body">
+                                <h1>Grazie!</h1>
+                                <br>
+                                <h5>La tua risposta è stata registrata!</h5>
+                                <br>
+                                <form action="/">
+                                    <button class="btn btn-block btn-primary mb-4"> Torna alla HOME </button>
+                                </form>
+                                <form action={% url 'polls:result' id=poll.id %}>
+                                    <button class="btn btn-block btn-primary mb-4"> Risultati scelta </button>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-3">
-                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3"></div>
                 {% if poll.get_type == "Preferenza singola" %}
-                <div class="col-6">
+                <div class="col-md-6 col-sm-12">
                     <div class="card">
-                                <div class="card-body">
-                                    <h5 class="text-center">Vuoi esprimere la tua preferenza con un metodo diverso?</h5>
-                                        <form action={% url 'polls:vote_MJ' id=poll.id %} class="text-center">
-                                            <button class="btn btn-block btn-primary mb-4"> Vota di nuovo con il giudizio maggioritario </button>
-                                        </form>
-                                            <p class="card-text m-2 text-left">Il <b>giudizio maggioritario</b> è un metodo di scelta in cui ogni votante esprime un giudizio per ogni alternativa.
-                                                I giudizi non sono numerici, ma sono delle valutazioni come "<i>ottimo</i>", "<i>buono</i>", "<i>sufficiente</i>", "<i>scarso</i>" o "<i>pessimo</i>".
-                                                Al termine del voto, vengono combinate le valutazioni di tutti i votanti per ottenere un giudizio complessivo per ogni alternativa.
-                                                Vince l'alternativa con il giudizio complessivo migliore.
-                                            </p>
-                                        <form action={% url 'polls:explain_gm' %} class="text-center">
-                                            <button class="btn btn-link">Scopri di più sul giudizio maggioritario</button>
-                                        </form>
-                                </div>
+                        <div class="card-body">
+                            <h5 class="text-center">Vuoi esprimere la tua preferenza con un metodo diverso?</h5>
+                            <form action={% url 'polls:vote_MJ' id=poll.id %} class="text-center">
+                                <button class="btn btn-block btn-primary mb-4"> Vota di nuovo con il giudizio maggioritario
+                                </button>
+                            </form>
+                            <p class="card-text m-2 text-left">Il <b>giudizio maggioritario</b> è un metodo di scelta in cui
+                                ogni votante esprime un giudizio per ogni alternativa.
+                                I giudizi non sono numerici, ma sono delle valutazioni come "<i>ottimo</i>", "<i>buono</i>",
+                                "<i>sufficiente</i>", "<i>scarso</i>" o "<i>pessimo</i>".
+                                Al termine del voto, vengono combinate le valutazioni di tutti i votanti per ottenere un
+                                giudizio complessivo per ogni alternativa.
+                                Vince l'alternativa con il giudizio complessivo migliore.
+                            </p>
+                            <form action={% url 'polls:explain_gm' %} class="text-center">
+                                <button class="btn btn-link">Scopri di più sul giudizio maggioritario</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
-                {% endif %}
+                <div class="col-md-3"></div>
             </div>
+            {% endif %}
         </div>
     </div>
+</div>
 {% endblock content %}
