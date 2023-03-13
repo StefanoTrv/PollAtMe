@@ -181,24 +181,24 @@ class PollMappingForm(forms.ModelForm):
             })
         }
 
-    def clean(self):
-        if self.errors:
-            return
+        error_messages = {
+            'code': {
+                'unique': 'Questo codice è già stato utilizzato, prova un altro'
+            }
+        }
 
+    def clean_code(self):
         form_code = self.cleaned_data['code']
 
         #controlliamo se il codice rispetta il vincolo sulla forma
         if not self._code_is_valid(self.cleaned_data['code']):
             self.add_error('code', 'Questo codice non è valido')
 
-        elif Mapping.objects.filter(code=form_code).count() > 0:
-            self.add_error('code', 'Questo codice è già stato utilizzato, prova un altro')
-
         #se nullo generiamo un codice
-        elif not self.cleaned_data['code']:
-            self.cleaned_data['code'] = Mapping.generate_code()
+        if form_code == '':
+            form_code = Mapping.generate_code()
 
-        return self.cleaned_data
+        return form_code
     
     def _code_is_valid(self, code):
         pattern = re.compile("([a-z]|[A-Z]|\d)*")
