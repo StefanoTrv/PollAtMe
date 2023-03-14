@@ -23,6 +23,7 @@ class TestPollEditView(TestCase):
         self.poll.alternative_set.create(text='Alternativa di prova 1')
         self.poll.alternative_set.create(text='Alternativa di prova 2')
         self.poll.visibility = 1
+        self.poll.mapping_set.create(code="lorem")
 
         self.client.login(username='test', password='test')
     
@@ -98,6 +99,7 @@ class TestPollEditView(TestCase):
         assert_that(last_poll.text).is_equal_to(data['text'])
         assert_that(last_poll.alternative_set.count()).is_equal_to(2)
         assert_that(last_poll.visibility).is_equal_to(2)
+        assert_that(last_poll.mapping_set.first().code).is_not_equal_to('Lorem').is_length(6)
 
         alternatives = last_poll.alternative_set.all()
         expected_texts = ['Alternativa di prova 2', 'Alternativa di prova 3']
@@ -154,3 +156,4 @@ class TestPollEditView(TestCase):
         
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, 403)
+

@@ -107,7 +107,7 @@ class PollFormAdditionalOptions(forms.ModelForm):
         } | PollFormMain.Meta.labels
 
         error_messages = {} | PollFormMain.Meta.error_messages
-        
+
         widgets = {
             'author': forms.HiddenInput(),
             'start': DateTimePickerInput(
@@ -122,7 +122,8 @@ class PollFormAdditionalOptions(forms.ModelForm):
             ),
             'text': forms.Textarea(attrs={
                 'style': 'resize: none;',
-                'rows': 4
+                'rows': 4,
+                'placeholder': 'Il testo della scelta non è stato inserito'
             }),
             'visibility': forms.RadioSelect(
                 choices=[
@@ -172,13 +173,6 @@ class PollMappingForm(forms.ModelForm):
         fields = ['code']
         labels = {
             'code': 'Codice link personalizzato'
-        }
-
-        widgets = {
-            'code': forms.Textarea(attrs={
-                'style': 'resize: none;',
-                'rows': 1
-            })
         }
 
         error_messages = {
