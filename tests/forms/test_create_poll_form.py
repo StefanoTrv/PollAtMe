@@ -276,34 +276,32 @@ class TestPollFormAdditionalOptions(TestCase):
         assert_that(form.has_error('end')).is_true()
         assert_that(form.has_error('start')).is_false()
 
-    def test_codice_non_valido(self):
-        codeForm = PollMappingForm(
-            {
-                'poll' : self.poll,
-                'code' : "...++a"
-            }
-        )
-
-        assert_that(codeForm.has_error('code')).is_true()
-
+class TestPollMappingForm(TestCase):
+    def test_empty(self):
+        form = PollMappingForm({})
+        assert_that(form.is_valid()).is_true()
+        assert_that(form.cleaned_data['code']).is_length(6)
+    
     def test_codice_valido(self):
-        codeForm = PollMappingForm(
-            {
-                'poll' : self.poll,
-                'code' : "00aaAAp9jJ"
-            }
+        form = PollMappingForm({'code': 'CodiceTest'})
+        assert_that(form.is_valid()).is_true()
+        assert_that(form.cleaned_data['code']).is_equal_to('CodiceTest')
+    
+    def test_codice_non_valido(self):
+        form = PollMappingForm({'code': "...++a"})
+        assert_that(form.is_valid()).is_false()
+        assert_that(form.errors).contains_key('code')
+    
+    def test_codice_duplicato(self):
+        poll = Poll(
+            title="Lorem", 
+            text="Lorem ipsum", 
+            start=timezone.now(), end=timezone.now() + timezone.timedelta(days=1),
+            author = User.objects.create_user(username='test'),
+            visibility=Poll.PollVisibility.PUBLIC
         )
-
-        assert_that(codeForm.has_error('code')).is_false()
-
-    def test_no_duplicazioni_codice(self):
-
-        codeForm = PollMappingForm(
-            {
-                'poll' : self.poll2,
-                'code' : "CodiceTest"
-            }
-        )
-
-        assert_that(codeForm.has_error('code')).is_true()
-
+        poll.save()
+        Mapping(poll=poll, code="CodiceTest").save()
+        form = PollMappingForm({'code': 'CodiceTest'})
+        assert_that(form.is_valid()).is_false()
+        assert_that(form.errors).contains_key('code')
