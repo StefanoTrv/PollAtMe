@@ -181,6 +181,12 @@ class PollMappingForm(forms.ModelForm):
             }
         }
 
+        widgets = {
+            'code': forms.TextInput(attrs={
+                'placeholder': 'Inserisci un codice alfanumerico per il link (opzionale)'
+            })
+        }
+
     def clean_code(self):
         form_code = self.cleaned_data['code']
 

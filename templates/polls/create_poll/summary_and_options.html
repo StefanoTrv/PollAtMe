@@ -62,25 +62,25 @@
                             <div class="d-grid gap-2 d-xl-flex justify-content-xl-center flex-xl-fill {% if f.errors %}is-invalid{% endif %}">
                                 {% for radio in form.visibility %}
                                     {{ radio.tag }}
-                                    <label class="{% if f.errors %}btn btn-outline-danger is-invalid{% else %}btn btn-outline-secondary{% endif %} w-100" for="{{ radio.id_for_label }}" onclick="switchAlert()">{{ radio.choice_label }}</label>
+                                    <label class="{% if f.errors %}btn btn-outline-danger is-invalid{% else %}btn btn-outline-secondary{% endif %} w-100" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
                                 {% endfor %}
                             </div>
                             <br>
-                            <div class="alert alert-info" role="alert" id="public_alert_id" {% if form.visibility.value == 2 %} style="display: none" {%else%} style="display: block" {%endif%} >
-								<b>Pubblico</b>: le scelte saranno mostrate sia nella pagina principale sia durante la ricerca, tutti potranno votare ed accedere ai risultati.
+                            <div class="alert alert-primary" role="alert" id="public_alert_id" {% if form.visibility.value == 2 %} style="display: none" {% else %} style="display: block" {% endif %} >
+								<b>Pubblico</b>: la scelta sarà visibile sia nella pagina principale sia nella ricerca globale. Tutti potranno votare ed accedere ai risultati.
                             </div>
-                            <div class="alert alert-info" role="alert" id="hidden_alert_id" {% if form.visibility.value == 1 %} style="display: none" {%else%} style="display: block" {%endif%}>
-                                <b>Nascosto</b>: le scelte <b>non</b> saranno visibili né nella pagina principale né durante la ricerca, l'accesso sarà possibile solamente a chi possiede il link.<br>
+                            <div class="alert alert-primary" role="alert" id="hidden_alert_id" {% if form.visibility.value == 1 %} style="display: none" {%else%} style="display: block" {% endif %}>
+                                <b>Nascosto</b>: la scelta <b>non</b> non sarà visibile né nella pagina principale né nella ricerca globale. Per votare e vedere i risultati sarà necessario conoscere il link della scelta.
 							</div>
                             <br>
                             <hr>
                             <br>
                             <!-- {% bootstrap_field form.visibility %} -->
                             {% bootstrap_field mapping_form.code %}
-                            <div class="alert alert-info" role="alert">
-								Seleziona un codice composto da maiuscole, minuscole e cifre decimali per identificare la scelta. Se lasciato vuoto ne verrà generao uno <b>automaticamente</b>!<br>
-                                Il codice viene utilizzato per genarare un link personalizzato alla scelta secondo il template:<br><br>
-                                <p class="text-center"> <i>{{ request.get_host }}/"Codice" </i></p> 
+                            <div class="alert alert-primary alert-dismissible fade show" role="alert">
+								Inserisci un codice alfanumerico (maiuscole, minuscole, numeri) per rendere più facile la condivisione della scelta.<br>
+                                Se questo campo viene lasciato vuoto, il codice sarà generato <b>automaticamente</b>.
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 							</div>
                         </div>
                     </div>
@@ -111,29 +111,23 @@
 {% include 'polls/includes/lock_sidebar.html' with id_modal='modal-return-home' %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.slim.min.js"></script>
 {{ form.media.js }}
+
 <script>
     document.querySelector('#additional-options').onsubmit = event => {
         document.querySelector("#{{ form.default_type.auto_id }}").removeAttribute('disabled')
     }
-</script>
 
-<script>
+    var public_alert = document.getElementById('public_alert_id')
+    var hidden_alert = document.getElementById('hidden_alert_id')
 
-    var public_alert = document.getElementById(`public_alert_id`)
-    var hidden_alert = document.getElementById(`hidden_alert_id`)
+    document.querySelector('#id_visibility_0').onclick = () => {
+        public_alert.style.display = "block"
+        hidden_alert.style.display = "none"
+    }
 
-    function switchAlert(){
-        if(public_alert.style.display == "none"){
-            public_alert.style.display = "block";
-        }else{
-            public_alert.style.display = "none";
-        }
-
-        if(hidden_alert.style.display == "none"){
-            hidden_alert.style.display = "block";
-        }else{
-            hidden_alert.style.display = "none";
-        }
+    document.querySelector('#id_visibility_1').onclick = () => {
+        public_alert.style.display = "none"
+        hidden_alert.style.display = "block"
     }
 
 </script>
