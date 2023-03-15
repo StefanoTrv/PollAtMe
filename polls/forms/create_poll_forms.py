@@ -123,7 +123,7 @@ class PollFormAdditionalOptions(forms.ModelForm):
             'text': forms.Textarea(attrs={
                 'style': 'resize: none;',
                 'rows': 4,
-                'placeholder': 'Il testo della scelta non è stato inserito'
+                'placeholder': 'Il testo della scelta verrà lasciato vuoto'
             }),
             'visibility': forms.RadioSelect(
                 choices=[
