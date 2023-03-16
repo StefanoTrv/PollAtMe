@@ -110,7 +110,9 @@ def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Option
             alt.delete()
 
         return render(request, f'polls/{action}_poll_success.html', {
-            'code' : saved_mapping.code
+            'code' : saved_mapping.code,
+            'title' : saved_poll.title,
+            'end' : saved_poll.end
         })
     else:
         return render(request, f'polls/create_poll/summary_and_options_{action}.html', {
