@@ -28,20 +28,12 @@
                     <div class="card">
                         <div class="card-body">
                         {% for radio in form.alternative %}
-                            <div class="alert alert-info" role="alert">
-                                <div class="form-check">
-                                    {{ radio.tag }}
-                                    <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label}}</label>
-                                </div>
-                            </div>
+                            {{ radio.tag }}
+                            <label class="btn btn-outline-primary w-100 m-2 p-3 text-start fs-5" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
                         {% endfor %}
                         </div>
                     </div>
-                    <div class="card">
-                        <div class="card-body">
-                            <button type="submit" class="btn btn-primary">Salva</button>
-                        </div>
-                    </div>
+                    <button type="submit" class="btn btn-primary">Salva</button>
                 </form>
             </div>
             <!-- [ sample-page ] end -->
