@@ -58,6 +58,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h4 class="card-title">Altre opzioni</h4>
+                            <!-- {{ form.visibility }} -->
                             <p>{{ form.visibility.label }}</p>
                             <div class="d-grid gap-2 d-xl-flex justify-content-xl-center flex-xl-fill {% if f.errors %}is-invalid{% endif %}">
                                 {% for radio in form.visibility %}
@@ -75,8 +76,8 @@
                             <br>
                             <hr>
                             <br>
-                            <!-- {% bootstrap_field form.visibility %} -->
-                            {% bootstrap_field mapping_form.code %}
+                            {% bootstrap_label mapping_form.code.label %}
+                            {% bootstrap_field mapping_form.code show_label='skip' wrapper_class='input-group mb-3' addon_before=request.get_host|add:"/" %}
                             <div class="alert alert-primary alert-dismissible fade show" role="alert">
 								Inserisci un codice alfanumerico (maiuscole, minuscole, numeri) per rendere più facile la condivisione della scelta.<br>
                                 Se questo campo viene lasciato vuoto, il codice sarà generato <b>automaticamente</b>.
@@ -88,13 +89,13 @@
             </div>
         </form>
         <!--- Modal -->
-        <div class="form-group">
-            <div class="col-sm-12 text-center">
+        <div class="form-group text-center">
+            <div class="col-sm-12 d-md-inline d-grid align-middle">
                 <input type="submit" form="go_back-form" name="go_back" value="Torna indietro"
-                    class="btn btn-primary" />
-                <button type="button" class="btn btn-block btn-secondary" data-bs-toggle="modal"
+                    class="btn btn-primary m-1" />
+                <button type="button" class="btn btn-block btn-secondary m-1" data-bs-toggle="modal"
                     data-bs-target="#exampleModal">Torna alla home</button>
-                <input type="submit" form="additional-options" name="save" class="btn btn-primary mt-2 mt-md-0" value="Salva" />
+                <input type="submit" form="additional-options" name="save" class="btn btn-primary m-1" value="Salva" />
             </div>
         </div>
         {% include 'polls/includes/footer.html' %}

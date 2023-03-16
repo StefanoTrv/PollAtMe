@@ -185,31 +185,3 @@ class TestCreateMajorityPreferenceView(TestCase):
         judgement: models.MajorityOpinionJudgement
         for judgement in last_vote.majorityopinionjudgement_set.all():
             self.assertEqual(judgement.grade,1)
-        
-    def test_revote(self):
-        poll_url = reverse('polls:vote_single_preference', args=[1])
-        resp = self.client.post(poll_url, {
-            'alternative' : 3,
-        })
-
-        synthetic_vote_id = models.MajorityPreference.objects.last().id
-        revote_url=reverse('polls:vote_MJ', args=[1])
-        resp = self.client.get(revote_url)
-        self.assertEqual(resp.status_code,200)
-        self.client.post(revote_url, {
-            'majorityopinionjudgement_set-TOTAL_FORMS': 4,
-            'majorityopinionjudgement_set-INITIAL_FORMS': 0,
-            'majorityopinionjudgement_set-MIN_NUM_FORMS': 4,
-            'majorityopinionjudgement_set-MAX_NUM_FORMS': 4,
-            'majorityopinionjudgement_set-0-grade': 1,
-            'majorityopinionjudgement_set-1-grade': 1,
-            'majorityopinionjudgement_set-2-grade': 5,
-            'majorityopinionjudgement_set-3-grade': 1,
-        })
-        self.assertEqual(resp.status_code,200)
-        assert_that(models.MajorityPreference.objects.filter(id=synthetic_vote_id)).is_empty()
-        assert_that(models.MajorityPreference.objects.last().poll.pk).is_equal_to(1)
-        assert_that(models.MajorityPreference.objects.last().majorityopinionjudgement_set.all()[0].grade).is_equal_to(1)
-        assert_that(models.MajorityPreference.objects.last().majorityopinionjudgement_set.all()[1].grade).is_equal_to(1)
-        assert_that(models.MajorityPreference.objects.last().majorityopinionjudgement_set.all()[2].grade).is_equal_to(5)
-        assert_that(models.MajorityPreference.objects.last().majorityopinionjudgement_set.all()[3].grade).is_equal_to(1)

@@ -87,7 +87,7 @@ class VoteSinglePreferenceView(_VotingView):
         form.instance.poll = self.poll
         new_preference = form.save()
 
-        if self.poll.get_type()==self.voteType:
+        if self.poll.get_type() == self.voteType:
             #crea voto sintetico
             synthetic_preference = MajorityPreference()
             synthetic_preference.poll=self.poll
@@ -95,17 +95,17 @@ class VoteSinglePreferenceView(_VotingView):
             synthetic_preference.save()
             for alternative in self.alternatives:
                 moj = MajorityOpinionJudgement()
-                moj.alternative=alternative
-                moj.preference=synthetic_preference
+                moj.alternative = alternative
+                moj.preference = synthetic_preference
                 if alternative == new_preference.alternative:
-                    moj.grade=5 # type: ignore
+                    moj.grade = 5 # type: ignore
                 else:
-                    moj.grade=1 # type: ignore
+                    moj.grade = 1 # type: ignore
                 moj.save()
                 synthetic_preference.majorityopinionjudgement_set.add(moj) # type: ignore
-            synthetic_preference.save()#serve? Forse no
+            # synthetic_preference.save() #serve? Forse no
 
-            self.request.session['preference_id']=synthetic_preference.id
+            self.request.session['preference_id'] = synthetic_preference.id
 
             return render(self.request, 'polls/vote_success.html', {'poll': self.poll})
         else:
@@ -131,7 +131,7 @@ class VoteMajorityJudgmentView(_VotingView):
             instance.preference = preference
             instance.save()
         
-        if self.poll.get_type()==self.voteType:            
+        if self.poll.get_type() == self.voteType:            
             return render(self.request, 'polls/vote_success.html', {'poll': self.poll})
         else:
             #cancello la preferenza sintetica

@@ -21,9 +21,9 @@
         <div class="card bg-c-blue order-card">
           <div class="card-body">
             <h6 class="text-white">Data di apertura della scelta:</h6>
-            <h2 class="text-end text-white"><em class="feather icon-calendar float-start"></em><span>{{ poll.start | date:"d/m/Y h:i" }}</span>
+            <h2 class="text-end text-white"><em class="feather icon-calendar float-start"></em><span>{{ poll.start | date:"d/m/Y H:i" }}</span>
             </h2>
-            <p class="m-b-0">Data di chiusura<span class="float-end">{{ poll.end |  date:"d/m/Y h:i" }}</span></p>
+            <p class="m-b-0">Data di chiusura<span class="float-end">{{ poll.end |  date:"d/m/Y H:i" }}</span></p>
           </div>
         </div>
       </div>
@@ -34,7 +34,7 @@
             <h2 class="text-end text-white">
               <em class="feather icon-user float-start"></em><span>{% user_display poll.author %}</span>
             </h2>
-            <p class="m-b-0">Data di creazione<span class="float-end">{{ poll.creation_date |  date:"d/m/Y h:i" }}</span></p>
+            <p class="m-b-0">Data di creazione<span class="float-end">{{ poll.creation_date |  date:"d/m/Y H:i" }}</span></p>
           </div>
         </div>
       </div>
