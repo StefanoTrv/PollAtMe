@@ -1,0 +1,55 @@
+<p> Scegli se condividere la scelta copiando il link </p>
+<div class="input-group mb-3">
+    <button type="button" class="btn btn-block btn-primary" onclick="copyText()"> 
+      <em class="feather icon-copy"></em> 
+    </button>
+    <input type="text" class="form-control" id="pollLink" value="">
+</div>
+<p> Oppure attraverso le seguenti piattaforme social</p>
+<div id="sharebuttons">
+    <a class="facebook" target="blank"><em class="fab fa-facebook fa-3x" style="color: #3b5998;"></em></a>&nbsp&nbsp
+    <a class="twitter" target="blank"><em class="fab fa-twitter fa-3x" style="color: #55acee"></em></a>&nbsp&nbsp
+    <a class="whatsapp" target="blank"><em class="fab fa-whatsapp fa-3x" style="color: #128C7E"></em></a>&nbsp&nbsp
+    <a class="telegram" target="blank"><em class="fab fa-telegram fa-3x" style="color: #27A7E7"></em></a>&nbsp&nbsp
+    <a class="reddit" target="blank"><em class="fab fa-reddit fa-3x" style="color: #FF5700"></em></a>&nbsp&nbsp
+    <a class="tumblr" target="blank"><em class="fab fa-tumblr fa-3x" style="color: #34526f"></em></a>&nbsp&nbsp
+    <a class="linkedin" target="blank"><em class="fab fa-linkedin fa-3x" style="color: #0077b5"></em></a>&nbsp&nbsp
+    <a class="envelope" target="blank"><em class="fa fa-envelope fa-3x" style="color: #080808"></em></a>
+</div>
+
+<script>
+    function copyText() {
+      var input = document.getElementById('pollLink');
+      input.select();
+      document.execCommand('copy');
+      setTimeout(function(){
+        window.getSelection().removeAllRanges();
+      }, 1500);
+    }
+
+    function socialLinks(link, msg, title){
+      var fb = document.querySelector('.facebook')
+      fb.href = `https://www.facebook.com/share.php?u=${link}&quote=${msg}`
+
+      var tw = document.querySelector('.twitter')
+      tw.href = `https://www.twitter.com/share?&url=${link}&text=${msg}&hashtags=sceltesociali`
+
+      var wa = document.querySelector('.whatsapp')
+      wa.href = `https://api.whatsapp.com/send?phone=&text=${msg}${link}`
+
+      var tg = document.querySelector('.telegram')
+      tg.href = `https://telegram.me/share/url?url=${link}&text=${msg}`
+
+      var rd = document.querySelector('.reddit')
+      rd.href = `https://www.reddit.com/submit?url=${link}&title=${title}`
+
+      var tb = document.querySelector('.tumblr')
+      tb.href = `https://www.tumblr.com/share/link?url=${link}name=${title}&description=${msg}`
+
+      var ld = document.querySelector('.linkedin')
+      ld.href = `https://www.linkedin.com/sharing/share-offsite/?url=${link}`
+
+      var mail = document.querySelector('.envelope')
+      mail.href = `mailto:?subject=${title}&body=${msg}${link}`
+  }
+</script>
