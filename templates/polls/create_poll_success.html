@@ -32,31 +32,9 @@
                         <h4>Vuoi condividere la scelta?</h4>
                     </div>
                     <div class="card-body">
-                        <p>
-                            Puoi condividere la scelta appena creata, tuttavia gli utenti se proveranno a votare,
-                            otterranno un messaggio d'errore fino a quando le votazioni non saranno
-                            partite. Puoi condividere la scelta copiando il link sottostante
-                        </p>
-                        <div class="input-group mb-3">
-                            <button type="button" class="btn btn-block btn-primary" onclick="copyText()">
-                                <em class="feather icon-copy"></em>
-                            </button>
-                            <input type="text" class="form-control" id="pollLink"
-                                value="{{ request.get_host }}/{{code}}">
-                        </div>
-                        <!--
-                        <br>
-                        <p> Oppure attraverso le seguenti piattaforme social </p>
-                        <a href="#" class="me-4">
-                            <em class="fab fa-facebook fa-4x" style="color: #3b5998;"></em>
-                        </a>
-                        <a href="#" class="me-4">
-                            <em class="fab fa-twitter fa-4x" style="color: #55acee;"></em>
-                        </a>
-                        <a href="#" class="me-4">
-                            <em class="fab fa-instagram fa-4x" style="color: #ac2bac;"></em>
-                        </a>
-                        --->
+                        Puoi condividere la scelta appena creata, tuttavia gli utenti se proveranno a votare, otterranno un messaggio d'errore fino a quando le votazioni non saranno 
+                        partite.
+                        {% include 'polls/includes/social_sharing.html' %}
                     </div>
                 </div>
             </div>
@@ -68,13 +46,12 @@
 
 {% block javascripts %}
 <script>
-    function copyText() {
-        var input = document.getElementById('pollLink');
-        input.select();
-        document.execCommand('copy');
-        setTimeout(function () {
-            window.getSelection().removeAllRanges();
-        }, 1500);
-    }
+    var domain = 'http://{{ request.get_host }}/';
+    var text = document.getElementById('pollLink');
+    var link = domain + '{{code}}';
+    text.value = link;
+    var title = 'Scelta sociale ' + '{{title}}';
+    var msg = 'Ho creato la ' + title.charAt(0).toLowerCase() + title.slice(1) + '. Visitate il link per esprimere la vostra preferenza o per vedere i risultati. Si può votare fino al giorno ' + '{{ end | date:"d/m/Y, H:i" }}' + '. '
+    socialLinks(link, msg, title)
 </script>
 {% endblock javascripts %}
