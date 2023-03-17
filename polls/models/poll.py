@@ -46,3 +46,12 @@ class Poll(models.Model):
     
     def is_public(self) -> bool:
         return self.visibility == Poll.PollVisibility.PUBLIC
+    
+    def has_random_order_for_options(self) -> bool:
+        return self.polloptions.random_order # type: ignore
+
+
+class PollOptions(models.Model):
+    poll = models.OneToOneField(Poll, on_delete=models.CASCADE)
+
+    random_order = models.BooleanField(default=True)

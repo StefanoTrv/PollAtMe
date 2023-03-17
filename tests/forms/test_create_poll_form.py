@@ -305,3 +305,6 @@ class TestPollMappingForm(TestCase):
         form = PollMappingForm({'code': 'CodiceTest'})
         assert_that(form.is_valid()).is_false()
         assert_that(form.errors).contains_key('code')
+
+class TestPollOptionsForm(TestCase):
+    pass

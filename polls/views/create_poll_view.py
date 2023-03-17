@@ -8,8 +8,8 @@ from django.db.models import QuerySet
 from django.utils import timezone
 from datetime import timedelta
 
-from polls.models import Poll
-from polls.forms import PollFormAdditionalOptions, PollFormMain, BaseAlternativeFormSet, PollMappingForm
+from polls.models import Poll, PollOptions
+from polls.forms import PollFormAdditionalOptions, PollFormMain, BaseAlternativeFormSet, PollMappingForm, PollOptionsForm
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -50,22 +50,18 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
             'alternatives': formset_alternatives.get_form_for_session()
         }
 
-        existing_mapping = None
-        if poll != None:
-            if Mapping.objects.filter(poll=poll).count() > 0:
-                existing_mapping = Mapping.objects.filter(poll=poll).get()
-
         return render(request, f'polls/create_poll/summary_and_options_{action}.html', {
             'alternatives': formset_alternatives.get_alternatives_text_list(),
             'form': PollFormAdditionalOptions(instance=f_poll),
-            'mapping_form': PollMappingForm(instance=existing_mapping)
+            'mapping_form': PollMappingForm(instance=Mapping.objects.filter(poll=poll).first()),
+            'options_form': PollOptionsForm(instance=PollOptions() if poll is None else poll.polloptions_set.first()), # type: ignore
         })
     else:
-        formset_alternatives._non_form_errors[0]=str(formset_alternatives._non_form_errors[0]).replace("Please submit at least 2 forms.","Inserisci almeno due alternative.") # type: ignore
-        print(formset_alternatives.errors)
+        formset_alternatives._non_form_errors[0] = str(formset_alternatives._non_form_errors[0]).replace( # type: ignore
+            "Please submit at least 2 forms.", "Inserisci almeno due alternative.")
         for dict in formset_alternatives.errors:
             if 'This field is required.' in str(dict):
-                dict['text']='' # type: ignore
+                dict['text'] = ''  # type: ignore
         return render(request, f'polls/create_poll/main_page_{action}.html', {
             'form': form,
             'formset': formset_alternatives,
@@ -83,13 +79,14 @@ def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Option
     form = PollFormAdditionalOptions(request.POST, instance=poll)
     formset_alternatives: BaseAlternativeFormSet = ALTERNATIVE_FORMSET(
         request.session[action]['alternatives'], queryset=alternatives)
-    
+
     if poll is None:
         mapping = None
     else:
-        mapping = poll.mapping_set.first()
+        mapping = poll.mapping # type: ignore
 
-    form_mapping: PollMappingForm = PollMappingForm(request.POST, instance=mapping)
+    form_mapping: PollMappingForm = PollMappingForm(
+        request.POST, instance=mapping)
 
     if form.is_valid() and formset_alternatives.is_valid() and form_mapping.is_valid():
         saved_poll = form.save()
@@ -110,9 +107,9 @@ def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Option
             alt.delete()
 
         return render(request, f'polls/{action}_poll_success.html', {
-            'code' : saved_mapping.code,
-            'title' : saved_poll.title,
-            'end' : saved_poll.end
+            'code': saved_mapping.code,
+            'title': saved_poll.title,
+            'end': saved_poll.end
         })
     else:
         return render(request, f'polls/create_poll/summary_and_options_{action}.html', {

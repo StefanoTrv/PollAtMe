@@ -4,8 +4,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.utils import timezone
 
-from polls.models import Alternative, Poll, SinglePreference
-
+from polls.models import Alternative, Poll, SinglePreference, PollOptions, Mapping
 
 class Modeltest(TestCase):
 
@@ -109,3 +108,30 @@ class Modeltest(TestCase):
         p1 = SinglePreference.objects.get(poll = q1, alternative = a1)
         self.assertEqual(p1.poll.id, q1.id)
         self.assertEqual(p1.alternative.id, a1.id)
+
+class TestPollMapping(TestCase):
+    def setUp(self) -> None:
+        self.p = Poll()
+        self.p.title = "Test"
+        self.p.text = "Test"
+        self.p.author = User.objects.create_user(username='test')
+        self.p.start = timezone.now()
+        self.p.end = timezone.now() + timedelta(weeks=1)
+        self.p.default_type = Poll.PollType.SINGLE_PREFERENCE
+        self.p.save()
+    
+    def test_mapping_save(self):
+        mapping = Mapping(poll=self.p, code="Test")
+        mapping.save()
+
+        self.assertEqual(mapping.poll, self.p)
+        self.assertEqual(mapping.code, "Test")
+
+    def test_unique(self):
+        mapping = Mapping(poll=self.p, code="Test")
+        mapping.save()
+
+
+
+class TestPollOptions(TestCase):
+    pass

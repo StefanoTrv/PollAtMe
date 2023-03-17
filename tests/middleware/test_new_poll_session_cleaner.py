@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from polls.models import Poll
+from polls.models import Poll, Mapping
 
 
 class NewPollSessionCleanerTest(TestCase):
@@ -41,6 +41,8 @@ class NewPollSessionCleanerTest(TestCase):
         self.poll.save()
         self.poll.alternative_set.create(text='Alternativa di prova 1')
         self.poll.alternative_set.create(text='Alternativa di prova 2')
+
+        Mapping.objects.create(poll=self.poll, code="test")
 
     def test_clears_creation(self):
         self.client.post(self.create_url, data=self.step_1_data | {'summary': ''})

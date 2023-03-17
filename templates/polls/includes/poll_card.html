@@ -43,7 +43,7 @@
         </button>
         {% endif %}
 
-        <a class="btn btn-block btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#modalPollSharing" data-bs-code="{{ poll.mapping_set.first }}" data-bs-title="{{ poll.title }}" data-bs-end="{{ poll.end | date:"d/m/Y, H:i" }}"> 
+        <a class="btn btn-block btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#modalPollSharing" data-bs-code="{{ poll.mapping }}" data-bs-title="{{ poll.title }}" data-bs-end="{{ poll.end | date:"d/m/Y, H:i" }}"> 
             <em class="feather mr-2 icon-share-2"></em>
         </a>
     </div>

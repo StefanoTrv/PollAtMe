@@ -6,7 +6,7 @@ from django.utils import timezone
 
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 
-from polls.models import Poll, Mapping, Alternative
+from polls.models import Poll, Mapping, Alternative, PollOptions
 
 # Form per la pagina principale della pagina di creazione di nuovi sondaggi, contenente i dati principali
 class BaseAlternativeFormSet(forms.BaseModelFormSet):
@@ -95,7 +95,7 @@ class PollFormMain(forms.ModelForm):
         self.fields['text'].required = False
 
 
-# Form per la seconda pagina della creazione di nuovi sondaggi, contenente opzioni secondarie
+# Form per la seconda pagina della creazione di nuovi sondaggi
 class PollFormAdditionalOptions(forms.ModelForm):
     class Meta:
         model = Poll
@@ -170,7 +170,7 @@ class PollFormAdditionalOptions(forms.ModelForm):
 class PollMappingForm(forms.ModelForm):
     class Meta:
         model = Mapping
-        fields = ['code']
+        exclude = ['poll']
         labels = {
             'code': 'Codice link personalizzato'
         }
@@ -204,4 +204,9 @@ class PollMappingForm(forms.ModelForm):
         pattern = re.compile("([a-z]|[A-Z]|\d)*")
         result = bool(pattern.fullmatch(code))
         return result
-    
+
+
+class PollOptionsForm(forms.ModelForm):
+    class Meta:
+        model = PollOptions
+        exclude = ['poll']
