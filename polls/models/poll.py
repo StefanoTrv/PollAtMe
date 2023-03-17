@@ -46,9 +46,6 @@ class Poll(models.Model):
     
     def is_public(self) -> bool:
         return self.visibility == Poll.PollVisibility.PUBLIC
-    
-    def has_random_order_for_options(self) -> bool:
-        return self.polloptions.random_order # type: ignore
 
 
 class PollOptions(models.Model):

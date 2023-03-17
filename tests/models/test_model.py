@@ -6,6 +6,8 @@ from django.utils import timezone
 
 from polls.models import Alternative, Poll, SinglePreference, PollOptions, Mapping
 
+from django.db import IntegrityError
+
 class Modeltest(TestCase):
 
     poll_title = "Età"
@@ -127,11 +129,39 @@ class TestPollMapping(TestCase):
         self.assertEqual(mapping.poll, self.p)
         self.assertEqual(mapping.code, "Test")
 
-    def test_unique(self):
+    def test_one_to_one(self):
         mapping = Mapping(poll=self.p, code="Test")
         mapping.save()
 
+        self.assertRaises(IntegrityError, Mapping.objects.create, poll=self.p, code="Test1")       
+
+    def test_unique(self):
+        new_p = Poll.objects.first()
+        new_p.pk = None
+        new_p.save()
+
+        mapping = Mapping(poll=self.p, code="Test")
+        mapping.save()
+
+        self.assertRaises(IntegrityError, Mapping.objects.create, poll=new_p, code="Test")
 
 
 class TestPollOptions(TestCase):
-    pass
+    def setUp(self) -> None:
+        self.p = Poll()
+        self.p.title = "Test"
+        self.p.text = "Test"
+        self.p.author = User.objects.create_user(username='test')
+        self.p.start = timezone.now()
+        self.p.end = timezone.now() + timedelta(weeks=1)
+        self.p.default_type = Poll.PollType.SINGLE_PREFERENCE
+        self.p.save()
+
+    def test_default_fields(self):
+        options = PollOptions(poll=self.p)
+        options.save()
+
+        self.assertEqual(options.poll, self.p)
+        self.assertEqual(self.p.polloptions, options)
+        
+        self.assertTrue(options.random_order)

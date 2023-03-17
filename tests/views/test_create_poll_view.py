@@ -7,9 +7,8 @@ from django.utils import timezone
 from assertpy import assert_that  # type: ignore
 from django.contrib.auth.models import User
 
-from polls.models import Poll, Alternative
-from polls.forms import PollFormMain, PollFormAdditionalOptions, BaseAlternativeFormSet, PollMappingForm
-from polls.models.mapping import Mapping
+from polls.models import Poll, Alternative, PollOptions, Mapping
+from polls.forms import PollFormMain, PollFormAdditionalOptions, BaseAlternativeFormSet, PollMappingForm, PollOptionsForm
 
 class CreatePollViewTest(TestCase):
     
@@ -49,7 +48,7 @@ class CreatePollViewTest(TestCase):
         # Verifichiamo che ci siano tutti i campi del form
         assert_that(response).contains_form(PollFormAdditionalOptions)
         assert_that(response).contains_form(PollMappingForm)
-
+        assert_that(response).contains_form(PollOptionsForm)
 
         assert_that(self.client.session.has_key('create')).is_true()
         assert_that(self.client.session['create']).is_length(2)
@@ -69,6 +68,7 @@ class CreatePollViewTest(TestCase):
         assert_that(Poll.objects.count()).is_equal_to(1)
         assert_that(Alternative.objects.count()).is_equal_to(2)
         assert_that(Mapping.objects.count()).is_equal_to(1)
+        assert_that(PollOptions.objects.count()).is_equal_to(1)
 
     def test_error_on_first_page(self):
         step_1_data = {

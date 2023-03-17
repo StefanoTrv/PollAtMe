@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.contrib.auth.models import User
 
-from polls.models import Poll, Mapping
+from polls.models import Poll, Mapping, PollOptions
 
 # Test semplificati: molti aspetti vengono già testati relativamente alla creazione, che è praticamente la stessa pagina
 class TestPollEditView(TestCase):
@@ -23,7 +23,9 @@ class TestPollEditView(TestCase):
         self.poll.alternative_set.create(text='Alternativa di prova 1')
         self.poll.alternative_set.create(text='Alternativa di prova 2')
         self.poll.visibility = 1
+
         Mapping.objects.create(poll=self.poll, code="lorem")
+        PollOptions.objects.create(poll=self.poll)
 
         self.client.login(username='test', password='test')
     

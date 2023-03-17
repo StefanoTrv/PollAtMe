@@ -54,7 +54,7 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
             'alternatives': formset_alternatives.get_alternatives_text_list(),
             'form': PollFormAdditionalOptions(instance=f_poll),
             'mapping_form': PollMappingForm(instance=Mapping.objects.filter(poll=poll).first()),
-            'options_form': PollOptionsForm(instance=PollOptions() if poll is None else poll.polloptions_set.first()), # type: ignore
+            'options_form': PollOptionsForm(instance=PollOptions() if poll is None else poll.polloptions), # type: ignore
         })
     else:
         formset_alternatives._non_form_errors[0] = str(formset_alternatives._non_form_errors[0]).replace( # type: ignore
@@ -82,18 +82,27 @@ def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Option
 
     if poll is None:
         mapping = None
+        options = None
     else:
         mapping = poll.mapping # type: ignore
+        options = poll.polloptions
 
     form_mapping: PollMappingForm = PollMappingForm(
         request.POST, instance=mapping)
+    
+    form_options: PollOptionsForm = PollOptionsForm(
+        request.POST, instance=options)
 
-    if form.is_valid() and formset_alternatives.is_valid() and form_mapping.is_valid():
+    if form.is_valid() and formset_alternatives.is_valid() and form_mapping.is_valid() and form_options.is_valid():
         saved_poll = form.save()
 
         saved_mapping = form_mapping.save(commit=False)
         saved_mapping.poll = saved_poll
         saved_mapping.save()
+
+        saved_options = form_options.save(commit=False)
+        saved_options.poll = saved_poll
+        saved_options.save()
 
         formset_alternatives.save(commit=False)
         for alt in formset_alternatives.new_objects:
@@ -115,7 +124,8 @@ def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Option
         return render(request, f'polls/create_poll/summary_and_options_{action}.html', {
             'form': form,
             'alternatives': formset_alternatives.get_alternatives_text_list(),
-            'mapping_form': form_mapping
+            'mapping_form': form_mapping,
+            'options_form': form_options,
         })
 
 
