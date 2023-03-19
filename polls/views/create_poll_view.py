@@ -6,7 +6,7 @@ from django.shortcuts import render, get_object_or_404
 from django.core.exceptions import PermissionDenied
 from django.db.models import QuerySet
 from django.utils import timezone
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from polls.models import Poll
 from polls.forms import PollFormAdditionalOptions, PollFormMain, BaseAlternativeFormSet, PollMappingForm
@@ -36,7 +36,7 @@ def select_action(request: HttpRequest, poll=None):
 def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Optional[Poll] = None):
     form = PollFormMain(request.POST, instance=poll)
     formset_alternatives: BaseAlternativeFormSet = ALTERNATIVE_FORMSET(
-        request.POST, queryset=alternatives)
+        request.POST, queryset=alternatives)\
 
     if form.is_valid() and formset_alternatives.is_valid():
         f_poll: Poll = form.save(commit=False)
@@ -55,9 +55,20 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
             if Mapping.objects.filter(poll=poll).count() > 0:
                 existing_mapping = Mapping.objects.filter(poll=poll).get()
 
+        form_additional_options = PollFormAdditionalOptions(instance=f_poll)
+
+        if 'additional_options' in request.session:
+            form_additional_options.initial['start'] = datetime.fromtimestamp(request.session['additional_options']['start']),
+            form_additional_options.initial['end'] = datetime.fromtimestamp(request.session['additional_options']['end']),
+            form_additional_options.initial['visibility'] = request.session['additional_options']['visibility'],
+        
+            print(request.session['additional_options']['start']),
+            print(request.session['additional_options']['end']),
+            print(request.session['additional_options']['visibility']),
+
         return render(request, f'polls/create_poll/summary_and_options_{action}.html', {
             'alternatives': formset_alternatives.get_alternatives_text_list(),
-            'form': PollFormAdditionalOptions(instance=f_poll),
+            'form': form_additional_options,
             'mapping_form': PollMappingForm(instance=existing_mapping)
         })
     else:
@@ -73,6 +84,16 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
 
 
 def go_back(request: HttpRequest, action: str, alternatives: QuerySet, poll: Optional[Poll] = None):
+
+    form_options = PollFormAdditionalOptions(request.POST, instance = poll)
+
+    if form_options.is_valid():
+        request.session['additional_options'] = {
+            'start' : form_options.cleaned_data['start'].timestamp(),
+            'end' : form_options.cleaned_data['end'].timestamp(),
+            'visibility' : form_options.cleaned_data['visibility'],
+        }
+
     return render(request, f'polls/create_poll/main_page_{action}.html', {
         'form': PollFormMain(request.session[action]['poll'], instance=poll),
         'formset': ALTERNATIVE_FORMSET(request.session[action]['alternatives'], queryset=alternatives)
