@@ -45,26 +45,32 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
             f_poll.end = f_poll.start + timedelta(weeks=2)
         if f_poll.author_id is None:
             f_poll.author = request.user
-        request.session[action] = {
-            'poll': form.cleaned_data,
-            'alternatives': formset_alternatives.get_form_for_session()
-        }
+
+        if action in request.session:
+            request.session[action]['poll'] = form.cleaned_data
+            request.session[action]['alternatives'] = formset_alternatives.get_form_for_session()
+        else: 
+            request.session[action] = {
+                'poll': form.cleaned_data,
+                'alternatives': formset_alternatives.get_form_for_session()
+            }
 
         existing_mapping = None
         if poll != None:
             if Mapping.objects.filter(poll=poll).count() > 0:
                 existing_mapping = Mapping.objects.filter(poll=poll).get()
+        
+        if 'code' in request.session[action]:
+            existing_mapping = Mapping()
+            existing_mapping.code = request.session[action]['code']
+
+
+        if 'additional_options' in request.session[action]:
+            f_poll.start = request.session[action]['additional_options']['start']
+            f_poll.end = request.session[action]['additional_options']['end']
+            f_poll.visibility = request.session[action]['additional_options']['visibility']
 
         form_additional_options = PollFormAdditionalOptions(instance=f_poll)
-
-        if 'additional_options' in request.session:
-            form_additional_options.initial['start'] = datetime.fromtimestamp(request.session['additional_options']['start']),
-            form_additional_options.initial['end'] = datetime.fromtimestamp(request.session['additional_options']['end']),
-            form_additional_options.initial['visibility'] = request.session['additional_options']['visibility'],
-        
-            print(request.session['additional_options']['start']),
-            print(request.session['additional_options']['end']),
-            print(request.session['additional_options']['visibility']),
 
         return render(request, f'polls/create_poll/summary_and_options_{action}.html', {
             'alternatives': formset_alternatives.get_alternatives_text_list(),
@@ -86,13 +92,23 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
 def go_back(request: HttpRequest, action: str, alternatives: QuerySet, poll: Optional[Poll] = None):
 
     form_options = PollFormAdditionalOptions(request.POST, instance = poll)
+    form_mapping = PollMappingForm(request.POST)
+
 
     if form_options.is_valid():
-        request.session['additional_options'] = {
-            'start' : form_options.cleaned_data['start'].timestamp(),
-            'end' : form_options.cleaned_data['end'].timestamp(),
-            'visibility' : form_options.cleaned_data['visibility'],
+        request.session[action] = request.session[action] | {
+            'additional_options' : {
+                'start' : form_options.cleaned_data['start'].strftime('%Y-%m-%d %H:%M:%S'),
+                'end' : form_options.cleaned_data['end'].strftime('%Y-%m-%d %H:%M:%S'),
+                'visibility' : form_options.cleaned_data['visibility'],
+            }
         }
+
+    if form_mapping.data['code'] != '' and form_mapping.is_valid():
+        request.session[action] = request.session[action] | {
+            'code' : form_mapping.data['code']
+        }
+
 
     return render(request, f'polls/create_poll/main_page_{action}.html', {
         'form': PollFormMain(request.session[action]['poll'], instance=poll),
