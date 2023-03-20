@@ -165,3 +165,14 @@ class TestPollOptions(TestCase):
         self.assertEqual(self.p.polloptions, options)
         
         self.assertTrue(options.random_order)
+    
+    def test_random_order_flag(self):
+        options = PollOptions(poll=self.p, random_order=False)
+        options.save()
+
+        self.assertFalse(options.random_order)
+
+        options.random_order = True
+        options.save()
+
+        self.assertTrue(options.random_order)

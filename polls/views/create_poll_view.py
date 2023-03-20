@@ -43,8 +43,7 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
         if f_poll.start is None:
             f_poll.start = timezone.now() + timedelta(minutes=10)
             f_poll.end = f_poll.start + timedelta(weeks=2)
-        if f_poll.author_id is None:
-            f_poll.author = request.user
+        
         request.session[action] = {
             'poll': form.cleaned_data,
             'alternatives': formset_alternatives.get_form_for_session()
@@ -57,11 +56,11 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
             'options_form': PollOptionsForm(instance=PollOptions() if poll is None else poll.polloptions), # type: ignore
         })
     else:
-        formset_alternatives._non_form_errors[0] = str(formset_alternatives._non_form_errors[0]).replace( # type: ignore
-            "Please submit at least 2 forms.", "Inserisci almeno due alternative.")
+        formset_alternatives._non_form_errors[0] = "Inserisci almeno due alternative." #type: ignore
         for dict in formset_alternatives.errors:
             if 'This field is required.' in str(dict):
                 dict['text'] = ''  # type: ignore
+
         return render(request, f'polls/create_poll/main_page_{action}.html', {
             'form': form,
             'formset': formset_alternatives,
@@ -94,13 +93,15 @@ def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Option
         request.POST, instance=options)
 
     if form.is_valid() and formset_alternatives.is_valid() and form_mapping.is_valid() and form_options.is_valid():
-        saved_poll = form.save()
+        saved_poll: Poll = form.save(commit=False)
+        saved_poll.author = request.user #type: ignore
+        saved_poll.save()
 
-        saved_mapping = form_mapping.save(commit=False)
+        saved_mapping: Mapping = form_mapping.save(commit=False)
         saved_mapping.poll = saved_poll
         saved_mapping.save()
 
-        saved_options = form_options.save(commit=False)
+        saved_options: PollOptions = form_options.save(commit=False)
         saved_options.poll = saved_poll
         saved_options.save()
 

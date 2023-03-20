@@ -1,5 +1,6 @@
 {% extends 'layouts/base.html' %}
 {% load django_bootstrap5 %}
+{% load shuffle %}
 
 {% block title %} {{ block.super }} | {{ poll.title }} {% endblock title %}
 
@@ -29,7 +30,7 @@
                     <div class="card">
                         <div class="card-body">
                             <p class="card-text">Scegli una delle seguenti opzioni</p>
-                            {% for radio in form.alternative %}
+                            {% for radio in form.alternative|shuffle:poll.polloptions.random_order %}
                             {{ radio.tag }}
                             <label class="btn btn-outline-primary w-100 m-2 p-3 text-start fs-5" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
                             {% endfor %}

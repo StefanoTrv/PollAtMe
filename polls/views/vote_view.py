@@ -19,7 +19,7 @@ from polls.services import SearchPollService
 #se si accede alla pagina di voto generica, si viene reindirizzati alla pagina di voto del metodo principale
 def vote_redirect_view(request, id):
     poll = SearchPollService().search_by_id(id)
-    if poll.get_type()=="Preferenza singola":
+    if poll.default_type == 3:
         return redirect(reverse('polls:vote_single_preference', args=[id]))
     else:
         return redirect(reverse('polls:vote_MJ', args=[id]))
@@ -47,11 +47,14 @@ class _VotingView(CreateView):
             raise http.Http404("Il sondaggio ricercato non ha opzioni di risposta")
             
         #controllo che, se è un metodo di voto alternativo, l'ID della preferenza sintetica sia presente e corretto
-        if self.poll.get_type()!=self.voteType:
+        if self.poll.get_type() != self.voteType:
+            
             if 'preference_id' not in request.session:
                 raise PermissionDenied('Il voto con metodi alternativi è concesso solo durante il rivoto')
-            syntethic_preference = SinglePreference.objects.get(id=request.session['preference_id']) if self.voteType=="Preferenza singola" else MajorityPreference.objects.get(id=request.session['preference_id'])
-            if syntethic_preference.poll!=self.poll:
+            syntethic_preference = SinglePreference.objects.get(id=request.session['preference_id']) \
+                if self.voteType == "Preferenza singola" else MajorityPreference.objects.get(id=request.session['preference_id'])
+            
+            if syntethic_preference.poll != self.poll:
                 raise PermissionDenied('Il voto con metodi alternativi è concesso solo durante il rivoto\n(Dettagli dell\'errore: la preferenza sintetica è riferita ad un poll diverso)')
         
         return super().dispatch(request, *args, **kwargs)
