@@ -29,24 +29,34 @@
             {% csrf_token %}
             {{ form.author }}
             <div class="row">
-                <div class="col-sm-12 col-xl-6">
+                <div class="col-sm-12">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="card-title">Controlla i dati che hai inserito</h4>
-                            {% bootstrap_field form.title %}
-                            {% bootstrap_field form.default_type %}
-                            {% bootstrap_field form.text %}
-                            <div class="mb-3">
-                                <label class="form-label">Alternative</label>
-                                <ul class="list-group">
-                                    {% for alt in alternatives %}
-                                    <li class="list-group-item">{{ alt }}</li>
-                                    {% endfor %}
-                                </ul>
+                            <h5 class="card-title">Controlla i dati che hai inserito</h5>
+                            <div class="row">
+                                <div class="col-xl-4 col-md-6 col-sm-12">
+                                    {% bootstrap_field form.title %}
+                                    {% bootstrap_field form.default_type %}
+                                </div>
+                                <div class="col-xl-4 col-md-6 col-sm-12">
+                                    {% bootstrap_field form.text %}
+                                </div>
+                                <div class="col-xl-4 col-md-12">
+                                    <div class="mb-3">
+                                        <label class="form-label">Alternative</label>
+                                        <ul class="list-group">
+                                            {% for alt in alternatives %}
+                                            <li class="list-group-item">{{ alt }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="row">
                 <div class="col-sm-12 col-xl-6">
                     <div class="card">
                         <div class="card-body">
@@ -57,36 +67,49 @@
                     </div>
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="card-title">Altre opzioni</h4>
+                            <h5 class="card-title">{{ form.visibility.label }}</h5>
                             <!-- {{ form.visibility }} -->
-                            <p>{{ form.visibility.label }}</p>
-                            <div class="d-grid gap-2 d-xl-flex justify-content-xl-center flex-xl-fill {% if f.errors %}is-invalid{% endif %}">
+                            <div
+                                class="d-grid gap-2 d-xl-flex justify-content-xl-center flex-xl-fill {% if f.errors %}is-invalid{% endif %}">
                                 {% for radio in form.visibility %}
-                                    {{ radio.tag }}
-                                    <label class="{% if f.errors %}btn btn-outline-danger is-invalid{% else %}btn btn-outline-secondary{% endif %} w-100" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                {{ radio.tag }}
+                                <label
+                                    class="{% if f.errors %}btn btn-outline-danger is-invalid{% else %}btn btn-outline-secondary{% endif %} w-100"
+                                    for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
                                 {% endfor %}
                             </div>
                             <br>
-                            <div class="alert alert-primary" role="alert" id="public_alert_id" {% if form.visibility.value == 2 %} style="display: none" {% else %} style="display: block" {% endif %} >
-								<b>Pubblico</b>: la scelta sarà visibile sia nella pagina principale sia nella ricerca globale. Tutti potranno votare ed accedere ai risultati.
+                            <div class="alert alert-primary" role="alert" id="public_alert_id" 
+                            {% if form.visibility.value == 2 %} style="display: none" {% else %} style="display: block" {% endif %}>
+                                <b>Pubblico</b>: la scelta sarà visibile sia nella pagina principale sia nella ricerca
+                                globale. Tutti potranno votare ed accedere ai risultati.
                             </div>
-                            <div class="alert alert-primary" role="alert" id="hidden_alert_id" {% if form.visibility.value == 1 %} style="display: none" {%else%} style="display: block" {% endif %}>
-                                <b>Nascosto</b>: la scelta <b>non</b> non sarà visibile né nella pagina principale né nella ricerca globale. Per votare e vedere i risultati sarà necessario conoscere il link della scelta.
-							</div>
-                            <br>
-                            <hr>
-                            <br>
-                            {% bootstrap_label mapping_form.code.label %}
+                            <div class="alert alert-primary" role="alert" id="hidden_alert_id" 
+                            {% if form.visibility.value == 1 %} style="display: none" {% else %} style="display: block" {% endif %}>
+                                <b>Nascosto</b>: la scelta <b>non</b> non sarà visibile né nella pagina principale né
+                                nella ricerca globale. Per votare e vedere i risultati sarà necessario conoscere il link
+                                della scelta.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-xl-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ mapping_form.code.label }}</h5>
                             {% bootstrap_field mapping_form.code show_label='skip' wrapper_class='input-group mb-3' addon_before=request.get_host|add:"/" %}
                             <div class="alert alert-primary alert-dismissible fade show" role="alert">
-								Inserisci un codice alfanumerico (maiuscole, minuscole, numeri) per rendere più facile la condivisione della scelta.<br>
+                                Inserisci un codice alfanumerico (maiuscole, minuscole, numeri) per rendere più facile
+                                la condivisione della scelta.<br>
                                 Se questo campo viene lasciato vuoto, il codice sarà generato <b>automaticamente</b>.
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-							</div>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                    aria-label="Close"></button>
+                            </div>
                         </div>
                     </div>
                     <div class="card">
                         <div class="card-body">
+                            <h5 class="card-title">Opzioni avanzate</h5>
                             {% bootstrap_form options_form %}
                         </div>
                     </div>

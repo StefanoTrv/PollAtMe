@@ -99,7 +99,7 @@ class PollFormMain(forms.ModelForm):
 class PollFormAdditionalOptions(forms.ModelForm):
     class Meta:
         model = Poll
-        fields = "__all__"
+        exclude = ["author"]
         labels = {
             'start': 'Data inizio votazioni',
             'end': 'Data fine votazioni',
@@ -109,7 +109,6 @@ class PollFormAdditionalOptions(forms.ModelForm):
         error_messages = {} | PollFormMain.Meta.error_messages
 
         widgets = {
-            'author': forms.HiddenInput(),
             'start': DateTimePickerInput(
                 options={"format": "DD-MM-YYYY HH:mm"}
             ),
@@ -122,7 +121,7 @@ class PollFormAdditionalOptions(forms.ModelForm):
             ),
             'text': forms.Textarea(attrs={
                 'style': 'resize: none;',
-                'rows': 4,
+                'rows': 5,
                 'placeholder': 'Il testo della scelta verrà lasciato vuoto'
             }),
             'visibility': forms.RadioSelect(
@@ -210,3 +209,6 @@ class PollOptionsForm(forms.ModelForm):
     class Meta:
         model = PollOptions
         exclude = ['poll']
+        labels = {
+            'random_order': "Le alternative verranno mostrate in ordine casuale",
+        }
