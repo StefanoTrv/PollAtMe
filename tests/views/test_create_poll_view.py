@@ -138,8 +138,8 @@ class CreatePollViewTest(TestCase):
         end = (now + timedelta(weeks=2)).strftime('%Y-%m-%d %H:%M:%S')
 
         step_2_data = step_1_data | {
-            'start': (now + timedelta(hours=5)).strftime('%Y-%m-%d %H:%M:%S'),
-            'end': (now + timedelta(weeks=2)).strftime('%Y-%m-%d %H:%M:%S'),
+            'start': start,
+            'end': end,
             'author': self.u.id,
             'visibility': 1,
             'go_back': '',
@@ -155,9 +155,33 @@ class CreatePollViewTest(TestCase):
         response = self.client.post(self.url, data=step_1_data | {'summary': ''})
         assert_that(response.context['form'].initial['start']).is_equal_to(start)
         assert_that(response.context['form'].initial['end']).is_equal_to(end)
-        assert_that(response.context['form'].initial['visibility']).is_equal_to(1)
+        assert_that(response.context['form'].initial['visibility'] == 1).is_true
         assert_that(response.context['mapping_form'].initial['code']).is_equal_to('TestCode')
-        
+
+        ##dati non validi
+        start = (now - timedelta(days=5)).strftime('%Y-%m-%d %H:%M:%S')
+        end = (now + timedelta(weeks=2)).strftime('%Y-%m-%d %H:%M:%S')
+
+        step_2_data = step_1_data | {
+            'start':start,
+            'end': end,
+            'author': self.u.id,
+            'visibility': 1,
+            'go_back': '',
+            'code': '..2,1233..',
+        }
+
+
+        response = self.client.post(self.url, data = step_2_data)
+        assert_that(response.status_code).is_equal_to(200)
+        self.assertTemplateUsed(response, 'polls/create_poll/main_page_create.html')
+        self.assertContains(response,'Lorem ipsum')
+
+        response = self.client.post(self.url, data=step_1_data | {'summary': ''})
+        assert_that(response.context['form'].initial['start']).is_equal_to(start)
+        assert_that(response.context['form'].initial['end']).is_equal_to(end)
+        assert_that(response.context['form'].initial['visibility'] == 1).is_true
+        assert_that(response.context['mapping_form'].initial['code']).is_equal_to('..2,1233..')
 
 
     def test_aggiunta_poll_custom_code(self):

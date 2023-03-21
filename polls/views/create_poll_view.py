@@ -95,16 +95,15 @@ def go_back(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
     form_mapping = PollMappingForm(request.POST)
 
 
-    if form_options.is_valid():
-        request.session[action] = request.session[action] | {
-            'additional_options' : {
-                'start' : form_options.cleaned_data['start'].strftime('%Y-%m-%d %H:%M:%S'),
-                'end' : form_options.cleaned_data['end'].strftime('%Y-%m-%d %H:%M:%S'),
-                'visibility' : form_options.cleaned_data['visibility'],
-            }
+    request.session[action] = request.session[action] | {
+        'additional_options' : {
+            'start' : form_options.data['start'],
+            'end' : form_options.data['end'],
+            'visibility' : form_options.data['visibility'],
         }
+    }
 
-    if form_mapping.data['code'] != '' and form_mapping.is_valid():
+    if form_mapping.data['code'] != '':
         request.session[action] = request.session[action] | {
             'code' : form_mapping.data['code']
         }
