@@ -33,7 +33,7 @@
                         <div class="col-sm-12 col-md-6">
                             <div class="card">
                                 <div class="card-body">
-                                    <p class="fs-4 p-2">{{ f.grade.label }}</p>
+                                    <p name="option" class="fs-4 p-2">{{ f.grade.label }}</p>
                                     <div class="d-grid gap-2 d-xl-flex justify-content-xl-center flex-xl-fill {% if f.errors %}is-invalid{% endif %}">
                                         {% for radio in f.grade %}
                                         {{ radio.tag }}
@@ -55,7 +55,7 @@
                     </div>
                     <div class="col-sm-12">
                         <!--<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAlertPollRevote" data-bs-alternative_sp="{{ request.session.alternative_sp }}">-->
-                        <button id="save" type="submit" class="btn btn-primary">Salva</button>
+                        <button type="submit" class="btn btn-primary">Salva</button>
                     </div>
                 </form>
                 {% include 'polls/includes/modal_spiegazione_giudizio_maggioritario.html'%}
@@ -72,21 +72,33 @@
 {% block javascripts %}
 <script>
     var form = document.getElementById('vote-form');
-    var modal = new bootstrap.Modal(document.getElementById('modalAlertPollRevote'), {
-        'data-bs-toggle': 'modal',
-        'data-bs-target': '#modalAlertPollRevote',
-        'data-bs-alternative_sp': '{{ request.session.alternative_sp }}'
-    });
-    console.log(modal);
-    var btn = document.getElementById('save');
+    var modal = new bootstrap.Modal(document.getElementById('modalAlertPollRevote'));
     isRevote = window.location.href.slice(-1) == '?';
-    if (isRevote) {
+    alternative_sp = '{{request.session.alternative_sp}}'
+    console.log(alternative_sp)
+    if (alternative_sp != '') {
         form.addEventListener('submit', event => {
-        if ('ciao' == 'ciao') {//controllare se ci sono le condizioni per mostrare il modal
-            event.preventDefault()
-            modal.show()
-        } else {
+        event.preventDefault()
+        var numberFields = parseInt(form.querySelector('input[name="majorityopinionjudgement_set-TOTAL_FORMS"]').value)
+        var dict = {}
+        const formLabels = document.getElementsByName('option');
+        for (let i = 0; i < numberFields; i++) {
+            var gradeLabel = formLabels[i].innerText
+            var grade = document.querySelector(`input[name="majorityopinionjudgement_set-${i}-grade"]:checked`).value
+            dict[gradeLabel] = grade
+        }
+        var items = Object.keys(dict).map(function(key) {
+            return [key, dict[key]];
+        });
+        // Sort the array based on the second element (value of dict)
+        items.sort(function(first, second) {
+            return second[1] - first[1];
+        });
+        console.log(items)
+        if ((items[0][0] == alternative_sp) && (items[0][1] > items[1][1])) {
             form.submit()
+        } else {
+            modal.show()
         }
     })
     }

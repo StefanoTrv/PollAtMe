@@ -10,7 +10,7 @@
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
-            <button type="button" class="btn btn-primary">Salva</button>
+            <button id="saveModal" type="click" class="btn btn-primary">Salva</button>
         </div>
       </div>
     </div>
@@ -21,12 +21,13 @@
     var alertModal = document.getElementById('modalAlertPollRevote');
     var p = document.getElementById('text');
     alertModal.addEventListener('show.bs.modal', event => {
-        var button = event.relatedTarget
-        var alternative_sp = alertModal.getAttribute('data-bs-alternative_sp')
-        console.log(alternative_sp)
-        p.innerHTML = "Prima hai scelto " + alternative_sp + " e ora hai giudicato una o più altre alternative più rilevanti di " + alternative_sp + ". Premi sul pulsante Chiudi per rivedere i giudizi o sul pulsante Salva per confermare.";
+        p.innerHTML = "Prima hai scelto una alternativa e ora hai preferito/appaiato uno o più altri giudizi rispetto all'alternativa. Premi sul pulsante Chiudi per rivedere i giudizi o sul pulsante Salva per confermare.";
     })
     alertModal.addEventListener('hide.bs.modal', event => {
-      p.innerHTML = ""
+        p.innerHTML = ""
+    })
+    var saveModal = document.getElementById('saveModal');
+    saveModal.addEventListener('click', event => {
+      document.getElementById('vote-form').submit()
     })
 </script>
