@@ -23,7 +23,13 @@ shareModal.addEventListener('show.bs.modal', event => {
     var text = document.getElementById('pollLink')
     text.value = link
     var title = 'Scelta sociale ' + button.getAttribute('data-bs-title')
-    var msg = 'Ho creato la ' + title.charAt(0).toLowerCase() + title.slice(1) + '. Visitate il link per esprimere la vostra preferenza o per vedere i risultati. Si può votare fino al giorno ' + end + '. '
+    var isPublic = button.getAttribute('data-bs-public').toLowerCase() == 'true' ? true : false
+    if (isPublic) {
+      var msg = 'Condivido la '
+    } else {
+      var msg = 'Ho creato la '
+    }
+    msg = msg + title.charAt(0).toLowerCase() + title.slice(1) + '. Visitate il link per esprimere la vostra preferenza o per vedere i risultati. Si può votare fino al giorno ' + end + '. '
     socialLinks(link, msg, title)
 })
 shareModal.addEventListener('hide.bs.modal', event => {
