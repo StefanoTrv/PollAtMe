@@ -25,7 +25,7 @@
             <!-- [ sample-page ] start -->
             <div class="col-sm-12">
                 {% bootstrap_alert "Non sai come funziona questa modalità di voto? Clicca <a class='alert-link' data-bs-toggle='modal' data-bs-target='#modal-majority-explanation' href='#'>qui</a> per ulteriori informazioni." %}
-                <form method="post">
+                <form id="vote-form" method="post">
                     {% csrf_token %}
                     {{ form.management_form }}
                     <div class="row">
@@ -54,12 +54,12 @@
                         {% endfor %}
                     </div>
                     <div class="col-sm-12">
-                        <button type="submit" class="btn btn-primary">Salva</button>
-                        <button type="reset" class="btn btn-secondary">Cancella</button>
+                        <!--<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAlertPollRevote" data-bs-alternative_sp="{{ request.session.alternative_sp }}">-->
+                        <button id="save" type="submit" class="btn btn-primary">Salva</button>
                     </div>
                 </form>
-                
                 {% include 'polls/includes/modal_spiegazione_giudizio_maggioritario.html'%}
+                {% include 'polls/includes/modal-revote_alert.html' %}
             </div>
             <!-- [ sample-page ] end -->
         </div>
@@ -67,3 +67,28 @@
     </div>
 </div>
 {% endblock content %}
+
+
+{% block javascripts %}
+<script>
+    var form = document.getElementById('vote-form');
+    var modal = new bootstrap.Modal(document.getElementById('modalAlertPollRevote'), {
+        'data-bs-toggle': 'modal',
+        'data-bs-target': '#modalAlertPollRevote',
+        'data-bs-alternative_sp': '{{ request.session.alternative_sp }}'
+    });
+    console.log(modal);
+    var btn = document.getElementById('save');
+    isRevote = window.location.href.slice(-1) == '?';
+    if (isRevote) {
+        form.addEventListener('submit', event => {
+        if ('ciao' == 'ciao') {//controllare se ci sono le condizioni per mostrare il modal
+            event.preventDefault()
+            modal.show()
+        } else {
+            form.submit()
+        }
+    })
+    }
+</script>
+{% endblock javascripts %}
