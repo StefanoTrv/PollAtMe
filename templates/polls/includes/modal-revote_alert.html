@@ -2,15 +2,15 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Rivoto</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Sei sicuro?</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
             <p id="text"></p>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
-            <button id="saveModal" type="click" class="btn btn-primary">Salva</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Indietro</button>
+            <button id="saveModal" type="click" class="btn btn-primary">Conferma</button>
         </div>
       </div>
     </div>
@@ -21,7 +21,7 @@
     var alertModal = document.getElementById('modalAlertPollRevote');
     var p = document.getElementById('text');
     alertModal.addEventListener('show.bs.modal', event => {
-        p.innerHTML = "Prima hai scelto una alternativa e ora hai preferito/appaiato uno o più altri giudizi rispetto all'alternativa. Premi sul pulsante Chiudi per rivedere i giudizi o sul pulsante Salva per confermare.";
+        p.innerHTML = "Prima hai scelto {{ request.session.alternative_sp }} e ora hai dato uno o più giudizi migliori rispetto a {{ request.session.alternative_sp }}. Vuoi confermare comunque il rivoto?";
     })
     alertModal.addEventListener('hide.bs.modal', event => {
         p.innerHTML = ""
