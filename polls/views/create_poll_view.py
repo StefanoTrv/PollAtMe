@@ -70,13 +70,17 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
             f_poll.end = request.session[action]['additional_options']['end']
             f_poll.visibility = request.session[action]['additional_options']['visibility']
 
+        pollOptions = PollOptions() if poll is None else poll.polloptions
+        if 'random_order' in request.session[action]:
+            pollOptions.random_order = request.session[action]['random_order']
+
         form_additional_options = PollFormAdditionalOptions(instance=f_poll)
 
         return render(request, f'polls/create_poll/summary_and_options_{action}.html', {
             'alternatives': formset_alternatives.get_alternatives_text_list(),
             'form': form_additional_options,
             'mapping_form': PollMappingForm(instance=existing_mapping),
-            'options_form': PollOptionsForm(instance=PollOptions() if poll is None else poll.polloptions), # type: ignore
+            'options_form': PollOptionsForm(instance=pollOptions), # type: ignore
         })
     else:
         formset_alternatives._non_form_errors[0] = "Inserisci almeno due alternative." #type: ignore
@@ -92,15 +96,15 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
 
 def go_back(request: HttpRequest, action: str, alternatives: QuerySet, poll: Optional[Poll] = None):
 
-    form_options = PollFormAdditionalOptions(request.POST, instance = poll)
+    form_additionalOptions = PollFormAdditionalOptions(request.POST, instance = poll)
     form_mapping = PollMappingForm(request.POST)
-
+    form_options = PollOptionsForm(request.POST)
 
     request.session[action] = request.session[action] | {
         'additional_options' : {
-            'start' : form_options.data['start'],
-            'end' : form_options.data['end'],
-            'visibility' : form_options.data['visibility'],
+            'start' : form_additionalOptions.data['start'],
+            'end' : form_additionalOptions.data['end'],
+            'visibility' : form_additionalOptions.data['visibility'],
         }
     }
 
@@ -108,7 +112,16 @@ def go_back(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
         request.session[action] = request.session[action] | {
             'code' : form_mapping.data['code']
         }
-
+    
+    if 'random_order' in form_options.data:
+        request.session[action] = request.session[action] | {
+            'random_order' : form_options.data['random_order']
+        }
+    else:
+        request.session[action] = request.session[action] | {
+            'random_order' : False
+        }
+    
 
     return render(request, f'polls/create_poll/main_page_{action}.html', {
         'form': PollFormMain(request.session[action]['poll'], instance=poll),

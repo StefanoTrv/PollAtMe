@@ -157,6 +157,7 @@ class CreatePollViewTest(TestCase):
         assert_that(response.context['form'].initial['end']).is_equal_to(end)
         assert_that(response.context['form'].initial['visibility'] == 1).is_true
         assert_that(response.context['mapping_form'].initial['code']).is_equal_to('TestCode')
+        assert_that(response.context['options_form'].initial['random_order']).is_equal_to(False)
 
         ##dati non validi
         start = (now - timedelta(days=5)).strftime('%Y-%m-%d %H:%M:%S')
