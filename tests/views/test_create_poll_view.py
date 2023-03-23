@@ -127,14 +127,62 @@ class CreatePollViewTest(TestCase):
             'form-1-id': '',
             'form-1-DELETE': '',
         }
+
         response = self.client.post(self.url, data=step_1_data | {'summary': ''})
         assert_that(response.status_code).is_equal_to(200)
         self.assertTemplateUsed('polls/create_poll/summary_and_options_create.html')
 
-        response = self.client.post(self.url, data={'go_back': ''})
+        now = timezone.localtime(timezone.now())
+
+        start = (now + timedelta(hours=5)).strftime('%Y-%m-%d %H:%M:%S')
+        end = (now + timedelta(weeks=2)).strftime('%Y-%m-%d %H:%M:%S')
+
+        step_2_data = step_1_data | {
+            'start': start,
+            'end': end,
+            'author': self.u.id,
+            'visibility': 1,
+            'go_back': '',
+            'code': 'TestCode',
+        }
+
+        response = self.client.post(self.url, data = step_2_data)
         assert_that(response.status_code).is_equal_to(200)
         self.assertTemplateUsed(response, 'polls/create_poll/main_page_create.html')
         self.assertContains(response,'Lorem ipsum')
+
+        #mantenimento dati
+        response = self.client.post(self.url, data=step_1_data | {'summary': ''})
+        assert_that(response.context['form'].initial['start']).is_equal_to(start)
+        assert_that(response.context['form'].initial['end']).is_equal_to(end)
+        assert_that(response.context['form'].initial['visibility'] == 1).is_true
+        assert_that(response.context['mapping_form'].initial['code']).is_equal_to('TestCode')
+        assert_that(response.context['options_form'].initial['random_order']).is_equal_to(False)
+
+        ##dati non validi
+        start = (now - timedelta(days=5)).strftime('%Y-%m-%d %H:%M:%S')
+        end = (now + timedelta(weeks=2)).strftime('%Y-%m-%d %H:%M:%S')
+
+        step_2_data = step_1_data | {
+            'start':start,
+            'end': end,
+            'author': self.u.id,
+            'visibility': 1,
+            'go_back': '',
+            'code': '..2,1233..',
+        }
+
+
+        response = self.client.post(self.url, data = step_2_data)
+        assert_that(response.status_code).is_equal_to(200)
+        self.assertTemplateUsed(response, 'polls/create_poll/main_page_create.html')
+        self.assertContains(response,'Lorem ipsum')
+
+        response = self.client.post(self.url, data=step_1_data | {'summary': ''})
+        assert_that(response.context['form'].initial['start']).is_equal_to(start)
+        assert_that(response.context['form'].initial['end']).is_equal_to(end)
+        assert_that(response.context['form'].initial['visibility'] == 1).is_true
+        assert_that(response.context['mapping_form'].initial['code']).is_equal_to('..2,1233..')
 
 
     def test_aggiunta_poll_custom_code(self):
