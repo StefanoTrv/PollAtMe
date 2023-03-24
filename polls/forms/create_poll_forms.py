@@ -113,7 +113,6 @@ class PollFormAdditionalOptions(forms.ModelForm):
                 options={"format": "DD-MM-YYYY HH:mm"}
             ),
             'end': DateTimePickerInput(
-                range_from='start',
                 options={"format": "DD-MM-YYYY HH:mm"}
             ),
             'default_type': forms.Select(
