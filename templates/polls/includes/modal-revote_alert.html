@@ -21,7 +21,7 @@
     var alertModal = document.getElementById('modalAlertPollRevote');
     var p = document.getElementById('text');
     alertModal.addEventListener('show.bs.modal', event => {
-        p.innerHTML = "Prima hai scelto {{ request.session.alternative_sp }} e ora hai dato uno o più giudizi migliori rispetto a {{ request.session.alternative_sp }}. Vuoi confermare comunque il rivoto?";
+        p.innerHTML = "Prima hai scelto {{ request.session.alternative_sp }} e ora hai dato ad almeno un'altra alternativa un giudizio migliore rispetto a {{ request.session.alternative_sp }}. Vuoi confermare comunque il rivoto?";
     })
     alertModal.addEventListener('hide.bs.modal', event => {
         p.innerHTML = ""
