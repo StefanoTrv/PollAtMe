@@ -81,6 +81,12 @@
             var numberFields = parseInt(form.querySelector('input[name="majorityopinionjudgement_set-TOTAL_FORMS"]').value)
             var dict = {}
             const formLabels = document.getElementsByName('option');
+            //controllo se uno o più campi non sono stati compilati e nel caso lascio al server segnalare gli avvisi
+            for (let i = 0; i < numberFields; i++) {
+                if (document.querySelector(`input[name="majorityopinionjudgement_set-${i}-grade"]:checked`) == null) {
+                    form.submit()
+                }
+            }
             for (let i = 0; i < numberFields; i++) {
                 var gradeLabel = formLabels[i].innerText
                 var grade = document.querySelector(`input[name="majorityopinionjudgement_set-${i}-grade"]:checked`).value
