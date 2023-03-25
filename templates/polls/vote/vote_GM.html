@@ -1,5 +1,6 @@
 {% extends 'layouts/base.html' %}
 {% load django_bootstrap5 %}
+{% load shuffle %}
 
 {% block title %} {{block.super}} | {{ poll.title }} {% endblock title %}
 
@@ -25,15 +26,15 @@
             <!-- [ sample-page ] start -->
             <div class="col-sm-12">
                 {% bootstrap_alert "Non sai come funziona questa modalità di voto? Clicca <a class='alert-link' data-bs-toggle='modal' data-bs-target='#modal-majority-explanation' href='#'>qui</a> per ulteriori informazioni." %}
-                <form method="post">
+                <form id="vote-form" method="post">
                     {% csrf_token %}
                     {{ form.management_form }}
                     <div class="row">
-                        {% for f in form %}
+                        {% for f in form|shuffle:poll.polloptions.random_order %}
                         <div class="col-sm-12 col-md-6">
                             <div class="card">
                                 <div class="card-body">
-                                    <p class="fs-4 p-2">{{ f.grade.label }}</p>
+                                    <p name="option" class="fs-4 p-2">{{ f.grade.label }}</p>
                                     <div class="d-grid gap-2 d-xl-flex justify-content-xl-center flex-xl-fill {% if f.errors %}is-invalid{% endif %}">
                                         {% for radio in f.grade %}
                                         {{ radio.tag }}
@@ -54,12 +55,12 @@
                         {% endfor %}
                     </div>
                     <div class="col-sm-12">
+                        <!--<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAlertPollRevote" data-bs-alternative_sp="{{ request.session.alternative_sp }}">-->
                         <button type="submit" class="btn btn-primary">Salva</button>
-                        <button type="reset" class="btn btn-secondary">Cancella</button>
                     </div>
                 </form>
-                
                 {% include 'polls/includes/modal_spiegazione_giudizio_maggioritario.html'%}
+                {% include 'polls/includes/modal-revote_alert.html' %}
             </div>
             <!-- [ sample-page ] end -->
         </div>
@@ -67,3 +68,42 @@
     </div>
 </div>
 {% endblock content %}
+
+
+{% block javascripts %}
+<script>
+    var form = document.getElementById('vote-form');
+    var modal = new bootstrap.Modal(document.getElementById('modalAlertPollRevote'));
+    alternative_sp = '{{request.session.alternative_sp}}';
+    if (alternative_sp != '') {
+        form.addEventListener('submit', event => {
+            event.preventDefault()
+            var numberFields = parseInt(form.querySelector('input[name="majorityopinionjudgement_set-TOTAL_FORMS"]').value)
+            var dict = {}
+            const formLabels = document.getElementsByName('option');
+            //controllo se uno o più campi non sono stati compilati e nel caso lascio al server segnalare gli avvisi
+            for (let i = 0; i < numberFields; i++) {
+                if (document.querySelector(`input[name="majorityopinionjudgement_set-${i}-grade"]:checked`) == null) {
+                    form.submit()
+                }
+            }
+            for (let i = 0; i < numberFields; i++) {
+                var gradeLabel = formLabels[i].innerText
+                var grade = document.querySelector(`input[name="majorityopinionjudgement_set-${i}-grade"]:checked`).value
+                dict[gradeLabel] = grade
+            }
+            var tmp = false
+            var items = Object.keys(dict).forEach(function(key) {
+                if (key != alternative_sp && dict[key] > dict[alternative_sp]) {
+                    tmp = true
+                }
+            })
+            if (tmp) {
+                modal.show()
+            } else {
+                form.submit()
+            }
+        })
+    }
+</script>
+{% endblock javascripts %}

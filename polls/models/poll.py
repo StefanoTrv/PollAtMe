@@ -46,3 +46,9 @@ class Poll(models.Model):
     
     def is_public(self) -> bool:
         return self.visibility == Poll.PollVisibility.PUBLIC
+
+
+class PollOptions(models.Model):
+    poll = models.OneToOneField(Poll, on_delete=models.CASCADE)
+
+    random_order = models.BooleanField(default=True)

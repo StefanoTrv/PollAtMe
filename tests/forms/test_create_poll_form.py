@@ -232,7 +232,7 @@ class TestPollFormAdditionalOptions(TestCase):
     def test_errore(self):
         form = PollFormAdditionalOptions({})
         assert_that(form.is_valid()).is_false()
-        assert_that(form.errors).is_length(6)
+        assert_that(form.errors).is_length(5)
     
     def test_fine_precedente_inizio(self):
         form = PollFormAdditionalOptions({
@@ -305,3 +305,6 @@ class TestPollMappingForm(TestCase):
         form = PollMappingForm({'code': 'CodiceTest'})
         assert_that(form.is_valid()).is_false()
         assert_that(form.errors).contains_key('code')
+
+class TestPollOptionsForm(TestCase):
+    pass

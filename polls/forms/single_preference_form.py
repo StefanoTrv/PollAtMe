@@ -18,7 +18,7 @@ class SinglePreferenceForm(forms.ModelForm):
             self.fields['alternative'] = forms.ModelChoiceField(
                 queryset=poll.alternative_set.all(),
                 widget=forms.RadioSelect(attrs={
-                    'class': 'form-check-input'
+                    'class': 'btn-check'
                 }),  # specifichiamo che vogliamo un radio button
                 label=''
             )

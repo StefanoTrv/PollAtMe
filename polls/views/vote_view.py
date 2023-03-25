@@ -19,7 +19,7 @@ from polls.services import SearchPollService
 #se si accede alla pagina di voto generica, si viene reindirizzati alla pagina di voto del metodo principale
 def vote_redirect_view(request, id):
     poll = SearchPollService().search_by_id(id)
-    if poll.get_type()=="Preferenza singola":
+    if poll.default_type == 3:
         return redirect(reverse('polls:vote_single_preference', args=[id]))
     else:
         return redirect(reverse('polls:vote_MJ', args=[id]))
@@ -47,11 +47,14 @@ class _VotingView(CreateView):
             raise http.Http404("Il sondaggio ricercato non ha opzioni di risposta")
             
         #controllo che, se è un metodo di voto alternativo, l'ID della preferenza sintetica sia presente e corretto
-        if self.poll.get_type()!=self.voteType:
+        if self.poll.get_type() != self.voteType:
+            
             if 'preference_id' not in request.session:
                 raise PermissionDenied('Il voto con metodi alternativi è concesso solo durante il rivoto')
-            syntethic_preference = SinglePreference.objects.get(id=request.session['preference_id']) if self.voteType=="Preferenza singola" else MajorityPreference.objects.get(id=request.session['preference_id'])
-            if syntethic_preference.poll!=self.poll:
+            syntethic_preference = SinglePreference.objects.get(id=request.session['preference_id']) \
+                if self.voteType == "Preferenza singola" else MajorityPreference.objects.get(id=request.session['preference_id'])
+            
+            if syntethic_preference.poll != self.poll:
                 raise PermissionDenied('Il voto con metodi alternativi è concesso solo durante il rivoto\n(Dettagli dell\'errore: la preferenza sintetica è riferita ad un poll diverso)')
         
         return super().dispatch(request, *args, **kwargs)
@@ -87,7 +90,7 @@ class VoteSinglePreferenceView(_VotingView):
         form.instance.poll = self.poll
         new_preference = form.save()
 
-        if self.poll.get_type()==self.voteType:
+        if self.poll.get_type() == self.voteType:
             #crea voto sintetico
             synthetic_preference = MajorityPreference()
             synthetic_preference.poll=self.poll
@@ -95,17 +98,18 @@ class VoteSinglePreferenceView(_VotingView):
             synthetic_preference.save()
             for alternative in self.alternatives:
                 moj = MajorityOpinionJudgement()
-                moj.alternative=alternative
-                moj.preference=synthetic_preference
+                moj.alternative = alternative
+                moj.preference = synthetic_preference
                 if alternative == new_preference.alternative:
-                    moj.grade=5 # type: ignore
+                    moj.grade = 5 # type: ignore
                 else:
-                    moj.grade=1 # type: ignore
+                    moj.grade = 1 # type: ignore
                 moj.save()
                 synthetic_preference.majorityopinionjudgement_set.add(moj) # type: ignore
-            synthetic_preference.save()#serve? Forse no
+            # synthetic_preference.save() #serve? Forse no
 
-            self.request.session['preference_id']=synthetic_preference.id
+            self.request.session['preference_id'] = synthetic_preference.id
+            self.request.session['alternative_sp'] = new_preference.alternative.text
 
             return render(self.request, 'polls/vote_success.html', {'poll': self.poll})
         else:
@@ -131,7 +135,7 @@ class VoteMajorityJudgmentView(_VotingView):
             instance.preference = preference
             instance.save()
         
-        if self.poll.get_type()==self.voteType:            
+        if self.poll.get_type() == self.voteType:            
             return render(self.request, 'polls/vote_success.html', {'poll': self.poll})
         else:
             #cancello la preferenza sintetica

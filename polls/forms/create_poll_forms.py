@@ -6,7 +6,7 @@ from django.utils import timezone
 
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 
-from polls.models import Poll, Mapping, Alternative
+from polls.models import Poll, Mapping, Alternative, PollOptions
 
 # Form per la pagina principale della pagina di creazione di nuovi sondaggi, contenente i dati principali
 class BaseAlternativeFormSet(forms.BaseModelFormSet):
@@ -95,11 +95,11 @@ class PollFormMain(forms.ModelForm):
         self.fields['text'].required = False
 
 
-# Form per la seconda pagina della creazione di nuovi sondaggi, contenente opzioni secondarie
+# Form per la seconda pagina della creazione di nuovi sondaggi
 class PollFormAdditionalOptions(forms.ModelForm):
     class Meta:
         model = Poll
-        fields = "__all__"
+        exclude = ["author"]
         labels = {
             'start': 'Data inizio votazioni',
             'end': 'Data fine votazioni',
@@ -109,12 +109,10 @@ class PollFormAdditionalOptions(forms.ModelForm):
         error_messages = {} | PollFormMain.Meta.error_messages
 
         widgets = {
-            'author': forms.HiddenInput(),
             'start': DateTimePickerInput(
                 options={"format": "DD-MM-YYYY HH:mm"}
             ),
             'end': DateTimePickerInput(
-                range_from='start',
                 options={"format": "DD-MM-YYYY HH:mm"}
             ),
             'default_type': forms.Select(
@@ -122,7 +120,7 @@ class PollFormAdditionalOptions(forms.ModelForm):
             ),
             'text': forms.Textarea(attrs={
                 'style': 'resize: none;',
-                'rows': 4,
+                'rows': 5,
                 'placeholder': 'Il testo della scelta verrà lasciato vuoto'
             }),
             'visibility': forms.RadioSelect(
@@ -170,7 +168,7 @@ class PollFormAdditionalOptions(forms.ModelForm):
 class PollMappingForm(forms.ModelForm):
     class Meta:
         model = Mapping
-        fields = ['code']
+        exclude = ['poll']
         labels = {
             'code': 'Codice link personalizzato'
         }
@@ -204,4 +202,12 @@ class PollMappingForm(forms.ModelForm):
         pattern = re.compile("([a-z]|[A-Z]|\d)*")
         result = bool(pattern.fullmatch(code))
         return result
-    
+
+
+class PollOptionsForm(forms.ModelForm):
+    class Meta:
+        model = PollOptions
+        exclude = ['poll']
+        labels = {
+            'random_order': "Le alternative verranno mostrate in ordine casuale",
+        }

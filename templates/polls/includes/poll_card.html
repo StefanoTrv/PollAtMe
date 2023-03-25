@@ -21,15 +21,21 @@
             {% if poll.is_ended %} Terminato il {{ poll.end | date:"d/m/Y, H:i" }} {% endif %}
         </p>
         {% if poll.is_active %}
-        <a class="btn btn-block btn-primary mb-4" href={% url  'polls:vote' id=poll.id %}>Vota</a>
+        <a class="btn btn-block btn-primary mb-4" href={% url  'polls:vote' id=poll.id %}>
+            {% if poll.default_type == 1 %}
+                Giudica
+            {% elif poll.default_type == 3 %}
+                Scegli
+            {% endif %}
+        </a>
         {% endif %}
         
         {% if poll.is_active or poll.is_ended %}
             <a class="btn btn-block btn-secondary mb-4" href={% url 'polls:result' id=poll.id %}>Risultati</a>      
         {% endif %}
 
-        {% if poll.is_not_started and  user.is_authenticated  and user == poll.author%}
-        <a class="btn btn-block btn-warning mb-4" href={% url 'polls:edit_poll' id=poll.id %} data-bs-toggle="tooltip" data-bs-placement="top" title="Modifica il sondaggio">
+        {% if poll.is_not_started and  user.is_authenticated  and user == poll.author %}
+        <a class="btn btn-block btn-warning mb-4" href={% url 'polls:edit_poll' id=poll.id %}>
             Modifica
         </a>
         <button type="button" class="btn btn-block btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#modalDeletePollConfirm" data-bs-poll="{{ poll.id }}">
@@ -37,7 +43,7 @@
         </button>
         {% endif %}
 
-        <a class="btn btn-block btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#modalPollSharing" data-bs-code="{{ poll.mapping_set.first }}"> 
+        <a class="btn btn-block btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#modalPollSharing" data-bs-code="{{ poll.mapping }}" data-bs-public="{{ poll.is_public }}" data-bs-title="{{ poll.title }}" data-bs-end="{{ poll.end | date:"d/m/Y, H:i" }}"> 
             <em class="feather mr-2 icon-share-2"></em>
         </a>
     </div>

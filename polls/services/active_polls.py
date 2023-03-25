@@ -78,7 +78,8 @@ class SearchPollQueryBuilder:
         return self
 
     def public_filter(self, only_public = True):
-        self.__query_filter = self.__query_filter & Q(visibility=Poll.PollVisibility.PUBLIC)
+        if only_public:
+            self.__query_filter = self.__query_filter & Q(visibility=Poll.PollVisibility.PUBLIC)
 
 
     def search(self) -> list[Poll]:

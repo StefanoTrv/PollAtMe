@@ -26,18 +26,16 @@
                     </div>
                 </div>
             </div>
+        </div>
+        {% if poll.get_type == "Preferenza singola" %}
             <div class="row">
                 <div class="col-md-3"></div>
-                {% if poll.get_type == "Preferenza singola" %}
-                <div class="col-md-6 col-sm-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="text-center">Vuoi esprimere la tua preferenza con un metodo diverso?</h5>
-                            <form action={% url 'polls:vote_MJ' id=poll.id %} class="text-center">
-                                <button class="btn btn-block btn-primary mb-4"> Vota di nuovo con il giudizio maggioritario
-                                </button>
-                            </form>
-                            <p class="card-text m-2 text-left">Il <b>giudizio maggioritario</b> è un metodo di scelta in cui
+                <div class="col-md-6">
+                    <div class="card align-items-center">
+                        <div class="card-body text-center">
+                            <h5>Vuoi esprimere la tua preferenza con un metodo diverso?</h5>
+                            <a href="{% url 'polls:vote_MJ' id=poll.id %}" class="btn btn-block btn-primary mb-4">Giudica le alternative con il giudizio maggioritario</a>
+                            <p class="card-text m-2">Il <b>giudizio maggioritario</b> è un metodo di scelta in cui
                                 ogni votante esprime un giudizio per ogni alternativa.
                                 I giudizi non sono numerici, ma sono delle valutazioni come "<i>ottimo</i>", "<i>buono</i>",
                                 "<i>sufficiente</i>", "<i>scarso</i>" o "<i>pessimo</i>".
@@ -45,16 +43,13 @@
                                 giudizio complessivo per ogni alternativa.
                                 Vince l'alternativa con il giudizio complessivo migliore.
                             </p>
-                            <form action={% url 'polls:explain_gm' %} class="text-center">
-                                <button class="btn btn-link">Scopri di più sul giudizio maggioritario</button>
-                            </form>
+                            <a href="{% url 'polls:explain_gm' %}" class="btn btn-primary btn-block">Scopri di più sul giudizio maggioritario</a>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3"></div>
             </div>
             {% endif %}
-        </div>
     </div>
 </div>
 {% endblock content %}

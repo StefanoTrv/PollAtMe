@@ -7,7 +7,7 @@ from .poll import Poll
 
 
 class Mapping(models.Model):
-    poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
+    poll = models.OneToOneField(Poll, on_delete=models.CASCADE)
     code = models.CharField(unique=True, blank=True, max_length=50)
     
     def __str__(self) -> str:

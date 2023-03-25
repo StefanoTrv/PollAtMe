@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.contrib.auth.models import User
 
-from polls.models import Poll
+from polls.models import Poll, Mapping, PollOptions
 
 # Test semplificati: molti aspetti vengono già testati relativamente alla creazione, che è praticamente la stessa pagina
 class TestPollEditView(TestCase):
@@ -23,7 +23,9 @@ class TestPollEditView(TestCase):
         self.poll.alternative_set.create(text='Alternativa di prova 1')
         self.poll.alternative_set.create(text='Alternativa di prova 2')
         self.poll.visibility = 1
-        self.poll.mapping_set.create(code="lorem")
+
+        Mapping.objects.create(poll=self.poll, code="lorem")
+        PollOptions.objects.create(poll=self.poll)
 
         self.client.login(username='test', password='test')
     
@@ -50,6 +52,12 @@ class TestPollEditView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'polls/create_poll/main_page_edit.html')
 
+        ##dati preinseriti
+        assert_that(response.context['form'].initial['title']).is_equal_to('Sondaggio di prova')
+        assert_that(response.context['form'].initial['default_type']).is_equal_to(Poll.PollType.MAJORITY_JUDGMENT)
+        assert_that(response.context['form'].initial['text']).is_equal_to('Sondaggio di prova')
+
+
         data={
             'title': 'Lorem',
             'text': 'Ipsum',
@@ -59,6 +67,7 @@ class TestPollEditView(TestCase):
             'form-MIN_NUM_FORMS': 2,
             'form-MAX_NUM_FORMS': 10,
         }
+
         for i, alt in enumerate(self.poll.alternative_set.all()):
             data = data | {
                 f'form-{i}-text': alt.text,
@@ -76,6 +85,14 @@ class TestPollEditView(TestCase):
         assert_that(response.status_code).is_equal_to(200)
         self.assertTemplateUsed('polls/create_poll/summary_and_options_edit.html')
         assert_that(self.client.session.has_key('edit')).is_true()
+
+        ##dati preesistenti
+        assert_that(response.context['form'].initial['start']).is_equal_to(self.poll.start)
+        assert_that(response.context['form'].initial['end']).is_equal_to(self.poll.end)
+        assert_that(response.context['form'].initial['visibility'] == 1).is_true
+        assert_that(response.context['mapping_form'].initial['code']).is_equal_to('lorem')
+        assert_that(response.context['options_form'].initial['random_order']).is_equal_to(True)
+
 
         start = (timezone.now() + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')
         end = (timezone.now() + timedelta(days=2)).strftime('%Y-%m-%d %H:%M:%S')
@@ -99,12 +116,101 @@ class TestPollEditView(TestCase):
         assert_that(last_poll.text).is_equal_to(data['text'])
         assert_that(last_poll.alternative_set.count()).is_equal_to(2)
         assert_that(last_poll.visibility).is_equal_to(2)
-        assert_that(last_poll.mapping_set.first().code).is_not_equal_to('Lorem').is_length(6)
+        assert_that(last_poll.mapping.code).is_not_equal_to('Lorem').is_length(6)
 
         alternatives = last_poll.alternative_set.all()
         expected_texts = ['Alternativa di prova 2', 'Alternativa di prova 3']
         for alt, text in zip(alternatives, expected_texts):
             assert_that(alt.text).is_equal_to(text)
+
+
+    def test_edit_going_back(self):
+        
+        url = reverse('polls:edit_poll', kwargs={'id': self.poll.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'polls/create_poll/main_page_edit.html')
+        
+        step_1_data = {
+            'title': 'Lorem ipsum',
+            'text': 'dolor sit amet',
+            'default_type': 1,
+            'form-TOTAL_FORMS': 2,
+            'form-INITIAL_FORMS': 0,
+            'form-MIN_NUM_FORMS': 2,
+            'form-MAX_NUM_FORMS': 10,
+            'form-0-text': 'lorem',
+            'form-0-id': '',
+            'form-0-DELETE': '',
+            'form-1-text': 'ipsum',
+            'form-1-id': '',
+            'form-1-DELETE': '',
+        }
+
+        response = self.client.post(url, data=step_1_data | {'summary': ''})
+        assert_that(response.status_code).is_equal_to(200)
+        self.assertTemplateUsed('polls/create_poll/summary_and_options_create.html')
+
+        assert_that(response.context['form'].initial['start']).is_equal_to(self.poll.start)
+        assert_that(response.context['form'].initial['end']).is_equal_to(self.poll.end)
+        assert_that(response.context['form'].initial['visibility'] == 1).is_true
+        assert_that(response.context['mapping_form'].initial['code']).is_equal_to('lorem')
+        assert_that(response.context['options_form'].initial['random_order']).is_equal_to(True)
+
+        now = timezone.localtime(timezone.now())
+
+        start = (now + timedelta(hours=5)).strftime('%Y-%m-%d %H:%M:%S')
+        end = (now + timedelta(weeks=2)).strftime('%Y-%m-%d %H:%M:%S')
+
+        step_2_data = step_1_data | {
+            'start': start,
+            'end': end,
+            'author': self.u.id,
+            'visibility': 1,
+            'go_back': '',
+            'code': 'TestCode',
+        }
+
+        response = self.client.post(url, data = step_2_data)
+        assert_that(response.status_code).is_equal_to(200)
+        self.assertTemplateUsed(response, 'polls/create_poll/main_page_edit.html')
+        self.assertContains(response,'Lorem ipsum')
+
+
+
+        #mantenimento dati
+        response = self.client.post(url, data=step_1_data | {'summary': ''})
+
+        assert_that(response.context['form'].initial['start']).is_equal_to(start)
+        assert_that(response.context['form'].initial['end']).is_equal_to(end)
+        assert_that(response.context['form'].initial['visibility'] == 1).is_true
+        assert_that(response.context['mapping_form'].initial['code']).is_equal_to('TestCode')
+        assert_that(response.context['options_form'].initial['random_order']).is_equal_to(False)
+
+        ##dati non validi
+        start = (now - timedelta(days=5)).strftime('%Y-%m-%d %H:%M:%S')
+        end = (now + timedelta(weeks=2)).strftime('%Y-%m-%d %H:%M:%S')
+
+        step_2_data = step_1_data | {
+            'start':start,
+            'end': end,
+            'author': self.u.id,
+            'visibility': 1,
+            'go_back': '',
+            'code': '..2,1233..',
+        }
+
+        response = self.client.post(url, data = step_2_data)
+        assert_that(response.status_code).is_equal_to(200)
+        self.assertTemplateUsed(response, 'polls/create_poll/main_page_edit.html')
+        self.assertContains(response,'Lorem ipsum')
+
+        response = self.client.post(url, data=step_1_data | {'summary': ''})
+        assert_that(response.context['form'].initial['start']).is_equal_to(start)
+        assert_that(response.context['form'].initial['end']).is_equal_to(end)
+        assert_that(response.context['form'].initial['visibility'] == 1).is_true
+        assert_that(response.context['mapping_form'].initial['code']).is_equal_to('..2,1233..')
+
 
     def test_edit_poll_after_start(self):
         url = reverse('polls:edit_poll', kwargs={'id': self.poll.pk})

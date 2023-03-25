@@ -1,6 +1,8 @@
 {% extends 'layouts/base.html' %}
+{% load django_bootstrap5 %}
+{% load shuffle %}
 
-{% block title %} {{block.super}} | {{ poll.title }} {% endblock title %}
+{% block title %} {{ block.super }} | {{ poll.title }} {% endblock title %}
 
 {% block content %}
 <div class="pcoded-main-container">
@@ -27,21 +29,14 @@
                     {% csrf_token %}
                     <div class="card">
                         <div class="card-body">
-                        {% for radio in form.alternative %}
-                            <div class="alert alert-info" role="alert">
-                                <div class="form-check">
-                                    {{ radio.tag }}
-                                    <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label}}</label>
-                                </div>
-                            </div>
-                        {% endfor %}
+                            <p class="card-text">Scegli una delle seguenti opzioni</p>
+                            {% for radio in form.alternative|shuffle:poll.polloptions.random_order %}
+                            {{ radio.tag }}
+                            <label class="btn btn-outline-primary w-100 m-2 p-3 text-start fs-5" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                            {% endfor %}
                         </div>
                     </div>
-                    <div class="card">
-                        <div class="card-body">
-                            <button type="submit" class="btn btn-primary">Salva</button>
-                        </div>
-                    </div>
+                    <button type="submit" class="btn btn-primary">Salva</button>
                 </form>
             </div>
             <!-- [ sample-page ] end -->
