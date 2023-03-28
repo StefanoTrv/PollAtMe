@@ -53,8 +53,8 @@ class _VotingView(CreateView):
                 'Il voto con metodi alternativi è concesso solo durante il rivoto')
 
         syntethic_preference = self.__get_syntethic_preference(
-            request.session.get('preference_id'))
-        if not (self.poll.get_type() == self.voteType or syntethic_preference.poll == self.poll):
+            request.session.get('preference_id', True))
+        if not (syntethic_preference or syntethic_preference.poll == self.poll):
             raise PermissionDenied(
                 'Il voto con metodi alternativi è concesso solo durante il rivoto\n(Dettagli dell\'errore: la preferenza sintetica è riferita ad un poll diverso)')
 
@@ -69,8 +69,8 @@ class _VotingView(CreateView):
         return context
 
     def __get_syntethic_preference(self, id):
-        if self.poll.get_type() == self.voteType or id is None:
-            return None
+        if id or self.poll.get_type() == self.voteType:
+            return True
 
         if self.voteType == "Preferenza singola":
             vote_class = SinglePreference
