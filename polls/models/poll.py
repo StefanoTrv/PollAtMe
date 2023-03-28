@@ -15,7 +15,6 @@ class Poll(models.Model):
         PUBLIC = 1, _("Pubblico")
         HIDDEN = 2, _("Nascosto")
 
-
     title = models.CharField(max_length=100)
     text = models.TextField(default="")
     default_type = models.IntegerField(choices=PollType.choices, default=PollType.MAJORITY_JUDGMENT)
@@ -52,3 +51,7 @@ class PollOptions(models.Model):
     poll = models.OneToOneField(Poll, on_delete=models.CASCADE)
 
     random_order = models.BooleanField(default=True)
+    authentication_required = models.BooleanField(default=False)
+
+class AuthenticatedPoll(Poll):
+    users_have_voted = models.ManyToManyField(User)

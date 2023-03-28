@@ -210,4 +210,5 @@ class PollOptionsForm(forms.ModelForm):
         exclude = ['poll']
         labels = {
             'random_order': "Le alternative verranno mostrate in ordine casuale",
+            'authentication_required': "L'utente deve aver effettuato il login per votare",
         }
