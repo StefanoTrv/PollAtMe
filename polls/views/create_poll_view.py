@@ -43,6 +43,7 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
         })
         
         saved_data = request.session[action].get('page_2')
+        saved_data.update(request.POST.dict()) if saved_data is not None else None
 
         return render(request, f'polls/create_poll/summary_and_options_{action}.html', {
             'alternatives': formset_alternatives.get_alternatives_text_list(),
@@ -64,7 +65,7 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
 
 def go_back(request: HttpRequest, action: str, alternatives: QuerySet, poll: Optional[models.Poll] = None):
 
-    request.session[action]['page_2'] = request.POST
+    request.session[action]['page_2'] = request.POST.dict()
     request.session.modified = True
     
     return render(request, f'polls/create_poll/main_page_{action}.html', {
