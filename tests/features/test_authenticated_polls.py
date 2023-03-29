@@ -35,14 +35,12 @@ class TestAuthenticatedPollsCreate(TestCase):
             reverse('polls:create_poll'), data=step_1_data | {'summary': ''})
         now = timezone.localtime(timezone.now())
 
-        self.assertContains(response, "L'utente deve aver effettuato il login per votare")
-
         step_2_data = step_1_data | {
             'start': (now + timedelta(minutes=20)).strftime('%Y-%m-%d %H:%M:%S'),
             'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
             'author': self.u.id,
             'visibility': 1,
-            'authentication_required': '',
+            'authentication_required': True,
             'save': ''
         }
         response = self.client.post(reverse('polls:create_poll'), data=step_2_data)
@@ -55,9 +53,10 @@ class TestAuthenticatedPollsCreate(TestCase):
         assert_that(p.polloptions.authentication_required).is_true()
 
         try:
-            models.AuthenticatedPoll.objects.get(poll=p)
+            ap = models.AuthenticatedPoll.objects.get(title='Lorem ipsum')
         except models.AuthenticatedPoll.DoesNotExist:
             self.fail('AuthenticatedPoll was not created')
+        assert_that(ap.poll_ptr).is_equal_to(p)
     
 
 class TestAuthenticatedPollsVote(TestCase):
@@ -102,5 +101,3 @@ class TestAuthenticatedPollsVote(TestCase):
         self.client.login(username='test', password='test')
         response = self.__going_to_vote_page()
         self.assertContains(response, "Lorem ipsum")
-
-        

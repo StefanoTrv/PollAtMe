@@ -47,6 +47,7 @@ class AnonymousPollFactory(PollFactory):
 class AuthenticatedPollFactory(PollFactory):
     def save_poll(self, user: AbstractBaseUser, form_poll, form_mapping, form_options, formset_alternatives) -> Poll:
         base_poll: Poll = super().save_poll(user, form_poll, form_mapping, form_options, formset_alternatives)
-        saved_poll = AuthenticatedPoll.objects.create(poll=base_poll) #type: ignore
+        saved_poll = AuthenticatedPoll(poll_ptr = base_poll)
+        saved_poll.save_base(raw=True)
 
         return saved_poll
