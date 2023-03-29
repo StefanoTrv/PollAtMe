@@ -1,17 +1,15 @@
 from typing import Any, Optional, Type
 
 from django import http
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Model, QuerySet
 from django.shortcuts import render
-from django.urls import reverse
-from django.views.generic import FormView, View
+from django.views.generic import FormView
 from django.views.generic.list import ListView
 
 from polls.forms import SearchPollForm
 from polls.models import Poll
 from polls.services import PollsListService
-
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class IndexView(ListView):

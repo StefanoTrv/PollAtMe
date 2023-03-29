@@ -1,26 +1,21 @@
 from typing import Optional
 
-from django.http import HttpRequest
-from django.views.generic import TemplateView
-from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import QuerySet
-from django.utils import timezone
-from datetime import datetime, timedelta
+from django.http import HttpRequest
+from django.shortcuts import get_object_or_404, render
+from django.views.generic import TemplateView
 
-from polls.models import Poll, PollOptions
-from polls.forms import PollFormAdditionalOptions, PollFormMain, BaseAlternativeFormSet, PollMappingForm, PollOptionsForm
+from polls import forms
+from polls import models
+from polls.services import create_poll_service
 
-from django.contrib.auth.mixins import LoginRequiredMixin
-
-from polls.models.mapping import Mapping
-
-
-ALTERNATIVE_FORMSET = BaseAlternativeFormSet.get_formset_class()
+ALTERNATIVE_FORMSET = forms.BaseAlternativeFormSet.get_formset_class()
 
 
 def select_action(request: HttpRequest, poll=None):
-    action, queryset_alternatives = ('create', Poll.objects.none(
+    action, queryset_alternatives = ('create', models.Poll.objects.none(
     )) if poll is None else ('edit', poll.alternative_set.all())
 
     if 'summary' in request.POST:
@@ -33,54 +28,27 @@ def select_action(request: HttpRequest, poll=None):
         return save(request, action, queryset_alternatives, poll)
 
 
-def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Optional[Poll] = None):
-    form = PollFormMain(request.POST, instance=poll)
-    formset_alternatives: BaseAlternativeFormSet = ALTERNATIVE_FORMSET(
-        request.POST, queryset=alternatives)\
+def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Optional[models.Poll] = None):
+    form_mainpoll = forms.PollFormMain(request.POST, instance=poll)
+    formset_alternatives: forms.BaseAlternativeFormSet = ALTERNATIVE_FORMSET(request.POST, queryset=alternatives)
 
-    if form.is_valid() and formset_alternatives.is_valid():
-        f_poll: Poll = form.save(commit=False)
-        if f_poll.start is None:
-            f_poll.start = timezone.now() + timedelta(minutes=10)
-            f_poll.end = f_poll.start + timedelta(weeks=2)
-        if f_poll.author_id is None:
-            f_poll.author = request.user
-
-        if action in request.session:
-            request.session[action]['poll'] = form.cleaned_data
-            request.session[action]['alternatives'] = formset_alternatives.get_form_for_session()
-        else: 
-            request.session[action] = {
-                'poll': form.cleaned_data,
-                'alternatives': formset_alternatives.get_form_for_session()
-            }
-
-        existing_mapping = None
-        if poll != None:
-            if Mapping.objects.filter(poll=poll).count() > 0:
-                existing_mapping = Mapping.objects.filter(poll=poll).get()
+    if form_mainpoll.is_valid() and formset_alternatives.is_valid():
+        form_poll: models.Poll = form_mainpoll.get_temporary_poll()
         
-        if 'code' in request.session[action]:
-            existing_mapping = Mapping()
-            existing_mapping.code = request.session[action]['code']
+        if action not in request.session:
+            request.session[action] = {}
 
-
-        if 'additional_options' in request.session[action]:
-            f_poll.start = request.session[action]['additional_options']['start']
-            f_poll.end = request.session[action]['additional_options']['end']
-            f_poll.visibility = request.session[action]['additional_options']['visibility']
-
-        pollOptions = PollOptions() if poll is None else poll.polloptions
-        if 'random_order' in request.session[action]:
-            pollOptions.random_order = request.session[action]['random_order']
-
-        form_additional_options = PollFormAdditionalOptions(instance=f_poll)
+        request.session[action].update({
+            'page_1': formset_alternatives.get_form_for_session()
+        })
+        
+        saved_data = request.session[action].get('page_2')
 
         return render(request, f'polls/create_poll/summary_and_options_{action}.html', {
             'alternatives': formset_alternatives.get_alternatives_text_list(),
-            'form': form_additional_options,
-            'mapping_form': PollMappingForm(instance=existing_mapping),
-            'options_form': PollOptionsForm(instance=pollOptions), # type: ignore
+            'form': forms.PollFormAdditionalOptions(saved_data, instance = form_poll),
+            'mapping_form': forms.PollMappingForm(saved_data, instance = form_poll.mapping),
+            'options_form': forms.PollOptionsForm(saved_data, instance = form_poll.polloptions),
         })
     else:
         formset_alternatives._non_form_errors[0] = "Inserisci almeno due alternative." #type: ignore
@@ -89,96 +57,38 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
                 dict['text'] = ''  # type: ignore
 
         return render(request, f'polls/create_poll/main_page_{action}.html', {
-            'form': form,
+            'form': form_mainpoll,
             'formset': formset_alternatives,
         })
 
 
-def go_back(request: HttpRequest, action: str, alternatives: QuerySet, poll: Optional[Poll] = None):
+def go_back(request: HttpRequest, action: str, alternatives: QuerySet, poll: Optional[models.Poll] = None):
 
-    form_additionalOptions = PollFormAdditionalOptions(request.POST, instance = poll)
-    form_mapping = PollMappingForm(request.POST)
-    form_options = PollOptionsForm(request.POST)
-
-    request.session[action] = request.session[action] | {
-        'additional_options' : {
-            'start' : form_additionalOptions.data['start'],
-            'end' : form_additionalOptions.data['end'],
-            'visibility' : form_additionalOptions.data['visibility'],
-        }
-    }
-
-    if form_mapping.data['code'] != '':
-        request.session[action] = request.session[action] | {
-            'code' : form_mapping.data['code']
-        }
+    request.session[action]['page_2'] = request.POST
+    request.session.modified = True
     
-    if 'random_order' in form_options.data:
-        request.session[action] = request.session[action] | {
-            'random_order' : form_options.data['random_order']
-        }
-    else:
-        request.session[action] = request.session[action] | {
-            'random_order' : False
-        }
-    
-
     return render(request, f'polls/create_poll/main_page_{action}.html', {
-        'form': PollFormMain(request.session[action]['poll'], instance=poll),
-        'formset': ALTERNATIVE_FORMSET(request.session[action]['alternatives'], queryset=alternatives)
+        'form': forms.PollFormMain(request.POST, instance=poll),
+        'formset': ALTERNATIVE_FORMSET(request.session[action]['page_1'], queryset=alternatives)
     })
 
 
-def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Optional[Poll] = None):
-    form = PollFormAdditionalOptions(request.POST, instance=poll)
-    formset_alternatives: BaseAlternativeFormSet = ALTERNATIVE_FORMSET(
-        request.session[action]['alternatives'], queryset=alternatives)
+def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Optional[models.Poll] = None):
+    form_poll = forms.PollFormAdditionalOptions(request.POST, instance=poll)
+    formset_alternatives: forms.BaseAlternativeFormSet = ALTERNATIVE_FORMSET(request.session[action]['page_1'], queryset=alternatives)
+    form_mapping = forms.PollMappingForm(request.POST, instance=poll.mapping if poll is not None else None)
+    form_options = forms.PollOptionsForm(request.POST, instance=poll.polloptions if poll is not None else None)
 
-    if poll is None:
-        mapping = None
-        options = None
-    else:
-        mapping = poll.mapping # type: ignore
-        options = poll.polloptions
-
-    form_mapping: PollMappingForm = PollMappingForm(
-        request.POST, instance=mapping)
-    
-    form_options: PollOptionsForm = PollOptionsForm(
-        request.POST, instance=options)
-
-    if form.is_valid() and formset_alternatives.is_valid() and form_mapping.is_valid() and form_options.is_valid():
-        saved_poll: Poll = form.save(commit=False)
-        saved_poll.author = request.user #type: ignore
-        saved_poll.save()
-
-        saved_mapping: Mapping = form_mapping.save(commit=False)
-        saved_mapping.poll = saved_poll
-        saved_mapping.save()
-
-        saved_options: PollOptions = form_options.save(commit=False)
-        saved_options.poll = saved_poll
-        saved_options.save()
-
-        formset_alternatives.save(commit=False)
-        for alt in formset_alternatives.new_objects:
-            alt.poll = saved_poll
-            alt.save()
-
-        for alt in formset_alternatives.changed_objects:
-            alt[0].save()
-
-        for alt in formset_alternatives.deleted_objects:
-            alt.delete()
-
+    if all((form_poll.is_valid(), formset_alternatives.is_valid(), form_mapping.is_valid(), form_options.is_valid())):
+        saved_poll = create_poll_service(request.user, form_poll, form_mapping, form_options, formset_alternatives) # type: ignore
         return render(request, f'polls/{action}_poll_success.html', {
-            'code': saved_mapping.code,
+            'code': saved_poll.mapping.code,
             'title': saved_poll.title,
             'end': saved_poll.end
         })
     else:
         return render(request, f'polls/create_poll/summary_and_options_{action}.html', {
-            'form': form,
+            'form': form_poll,
             'alternatives': formset_alternatives.get_alternatives_text_list(),
             'mapping_form': form_mapping,
             'options_form': form_options,
@@ -189,8 +99,8 @@ class CreatePollView(LoginRequiredMixin, TemplateView):
 
     def get(self, request: HttpRequest, *args, **kwargs):
         return render(request, 'polls/create_poll/main_page_create.html', {
-            'form': PollFormMain(),
-            'formset': BaseAlternativeFormSet.get_formset_class()(queryset=Poll.objects.none())
+            'form': forms.PollFormMain(),
+            'formset': forms.BaseAlternativeFormSet.get_formset_class()(queryset=models.Poll.objects.none())
         })
 
     def post(self, request: HttpRequest, *args, **kwargs):
@@ -200,7 +110,7 @@ class CreatePollView(LoginRequiredMixin, TemplateView):
 class EditPollView(LoginRequiredMixin, TemplateView):
 
     def dispatch(self, request: HttpRequest, *args, **kwargs):
-        self.__poll: Poll = get_object_or_404(Poll, id=kwargs['id'])
+        self.__poll: models.Poll = get_object_or_404(models.Poll, id=kwargs['id'])
 
         if self.__poll.is_active():
             raise PermissionDenied(
@@ -218,8 +128,8 @@ class EditPollView(LoginRequiredMixin, TemplateView):
 
     def get(self, request: HttpRequest, *args, **kwargs):
         return render(request, 'polls/create_poll/main_page_edit.html', {
-            'form': PollFormMain(instance=self.__poll),
-            'formset': BaseAlternativeFormSet.get_formset_class()(queryset=self.__poll.alternative_set.all())
+            'form': forms.PollFormMain(instance=self.__poll),
+            'formset': forms.BaseAlternativeFormSet.get_formset_class()(queryset=self.__poll.alternative_set.all())
         })
 
     def post(self, request: HttpRequest, *args, **kwargs):

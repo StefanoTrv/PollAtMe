@@ -1,23 +1,18 @@
 from django.http import Http404
 from django.urls import reverse
 from django.views.generic.base import RedirectView
-
+from django.shortcuts import get_object_or_404
 
 from polls.models.mapping import Mapping
-from polls.models.poll import Poll
-
 
 
 class AccessPollView(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
 
-        passed_code = kwargs['code'] 
-
-        if Mapping.objects.filter(code=passed_code).count() == 0:
-            raise Http404
+        mapping = get_object_or_404(Mapping, code=kwargs['code'])
         
-        poll = Mapping.objects.filter(code=passed_code).get().poll ##.pk
+        poll = mapping.poll
 
         if poll.is_ended():
             self.url = reverse('polls:result', kwargs={'id': poll.pk})

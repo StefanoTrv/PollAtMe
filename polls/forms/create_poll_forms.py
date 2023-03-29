@@ -1,6 +1,7 @@
 import re
 
 from datetime import timedelta
+from typing import Any
 from django import forms
 from django.utils import timezone
 
@@ -56,7 +57,8 @@ class BaseAlternativeFormSet(forms.BaseModelFormSet):
                 'text': ""
             },
             error_messages={
-                'too_few_forms': 'Inserisci almeno %(num)d alternative valide per proseguire'
+                'too_few_forms': 'Inserisci almeno %(num)d alternative valide per proseguire',
+                'too_many_forms': 'Inserisci al massimo %(num)d alternative valide per proseguire',
             },
             can_order=False, can_delete=True,
             extra=0,
@@ -94,6 +96,19 @@ class PollFormMain(forms.ModelForm):
         super(PollFormMain, self).__init__(*args, **kwargs)
         self.fields['text'].required = False
 
+    def get_temporary_poll(self) -> Poll:
+        poll: Poll = self.instance
+        if poll.start is None:
+            poll.start = timezone.now() + timedelta(minutes=10)
+            poll.end = poll.start + timedelta(weeks=2)
+        
+        if not hasattr(poll, 'mapping'):
+            poll.mapping = Mapping()
+        
+        if not hasattr(poll, 'polloptions'):
+            poll.polloptions = PollOptions()
+        
+        return self.save(commit=False)
 
 # Form per la seconda pagina della creazione di nuovi sondaggi
 class PollFormAdditionalOptions(forms.ModelForm):

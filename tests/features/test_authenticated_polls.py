@@ -68,25 +68,39 @@ class TestAuthenticatedPollsVote(TestCase):
         self.ap.text = 'dolor sit amet'
         self.ap.default_type = models.Poll.PollType.SINGLE_PREFERENCE
         self.ap.author = self.u
-        self.ap.start = timezone.localtime(timezone.now()) + timedelta(minutes=20)
-        self.ap.end = timezone.localtime(timezone.now()) + timedelta(weeks=1)
+        self.ap.start = timezone.now()
+        self.ap.end = timezone.now() + timedelta(weeks=1)
         self.ap.visibility = models.Poll.PollVisibility.HIDDEN
-        self.ap.polloptions.authentication_required = True
+        self.ap.polloptions = models.PollOptions(authentication_required=True)
+        self.ap.mapping = models.Mapping(code="loremipsum")
+        
         self.ap.save()
-
+        self.ap.polloptions.save()
+        self.ap.mapping.save()
+        
         self.ap.alternative_set.create(text='lorem')
         self.ap.alternative_set.create(text='ipsum')
+
+    def __going_to_vote_page(self):
+        response = self.client.get(reverse('polls:access_poll', args=[self.ap.mapping.code]))
+        assert_that(response.url).is_equal_to(reverse('polls:vote', args=[self.ap.id]))
+        response = self.client.get(response.url)
+        response = self.client.get(response.url)
+        return response
 
     '''
     Se un utente non autenticato prova a votare un sondaggio che richiede l'autenticazione deve essere rimandato alla pagina di autenticazione, in questo caso deve essere anche presente un messaggio che faccia capire all'utente che per tale sondaggio è richiesta l'autenticazione. 
     '''
     def test_try_to_vote_without_authentication(self):
-        response = self.client.get(reverse('polls:access_poll', args=[self.ap.mapping.code]))
-        self.assertContains(response, "L'utente deve aver effettuato il login per votare")
+        response = self.__going_to_vote_page()
+        assert_that(response.status_code).is_equal_to(302)
         assert_that(response.url).is_equal_to(reverse('login') + '?next=' + reverse('polls:vote', args=[self.ap.id]))
+        response = self.client.get(response.url)
+        self.assertContains(response, "Devi aver effettuato il login per poter votare questa scelta")
     
     def test_try_to_vote_authenticate(self):
         self.client.login(username='test', password='test')
-        response = self.client.get(reverse('polls:access_poll', args=[self.ap.mapping.code]))
-        assert_that(response.url).is_equal_to(reverse('polls:vote', args=[self.ap.id]))
+        response = self.__going_to_vote_page()
+        self.assertContains(response, "Lorem ipsum")
+
         

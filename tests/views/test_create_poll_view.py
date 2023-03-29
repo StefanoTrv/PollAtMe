@@ -40,8 +40,22 @@ class CreatePollViewTest(TestCase):
             'form-1-text': 'ipsum',
             'form-1-id': '',
             'form-1-DELETE': '',
+            'summary': ''
         }
-        response = self.client.post(self.url, data=step_1_data | {'summary': ''})
+
+        now = timezone.localtime(timezone.now())
+        step_2_data = {
+            'title': step_1_data['title'],
+            'text': step_1_data['text'],
+            'default_type': step_1_data['default_type'],
+            'start': (now + timedelta(minutes=20)).strftime('%Y-%m-%d %H:%M:%S'),
+            'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
+            'visibility': 1,
+            'random_order': False,
+            'save': ''
+        }
+
+        response = self.client.post(self.url, data=step_1_data)
         assert_that(response.status_code).is_equal_to(200)
         self.assertTemplateUsed(response, 'polls/create_poll/summary_and_options_create.html')
 
@@ -50,17 +64,6 @@ class CreatePollViewTest(TestCase):
         assert_that(response).contains_form(PollMappingForm)
         assert_that(response).contains_form(PollOptionsForm)
 
-        assert_that(self.client.session.has_key('create')).is_true()
-        assert_that(self.client.session['create']).is_length(2)
-
-        now = timezone.localtime(timezone.now())
-        step_2_data = step_1_data | {
-            'start': (now + timedelta(minutes=20)).strftime('%Y-%m-%d %H:%M:%S'),
-            'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
-            'author': self.u.id,
-            'visibility': 1,
-            'save': ''
-        }
         response = self.client.post(self.url, data=step_2_data)
         assert_that(response.status_code).is_equal_to(200)
         self.assertTemplateUsed(response, 'polls/create_poll_success.html')
@@ -126,63 +129,38 @@ class CreatePollViewTest(TestCase):
             'form-1-text': 'ipsum',
             'form-1-id': '',
             'form-1-DELETE': '',
+            'summary': ''
         }
 
-        response = self.client.post(self.url, data=step_1_data | {'summary': ''})
+        now = timezone.now()
+        step_2_data = {
+            'title': step_1_data['title'],
+            'text': step_1_data['text'],
+            'default_type': step_1_data['default_type'],
+            'start': (now + timedelta(minutes=20)).strftime('%Y-%m-%d %H:%M:%S'),
+            'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
+            'visibility': 1,
+            'random_order': False,
+        }
+
+        response = self.client.post(self.url, data=step_1_data)
         assert_that(response.status_code).is_equal_to(200)
         self.assertTemplateUsed('polls/create_poll/summary_and_options_create.html')
 
-        now = timezone.localtime(timezone.now())
+        # torno indietro alla prima pagina
+        response = self.client.post(self.url, data=step_2_data | {'go_back': ''})
+        self.assertContains(response, step_1_data['title'])
+        self.assertContains(response, step_1_data['text'])
+        self.assertContains(response, step_1_data['default_type'])
+        self.assertContains(response, step_1_data['form-0-text'])
+        self.assertContains(response, step_1_data['form-1-text'])
 
-        start = (now + timedelta(hours=5)).strftime('%Y-%m-%d %H:%M:%S')
-        end = (now + timedelta(weeks=2)).strftime('%Y-%m-%d %H:%M:%S')
-
-        step_2_data = step_1_data | {
-            'start': start,
-            'end': end,
-            'author': self.u.id,
-            'visibility': 1,
-            'go_back': '',
-            'code': 'TestCode',
-        }
-
-        response = self.client.post(self.url, data = step_2_data)
-        assert_that(response.status_code).is_equal_to(200)
-        self.assertTemplateUsed(response, 'polls/create_poll/main_page_create.html')
-        self.assertContains(response,'Lorem ipsum')
-
-        #mantenimento dati
-        response = self.client.post(self.url, data=step_1_data | {'summary': ''})
-        assert_that(response.context['form'].initial['start']).is_equal_to(start)
-        assert_that(response.context['form'].initial['end']).is_equal_to(end)
-        assert_that(response.context['form'].initial['visibility'] == 1).is_true
-        assert_that(response.context['mapping_form'].initial['code']).is_equal_to('TestCode')
-        assert_that(response.context['options_form'].initial['random_order']).is_equal_to(False)
-
-        ##dati non validi
-        start = (now - timedelta(days=5)).strftime('%Y-%m-%d %H:%M:%S')
-        end = (now + timedelta(weeks=2)).strftime('%Y-%m-%d %H:%M:%S')
-
-        step_2_data = step_1_data | {
-            'start':start,
-            'end': end,
-            'author': self.u.id,
-            'visibility': 1,
-            'go_back': '',
-            'code': '..2,1233..',
-        }
-
-
-        response = self.client.post(self.url, data = step_2_data)
-        assert_that(response.status_code).is_equal_to(200)
-        self.assertTemplateUsed(response, 'polls/create_poll/main_page_create.html')
-        self.assertContains(response,'Lorem ipsum')
-
-        response = self.client.post(self.url, data=step_1_data | {'summary': ''})
-        assert_that(response.context['form'].initial['start']).is_equal_to(start)
-        assert_that(response.context['form'].initial['end']).is_equal_to(end)
-        assert_that(response.context['form'].initial['visibility'] == 1).is_true
-        assert_that(response.context['mapping_form'].initial['code']).is_equal_to('..2,1233..')
+        # torno alla seconda pagina
+        response = self.client.post(self.url, data=step_1_data)
+        self.assertContains(response, step_2_data['start'])
+        self.assertContains(response, step_2_data['end'])
+        assert_that(response.context['form'].cleaned_data['visibility']).is_true()
+        assert_that(response.context['options_form'].cleaned_data['random_order']).is_false()
 
 
     def test_aggiunta_poll_custom_code(self):

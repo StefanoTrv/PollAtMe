@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 
 User = get_user_model()
 
@@ -55,3 +56,7 @@ class PollOptions(models.Model):
 
 class AuthenticatedPoll(Poll):
     users_have_voted = models.ManyToManyField(User)
+
+    def clean(self) -> None:
+        if not self.poll.polloptions.authentication_required: # type: ignore
+            raise ValidationError(_("AuthenticatedPoll is only for authenticated polls"))
