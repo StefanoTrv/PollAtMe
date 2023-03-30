@@ -44,13 +44,13 @@ class Poll(models.Model):
     def is_public(self) -> bool:
         return self.visibility == Poll.PollVisibility.PUBLIC
     
-    def require_authentication(self, is_auth) -> bool:
+    def missing_authentication(self, **kwargs) -> bool:
         return False
     
-    def has_already_voted(self, user) -> bool:
+    def has_already_voted(self, **kwargs) -> bool:
         return False
     
-    def add_vote(self, user) -> None:
+    def add_vote(self, **kwargs) -> None:
         pass
     
     def __str__(self) -> str:
@@ -69,12 +69,12 @@ class AuthenticatedPoll(Poll):
         if not self.poll.polloptions.authentication_required: # type: ignore
             raise ValidationError(_("AuthenticatedPoll is only for authenticated polls"))
     
-    def require_authentication(self, is_auth) -> bool:
-        return not is_auth
+    def missing_authentication(self, **kwargs) -> bool:
+        return not kwargs.get('user', False)
 
-    def has_already_voted(self, user) -> bool:
-        return self.users_have_voted.filter(pk=user.pk).exists()
+    def has_already_voted(self, **kwargs) -> bool:
+        return self.users_have_voted.filter(pk=kwargs['user'].pk).exists()
 
-    def add_vote(self, user) -> None:
-        if not self.has_already_voted(user):
-            self.users_have_voted.add(user)
+    def add_vote(self, **kwargs) -> None:
+        if not self.has_already_voted(user=kwargs["user"]):
+            self.users_have_voted.add(kwargs['user'])

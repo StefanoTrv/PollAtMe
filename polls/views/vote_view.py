@@ -53,11 +53,11 @@ class _VotingView(CreateView):
         if not self.poll.is_active():
             raise PermissionDenied('Non è possibile votare questo sondaggio')
 
-        if self.poll.require_authentication(request.user.is_authenticated):
+        if self.poll.missing_authentication(user=request.user.is_authenticated):
             request.session['auth_message'] = 'Devi aver effettuato il login per poter votare questa scelta'
             return redirect_to_login(request.get_full_path())
 
-        if self.poll.has_already_voted(request.user) and syntethic_preference is None:
+        if self.poll.has_already_voted(user=request.user) and syntethic_preference is None:
             raise PermissionDenied('Hai già votato questo sondaggio')
 
         if not (self.poll.get_type() == self.voteType or 'preference_id' in request.session):
@@ -115,7 +115,7 @@ class VoteSinglePreferenceView(_VotingView):
         form.instance.poll = self.poll
         new_preference = form.save()
         
-        self.poll.add_vote(self.request.user)
+        self.poll.add_vote(user=self.request.user)
 
         if self.poll.get_type() == self.voteType:
             synthetic_preference = MajorityPreference.save_mj_from_sp(new_preference)
@@ -149,7 +149,7 @@ class VoteMajorityJudgmentView(_VotingView):
         preference.save()
         preference.save_mj_judgements(form.save(commit=False))
 
-        self.poll.add_vote(self.request.user)
+        self.poll.add_vote(user=self.request.user)
 
         return render(self.request, 'polls/vote_success.html', {'poll': self.poll})
 

@@ -101,3 +101,31 @@ class TestAuthenticatedPollsVote(TestCase):
         self.client.login(username='test', password='test')
         response = self.__going_to_vote_page()
         self.assertContains(response, "Lorem ipsum")
+
+    def test_try_to_revote_sp(self):
+        self.client.login(username='test', password='test')
+        response = self.client.post(reverse('polls:vote_single_preference', args=[self.ap.id]), data={
+            'alternative': 1,
+        })
+        assert_that(response.status_code).is_equal_to(200)
+
+        response = self.client.get(reverse('polls:vote_single_preference', args=[self.ap.id]))
+        self.assertContains(response, status_code=403, text="Hai già votato questo sondaggio")
+
+    def test_try_to_revote_mj(self):
+        self.ap.default_type = models.Poll.PollType.MAJORITY_JUDGMENT
+        self.ap.save()
+        self.client.login(username='test', password='test')
+        
+        response = self.client.post(reverse('polls:vote_MJ', args=[self.ap.id]), data={
+            'majorityopinionjudgement_set-TOTAL_FORMS': 2,
+            'majorityopinionjudgement_set-INITIAL_FORMS': 0,
+            'majorityopinionjudgement_set-MIN_NUM_FORMS': 2,
+            'majorityopinionjudgement_set-MAX_NUM_FORMS': 2,
+            'majorityopinionjudgement_set-0-grade': 1,
+            'majorityopinionjudgement_set-1-grade': 1
+        })
+        assert_that(response.status_code).is_equal_to(200)
+
+        response = self.client.get(reverse('polls:vote_single_preference', args=[self.ap.id]))
+        self.assertContains(response, status_code=403, text="Hai già votato questo sondaggio")
