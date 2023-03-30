@@ -131,7 +131,7 @@ class TestCreateSinglePreferenceView(TestCase):
             'alternative': 1,
         })
 
-        synthetic_vote_id = models.MajorityPreference.objects.last().id
+        synthetic_vote = models.MajorityPreference.objects.last()
         revote_url = reverse('polls:vote_MJ', args=[self.poll.pk])
         resp = self.client.get(revote_url)
         self.assertEqual(resp.status_code, 200)
@@ -145,13 +145,12 @@ class TestCreateSinglePreferenceView(TestCase):
             'majorityopinionjudgement_set-2-grade': 1,
             'majorityopinionjudgement_set-3-grade': 1,
         })
-        self.assertEqual(resp.status_code, 200)
-        assert_that(models.MajorityPreference.objects.filter(
-            id=synthetic_vote_id)).is_empty()
-        assert_that(models.MajorityPreference.objects.last().poll).is_equal_to(
-            self.poll)
-        for judgement in models.MajorityPreference.objects.last().majorityopinionjudgement_set.all():
-            self.assertEqual(judgement.grade, 1)
+        assert_that(resp.status_code).is_equal_to(200)
+
+        synthetic_vote = models.MajorityPreference.objects.get(id=synthetic_vote.id)
+        assert_that(synthetic_vote.synthetic).is_equal_to(False)
+        for opinion in synthetic_vote.majorityopinionjudgement_set.all():
+            assert_that(opinion.grade).is_equal_to(1)
 
 
 class TestCreateMajorityPreferenceView(TestCase):

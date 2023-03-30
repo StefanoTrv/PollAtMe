@@ -5,11 +5,11 @@ from allauth.account import views  # type: ignore
 from allauth.socialaccount import providers  # type: ignore
 from django.urls import include, path
 
-from .views import signup
+from .views import signup, login
 
 urlpatterns = [
     path("signup/", signup, name="account_signup"),
-    path("login/", views.login, name="account_login"),
+    path("login/", login, name="account_login"),
     path("logout/", views.logout, name="account_logout"),
 ]
 

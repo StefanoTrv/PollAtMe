@@ -40,13 +40,21 @@ class Poll(models.Model):
 
     def get_type(self) -> str:
         return self.PollType(self.default_type).label
-
-    def __str__(self) -> str:
-        return self.title
     
     def is_public(self) -> bool:
         return self.visibility == Poll.PollVisibility.PUBLIC
-
+    
+    def require_authentication(self, is_auth) -> bool:
+        return False
+    
+    def has_already_voted(self, user) -> bool:
+        return False
+    
+    def add_vote(self, user) -> None:
+        pass
+    
+    def __str__(self) -> str:
+        return self.title
 
 class PollOptions(models.Model):
     poll = models.OneToOneField(Poll, on_delete=models.CASCADE)
@@ -60,3 +68,13 @@ class AuthenticatedPoll(Poll):
     def clean(self) -> None:
         if not self.poll.polloptions.authentication_required: # type: ignore
             raise ValidationError(_("AuthenticatedPoll is only for authenticated polls"))
+    
+    def require_authentication(self, is_auth) -> bool:
+        return not is_auth
+
+    def has_already_voted(self, user) -> bool:
+        return self.users_have_voted.filter(pk=user.pk).exists()
+
+    def add_vote(self, user) -> None:
+        if not self.has_already_voted(user):
+            self.users_have_voted.add(user)

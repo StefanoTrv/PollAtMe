@@ -29,22 +29,31 @@ class MajorityPreference(Preference):
         return self.poll.title + ' (preferenza ' + ('SINTETICA' if self.synthetic else 'REALE') + ')'+'\n\t'+'\n\t'.join(opinion_list) +'\n'
     
     @staticmethod
-    def create_synthetic_preference_from_sp(vote: SinglePreference):
+    def save_mj_from_sp(vote: SinglePreference):
         synthetic_preference = MajorityPreference()
         synthetic_preference.poll = vote.poll
         synthetic_preference.synthetic = True
         synthetic_preference.save()
-        for alternative in vote.poll.alternative_set.all():
-            moj = MajorityOpinionJudgement()
-            moj.alternative = alternative
-            moj.preference = synthetic_preference
-            if alternative == vote.alternative:
-                moj.grade = MajorityOpinionJudgement.JudgementType.OTTIMO
-            else:
-                moj.grade = MajorityOpinionJudgement.JudgementType.PESSIMO
-            moj.save()
-            synthetic_preference.majorityopinionjudgement_set.add(moj)
+
+        mojs = [
+            MajorityOpinionJudgement(**{
+                'alternative': alternative,
+                'grade': MajorityOpinionJudgement.JudgementType.OTTIMO if alternative == vote.alternative 
+                    else MajorityOpinionJudgement.JudgementType.PESSIMO,
+            })
+            for alternative in vote.poll.alternative_set.all()
+        ]
+        synthetic_preference.save_mj_judgements(mojs)
+        
         return synthetic_preference
+    
+    def save_mj_judgements(self, judgments):
+        if self.pk:
+            self.majorityopinionjudgement_set.all().delete()
+
+        for j in judgments:
+            j.preference = self
+        MajorityOpinionJudgement.objects.bulk_create(judgments)
 
 class MajorityOpinionJudgement(models.Model):
     class JudgementType(models.IntegerChoices):

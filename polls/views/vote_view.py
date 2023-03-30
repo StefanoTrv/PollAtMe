@@ -13,6 +13,8 @@ from polls.forms import MajorityPreferenceFormSet, SinglePreferenceForm
 from polls.models import MajorityOpinionJudgement, MajorityPreference, Poll
 from polls.models.preference import SinglePreference
 from polls.services import SearchPollService
+from django.contrib.auth.views import redirect_to_login
+
 
 # se si accede alla pagina di voto generica, si viene reindirizzati alla pagina di voto del metodo principale
 
@@ -21,7 +23,8 @@ def vote_redirect_view(request, id):
     poll = SearchPollService().search_by_id(id)
     if poll.default_type == 3:
         return redirect(reverse('polls:vote_single_preference', args=[id]))
-    else:
+    
+    if poll.default_type == 1:
         return redirect(reverse('polls:vote_MJ', args=[id]))
 
 
@@ -43,20 +46,29 @@ class _VotingView(CreateView):
         except PollWithoutAlternativesException:
             raise http.Http404(
                 "Il sondaggio ricercato non ha opzioni di risposta")
-
+        syntethic_preference = self.__get_syntethic_preference(
+            request.session.get('preference_id', None))
         self.alternatives = self.poll.alternative_set.all()
+
         if not self.poll.is_active():
             raise PermissionDenied('Non è possibile votare questo sondaggio')
+
+        if self.poll.require_authentication(request.user.is_authenticated):
+            request.session['auth_message'] = 'Devi aver effettuato il login per poter votare questa scelta'
+            return redirect_to_login(request.get_full_path())
+
+        if self.poll.has_already_voted(request.user) and syntethic_preference is None:
+            raise PermissionDenied('Hai già votato questo sondaggio')
 
         if not (self.poll.get_type() == self.voteType or 'preference_id' in request.session):
             raise PermissionDenied(
                 'Il voto con metodi alternativi è concesso solo durante il rivoto')
 
-        syntethic_preference = self.__get_syntethic_preference(
-            request.session.get('preference_id', True))
-        if not (syntethic_preference or syntethic_preference.poll == self.poll):
+        if not (syntethic_preference is None or syntethic_preference.poll.pk == self.poll.pk):
             raise PermissionDenied(
-                'Il voto con metodi alternativi è concesso solo durante il rivoto\n(Dettagli dell\'errore: la preferenza sintetica è riferita ad un poll diverso)')
+                '''Il voto con metodi alternativi è concesso solo durante il rivoto
+                (Dettagli dell'errore: la preferenza sintetica è riferita ad una scelta diversa)'''
+            )
 
         return super().dispatch(request, *args, **kwargs)
 
@@ -69,8 +81,8 @@ class _VotingView(CreateView):
         return context
 
     def __get_syntethic_preference(self, id):
-        if id or self.poll.get_type() == self.voteType:
-            return True
+        if id is None or self.poll.get_type() == self.voteType:
+            return None
 
         if self.voteType == "Preferenza singola":
             vote_class = SinglePreference
@@ -88,7 +100,7 @@ class VoteSinglePreferenceView(_VotingView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.voteType = "Preferenza singola"
+        self.voteType = Poll.PollType.SINGLE_PREFERENCE.label
 
     def get_form_kwargs(self) -> dict[str, Any]:
         """
@@ -102,16 +114,16 @@ class VoteSinglePreferenceView(_VotingView):
     def form_valid(self, form: forms.BaseModelForm) -> http.HttpResponse:
         form.instance.poll = self.poll
         new_preference = form.save()
+        
+        self.poll.add_vote(self.request.user)
 
         if self.poll.get_type() == self.voteType:
-            synthetic_preference = MajorityPreference.create_synthetic_preference_from_sp(
-                new_preference)
+            synthetic_preference = MajorityPreference.save_mj_from_sp(new_preference)
             self.request.session['preference_id'] = synthetic_preference.id
             self.request.session['alternative_sp'] = new_preference.alternative.text
-
             return render(self.request, 'polls/vote_success.html', {'poll': self.poll, 'revote': True})
-        else:
-            return render(self.request, 'polls/vote_success.html', {'poll': self.poll})
+        
+        return render(self.request, 'polls/vote_success.html', {'poll': self.poll})
 
 
 class VoteMajorityJudgmentView(_VotingView):
@@ -122,26 +134,24 @@ class VoteMajorityJudgmentView(_VotingView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.voteType = "Giudizio maggioritario"
+        self.voteType = Poll.PollType.MAJORITY_JUDGMENT.label
 
     def form_valid(self, form: forms.BaseInlineFormSet) -> http.HttpResponse:
-        preference = MajorityPreference(poll=self.poll)
-        preference.save()
 
-        instance: MajorityOpinionJudgement
-        for instance in form.save(commit=False):
-            instance.preference = preference
-            instance.save()
-
-        if self.poll.get_type() == self.voteType:
-            return render(self.request, 'polls/vote_success.html', {'poll': self.poll})
+        synthetic_id = self.request.session.pop('preference_id', False)
+        if synthetic_id:
+            preference = MajorityPreference.objects.get(id=synthetic_id)
         else:
-            # cancello la preferenza sintetica
-            MajorityPreference.objects.get(
-                id=self.request.session['preference_id']).delete()
-            del self.request.session['preference_id']
+            preference = MajorityPreference()
+            preference.poll = self.poll
+        
+        preference.synthetic = False
+        preference.save()
+        preference.save_mj_judgements(form.save(commit=False))
 
-            return render(self.request, 'polls/vote_success.html', {'poll': self.poll})
+        self.poll.add_vote(self.request.user)
+
+        return render(self.request, 'polls/vote_success.html', {'poll': self.poll})
 
     def get_form_kwargs(self) -> dict[str, Any]:
         kwargs = super().get_form_kwargs()
@@ -155,5 +165,5 @@ class VoteMajorityJudgmentView(_VotingView):
 
 class VoteShultzeView(View):
     """
-    Class view per l'inserimento delle risposte ai sondaggi a risposta singola
+    Class view per l'inserimento delle risposte ai sondaggi con metodo Shultze
     """

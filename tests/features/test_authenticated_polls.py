@@ -93,7 +93,7 @@ class TestAuthenticatedPollsVote(TestCase):
     def test_try_to_vote_without_authentication(self):
         response = self.__going_to_vote_page()
         assert_that(response.status_code).is_equal_to(302)
-        assert_that(response.url).is_equal_to(reverse('login') + '?next=' + reverse('polls:vote', args=[self.ap.id]))
+        assert_that(response.url).is_equal_to(reverse('account_login') + '?next=' + reverse('polls:vote_single_preference', args=[self.ap.id]))
         response = self.client.get(response.url)
         self.assertContains(response, "Devi aver effettuato il login per poter votare questa scelta")
     

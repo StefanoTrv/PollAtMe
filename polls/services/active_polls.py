@@ -102,4 +102,7 @@ class SearchPollService:
                 raise PollWithoutAlternativesException
         except Poll.DoesNotExist:
             raise Http404("Il sondaggio ricercato non esiste")
+        
+        if hasattr(poll, 'authenticatedpoll'):
+            poll = poll.authenticatedpoll
         return poll
