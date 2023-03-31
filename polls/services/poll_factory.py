@@ -1,5 +1,4 @@
 from __future__ import annotations
-from abc import ABC, abstractmethod
 from polls.models import Poll, AuthenticatedPoll, Mapping, PollOptions
 from django.contrib.auth.base_user import AbstractBaseUser
 
@@ -7,9 +6,9 @@ def create_poll_service(user: AbstractBaseUser, form_poll, form_mapping, form_op
     if form_options.cleaned_data['authentication_required']:
         return AuthenticatedPollFactory().save_poll(user, form_poll, form_mapping, form_options, formset_alternatives)
     
-    return AnonymousPollFactory().save_poll(user, form_poll, form_mapping, form_options, formset_alternatives)
+    return PollFactory().save_poll(user, form_poll, form_mapping, form_options, formset_alternatives)
 
-class PollFactory(ABC):
+class PollFactory():
     def __save_alternatives(self, formset_alternatives, saved_poll):
         formset_alternatives.save(commit=False)
         for alt in formset_alternatives.new_objects:
@@ -22,11 +21,13 @@ class PollFactory(ABC):
         for alt in formset_alternatives.deleted_objects:
             alt.delete()
 
-    @abstractmethod
     def save_poll(self, user: AbstractBaseUser, form_poll, form_mapping, form_options, formset_alternatives) -> Poll:
         saved_poll: Poll = form_poll.save(commit=False)
         saved_poll.author = user #type: ignore
         saved_poll.save()
+
+        if hasattr(saved_poll, 'authenticatedpoll') and not saved_poll.polloptions.authentication_required:
+            saved_poll.authenticatedpoll.delete(keep_parents=True)
 
         saved_mapping: Mapping = form_mapping.save(commit=False)
         saved_mapping.poll = saved_poll
@@ -37,13 +38,7 @@ class PollFactory(ABC):
         saved_options.save()
 
         self.__save_alternatives(formset_alternatives, saved_poll)
-        
         return saved_poll
-
-class AnonymousPollFactory(PollFactory):
-    def save_poll(self, user: AbstractBaseUser, form_poll, form_mapping, form_options, formset_alternatives) -> Poll:
-        return super().save_poll(user, form_poll, form_mapping, form_options, formset_alternatives)
-
 class AuthenticatedPollFactory(PollFactory):
     def save_poll(self, user: AbstractBaseUser, form_poll, form_mapping, form_options, formset_alternatives) -> Poll:
         base_poll: Poll = super().save_poll(user, form_poll, form_mapping, form_options, formset_alternatives)
