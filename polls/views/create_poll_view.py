@@ -47,7 +47,7 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
 
         return render(request, f'polls/create_poll/summary_and_options_{action}.html', {
             'alternatives': formset_alternatives.get_alternatives_text_list(),
-            'form': forms.PollFormAdditionalOptions(saved_data, instance = form_poll),
+            'form': forms.PollForm(saved_data, instance = form_poll),
             'mapping_form': forms.PollMappingForm(saved_data, instance = form_poll.mapping),
             'options_form': forms.PollOptionsForm(saved_data, instance = form_poll.polloptions),
         })
@@ -75,7 +75,7 @@ def go_back(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
 
 
 def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Optional[models.Poll] = None):
-    form_poll = forms.PollFormAdditionalOptions(request.POST, instance=poll)
+    form_poll = forms.PollForm(request.POST, instance=poll)
     formset_alternatives: forms.BaseAlternativeFormSet = ALTERNATIVE_FORMSET(request.session[action]['page_1'], queryset=alternatives)
     form_mapping = forms.PollMappingForm(request.POST, instance=poll.mapping if poll is not None else None)
     form_options = forms.PollOptionsForm(request.POST, instance=poll.polloptions if poll is not None else None)

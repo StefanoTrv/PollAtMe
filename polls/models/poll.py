@@ -16,6 +16,11 @@ class Poll(models.Model):
         PUBLIC = 1, _("Pubblico")
         HIDDEN = 2, _("Nascosto")
 
+    class PollVoteType(models.IntegerChoices):
+        FREE = 1, _("Libero")
+        AUTHENTICATED = 2, _("Solo autenticati")
+        TOKENIZED = 3, _("Solo con password")
+
     title = models.CharField(max_length=100)
     text = models.TextField(default="")
     default_type = models.IntegerField(choices=PollType.choices, default=PollType.MAJORITY_JUDGMENT)
@@ -28,6 +33,7 @@ class Poll(models.Model):
     last_update = models.DateTimeField(auto_now = True)
 
     visibility = models.IntegerField(choices=PollVisibility.choices, default=PollVisibility.HIDDEN)
+    vote_type = models.IntegerField(choices=PollVoteType.choices, default=PollVoteType.FREE)
 
     def is_active(self) -> bool:
         return self.start <= timezone.now() < self.end
@@ -60,13 +66,11 @@ class PollOptions(models.Model):
     poll = models.OneToOneField(Poll, on_delete=models.CASCADE)
 
     random_order = models.BooleanField(default=True)
-    authentication_required = models.BooleanField(default=False)
-
 class AuthenticatedPoll(Poll):
     users_have_voted = models.ManyToManyField(User)
 
     def clean(self) -> None:
-        if not self.poll.polloptions.authentication_required: # type: ignore
+        if self.poll.vote_type != Poll.PollVoteType.AUTHENTICATED : # type: ignore
             raise ValidationError(_("AuthenticatedPoll is only for authenticated polls"))
     
     def missing_authentication(self, **kwargs) -> bool:
@@ -78,3 +82,18 @@ class AuthenticatedPoll(Poll):
     def add_vote(self, **kwargs) -> None:
         if not self.has_already_voted(user=kwargs["user"]):
             self.users_have_voted.add(kwargs['user'])
+
+class TokenizedPoll(Poll):
+    
+    def clean(self) -> None:
+        if self.poll.vote_type != Poll.PollVoteType.TOKENIZED : # type: ignore
+            raise ValidationError(_("TokenizedPoll is only for polls with tokens"))
+    
+    def missing_authentication(self, **kwargs) -> bool:
+        return False
+
+    def has_already_voted(self, **kwargs) -> bool:
+        return False
+
+    def add_vote(self, **kwargs) -> None:
+        pass

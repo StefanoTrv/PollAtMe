@@ -8,7 +8,7 @@ from assertpy import assert_that  # type: ignore
 from django.contrib.auth.models import User
 
 from polls.models import Poll, Alternative, PollOptions, Mapping
-from polls.forms import PollFormMain, PollFormAdditionalOptions, BaseAlternativeFormSet, PollMappingForm, PollOptionsForm
+from polls.forms import PollFormMain, PollForm, BaseAlternativeFormSet, PollMappingForm, PollOptionsForm
 
 class CreatePollViewTest(TestCase):
     
@@ -60,7 +60,7 @@ class CreatePollViewTest(TestCase):
         self.assertTemplateUsed(response, 'polls/create_poll/summary_and_options_create.html')
 
         # Verifichiamo che ci siano tutti i campi del form
-        assert_that(response).contains_form(PollFormAdditionalOptions)
+        assert_that(response).contains_form(PollForm)
         assert_that(response).contains_form(PollMappingForm)
         assert_that(response).contains_form(PollOptionsForm)
 

@@ -111,14 +111,15 @@ class PollFormMain(forms.ModelForm):
         return self.save(commit=False)
 
 # Form per la seconda pagina della creazione di nuovi sondaggi
-class PollFormAdditionalOptions(forms.ModelForm):
+class PollForm(forms.ModelForm):
     class Meta:
         model = Poll
         exclude = ["author"]
         labels = {
             'start': 'Data inizio votazioni',
             'end': 'Data fine votazioni',
-            'visibility': "Visibilità"
+            'visibility': "Visibilità",
+            'vote_type': 'Tipo di scelta',
         } | PollFormMain.Meta.labels
 
         error_messages = {} | PollFormMain.Meta.error_messages
@@ -139,10 +140,11 @@ class PollFormAdditionalOptions(forms.ModelForm):
                 'placeholder': 'Il testo della scelta verrà lasciato vuoto'
             }),
             'visibility': forms.RadioSelect(
-                choices=[
-                    ('1', 'Nascosto'),
-                    ('2', 'Pubblico'),
-                ],
+                attrs={
+                    'class': 'btn-check'
+                }
+            ),
+            'vote_type': forms.RadioSelect(
                 attrs={
                     'class': 'btn-check'
                 }
@@ -225,5 +227,4 @@ class PollOptionsForm(forms.ModelForm):
         exclude = ['poll']
         labels = {
             'random_order': "Le alternative verranno mostrate in ordine casuale",
-            'authentication_required': "L'utente deve aver effettuato il login per votare",
         }

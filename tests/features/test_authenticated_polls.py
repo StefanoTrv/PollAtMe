@@ -38,9 +38,8 @@ class TestAuthenticatedPollsCreate(TestCase):
         step_2_data = step_1_data | {
             'start': (now + timedelta(minutes=20)).strftime('%Y-%m-%d %H:%M:%S'),
             'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
-            'author': self.u.id,
-            'visibility': 1,
-            'authentication_required': True,
+            'visibility': models.Poll.PollVisibility.PUBLIC.value,
+            'vote_type': models.Poll.PollVoteType.AUTHENTICATED.value,
             'save': ''
         }
         response = self.client.post(reverse('polls:create_poll'), data=step_2_data)
@@ -50,7 +49,7 @@ class TestAuthenticatedPollsCreate(TestCase):
             p = models.Poll.objects.get(title='Lorem ipsum')
         except models.Poll.DoesNotExist:
             self.fail('Poll was not created')
-        assert_that(p.polloptions.authentication_required).is_true()
+        assert_that(p.vote_type).is_equal_to(models.Poll.PollVoteType.AUTHENTICATED.value)
 
         try:
             ap = models.AuthenticatedPoll.objects.get(title='Lorem ipsum')
@@ -70,11 +69,10 @@ class TestAuthenticatedPollsVote(TestCase):
         self.ap.start = timezone.now()
         self.ap.end = timezone.now() + timedelta(weeks=1)
         self.ap.visibility = models.Poll.PollVisibility.HIDDEN
-        self.ap.polloptions = models.PollOptions(authentication_required=True)
+        self.ap.vote_type = models.Poll.PollVoteType.AUTHENTICATED
         self.ap.mapping = models.Mapping(code="loremipsum")
         
         self.ap.save()
-        self.ap.polloptions.save()
         self.ap.mapping.save()
         
         self.ap.alternative_set.create(text='lorem')

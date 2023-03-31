@@ -102,6 +102,28 @@
                                 nella ricerca globale. Per votare e vedere i risultati sarà necessario conoscere il link
                                 della scelta.
                             </div>
+                            <h5 class="card-title">{{ form.vote_type.label }}</h5>
+                            <div class="d-grid gap-2 d-xl-flex justify-content-xl-center flex-xl-fill mb-3">
+                                {% for radio in form.vote_type %}
+                                {{ radio.tag }}
+                                <label class="btn btn-outline-secondary w-100" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                {% endfor %}
+                            </div>
+                            <div class="alert alert-primary" role="alert" id="free_alert_id"
+                            {% if form.vote_type.value == 1 or form.vote_type.value == "1" %} style="display: none;" {% else %} style="display: block;" {% endif %}>
+                                <b>Libero</b>: chiunque può votare quante volte vuole.
+                            </div>
+                            
+                            <div class="alert alert-primary" role="alert" id="auth_alert_id"
+                            {% if form.vote_type.value == 2 or form.vote_type.value == "2" %} style="display: none;" {% else %} style="display: block;" {% endif %}>
+                                <b>Solo autenticati</b>: per votare la scelta è necessario fare il login. Si può votare una sola volta e non si può
+                                modificare il voto.
+                            </div>
+
+                            <div class="alert alert-primary" role="alert" id="token_alert_id"
+                            {% if form.vote_type.value == 3 or form.vote_type.value == "3" %} style="display: none;" {% else %} style="display: block;" {% endif %}>
+                                <b>Solo con password</b>: per votare la scelta è necessario conoscere una password generata dal sistema e distribuita ai votanti dal creatore della scelta. Si può votare una sola volta e non si può modificare il voto.
+                            </div>
                         </div>
                     </div>
                     <div class="card">
@@ -145,6 +167,9 @@
 
     var public_alert = document.getElementById('public_alert_id')
     var hidden_alert = document.getElementById('hidden_alert_id')
+    var free_alert = document.getElementById('free_alert_id')
+    var auth_alert = document.getElementById('auth_alert_id')
+    var token_alert = document.getElementById('token_alert_id')
 
     document.querySelector('#id_visibility_0').onclick = () => {
         public_alert.style.display = "block"
@@ -154,6 +179,24 @@
     document.querySelector('#id_visibility_1').onclick = () => {
         public_alert.style.display = "none"
         hidden_alert.style.display = "block"
+    }
+
+    document.querySelector('#id_vote_type_1').onclick = () => {
+        free_alert.style.display = "block"
+        auth_alert.style.display = "none"
+        token_alert.style.display = "none"
+    }
+
+    document.querySelector('#id_vote_type_2').onclick = () => {
+        free_alert.style.display = "none"
+        auth_alert.style.display = "block"
+        token_alert.style.display = "none"
+    }
+
+    document.querySelector('#id_vote_type_3').onclick = () => {
+        free_alert.style.display = "none"
+        auth_alert.style.display = "none"
+        token_alert.style.display = "block"
     }
 
 </script>

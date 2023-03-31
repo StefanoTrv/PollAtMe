@@ -3,7 +3,7 @@ from polls.models import Poll, AuthenticatedPoll, Mapping, PollOptions
 from django.contrib.auth.base_user import AbstractBaseUser
 
 def create_poll_service(user: AbstractBaseUser, form_poll, form_mapping, form_options, formset_alternatives):
-    if form_options.cleaned_data['authentication_required']:
+    if form_poll.cleaned_data['vote_type'] == Poll.PollVoteType.AUTHENTICATED:
         return AuthenticatedPollFactory().save_poll(user, form_poll, form_mapping, form_options, formset_alternatives)
     
     return PollFactory().save_poll(user, form_poll, form_mapping, form_options, formset_alternatives)
@@ -26,7 +26,7 @@ class PollFactory():
         saved_poll.author = user #type: ignore
         saved_poll.save()
 
-        if hasattr(saved_poll, 'authenticatedpoll') and not saved_poll.polloptions.authentication_required:
+        if hasattr(saved_poll, 'authenticatedpoll') and saved_poll.vote_type != Poll.PollVoteType.AUTHENTICATED:
             saved_poll.authenticatedpoll.delete(keep_parents=True)
 
         saved_mapping: Mapping = form_mapping.save(commit=False)
