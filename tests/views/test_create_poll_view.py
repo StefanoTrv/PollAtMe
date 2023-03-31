@@ -50,7 +50,8 @@ class CreatePollViewTest(TestCase):
             'default_type': step_1_data['default_type'],
             'start': (now + timedelta(minutes=20)).strftime('%Y-%m-%d %H:%M:%S'),
             'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
-            'visibility': 1,
+            'visibility': Poll.PollVisibility.HIDDEN.value,
+            'vote_type': Poll.PollVoteType.FREE.value,
             'random_order': False,
             'save': ''
         }
@@ -185,11 +186,15 @@ class CreatePollViewTest(TestCase):
 
         now = timezone.localtime(timezone.now())
 
-        step_2_data = step_1_data | {
+        step_2_data = {
+            'title': step_1_data['title'],
+            'text': step_1_data['text'],
+            'default_type': step_1_data['default_type'],
             'start': (now + timedelta(minutes=20)).strftime('%Y-%m-%d %H:%M:%S'),
             'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
             'author': self.u.id,
-            'visibility': 1,
+            'visibility': Poll.PollVisibility.PUBLIC.value,
+            'vote_type': Poll.PollVoteType.FREE.value,
             'save': '',
             'code': 'TestCode',
         }
@@ -199,7 +204,6 @@ class CreatePollViewTest(TestCase):
 
         #testiamo che sia stato salvato il mapping
         assert_that(Mapping.objects.filter(code='TestCode').count()).is_equal_to(1)
-
 
 
     def test_aggiunta_poll_automatic_code(self):
@@ -223,12 +227,16 @@ class CreatePollViewTest(TestCase):
         self.assertTemplateUsed('polls/create_poll/summary_and_options_create.html')
 
         now = timezone.localtime(timezone.now())
-
-        step_2_data = step_1_data | {
+        
+        step_2_data = {
+            'title': step_1_data['title'],
+            'text': step_1_data['text'],
+            'default_type': step_1_data['default_type'],
             'start': (now + timedelta(minutes=20)).strftime('%Y-%m-%d %H:%M:%S'),
             'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
             'author': self.u.id,
-            'visibility': 1,
+            'visibility': Poll.PollVisibility.PUBLIC.value,
+            'vote_type': Poll.PollVoteType.FREE.value,
             'save': '',
             'code': '',
         }

@@ -201,7 +201,7 @@ class TestPollFormMain(TestCase):
         assert_that(p.default_type).is_equal_to(1)
 
 
-class TestPollFormAdditionalOptions(TestCase):
+class TestPollForm(TestCase):
     def setUp(self) -> None:
         self.u = User.objects.create_user(username="test")
         self.poll =  Poll(
@@ -232,7 +232,7 @@ class TestPollFormAdditionalOptions(TestCase):
     def test_errore(self):
         form = PollForm({})
         assert_that(form.is_valid()).is_false()
-        assert_that(form.errors).is_length(5)
+        assert_that(form.errors).is_length(6)
     
     def test_fine_precedente_inizio(self):
         form = PollForm({
@@ -242,7 +242,8 @@ class TestPollFormAdditionalOptions(TestCase):
             'start': timezone.now() + timezone.timedelta(days=2),
             'end': timezone.now() + timezone.timedelta(days=1),
             'author': self.u.id,
-            'visibility': 1
+            'visibility': 1,
+            'vote_type': 1
         })
 
         assert_that(form.has_error('end')).is_true()
@@ -256,7 +257,8 @@ class TestPollFormAdditionalOptions(TestCase):
             'start': timezone.now() + timezone.timedelta(minutes=4),
             'end': timezone.now() + timezone.timedelta(days=1),
             'author': self.u.id,
-            'visibility': 1
+            'visibility': 1,
+            'vote_type': 1
         })
 
         assert_that(form.has_error('start')).is_true()
@@ -270,7 +272,8 @@ class TestPollFormAdditionalOptions(TestCase):
             'start': timezone.now() + timezone.timedelta(hours=1),
             'end': timezone.now() + timezone.timedelta(hours=1, minutes=14),
             'author': self.u.id,
-            'visibility': 1
+            'visibility': 1,
+            'vote_type': 1
         })
 
         assert_that(form.has_error('end')).is_true()

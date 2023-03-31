@@ -8,13 +8,13 @@ from assertpy import assert_that  # type: ignore
 
 from polls import models
 
-class TestAuthenticatedPollsCreate(TestCase):
+class TestTokenizedPollsCreate(TestCase):
 
     def setUp(self) -> None:
         self.u = User.objects.create_user(username='test', password='test')
 
     # Crea un sondaggio autenticato
-    def test_create_authenticated_poll(self):
+    def test_create_tokenized_poll(self):
         self.client.login(username='test', password='test')
         step_1_data = {
             'title': 'Lorem ipsum',
@@ -43,7 +43,7 @@ class TestAuthenticatedPollsCreate(TestCase):
             'start': (now + timedelta(minutes=20)).strftime('%Y-%m-%d %H:%M:%S'),
             'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
             'visibility': models.Poll.PollVisibility.PUBLIC.value,
-            'vote_type': models.Poll.PollVoteType.AUTHENTICATED.value,
+            'vote_type': models.Poll.PollVoteType.TOKENIZED.value,
             'save': ''
         }
         response = self.client.post(reverse('polls:create_poll'), data=step_2_data)
@@ -53,13 +53,28 @@ class TestAuthenticatedPollsCreate(TestCase):
             p = models.Poll.objects.get(title='Lorem ipsum')
         except models.Poll.DoesNotExist:
             self.fail('Poll was not created')
-        assert_that(p.vote_type).is_equal_to(models.Poll.PollVoteType.AUTHENTICATED.value)
+        assert_that(p.vote_type).is_equal_to(models.Poll.PollVoteType.TOKENIZED.value)
 
         try:
-            ap = models.AuthenticatedPoll.objects.get(title='Lorem ipsum')
-        except models.AuthenticatedPoll.DoesNotExist:
-            self.fail('AuthenticatedPoll was not created')
+            ap = models.TokenizedPoll.objects.get(title='Lorem ipsum')
+        except models.TokenizedPoll.DoesNotExist:
+            self.fail('Tokenized Poll was not created')
         assert_that(ap.poll_ptr).is_equal_to(p)
+
+    def test_edit_tokenized_poll(self):
+        self.client.login(username='test', password='test')
+        tp = models.TokenizedPoll()
+        tp.title = 'Lorem ipsum'
+        tp.text = 'dolor sit amet'
+        tp.default_type = models.Poll.PollType.SINGLE_PREFERENCE
+        tp.author = self.u
+        tp.start = timezone.now()
+        tp.end = timezone.now() + timedelta(weeks=1)
+        tp.visibility = models.Poll.PollVisibility.HIDDEN
+        tp.vote_type = models.Poll.PollVoteType.TOKENIZED
+        tp.mapping = models.Mapping(code="loremipsum")
+        tp.save()
+        tp.mapping.save()
     
 
 class TestAuthenticatedPollsVote(TestCase):

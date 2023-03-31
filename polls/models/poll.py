@@ -33,7 +33,13 @@ class Poll(models.Model):
     last_update = models.DateTimeField(auto_now = True)
 
     visibility = models.IntegerField(choices=PollVisibility.choices, default=PollVisibility.HIDDEN)
+
+    AUTH_VOTE_TYPE_FIELDNAME = 'authenticatedpoll'
+    TOKEN_VOTE_TYPE_FIELDNAME = 'tokenizedpoll'
     vote_type = models.IntegerField(choices=PollVoteType.choices, default=PollVoteType.FREE)
+
+    MAPPING_FIELDNAME = 'mapping'
+    OPTIONS_FIELDNAME = 'polloptions'
 
     def is_active(self) -> bool:
         return self.start <= timezone.now() < self.end

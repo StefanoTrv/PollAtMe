@@ -1,12 +1,17 @@
 from __future__ import annotations
-from polls.models import Poll, AuthenticatedPoll, Mapping, PollOptions
+from polls.models import Poll, AuthenticatedPoll, Mapping, PollOptions, TokenizedPoll
 from django.contrib.auth.base_user import AbstractBaseUser
+
 
 def create_poll_service(user: AbstractBaseUser, form_poll, form_mapping, form_options, formset_alternatives):
     if form_poll.cleaned_data['vote_type'] == Poll.PollVoteType.AUTHENTICATED:
         return AuthenticatedPollFactory().save_poll(user, form_poll, form_mapping, form_options, formset_alternatives)
-    
+
+    if form_poll.cleaned_data['vote_type'] == Poll.PollVoteType.TOKENIZED:
+        return TokenizedPollFactory().save_poll(user, form_poll, form_mapping, form_options, formset_alternatives)
+
     return PollFactory().save_poll(user, form_poll, form_mapping, form_options, formset_alternatives)
+
 
 class PollFactory():
     def __save_alternatives(self, formset_alternatives, saved_poll):
@@ -23,11 +28,14 @@ class PollFactory():
 
     def save_poll(self, user: AbstractBaseUser, form_poll, form_mapping, form_options, formset_alternatives) -> Poll:
         saved_poll: Poll = form_poll.save(commit=False)
-        saved_poll.author = user #type: ignore
+        saved_poll.author = user  # type: ignore
         saved_poll.save()
 
-        if hasattr(saved_poll, 'authenticatedpoll') and saved_poll.vote_type != Poll.PollVoteType.AUTHENTICATED:
+        if hasattr(saved_poll, Poll.AUTH_VOTE_TYPE_FIELDNAME) and saved_poll.vote_type != Poll.PollVoteType.AUTHENTICATED:
             saved_poll.authenticatedpoll.delete(keep_parents=True)
+
+        if hasattr(saved_poll, Poll.TOKEN_VOTE_TYPE_FIELDNAME) and saved_poll.vote_type != Poll.PollVoteType.TOKENIZED:
+            saved_poll.tokenizedpoll.delete(keep_parents=True)
 
         saved_mapping: Mapping = form_mapping.save(commit=False)
         saved_mapping.poll = saved_poll
@@ -39,10 +47,23 @@ class PollFactory():
 
         self.__save_alternatives(formset_alternatives, saved_poll)
         return saved_poll
+
+
 class AuthenticatedPollFactory(PollFactory):
     def save_poll(self, user: AbstractBaseUser, form_poll, form_mapping, form_options, formset_alternatives) -> Poll:
-        base_poll: Poll = super().save_poll(user, form_poll, form_mapping, form_options, formset_alternatives)
-        saved_poll = AuthenticatedPoll(poll_ptr = base_poll)
+        base_poll: Poll = super().save_poll(user, form_poll, form_mapping,
+                                            form_options, formset_alternatives)
+        saved_poll = AuthenticatedPoll(poll_ptr=base_poll)
+        saved_poll.save_base(raw=True)
+
+        return saved_poll
+
+
+class TokenizedPollFactory(PollFactory):
+    def save_poll(self, user: AbstractBaseUser, form_poll, form_mapping, form_options, formset_alternatives) -> Poll:
+        base_poll: Poll = super().save_poll(user, form_poll, form_mapping,
+                                            form_options, formset_alternatives)
+        saved_poll = TokenizedPoll(poll_ptr=base_poll)
         saved_poll.save_base(raw=True)
 
         return saved_poll

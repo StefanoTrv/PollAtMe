@@ -103,7 +103,8 @@ class TestPollEditView(TestCase):
             'start': start,
             'end': end,
             'author': self.u.id,
-            'visibility': 2,
+            'visibility': Poll.PollVisibility.PUBLIC.value,
+            'vote_type': Poll.PollVoteType.FREE.value,
             'save': ''
         }
         response = self.client.post(url, data=data)
@@ -115,7 +116,7 @@ class TestPollEditView(TestCase):
         assert_that(last_poll.default_type).is_equal_to(data['default_type'])
         assert_that(last_poll.text).is_equal_to(data['text'])
         assert_that(last_poll.alternative_set.count()).is_equal_to(2)
-        assert_that(last_poll.visibility).is_equal_to(2)
+        assert_that(last_poll.visibility).is_equal_to(Poll.PollVisibility.PUBLIC.value)
         assert_that(last_poll.mapping.code).is_not_equal_to('Lorem').is_length(6)
 
         alternatives = last_poll.alternative_set.all()

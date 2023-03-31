@@ -102,10 +102,10 @@ class PollFormMain(forms.ModelForm):
             poll.start = timezone.now() + timedelta(minutes=10)
             poll.end = poll.start + timedelta(weeks=2)
         
-        if not hasattr(poll, 'mapping'):
+        if not hasattr(poll, Poll.MAPPING_FIELDNAME):
             poll.mapping = Mapping()
         
-        if not hasattr(poll, 'polloptions'):
+        if not hasattr(poll, Poll.OPTIONS_FIELDNAME):
             poll.polloptions = PollOptions()
         
         return self.save(commit=False)
@@ -119,7 +119,7 @@ class PollForm(forms.ModelForm):
             'start': 'Data inizio votazioni',
             'end': 'Data fine votazioni',
             'visibility': "Visibilità",
-            'vote_type': 'Tipo di scelta',
+            'vote_type': "Modalità di voto",
         } | PollFormMain.Meta.labels
 
         error_messages = {} | PollFormMain.Meta.error_messages

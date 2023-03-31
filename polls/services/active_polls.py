@@ -103,6 +103,10 @@ class SearchPollService:
         except Poll.DoesNotExist:
             raise Http404("Il sondaggio ricercato non esiste")
         
-        if hasattr(poll, 'authenticatedpoll'):
-            poll = poll.authenticatedpoll
+        if hasattr(poll, Poll.AUTH_VOTE_TYPE_FIELDNAME):
+            poll = getattr(poll, Poll.AUTH_VOTE_TYPE_FIELDNAME)
+
+        if hasattr(poll, Poll.TOKEN_VOTE_TYPE_FIELDNAME):
+            poll = getattr(poll, Poll.TOKEN_VOTE_TYPE_FIELDNAME)
+            
         return poll
