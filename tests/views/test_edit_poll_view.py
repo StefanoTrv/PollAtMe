@@ -104,7 +104,7 @@ class TestPollEditView(TestCase):
             'end': end,
             'author': self.u.id,
             'visibility': Poll.PollVisibility.PUBLIC.value,
-            'vote_type': Poll.PollVoteType.FREE.value,
+            'authentication_type': Poll.PollAuthenticationType.FREE.value,
             'save': ''
         }
         response = self.client.post(url, data=data)

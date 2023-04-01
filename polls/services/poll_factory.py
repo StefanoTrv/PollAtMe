@@ -4,10 +4,10 @@ from django.contrib.auth.base_user import AbstractBaseUser
 
 
 def create_poll_service(user: AbstractBaseUser, form_poll, form_mapping, form_options, formset_alternatives):
-    if form_poll.cleaned_data['vote_type'] == Poll.PollVoteType.AUTHENTICATED:
+    if form_poll.cleaned_data['authentication_type'] == Poll.PollAuthenticationType.AUTHENTICATED:
         return AuthenticatedPollFactory().save_poll(user, form_poll, form_mapping, form_options, formset_alternatives)
 
-    if form_poll.cleaned_data['vote_type'] == Poll.PollVoteType.TOKENIZED:
+    if form_poll.cleaned_data['authentication_type'] == Poll.PollAuthenticationType.TOKENIZED:
         return TokenizedPollFactory().save_poll(user, form_poll, form_mapping, form_options, formset_alternatives)
 
     return PollFactory().save_poll(user, form_poll, form_mapping, form_options, formset_alternatives)
@@ -31,10 +31,10 @@ class PollFactory():
         saved_poll.author = user  # type: ignore
         saved_poll.save()
 
-        if hasattr(saved_poll, Poll.AUTH_VOTE_TYPE_FIELDNAME) and saved_poll.vote_type != Poll.PollVoteType.AUTHENTICATED:
+        if hasattr(saved_poll, Poll.AUTH_VOTE_TYPE_FIELDNAME) and saved_poll.authentication_type != Poll.PollAuthenticationType.AUTHENTICATED:
             saved_poll.authenticatedpoll.delete(keep_parents=True)
 
-        if hasattr(saved_poll, Poll.TOKEN_VOTE_TYPE_FIELDNAME) and saved_poll.vote_type != Poll.PollVoteType.TOKENIZED:
+        if hasattr(saved_poll, Poll.TOKEN_VOTE_TYPE_FIELDNAME) and saved_poll.authentication_type != Poll.PollAuthenticationType.TOKENIZED:
             saved_poll.tokenizedpoll.delete(keep_parents=True)
 
         saved_mapping: Mapping = form_mapping.save(commit=False)

@@ -243,7 +243,7 @@ class TestPollForm(TestCase):
             'end': timezone.now() + timezone.timedelta(days=1),
             'author': self.u.id,
             'visibility': 1,
-            'vote_type': 1
+            'authentication_type': 1
         })
 
         assert_that(form.has_error('end')).is_true()
@@ -258,7 +258,7 @@ class TestPollForm(TestCase):
             'end': timezone.now() + timezone.timedelta(days=1),
             'author': self.u.id,
             'visibility': 1,
-            'vote_type': 1
+            'authentication_type': 1
         })
 
         assert_that(form.has_error('start')).is_true()
@@ -273,7 +273,7 @@ class TestPollForm(TestCase):
             'end': timezone.now() + timezone.timedelta(hours=1, minutes=14),
             'author': self.u.id,
             'visibility': 1,
-            'vote_type': 1
+            'authentication_type': 1
         })
 
         assert_that(form.has_error('end')).is_true()

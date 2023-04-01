@@ -1,5 +1,5 @@
 from .vote_view import VoteSinglePreferenceView, VoteMajorityJudgmentView, VoteShultzeView, vote_redirect_view
-from .result_view import SinglePreferenceResultView, MajorityJudgementListView, result_redirect_view
+from .result_view import SinglePreferenceResultView, MajorityJudgementResultView, result_redirect_view
 from .poll_list import *
 from .create_poll_view import *
 from .delete_poll_view import PollDeleteView

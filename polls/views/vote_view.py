@@ -19,13 +19,17 @@ from django.contrib.auth.views import redirect_to_login
 # se si accede alla pagina di voto generica, si viene reindirizzati alla pagina di voto del metodo principale
 
 
-def vote_redirect_view(request, id):
+def vote_redirect_view(request, id, token=''):
     poll = SearchPollService().search_by_id(id)
+    if token=='':
+        args = [id]
+    else:
+        args = [id,token]
     if poll.default_type == 3:
-        return redirect(reverse('polls:vote_single_preference', args=[id]))
+        return redirect(reverse('polls:vote_single_preference', args=args))
     
     if poll.default_type == 1:
-        return redirect(reverse('polls:vote_MJ', args=[id]))
+        return redirect(reverse('polls:vote_MJ', args=args))
 
 
 class _VotingView(CreateView):
@@ -33,7 +37,7 @@ class _VotingView(CreateView):
     Class view (de facto astratta) che incorpora ciò che hanno in comune le diverse pagine di voto
     """
     poll: Poll
-    voteType: str
+    authenticationType: str
     alternatives: QuerySet
 
     def dispatch(self, request, *args, **kwargs):
@@ -53,14 +57,17 @@ class _VotingView(CreateView):
         if not self.poll.is_active():
             raise PermissionDenied('Non è possibile votare questo sondaggio')
 
-        if self.poll.missing_authentication(user=request.user.is_authenticated):
-            request.session['auth_message'] = 'Devi aver effettuato il login per poter votare questa scelta'
-            return redirect_to_login(request.get_full_path())
+        if self.poll.failed_authentication(user=request.user.is_authenticated,token=kwargs.get('token','')):
+            if self.poll.authentication_type == Poll.PollAuthenticationType.AUTHENTICATED:
+                request.session['auth_message'] = 'Devi aver effettuato il login per poter votare questa scelta'
+                return redirect_to_login(request.get_full_path())
+            elif self.poll.authentication_type == Poll.PollAuthenticationType.TOKENIZED:
+                raise PermissionDenied('Token non valido') # sostituire con redirect a pagina di autenticazione con token!!!!!!!!
 
-        if self.poll.user_has_already_voted(user=request.user) and syntethic_preference is None:
+        if self.poll.user_has_already_voted(user=request.user,token=kwargs.get('token','')) and syntethic_preference is None:
             raise PermissionDenied('Hai già votato questo sondaggio')
 
-        if not (self.poll.get_type() == self.voteType or 'preference_id' in request.session):
+        if not (self.poll.get_type() == self.authenticationType or 'preference_id' in request.session):
             raise PermissionDenied(
                 'Il voto con metodi alternativi è concesso solo durante il rivoto')
 
@@ -81,13 +88,13 @@ class _VotingView(CreateView):
         return context
 
     def __get_syntethic_preference(self, id):
-        if id is None or self.poll.get_type() == self.voteType:
+        if id is None or self.poll.get_type() == self.authenticationType:
             return None
 
-        if self.voteType == "Preferenza singola":
+        if self.authenticationType == "Preferenza singola":
             vote_class = SinglePreference
 
-        if self.voteType == "Giudizio maggioritario":
+        if self.authenticationType == "Giudizio maggioritario":
             vote_class = MajorityPreference
 
         return vote_class.objects.get(id=id)
@@ -100,7 +107,7 @@ class VoteSinglePreferenceView(_VotingView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.voteType = Poll.PollType.SINGLE_PREFERENCE.label
+        self.authenticationType = Poll.PollType.SINGLE_PREFERENCE.label
 
     def get_form_kwargs(self) -> dict[str, Any]:
         """
@@ -117,7 +124,7 @@ class VoteSinglePreferenceView(_VotingView):
         
         self.poll.add_vote(user=self.request.user)
 
-        if self.poll.get_type() == self.voteType:
+        if self.poll.get_type() == self.authenticationType:
             synthetic_preference = MajorityPreference.save_mj_from_sp(new_preference)
             self.request.session['preference_id'] = synthetic_preference.id
             self.request.session['alternative_sp'] = new_preference.alternative.text
@@ -134,7 +141,7 @@ class VoteMajorityJudgmentView(_VotingView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.voteType = Poll.PollType.MAJORITY_JUDGMENT.label
+        self.authenticationType = Poll.PollType.MAJORITY_JUDGMENT.label
 
     def form_valid(self, form: forms.BaseInlineFormSet) -> http.HttpResponse:
 

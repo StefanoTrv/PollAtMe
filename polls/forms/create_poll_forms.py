@@ -119,7 +119,7 @@ class PollForm(forms.ModelForm):
             'start': 'Data inizio votazioni',
             'end': 'Data fine votazioni',
             'visibility': "Visibilità",
-            'vote_type': "Modalità di voto",
+            'authentication_type': "Modalità di voto",
         } | PollFormMain.Meta.labels
 
         error_messages = {} | PollFormMain.Meta.error_messages
@@ -144,7 +144,7 @@ class PollForm(forms.ModelForm):
                     'class': 'btn-check'
                 }
             ),
-            'vote_type': forms.RadioSelect(
+            'authentication_type': forms.RadioSelect(
                 attrs={
                     'class': 'btn-check'
                 }

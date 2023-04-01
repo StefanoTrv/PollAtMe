@@ -88,7 +88,7 @@ class ShultzePreferenceResultView(_ResultView):
         return context
     
 
-class MajorityJudgementListView(_ResultView):
+class MajorityJudgementResultView(_ResultView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)

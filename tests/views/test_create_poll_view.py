@@ -51,7 +51,7 @@ class CreatePollViewTest(TestCase):
             'start': (now + timedelta(minutes=20)).strftime('%Y-%m-%d %H:%M:%S'),
             'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
             'visibility': Poll.PollVisibility.HIDDEN.value,
-            'vote_type': Poll.PollVoteType.FREE.value,
+            'authentication_type': Poll.PollAuthenticationType.FREE.value,
             'random_order': False,
             'save': ''
         }
@@ -194,7 +194,7 @@ class CreatePollViewTest(TestCase):
             'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
             'author': self.u.id,
             'visibility': Poll.PollVisibility.PUBLIC.value,
-            'vote_type': Poll.PollVoteType.FREE.value,
+            'authentication_type': Poll.PollAuthenticationType.FREE.value,
             'save': '',
             'code': 'TestCode',
         }
@@ -236,7 +236,7 @@ class CreatePollViewTest(TestCase):
             'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
             'author': self.u.id,
             'visibility': Poll.PollVisibility.PUBLIC.value,
-            'vote_type': Poll.PollVoteType.FREE.value,
+            'authentication_type': Poll.PollAuthenticationType.FREE.value,
             'save': '',
             'code': '',
         }

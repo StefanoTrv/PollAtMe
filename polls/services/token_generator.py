@@ -13,7 +13,7 @@ def generate_tokens(poll : TokenizedPoll, n = 0):
     new_tokens_list: List[str] = []
     for i in range(n):
         token = __create_token()
-        while Token.objects.filter(token=token).filter(poll=poll).count() != 0:
+        while Token.objects.filter(token=token,poll=poll).exists():
             token = __create_token()
         Token.objects.create(poll=poll, token=token, used=False)
         new_tokens_list.append(token)

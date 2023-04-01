@@ -17,7 +17,11 @@ class AccessPollView(RedirectView):
         if poll.is_ended():
             self.url = reverse('polls:result', kwargs={'id': poll.pk})
         else:
-            self.url = reverse('polls:vote', kwargs={'id': poll.pk})
+            if 'token' in kwargs:
+                redirect_args = {'id': poll.pk, 'token': kwargs['token']}
+            else:
+                redirect_args={'id': poll.pk}
+            self.url = reverse('polls:vote', kwargs=redirect_args)
             
         return super().get_redirect_url(*args, **kwargs)
 

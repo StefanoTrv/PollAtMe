@@ -43,7 +43,7 @@ class TestTokenizedPollsCreate(TestCase):
             'start': (now + timedelta(minutes=20)).strftime('%Y-%m-%d %H:%M:%S'),
             'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
             'visibility': models.Poll.PollVisibility.PUBLIC.value,
-            'vote_type': models.Poll.PollVoteType.TOKENIZED.value,
+            'authentication_type': models.Poll.PollAuthenticationType.TOKENIZED.value,
             'save': ''
         }
         response = self.client.post(reverse('polls:create_poll'), data=step_2_data)
@@ -53,7 +53,7 @@ class TestTokenizedPollsCreate(TestCase):
             p = models.Poll.objects.get(title='Lorem ipsum')
         except models.Poll.DoesNotExist:
             self.fail('Poll was not created')
-        assert_that(p.vote_type).is_equal_to(models.Poll.PollVoteType.TOKENIZED.value)
+        assert_that(p.authentication_type).is_equal_to(models.Poll.PollAuthenticationType.TOKENIZED.value)
 
         try:
             ap = models.TokenizedPoll.objects.get(title='Lorem ipsum')
@@ -71,7 +71,7 @@ class TestTokenizedPollsCreate(TestCase):
         tp.start = timezone.localtime(timezone.now()) + timedelta(minutes=20)
         tp.end = timezone.localtime(timezone.now()) + timedelta(weeks=1)
         tp.visibility = models.Poll.PollVisibility.HIDDEN
-        tp.vote_type = models.Poll.PollVoteType.TOKENIZED
+        tp.authentication_type = models.Poll.PollAuthenticationType.TOKENIZED
         tp.mapping = models.Mapping(code="loremipsum")
         tp.polloptions = models.PollOptions()
         tp.save()
@@ -105,7 +105,7 @@ class TestTokenizedPollsCreate(TestCase):
             'start': tp.start.strftime('%Y-%m-%d %H:%M:%S'),
             'end': tp.end.strftime('%Y-%m-%d %H:%M:%S'),
             'visibility': models.Poll.PollVisibility.PUBLIC.value,
-            'vote_type': models.Poll.PollVoteType.FREE.value,
+            'authentication_type': models.Poll.PollAuthenticationType.FREE.value,
             'save': ''
         }
 
@@ -115,5 +115,5 @@ class TestTokenizedPollsCreate(TestCase):
         self.assertContains(response, 'Fatto! La tua scelta è stata modificata.')
 
         tp = models.Poll.objects.get(id=tp.pk)
-        assert_that(tp.vote_type).is_equal_to(models.Poll.PollVoteType.FREE.value)
+        assert_that(tp.authentication_type).is_equal_to(models.Poll.PollAuthenticationType.FREE.value)
         assert_that(getattr).raises(AttributeError).when_called_with(tp, models.Poll.TOKEN_VOTE_TYPE_FIELDNAME)
