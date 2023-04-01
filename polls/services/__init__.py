@@ -2,3 +2,4 @@ from .active_polls import PollsListService, SearchPollService, SearchPollQueryBu
 from .preferenza_singola import SinglePreferencePollResultsService
 from .giudizio_maggioritario import MajorityJudgementService
 from .poll_factory import create_poll_service
+from .token_generator import generate_tokens
