@@ -57,7 +57,7 @@ class _VotingView(CreateView):
             request.session['auth_message'] = 'Devi aver effettuato il login per poter votare questa scelta'
             return redirect_to_login(request.get_full_path())
 
-        if self.poll.has_already_voted(user=request.user) and syntethic_preference is None:
+        if self.poll.user_has_already_voted(user=request.user) and syntethic_preference is None:
             raise PermissionDenied('Hai già votato questo sondaggio')
 
         if not (self.poll.get_type() == self.voteType or 'preference_id' in request.session):

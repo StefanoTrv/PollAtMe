@@ -59,7 +59,7 @@ class Poll(models.Model):
     def missing_authentication(self, **kwargs) -> bool:
         return False
     
-    def has_already_voted(self, **kwargs) -> bool:
+    def user_has_already_voted(self, **kwargs) -> bool:
         return False
     
     def add_vote(self, **kwargs) -> None:
@@ -72,8 +72,9 @@ class PollOptions(models.Model):
     poll = models.OneToOneField(Poll, on_delete=models.CASCADE)
 
     random_order = models.BooleanField(default=True)
+
 class AuthenticatedPoll(Poll):
-    users_have_voted = models.ManyToManyField(User)
+    users_that_have_voted = models.ManyToManyField(User)
 
     def clean(self) -> None:
         if self.poll.vote_type != Poll.PollVoteType.AUTHENTICATED : # type: ignore
@@ -82,12 +83,14 @@ class AuthenticatedPoll(Poll):
     def missing_authentication(self, **kwargs) -> bool:
         return not kwargs.get('user', False)
 
-    def has_already_voted(self, **kwargs) -> bool:
-        return self.users_have_voted.filter(pk=kwargs['user'].pk).exists()
+    def user_has_already_voted(self, **kwargs) -> bool:
+        return self.users_that_have_voted.filter(pk=kwargs['user'].pk).exists()
 
     def add_vote(self, **kwargs) -> None:
-        if not self.has_already_voted(user=kwargs["user"]):
-            self.users_have_voted.add(kwargs['user'])
+        if not self.user_has_already_voted(user=kwargs["user"]):
+            self.users_that_have_voted.add(kwargs['user'])
+        else:
+            raise ValidationError(_("User has already voted"))
 
 class TokenizedPoll(Poll):
     
@@ -98,7 +101,7 @@ class TokenizedPoll(Poll):
     def missing_authentication(self, **kwargs) -> bool:
         return False
 
-    def has_already_voted(self, **kwargs) -> bool:
+    def user_has_already_voted(self, **kwargs) -> bool:
         return False
 
     def add_vote(self, **kwargs) -> None:
