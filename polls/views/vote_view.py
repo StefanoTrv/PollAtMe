@@ -48,8 +48,7 @@ class _VotingView(CreateView):
         try:
             self.poll = SearchPollService().search_by_id(kwargs['id'])
         except PollWithoutAlternativesException:
-            raise http.Http404(
-                "Il sondaggio ricercato non ha opzioni di risposta")
+            raise http.Http404("Il sondaggio ricercato non ha opzioni di risposta")
         syntethic_preference = self.__get_syntethic_preference(
             request.session.get('preference_id', None))
         self.alternatives = self.poll.alternative_set.all()
@@ -57,14 +56,14 @@ class _VotingView(CreateView):
         if not self.poll.is_active():
             raise PermissionDenied('Non è possibile votare questo sondaggio')
 
-        if self.poll.failed_authentication(user=request.user.is_authenticated,token=kwargs.get('token','')):
+        if self.poll.failed_authentication(user=request.user.is_authenticated,token=kwargs.get('token','').replace('-',' ')):
             if self.poll.authentication_type == Poll.PollAuthenticationType.AUTHENTICATED:
                 request.session['auth_message'] = 'Devi aver effettuato il login per poter votare questa scelta'
                 return redirect_to_login(request.get_full_path())
             elif self.poll.authentication_type == Poll.PollAuthenticationType.TOKENIZED:
                 raise PermissionDenied('Token non valido') # sostituire con redirect a pagina di autenticazione con token!!!!!!!!
 
-        if self.poll.user_has_already_voted(user=request.user,token=kwargs.get('token','')) and syntethic_preference is None:
+        if self.poll.user_has_already_voted(user=request.user,token=kwargs.get('token','').replace('-',' ')) and syntethic_preference is None:
             raise PermissionDenied('Hai già votato questo sondaggio')
 
         if not (self.poll.get_type() == self.authenticationType or 'preference_id' in request.session):
