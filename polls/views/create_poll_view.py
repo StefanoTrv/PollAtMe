@@ -54,6 +54,7 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
                 'poll': form.cleaned_data,
                 'alternatives': formset_alternatives.get_form_for_session()
             }
+            request.session.modified = True
 
         existing_mapping = None
         if poll != None:
