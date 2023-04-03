@@ -41,10 +41,11 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
         request.session[action].update({
             'page_1': formset_alternatives.get_form_for_session()
         })
-        
+
         saved_data = request.session[action].get('page_2')
         saved_data.update(request.POST.dict()) if saved_data is not None else None
-
+        request.session.modified = True
+        
         return render(request, f'polls/create_poll/summary_and_options_{action}.html', {
             'alternatives': formset_alternatives.get_alternatives_text_list(),
             'form': forms.PollForm(saved_data, instance = form_poll),
