@@ -54,7 +54,6 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
                 'poll': form.cleaned_data,
                 'alternatives': formset_alternatives.get_form_for_session()
             }
-            request.session.modified = True
 
         existing_mapping = None
         if poll != None:
@@ -76,7 +75,8 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
             pollOptions.random_order = request.session[action]['random_order']
 
         form_additional_options = PollFormAdditionalOptions(instance=f_poll)
-
+        
+        request.session.modified = True
         return render(request, f'polls/create_poll/summary_and_options_{action}.html', {
             'alternatives': formset_alternatives.get_alternatives_text_list(),
             'form': form_additional_options,
