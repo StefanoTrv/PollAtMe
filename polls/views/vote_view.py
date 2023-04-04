@@ -67,7 +67,10 @@ class _VotingView(CreateView):
                 raise PermissionDenied('Token non valido') # sostituire con redirect a pagina di autenticazione con token!!!!!!!!
 
         if self.poll.user_has_already_voted(user=request.user,token=self.token) and syntethic_preference is None:
-            raise PermissionDenied('Hai già votato questo sondaggio')
+            if self.poll.authentication_type == Poll.PollAuthenticationType.AUTHENTICATED:
+                raise PermissionDenied('Hai già votato questo sondaggio')
+            elif self.poll.authentication_type == Poll.PollAuthenticationType.TOKENIZED:
+                return redirect(reverse('polls:result', args=[kwargs['id']]))
 
         if not (self.poll.get_type() == self.pollType or 'preference_id' in request.session):
             raise PermissionDenied(

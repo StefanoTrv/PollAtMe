@@ -101,15 +101,12 @@ class TokenizedPoll(Poll):
             raise ValidationError(_("TokenizedPoll is only for polls with tokens"))
     
     def failed_authentication(self, **kwargs) -> bool:
-        print(kwargs)
         return not Token.objects.filter(poll=self,token=kwargs['token']).exists()
 
     def user_has_already_voted(self, **kwargs) -> bool:
         return Token.objects.filter(token=kwargs['token']).first().used # type: ignore
 
     def add_vote(self, **kwargs) -> None:
-        print("Da qui")
-        print(kwargs)
         if self.failed_authentication(**kwargs):
             raise ValidationError(_("The token is not valid"))
         elif self.user_has_already_voted(**kwargs):
