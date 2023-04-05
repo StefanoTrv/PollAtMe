@@ -19,7 +19,7 @@ def remove_csfr_token(response):
     )
 
 
-class TestCreateSinglePreferenceView(TestCase):
+class TestVoteSinglePreferenceView(TestCase):
     fixtures = ['polls.json']
     URL = 'polls:vote_single_preference'
 
@@ -153,7 +153,7 @@ class TestCreateSinglePreferenceView(TestCase):
             assert_that(opinion.grade).is_equal_to(1)
 
 
-class TestCreateMajorityPreferenceView(TestCase):
+class TestVoteMajorityPreferenceView(TestCase):
     fixtures = ['polls.json']
     URL = 'polls:vote_MJ'
 

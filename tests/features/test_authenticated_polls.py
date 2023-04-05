@@ -138,7 +138,7 @@ class TestAuthenticatedPollsVote(TestCase):
         self.ap.alternative_set.create(text='lorem')
         self.ap.alternative_set.create(text='ipsum')
 
-    def __going_to_vote_page(self):
+    def __go_to_vote_page(self):
         response = self.client.get(reverse('polls:access_poll', args=[self.ap.mapping.code]))
         assert_that(response.url).is_equal_to(reverse('polls:vote', args=[self.ap.id]))
         response = self.client.get(response.url)
@@ -148,19 +148,19 @@ class TestAuthenticatedPollsVote(TestCase):
     '''
     Se un utente non autenticato prova a votare un sondaggio che richiede l'autenticazione deve essere rimandato alla pagina di autenticazione, in questo caso deve essere anche presente un messaggio che faccia capire all'utente che per tale sondaggio è richiesta l'autenticazione. 
     '''
-    def test_try_to_vote_without_authentication(self):
-        response = self.__going_to_vote_page()
+    def test_try_go_to_vote_page_without_authentication(self):
+        response = self.__go_to_vote_page()
         assert_that(response.status_code).is_equal_to(302)
         assert_that(response.url).is_equal_to(reverse('account_login') + '?next=' + reverse('polls:vote_single_preference', args=[self.ap.id]))
         response = self.client.get(response.url)
         self.assertContains(response, "Devi aver effettuato il login per poter votare questa scelta")
     
-    def test_try_to_vote_authenticate(self):
+    def test_go_to_vote_page_authenticate(self):
         self.client.login(username='test', password='test')
-        response = self.__going_to_vote_page()
+        response = self.__go_to_vote_page()
         self.assertContains(response, "Lorem ipsum")
 
-    def test_try_to_revote_sp(self):
+    def test_blocks_revote_sp(self):
         self.ap.default_type = models.Poll.PollType.SINGLE_PREFERENCE
         self.ap.save()
         self.client.login(username='test', password='test')
@@ -172,7 +172,7 @@ class TestAuthenticatedPollsVote(TestCase):
         response = self.client.get(reverse('polls:vote_single_preference', args=[self.ap.id]))
         self.assertContains(response, status_code=403, text="Hai già votato questo sondaggio")
 
-    def test_try_to_revote_mj(self):
+    def test_blocks_revote_mj(self):
         self.ap.default_type = models.Poll.PollType.MAJORITY_JUDGMENT
         self.ap.save()
         self.client.login(username='test', password='test')
