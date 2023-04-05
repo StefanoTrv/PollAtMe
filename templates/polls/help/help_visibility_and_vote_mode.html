@@ -1,0 +1,84 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} {{block.super}} | Opzione avanzate {% endblock title %}
+
+{% block content %}
+
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">Opzioni avanzate</h3>
+                        <p class="card-text">
+                            Nella pagina corrente ti verranno spiegate in maniera più dettagliata le possibili opzioni riguardo la visibilità e le modalità di voto della scelta.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Visibilità</h5>
+                        <p>La visibilità di una scelta può essere di due tipi:</p>
+                        <ul>
+                            <li>
+                                <b>Pubblica</b>: la scelta sarà visibile sia tra le scelte pubbliche, sia tra "Le mie scelte". Inoltre apparirà nella ricerca globale se si proverà a cercarla. 
+                                Tutti potranno votare ed accedere ai risultati.
+                            </li>
+                            <br>
+                            <li>
+                                <b>Nascosta</b>: la scelta sarà solamente visibile nella sezione "Le mie scelte". Non comparirà tra le scelte pubbliche e non apparirà nemmeno utilizzando la ricerca
+                                globale. Per votare e vedere i risultati sarà necessario conoscere il link della scelta.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Modalità di voto</h5>
+                        <p>Le modalità di voto possono essere di tre tipi:</p>
+                        <ul>
+                            <li>
+                                <b>Libera</b>: il voto può essere espresso da chiunque senza necessità di effettuare login o di conoscere un codice per poter votare. Inoltre, non si sono limiti
+                                sul numero di volte che un votante può esprimere la propria preferenza. Qualora il sondaggio venga votato accedendo a ScegliMeglio, per facilitare i votanti, accanto 
+                                al pulsante per votare, vedranno la seguente icona &nbsp<i class="bi bi-universal-access"></i>
+                            </li>
+                            <br>
+                            <li>
+                                <b>Solo autenticati</b>: il voto è ammesso soltanto da utenti autenticati, ovvero da utenti che hanno effettuato il login, al fine di evitare voti multipli 
+                                da parte dello stesso votante. Non è possibile modificare la propria preferenza una volta che la scelta è stata votata. Qualora il sondaggio venga votato accedendo 
+                                a ScegliMeglio, per facilitare i votanti, accanto al pulsante per votare, vedranno la seguente icona &nbsp<i class="bi bi-people-fill"></i>
+                            </li>
+                            <br>
+                            <li>
+                                <b>Solo con password</b>: il sistema consente al creatore della scelta di generare codici una volta che la scelta è stata creata e consente anche di generarne di 
+                                nuovi una volta che la scelta in corso di votazione. Per poter votare è necessario quindi conoscere una codice generato dal sistema e distribuito ai votanti dal 
+                                creatore della scelta. Anche in questo caso, si può votare una sola volta e non si può modificare la propria preferenza. Qualora il sondaggio venga votato 
+                                accedendo a ScegliMeglio, per facilitare i votanti, accanto al pulsante per votare, vedranno la seguente icona &nbsp<i class="bi bi-lock-fill"></i>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <p class="card-text">
+                            Si ricorda che se non viene selezionato diversamente, il sistema imposta in automatico la scelta come <b>nascosta</b> per quanto riguarda la visiblità e 
+                            <b>libera</b> per quanto riguarda la restrizione sulle votazioni. Infine, è ammessa qualsiasi combinazione tra le visibilità e le modalità di voto spiegate sopra.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <button type="button" class="btn btn-primary" onclick="window.history.back()">Torna indietro</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

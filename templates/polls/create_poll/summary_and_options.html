@@ -83,8 +83,15 @@
                 <div class="col-sm-12 col-xl-6">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">{{ form.visibility.label }}</h5>
+                            <h4 class="card-title">Opzioni avanzate</h4>
+                            <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                                Se vuoi informazioni più dettagliate riguardo la visibilità della scelta e le modalità di voto, 
+                                clicca <a href={% url 'polls:explain_options' %} class='alert-link'> qui</a>.
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                    aria-label="Close"></button>
+                            </div>
                             <!-- {{ form.visibility }} -->
+                            <p>{{ form.visibility.label }}</p>
                             <div class="d-grid gap-2 d-xl-flex justify-content-xl-center flex-xl-fill mb-3">
                                 {% for radio in form.visibility %}
                                 {{ radio.tag }}
@@ -104,7 +111,7 @@
                             </div>
 
                             <!-- {{ form.vote_type }} -->
-                            <h5 class="card-title">{{ form.vote_type.label }}</h5>
+                            <p>{{ form.vote_type.label }}</p>
                             <div class="d-grid gap-2 d-xl-flex justify-content-xl-center flex-xl-fill mb-3">
                                 {% for radio in form.vote_type %}
                                 {{ radio.tag }}
@@ -130,7 +137,7 @@
                     </div>
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Opzioni avanzate</h5>
+                            <h4 class="card-title">Opzioni aggiuntive</h4>
                             {% bootstrap_form options_form %}
                         </div>
                     </div>
