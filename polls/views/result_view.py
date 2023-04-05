@@ -71,7 +71,7 @@ class SinglePreferenceResultView(_ResultView):
         context['unique_winner'] = results[0]['position'] != results[1]['position']
         context['poll'] = poll
         context['visibility'] = poll.get_visibility()
-        context['vote_type'] = poll.get_vote_type()
+        context['authentication_type'] = poll.get_authentication_type()
         context['responses_count']=tot_votes
 
         return context
@@ -115,7 +115,7 @@ class MajorityJudgementResultView(_ResultView):
         context.update(vote_list)
         context['poll'] = poll
         context['visibility'] = poll.get_visibility()
-        context['vote_type'] = poll.get_vote_type()
+        context['authentication_type'] = poll.get_authentication_type()
         context['responses_count']=result_service.get_numero_numero_preferenze()
         context['include_synthetic']=include_synthetic
         return context
