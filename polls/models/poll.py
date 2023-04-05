@@ -95,6 +95,8 @@ class AuthenticatedPoll(Poll):
     def add_vote(self, **kwargs) -> None:
         if not self.user_has_already_voted(user=kwargs["user"]):
             self.users_that_have_voted.add(kwargs['user'])
+        else:
+            raise ValidationError(_("User has already voted"))
 
 class TokenizedPoll(Poll):
     

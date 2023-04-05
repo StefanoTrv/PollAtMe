@@ -149,8 +149,9 @@ class VoteMajorityJudgmentView(_VotingView):
         preference.save()
         preference.save_mj_judgements(form.save(commit=False))
 
-        self.poll.add_vote(user=self.request.user)
-
+        if not synthetic_id:
+            self.poll.add_vote(user=self.request.user)
+        
         return render(self.request, 'polls/vote_success.html', {'poll': self.poll})
 
     def get_form_kwargs(self) -> dict[str, Any]:
