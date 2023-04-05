@@ -55,6 +55,12 @@ class Poll(models.Model):
     def get_type(self) -> str:
         return self.PollType(self.default_type).label
     
+    def get_visibility(self) -> str:
+        return self.PollVisibility(self.visibility).label
+    
+    def get_vote_type(self) -> str:
+        return self.PollVoteType(self.vote_type).label
+    
     def is_public(self) -> bool:
         return self.visibility == Poll.PollVisibility.PUBLIC
     
