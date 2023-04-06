@@ -27,11 +27,11 @@
             {% elif poll.default_type == 3 %}
                 Scegli
             {% endif %}
-            {% if poll.vote_type == 1 %} <!--free-->
+            {% if poll.authentication_type == 1 %} <!--free-->
                 &nbsp<i class="bi bi-universal-access"></i>
-            {% elif poll.vote_type == 2 %} <!--authenticated-->
+            {% elif poll.authentication_type == 2 %} <!--authenticated-->
                 &nbsp<i class="bi bi-people-fill"></i>
-            {% elif poll.vote_type == 3 %} <!--tokenized-->
+            {% elif poll.authentication_type == 3 %} <!--tokenized-->
                 &nbsp<i class="bi bi-lock-fill"></i>
             {% endif %}
         </a>
