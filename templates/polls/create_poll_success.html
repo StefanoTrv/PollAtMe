@@ -21,6 +21,25 @@
                 </div>
             </div>
         </div>
+        {% if vote_type == 'tokenized' %}
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <div class="card align-items-center text-center">
+                        <div class="card-header">
+                            <h4>Vai alla gestione codici</h4>
+                        </div>
+                        <div class="card-body">
+                            Puoi accedere alla pagina di gestione dei codici della scelta appena creata direttamente da qua, premendo sul pulsante sottostante. 
+                            <br>
+                            <br>
+                            <a class="btn btn-block btn-primary mb-4" href={% url 'polls:tokens' id=id %}>Codici</a> 
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3"></div>
+            </div>
+        {% endif %}
         <div class="row">
             <div class="col-md-3"></div>
             <div class="col-md-6">

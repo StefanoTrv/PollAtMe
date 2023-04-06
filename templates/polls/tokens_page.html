@@ -1,0 +1,65 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} {{block.super}} | Gestione codici {% endblock title %}
+
+{% block content %}
+
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">Gestione dei codici</h3>
+                        <p class="card-text">
+                            Nella pagina corrente puoi gestire i codici per la scelta
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Informazioni sui codici</h5>
+                        <p>Sono stati utilizzati n codici per votare</p>
+                        <p>Puoi usare ancora n codici</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3"></div>
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Lista dei codici</h5>
+                        <div class="dropdown" style="text-align:right">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              Filtri
+                            </button>
+                            <ul class="dropdown-menu">
+                              <li><button class="dropdown-item" type="button" aria-current="true">Attivi</button></li>
+                              <li><button class="dropdown-item" type="button">Usati</button></li>
+                              <li><button class="dropdown-item" type="button">Tutti</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!--lista codici-->
+                    <div class="col-sm-12" style="text-align:center">
+                        <a class="btn btn-block btn-primary mb-4">
+                            Genera
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12" style="text-align:center">
+                <a class="btn btn-block btn-primary mb-4" href="/">
+                    Torna alla home
+                </a>
+                <a class="btn btn-block btn-secondary mb-4" href="{% url 'polls:personal_polls' %}">
+                    Scelte personali
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
