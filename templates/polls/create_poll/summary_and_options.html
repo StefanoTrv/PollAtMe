@@ -62,6 +62,7 @@
                         <div class="card-body">
                             <h4 class="card-title">Data votazioni</h4>
                             {% bootstrap_field form.start %}
+                            {% bootstrap_field form.start_now %}
                             {% bootstrap_field form.end %}
                         </div>
                     </div>
@@ -170,8 +171,23 @@
 {{ form.media.js }}
 
 <script>
+    startNowDisableStart = checkbox => {
+        if (checkbox.checked) {
+            document.querySelector('#id_start').disabled = true
+        } else {
+            document.querySelector('#id_start').disabled = false
+        }
+    } 
+
+    startNowDisableStart(document.querySelector('#id_start_now'))
+
     document.querySelector('#additional-options').onsubmit = event => {
         document.querySelector("#{{ form.default_type.auto_id }}").removeAttribute('disabled')
+    }
+    
+    document.querySelector('#id_start_now').onchange = event => {
+        var checkbox = event.target
+        startNowDisableStart(checkbox)
     }
 
     var public_alert = document.getElementById('public_alert_id')

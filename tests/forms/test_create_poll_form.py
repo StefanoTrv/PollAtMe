@@ -232,13 +232,14 @@ class TestPollForm(TestCase):
     def test_errore(self):
         form = PollForm({})
         assert_that(form.is_valid()).is_false()
-        assert_that(form.errors).is_length(6)
+        assert_that(form.errors).is_length(5)
     
     def test_fine_precedente_inizio(self):
         form = PollForm({
             'title': 'Lorem',
             'text': 'ipsum',
             'default_type': 1,
+            'start_now': False,
             'start': timezone.now() + timezone.timedelta(days=2),
             'end': timezone.now() + timezone.timedelta(days=1),
             'author': self.u.id,
@@ -249,12 +250,13 @@ class TestPollForm(TestCase):
         assert_that(form.has_error('end')).is_true()
         assert_that(form.has_error('start')).is_false()
     
-    def test_inizio_precedente_5_minuti(self):
+    def test_inizio_precedente_attuale(self):
         form = PollForm({
             'title': 'Lorem',
             'text': 'ipsum',
             'default_type': 1,
-            'start': timezone.now() + timezone.timedelta(minutes=4),
+            'start_now': False,
+            'start': timezone.now() - timezone.timedelta(days=1),
             'end': timezone.now() + timezone.timedelta(days=1),
             'author': self.u.id,
             'visibility': 1,
@@ -264,11 +266,28 @@ class TestPollForm(TestCase):
         assert_that(form.has_error('start')).is_true()
         assert_that(form.has_error('end')).is_false()
     
+    def test_inizio_ora(self):
+        form = PollForm({
+            'title': 'Lorem',
+            'text': 'ipsum',
+            'default_type': 1,
+            'start_now': True,
+            'end': timezone.now() + timezone.timedelta(days=1),
+            'author': self.u.id,
+            'visibility': 1,
+            'authentication_type': 1
+        })
+
+        assert_that(form.has_error('start')).is_false()
+        assert_that(form.has_error('end')).is_false()
+        assert_that(form.cleaned_data['start']).is_equal_to_ignoring_milliseconds(timezone.localtime(timezone.now()))
+
     def test_sondaggio_meno_15_minuti(self):
         form = PollForm({
             'title': 'Lorem',
             'text': 'ipsum',
             'default_type': 1,
+            'start_now': False,
             'start': timezone.now() + timezone.timedelta(hours=1),
             'end': timezone.now() + timezone.timedelta(hours=1, minutes=14),
             'author': self.u.id,
