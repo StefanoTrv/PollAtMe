@@ -189,3 +189,22 @@ class TestAuthenticatedPollsVote(TestCase):
 
         response = self.client.get(reverse('polls:vote_single_preference', args=[self.ap.id]))
         self.assertContains(response, status_code=403, text="Hai già votato questo sondaggio")
+    
+    def test_try_revote(self):
+        self.ap.default_type = models.Poll.PollType.SINGLE_PREFERENCE
+        self.ap.save()
+        self.client.login(username='test', password='test')
+        response = self.client.post(reverse('polls:vote_single_preference', args=[self.ap.id]), data={
+            'alternative': self.ap.alternative_set.first().id,
+        })
+        self.assertTemplateUsed(response, 'polls/vote_success.html')
+
+        response = self.client.post(reverse('polls:vote_MJ', args=[self.ap.id]), data={
+            'majorityopinionjudgement_set-TOTAL_FORMS': 2,
+            'majorityopinionjudgement_set-INITIAL_FORMS': 0,
+            'majorityopinionjudgement_set-MIN_NUM_FORMS': 2,
+            'majorityopinionjudgement_set-MAX_NUM_FORMS': 2,
+            'majorityopinionjudgement_set-0-grade': 1,
+            'majorityopinionjudgement_set-1-grade': 1
+        })
+        self.assertTemplateUsed(response, 'polls/vote_success.html')

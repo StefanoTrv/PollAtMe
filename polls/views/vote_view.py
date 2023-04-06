@@ -149,10 +149,10 @@ class VoteMajorityJudgmentView(_VotingView):
         self.pollType = Poll.PollType.MAJORITY_JUDGMENT.label
 
     def form_valid(self, form: forms.BaseInlineFormSet) -> http.HttpResponse:
-
-        self.poll.add_vote(user=self.request.user,token=self.token)
-
         synthetic_id = self.request.session.pop('preference_id', False)
+        if not synthetic_id:
+            self.poll.add_vote(user=self.request.user,token=self.token)
+
         if synthetic_id:
             preference = MajorityPreference.objects.get(id=synthetic_id)
         else:
