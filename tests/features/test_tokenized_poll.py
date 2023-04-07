@@ -6,30 +6,12 @@ from datetime import timedelta
 
 from assertpy import assert_that  # type: ignore
 
-from polls.models import Poll, Mapping, Token, TokenizedPoll, PollOptions, MajorityPreference, MajorityOpinionJudgement
+from polls.models import Poll, Mapping, Token, TokenizedPoll, PollOptions, MajorityPreference, MajorityOpinionJudgement, SinglePreference
 
 class TestTokenizedPollsCreate(TestCase):
 
     def setUp(self) -> None:
-        self.u = User.objects.create_user(username='test', password='test')
-        now = timezone.localtime(timezone.now())
-        self.poll = TokenizedPoll.objects.create(
-            title = "Scelta con token",
-            text = "Testo della scelta",
-            default_type = Poll.PollType.MAJORITY_JUDGMENT,
-            author = self.u,
-            start = now - timedelta(minutes=20),
-            end = now + timedelta(weeks=1),
-            creation_date = now,
-            last_update = now,
-            visibility = Poll.PollVisibility.PUBLIC,
-            authentication_type = Poll.PollAuthenticationType.TOKENIZED,
-        )
-        self.token = Token.objects.create(poll=self.poll,token="abcdef")
-        self.poll.alternative_set.create(text='prima scelta')
-        self.poll.alternative_set.create(text='seconda scelta')
-        self.mapping = Mapping.objects.create(poll=self.poll,code="code")
-        self.poll_url = reverse('polls:vote_MJ', args=[self.poll.pk,self.token.token])
+        self.user = User.objects.create_user(username='test', password='test')
 
     # Crea un sondaggio con token
     def test_create_tokenized_poll(self):
@@ -85,7 +67,7 @@ class TestTokenizedPollsCreate(TestCase):
         tp.title = 'Lorem ipsum'
         tp.text = 'dolor sit amet'
         tp.default_type = Poll.PollType.SINGLE_PREFERENCE
-        tp.author = self.u
+        tp.author = self.user
         tp.start = timezone.localtime(timezone.now()) + timedelta(minutes=20)
         tp.end = timezone.localtime(timezone.now()) + timedelta(weeks=1)
         tp.visibility = Poll.PollVisibility.HIDDEN
@@ -135,6 +117,29 @@ class TestTokenizedPollsCreate(TestCase):
         tp = Poll.objects.get(id=tp.pk)
         assert_that(tp.authentication_type).is_equal_to(Poll.PollAuthenticationType.FREE.value)
         assert_that(getattr).raises(AttributeError).when_called_with(tp, Poll.TOKEN_VOTE_TYPE_FIELDNAME)
+
+class TestTokenizedPollsVote(TestCase):
+
+    def setUp(self) -> None:
+        self.user = User.objects.create_user(username='test', password='test')
+        now = timezone.localtime(timezone.now())
+        self.poll = TokenizedPoll.objects.create(
+            title = "Scelta con token",
+            text = "Testo della scelta",
+            default_type = Poll.PollType.MAJORITY_JUDGMENT,
+            author = self.user,
+            start = now - timedelta(minutes=20),
+            end = now + timedelta(weeks=1),
+            creation_date = now,
+            last_update = now,
+            visibility = Poll.PollVisibility.PUBLIC,
+            authentication_type = Poll.PollAuthenticationType.TOKENIZED,
+        )
+        self.token = Token.objects.create(poll=self.poll,token="abcdef")
+        self.poll.alternative_set.create(text='prima scelta')
+        self.poll.alternative_set.create(text='seconda scelta')
+        self.mapping = Mapping.objects.create(poll=self.poll,code="code")
+        self.poll_url = reverse('polls:vote_MJ', args=[self.poll.pk,self.token.token])
     
     #test accesso alla pagina di voto
     def test_reach_vote_page(self):
@@ -209,3 +214,48 @@ class TestTokenizedPollsCreate(TestCase):
     def test_redirect_from_short_url(self):
         response = self.client.get(reverse('polls:access_poll', args=[self.poll.mapping.code,self.token.token]),follow=True)
         self.assertRedirects(response,self.poll_url)
+    
+    #test rivoto
+    def test_revote(self):
+        now = timezone.localtime(timezone.now())
+        poll_single_preference = TokenizedPoll.objects.create(
+            title = "Scelta con token (pf)",
+            text = "Testo della scelta (pf)",
+            default_type = Poll.PollType.SINGLE_PREFERENCE,
+            author = self.user,
+            start = now - timedelta(minutes=20),
+            end = now + timedelta(weeks=1),
+            creation_date = now,
+            last_update = now,
+            visibility = Poll.PollVisibility.PUBLIC,
+            authentication_type = Poll.PollAuthenticationType.TOKENIZED,
+        )
+        token_single_preference = Token.objects.create(poll=poll_single_preference,token="abcdefgh")
+        poll_single_preference.alternative_set.create(text='prima scelta pf')
+        poll_single_preference.alternative_set.create(text='seconda scelta pf')
+        poll_single_preference.mapping = Mapping.objects.create(poll=poll_single_preference,code="codepf")
+        poll_url_single_preference = reverse('polls:vote_single_preference', args=[poll_single_preference.pk,token_single_preference.token])
+
+        resp=self.client.post(poll_url_single_preference, data={
+            'alternative': poll_single_preference.alternative_set.first().id,
+        })
+        self.assertEqual(resp.status_code, 200)
+
+        synthetic_vote = MajorityPreference.objects.last()
+        revote_url = reverse('polls:vote_MJ', args=[poll_single_preference.pk,token_single_preference.token])
+        resp = self.client.get(revote_url)
+        self.assertEqual(resp.status_code, 200)
+        resp = self.client.post(revote_url, {
+            'majorityopinionjudgement_set-TOTAL_FORMS': 2,
+            'majorityopinionjudgement_set-INITIAL_FORMS': 0,
+            'majorityopinionjudgement_set-MIN_NUM_FORMS': 2,
+            'majorityopinionjudgement_set-MAX_NUM_FORMS': 2,
+            'majorityopinionjudgement_set-0-grade': 1,
+            'majorityopinionjudgement_set-1-grade': 1,
+        })
+        assert_that(resp.status_code).is_equal_to(200)
+
+        synthetic_vote = MajorityPreference.objects.get(id=synthetic_vote.id)
+        assert_that(synthetic_vote.synthetic).is_equal_to(False)
+        for opinion in synthetic_vote.majorityopinionjudgement_set.all():
+            assert_that(opinion.grade).is_equal_to(1)

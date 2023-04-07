@@ -70,7 +70,7 @@ class Poll(models.Model):
     def user_has_already_voted(self, **kwargs) -> bool:
         return False
     
-    def add_vote(self, **kwargs) -> None:
+    def set_authentication_method_as_used(self, **kwargs) -> None:
         pass
     
     def __str__(self) -> str:
@@ -94,7 +94,7 @@ class AuthenticatedPoll(Poll):
     def user_has_already_voted(self, **kwargs) -> bool:
         return self.users_that_have_voted.filter(pk=kwargs['user'].pk).exists()
 
-    def add_vote(self, **kwargs) -> None:
+    def set_authentication_method_as_used(self, **kwargs) -> None:
         if not self.user_has_already_voted(user=kwargs["user"]):
             self.users_that_have_voted.add(kwargs['user'])
         else:
@@ -112,7 +112,7 @@ class TokenizedPoll(Poll):
     def user_has_already_voted(self, **kwargs) -> bool:
         return Token.objects.filter(token=kwargs['token']).first().used # type: ignore
 
-    def add_vote(self, **kwargs) -> None:
+    def set_authentication_method_as_used(self, **kwargs) -> None:
         if self.failed_authentication(**kwargs):
             raise ValidationError(_("The token is not valid"))
         elif self.user_has_already_voted(**kwargs):

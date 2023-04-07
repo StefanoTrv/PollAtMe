@@ -124,7 +124,7 @@ class VoteSinglePreferenceView(_VotingView):
         return kwargs
 
     def form_valid(self, form: forms.BaseModelForm) -> http.HttpResponse:
-        self.poll.add_vote(user=self.request.user,token=self.token)
+        self.poll.set_authentication_method_as_used(user=self.request.user,token=self.token)
 
         form.instance.poll = self.poll
         new_preference = form.save()
@@ -151,7 +151,7 @@ class VoteMajorityJudgmentView(_VotingView):
     def form_valid(self, form: forms.BaseInlineFormSet) -> http.HttpResponse:
         synthetic_id = self.request.session.pop('preference_id', False)
         if not synthetic_id:
-            self.poll.add_vote(user=self.request.user,token=self.token)
+            self.poll.set_authentication_method_as_used(user=self.request.user,token=self.token)
 
         if synthetic_id:
             preference = MajorityPreference.objects.get(id=synthetic_id)

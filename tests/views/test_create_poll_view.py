@@ -140,7 +140,8 @@ class CreatePollViewTest(TestCase):
             'default_type': step_1_data['default_type'],
             'start': (now + timedelta(minutes=20)).strftime('%Y-%m-%d %H:%M:%S'),
             'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
-            'visibility': 1,
+            'visibility': Poll.PollVisibility.HIDDEN.value,
+            'authentication_type': Poll.PollAuthenticationType.FREE.value,
             'random_order': False,
         }
 
@@ -255,3 +256,97 @@ class CreatePollViewTest(TestCase):
         code = Mapping.objects.filter(poll=poll_created).get().code
         result = bool((re.compile("([a-z]|[A-Z]|\d)*")).fullmatch(code)) and (len(code) == 6)
         assert_that(result).is_true()
+
+    
+    # test bug 305 (se si torna nella prima pagina e la si modifica, queste modifiche non vengono registrate)
+    def test_go_back_and_make_change(self):
+        
+        step_1_data = {
+            'title': 'Lorem ipsum',
+            'text': 'dolor sit amet',
+            'default_type': 1,
+            'form-TOTAL_FORMS': 2,
+            'form-INITIAL_FORMS': 0,
+            'form-MIN_NUM_FORMS': 2,
+            'form-MAX_NUM_FORMS': 10,
+            'form-0-text': 'lorem',
+            'form-0-id': '',
+            'form-0-DELETE': '',
+            'form-1-text': 'ipsum',
+            'form-1-id': '',
+            'form-1-DELETE': '',
+            'summary': ''
+        }
+        
+        step_1_data_modified = {
+            'title': 'Test modifica',
+            'text': 'testo modificato',
+            'default_type': 1,
+            'form-TOTAL_FORMS': 3,
+            'form-INITIAL_FORMS': 0,
+            'form-MIN_NUM_FORMS': 2,
+            'form-MAX_NUM_FORMS': 10,
+            'form-0-text': 'lorem',
+            'form-0-id': '',
+            'form-0-DELETE': '',
+            'form-1-text': 'ipsum',
+            'form-1-id': '',
+            'form-1-DELETE': '',
+            'form-2-text': 'dolor',
+            'form-2-id': '',
+            'form-2-DELETE': '',
+            'summary': ''
+        }
+
+        now = timezone.localtime(timezone.now())
+        step_2_data = {
+            'title': step_1_data['title'],
+            'text': step_1_data['text'],
+            'default_type': step_1_data['default_type'],
+            'start': (now + timedelta(minutes=20)).strftime('%Y-%m-%d %H:%M:%S'),
+            'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
+            'visibility': Poll.PollVisibility.HIDDEN.value,
+            'authentication_type': Poll.PollAuthenticationType.FREE.value,
+            'random_order': False,
+            'save': ''
+        }
+
+        step_2_data_modified = {
+            'title': step_1_data_modified['title'],
+            'text': step_1_data_modified['text'],
+            'default_type': step_1_data_modified['default_type'],
+            'start': (now + timedelta(minutes=20)).strftime('%Y-%m-%d %H:%M:%S'),
+            'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
+            'visibility': Poll.PollVisibility.HIDDEN.value,
+            'authentication_type': Poll.PollAuthenticationType.FREE.value,
+            'random_order': False,
+            'save': ''
+        }
+
+        response = self.client.post(self.url, data=step_1_data)
+        assert_that(response.status_code).is_equal_to(200)
+        self.assertTemplateUsed('polls/create_poll/summary_and_options_create.html')
+
+        # torno indietro alla prima pagina
+        response = self.client.post(self.url, data=step_2_data | {'go_back': ''})
+        assert_that(response.status_code).is_equal_to(200)
+        self.assertTemplateUsed('polls/create_poll/summary_and_options_create.html')
+
+        # torno alla seconda pagina
+        response = self.client.post(self.url, data=step_1_data_modified)
+        assert_that(response.status_code).is_equal_to(200)
+        self.assertTemplateUsed('polls/create_poll/summary_and_options_create.html')
+
+        # salvo la scelta
+        response = self.client.post(self.url, data=step_2_data_modified | {'save': ''})
+        assert_that(response.status_code).is_equal_to(200)
+        self.assertTemplateUsed(response, 'polls/create_poll_success.html')
+
+        created_poll = Poll.objects.last()
+        assert_that(created_poll.title).is_equal_to('Test modifica')
+        assert_that(created_poll.text).is_equal_to('testo modificato')
+        alternative_list=[alt[2] for alt in created_poll.alternative_set.all().values_list()]
+        assert_that(alternative_list).contains('lorem')
+        assert_that(alternative_list).contains('ipsum')
+        assert_that(alternative_list).contains('dolor')
+        

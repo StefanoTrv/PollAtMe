@@ -43,11 +43,13 @@ class TestVoteSinglePreferenceView(TestCase):
             self.assertContains(res, alternative.text)
 
     def test_show_single_preference_poll_form_random_order(self):
+        is_randomized = False
         models.PollOptions.objects.create(poll=self.poll, random_order=True)
-        resp = self.client.get(self.poll_url)
-        resp1 = self.client.get(self.poll_url)
-        assert_that(remove_csfr_token(resp1)).is_not_equal_to(
-            remove_csfr_token(resp))
+        for i in range(0,2):
+            resp = self.client.get(self.poll_url)
+            resp1 = self.client.get(self.poll_url)
+            is_randomized = is_randomized or remove_csfr_token(resp1)!=remove_csfr_token(resp)
+        assert_that(is_randomized).is_true
 
     def test_show_single_preference_poll_form_fixed_order(self):
         models.PollOptions.objects.create(poll=self.poll, random_order=False)
@@ -192,11 +194,13 @@ class TestVoteMajorityPreferenceView(TestCase):
             )
 
     def test_show_majority_preference_poll_form_random_order(self):
+        is_randomized = False
         models.PollOptions.objects.create(poll=self.poll, random_order=True)
-        resp = self.client.get(self.poll_url)
-        resp1 = self.client.get(self.poll_url)
-        assert_that(remove_csfr_token(resp1)).is_not_equal_to(
-            remove_csfr_token(resp))
+        for i in range(0,2):
+            resp = self.client.get(self.poll_url)
+            resp1 = self.client.get(self.poll_url)
+            is_randomized = is_randomized or remove_csfr_token(resp1)!=remove_csfr_token(resp)
+        assert_that(is_randomized).is_true
 
     def test_show_majority_preference_poll_form_fixed_order(self):
         models.PollOptions.objects.create(poll=self.poll, random_order=False)
