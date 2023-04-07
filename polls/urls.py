@@ -26,5 +26,5 @@ urlpatterns = [
     path('personal/', views.PersonalPollsView.as_view(), name='personal_polls'),
     path('<str:code>/<str:token>', views.AccessPollView.as_view(), name='access_poll'),
     path('<str:code>', views.AccessPollView.as_view(), name='access_poll'),
-    path('tokens<int:id>/', views.TokensView.as_view(), name='tokens'),
+    path('tokens/<int:id>/', views.TokensView.as_view(), name='tokens'),
 ]
