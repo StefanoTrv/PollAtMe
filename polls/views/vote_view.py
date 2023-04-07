@@ -133,7 +133,7 @@ class VoteSinglePreferenceView(_VotingView):
             synthetic_preference = MajorityPreference.save_mj_from_sp(new_preference)
             self.request.session['preference_id'] = synthetic_preference.id
             self.request.session['alternative_sp'] = new_preference.alternative.text
-            return render(self.request, 'polls/vote_success.html', {'poll': self.poll, 'revote': True})
+            return render(self.request, 'polls/vote_success.html', {'poll': self.poll, 'revote': True, 'token': self.token})
         
         return render(self.request, 'polls/vote_success.html', {'poll': self.poll})
 
