@@ -33,7 +33,7 @@
                         {% for f in form|shuffle:poll.polloptions.random_order %}
                         <div class="col-sm-12 col-md-6">
                             <div class="card">
-                                <div class="card-body">
+                                <div id="card" class="card-body">
                                     <p name="option" class="fs-4 p-2">{{ f.grade.label }}</p>
                                     <div class="d-grid gap-2 d-xl-flex justify-content-xl-center flex-xl-fill {% if f.errors %}is-invalid{% endif %}">
                                         {% for radio in f.grade %}
@@ -86,10 +86,15 @@
                     form.submit()
                 }
             }
-            for (let i = 0; i < numberFields; i++) {
-                var gradeLabel = formLabels[i].innerText
-                var grade = document.querySelector(`input[name="majorityopinionjudgement_set-${i}-grade"]:checked`).value
-                dict[gradeLabel] = grade
+            var card= document.querySelectorAll('#card')
+            for (element of card) {
+                var gradeLabel = element.firstElementChild.innerText
+                element.lastElementChild.childNodes.forEach(function(field){
+                    if (field.checked) {
+                        var grade = field.value
+                        dict[gradeLabel] = grade
+                    }
+                })
             }
             var tmp = false
             var items = Object.keys(dict).forEach(function(key) {
