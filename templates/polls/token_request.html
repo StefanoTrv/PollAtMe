@@ -1,0 +1,69 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} {{block.super}} | Inserisci la password per votare {% endblock title %}
+
+{% block content %}
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="row align-items-center text-center">
+                        <div class="col-md-12">
+                            <div class="card-body">
+                                <h1>Inserisci la password per votare</h1>
+                                Questa scelta è protetta da password: inserisci la password univoca che ti è stata fornita per votare.
+                                <br>
+                                Se non ha ricevuto una password e ritieni che dovresti essere in grado di votare, contatta il creatore di questa scelta.
+                                <br>
+                                La password è composta da quattro parole in italiano separate da spazi, come per esempio <i>"negozio salsiccia albero acqua"</i>.
+                                <br>
+                                <input type="text" id="password1" name="password1" onkeypress="keyPressInPassword(event,1)">
+                                <input type="text" id="password2" name="password2" onkeypress="keyPressInPassword(event,2)">
+                                <input type="text" id="password3" name="password3" onkeypress="keyPressInPassword(event,3)">
+                                <input type="text" id="password4" name="password4" onkeypress="keyPressInPassword(event,4)">
+                                <br>
+                                <button class="btn btn-block btn-primary mb-4" onclick="submitPassword()" id="submitButton">Vai al voto</button>
+                                <br>
+                                <form action="/">
+                                    <button class="btn btn-block btn-primary mb-4"> Torna alla HOME </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+{% endblock content %}
+
+{% block javascripts %}
+<script>
+    function submitPassword(){
+        currentUrlCleaned = window.location.href.split("/").slice(0,-1).join("/")+"/";
+
+        window.location.href = currentUrlCleaned 
+            + document.getElementById("password1").value.replaceAll(" ","") + "-"
+            + document.getElementById("password2").value.replaceAll(" ","") + "-"
+            + document.getElementById("password3").value.replaceAll(" ","") + "-"
+            + document.getElementById("password4").value.replaceAll(" ","");
+    }
+
+    function keyPressInPassword(event,field) {
+        if (event.key == "Enter") {
+            submitPassword();
+        } else if (event.code == "Space"){
+            console.log(field)
+            if (field==1){
+                document.getElementById("password2").focus();
+            } else if (field==2){
+                document.getElementById("password3").focus();
+            } else if (field==3){
+                document.getElementById("password4").focus();
+            } else if (field==4){
+                document.getElementById("submitButton").focus();
+            }
+        }
+    }
+</script>
+{% endblock javascripts %}

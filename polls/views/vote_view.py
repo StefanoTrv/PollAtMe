@@ -32,7 +32,7 @@ def vote_redirect_view(request, id, token=''):
         return redirect(reverse('polls:vote_MJ', args=args))
 
 
-class _VotingView(CreateView):
+class _VoteView(CreateView):
     """
     Class view (de facto astratta) che incorpora ciò che hanno in comune le diverse pagine di voto
     """
@@ -55,7 +55,7 @@ class _VotingView(CreateView):
         self.alternatives = self.poll.alternative_set.all()
 
         if not self.poll.is_active():
-            raise PermissionDenied('Non è possibile votare questo sondaggio')
+            raise PermissionDenied('Non è ancora possibile votare questo sondaggio: la votazione inizia il '+str(self.poll.start.date())+' alle '+str(self.poll.start.time())+'.')
 
         self.token = kwargs.get('token','').replace('-',' ')
 
@@ -64,7 +64,7 @@ class _VotingView(CreateView):
                 request.session['auth_message'] = 'Devi aver effettuato il login per poter votare questa scelta'
                 return redirect_to_login(request.get_full_path())
             elif self.poll.authentication_type == Poll.PollAuthenticationType.TOKENIZED:
-                raise PermissionDenied('Token non valido') # sostituire con redirect a pagina di autenticazione con token!!!!!!!!
+                return render(self.request, 'polls/token_request.html', {'poll': self.poll, 'token': self.token})
 
         if self.poll.user_has_already_voted(user=request.user,token=self.token) and syntethic_preference is None:
             if self.poll.authentication_type == Poll.PollAuthenticationType.AUTHENTICATED:
@@ -105,7 +105,7 @@ class _VotingView(CreateView):
         return vote_class.objects.get(id=id)
 
 
-class VoteSinglePreferenceView(_VotingView):
+class VoteSinglePreferenceView(_VoteView):
 
     form_class: Optional[Type[forms.BaseForm]] = SinglePreferenceForm
     template_name: str = 'polls/vote/vote_SP.html'
@@ -138,7 +138,7 @@ class VoteSinglePreferenceView(_VotingView):
         return render(self.request, 'polls/vote_success.html', {'poll': self.poll})
 
 
-class VoteMajorityJudgmentView(_VotingView):
+class VoteMajorityJudgmentView(_VoteView):
     """
     Class view per l'inserimento delle risposte ai sondaggi a risposta singola
     """
