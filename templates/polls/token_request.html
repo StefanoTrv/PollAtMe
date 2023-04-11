@@ -16,20 +16,27 @@
                                 <br>
                                 Se non ha ricevuto una password e ritieni che dovresti essere in grado di votare, contatta il creatore di questa scelta.
                                 <br>
-                                La password è composta da quattro parole in italiano separate da spazi, come per esempio <i>"negozio salsiccia albero acqua"</i>.
+                                La password è composta da quattro parole italiane, come per esempio "<i>negozio salsiccia albero acqua</i>".
                                 <br>
-                                <div class="input-group">
-                                    <input class="form-control m-2 {% if token != '' %}border-danger{% endif %}" type="text" id="password1" name="password1" onkeypress="keyPressInPassword(event,1)">
-                                    <input class="form-control m-2 {% if token != '' %}border-danger{% endif %}" type="text" id="password2" name="password2" onkeypress="keyPressInPassword(event,2)">
-                                    <input class="form-control m-2 {% if token != '' %}border-danger{% endif %}" type="text" id="password3" name="password3" onkeypress="keyPressInPassword(event,3)">
-                                    <input class="form-control m-2 {% if token != '' %}border-danger{% endif %}" type="text" id="password4" name="password4" onkeypress="keyPressInPassword(event,4)">
+                                <div class="input-group mt-4">
+                                    <input class="form-control m-2 {% if token != '' %}border-danger{% endif %}" type="text" id="password1" name="password1" onkeypress="keyPressInPassword(event,1)" placeholder="Prima parola">
+                                    <input class="form-control m-2 {% if token != '' %}border-danger{% endif %}" type="text" id="password2" name="password2" onkeypress="keyPressInPassword(event,2)" placeholder="Seconda parola">
+                                    <input class="form-control m-2 {% if token != '' %}border-danger{% endif %}" type="text" id="password3" name="password3" onkeypress="keyPressInPassword(event,3)" placeholder="Terza parola">
+                                    <input class="form-control m-2 {% if token != '' %}border-danger{% endif %}" type="text" id="password4" name="password4" onkeypress="keyPressInPassword(event,4)" placeholder="Quarta parola">
                                 </div>
                                 <br>
                                 {% if token != '' %}<!-- Wrong token --><p class="text-danger">La password che hai inserito non è corretta. Controlla che non contenga errori e prova di nuovo.</p><br>{% endif %}
                                 <button class="btn btn-block btn-primary mb-4" onclick="submitPassword()" id="submitButton">Vai al voto</button>
-                                <br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="row align-items-center text-center">
+                        <div class="col-md-12">
+                            <div class="card-body">
                                 <form action="/">
-                                    <button class="btn btn-block btn-primary mb-4"> Torna alla HOME </button>
+                                    <button class="btn btn-block btn-secondary m-4"> Annulla e torna alla HOME </button>
                                 </form>
                             </div>
                         </div>
