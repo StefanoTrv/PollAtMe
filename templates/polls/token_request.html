@@ -18,11 +18,14 @@
                                 <br>
                                 La password è composta da quattro parole in italiano separate da spazi, come per esempio <i>"negozio salsiccia albero acqua"</i>.
                                 <br>
-                                <input type="text" id="password1" name="password1" onkeypress="keyPressInPassword(event,1)">
-                                <input type="text" id="password2" name="password2" onkeypress="keyPressInPassword(event,2)">
-                                <input type="text" id="password3" name="password3" onkeypress="keyPressInPassword(event,3)">
-                                <input type="text" id="password4" name="password4" onkeypress="keyPressInPassword(event,4)">
+                                <div class="input-group">
+                                    <input class="form-control m-2 {% if token != '' %}border-danger{% endif %}" type="text" id="password1" name="password1" onkeypress="keyPressInPassword(event,1)">
+                                    <input class="form-control m-2 {% if token != '' %}border-danger{% endif %}" type="text" id="password2" name="password2" onkeypress="keyPressInPassword(event,2)">
+                                    <input class="form-control m-2 {% if token != '' %}border-danger{% endif %}" type="text" id="password3" name="password3" onkeypress="keyPressInPassword(event,3)">
+                                    <input class="form-control m-2 {% if token != '' %}border-danger{% endif %}" type="text" id="password4" name="password4" onkeypress="keyPressInPassword(event,4)">
+                                </div>
                                 <br>
+                                {% if token != '' %}<p class="text-danger">La password che hai inserito non è corretta. Controlla che non contenga errori e prova di nuovo.</p><br>{% endif %}
                                 <button class="btn btn-block btn-primary mb-4" onclick="submitPassword()" id="submitButton">Vai al voto</button>
                                 <br>
                                 <form action="/">
@@ -39,14 +42,44 @@
 
 {% block javascripts %}
 <script>
+    window.onload = function() {
+        prefillTextInputs();
+    }
+
+    function prefillTextInputs(){
+        token = "{{ token }}".split(" ");
+        if(token.length>0 && token[0]!=""){ 
+            document.getElementById("password1").value=token[0];
+        }
+        if(token.length>1 && token[1]!=""){
+            document.getElementById("password2").value=token[1];
+        }
+        if(token.length>2 && token[2]!=""){
+            document.getElementById("password3").value=token[2];
+        }
+        if(token.length>3 && token[3]!=""){
+            document.getElementById("password4").value=token[3];
+        }
+    }
+
     function submitPassword(){
         currentUrlCleaned = window.location.href.split("/").slice(0,-1).join("/")+"/";
 
-        window.location.href = currentUrlCleaned 
+        targetUrl = currentUrlCleaned 
             + document.getElementById("password1").value.replaceAll(" ","") + "-"
             + document.getElementById("password2").value.replaceAll(" ","") + "-"
             + document.getElementById("password3").value.replaceAll(" ","") + "-"
             + document.getElementById("password4").value.replaceAll(" ","");
+
+            //Rimuove eventuali trailing "-"
+            i = targetUrl.length - 1;
+            while(i >= 0 && targetUrl[i]=="-"){
+                targetUrl = targetUrl.slice(0,-1);
+                i--;
+            }
+
+
+        window.location.href = targetUrl;
     }
 
     function keyPressInPassword(event,field) {
