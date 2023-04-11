@@ -172,7 +172,7 @@ class TestTokenizedPollsVote(TestCase):
     #test blocco voto se il token è errato (sia accesso alla pagina che salvataggio del voto)
     def test_wrong_token(self):
         response = self.client.get(reverse('polls:vote_MJ', args=[self.poll.pk,"token_errato"]))
-        assert_that(response.status_code).is_equal_to(403)
+        self.assertTemplateUsed(response, 'polls/token_request.html')
 
         last_vote_old = MajorityPreference.objects.last()
         resp = self.client.post(reverse('polls:vote_MJ', args=[self.poll.pk,"token_errato"]), {
@@ -183,7 +183,7 @@ class TestTokenizedPollsVote(TestCase):
             'majorityopinionjudgement_set-0-grade': 1,
             'majorityopinionjudgement_set-1-grade': 1,
         })
-        self.assertEqual(resp.status_code, 403)
+        self.assertTemplateUsed(response, 'polls/token_request.html')
         last_vote = MajorityPreference.objects.last()
         assert_that(last_vote).is_equal_to(last_vote_old)
     
