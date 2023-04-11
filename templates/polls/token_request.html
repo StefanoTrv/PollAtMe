@@ -18,7 +18,7 @@
                                 <br>
                                 La password è composta da quattro parole italiane, come per esempio "<i>negozio salsiccia albero acqua</i>".
                                 <br>
-                                <div class="input-group mt-4">
+                                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center flex-sm-fill {% if f.errors %}is-invalid{% endif %}">
                                     <input class="form-control m-2 {% if token != '' %}border-danger{% endif %}" type="text" id="password1" name="password1" onkeypress="keyPressInPassword(event,1)" placeholder="Prima parola">
                                     <input class="form-control m-2 {% if token != '' %}border-danger{% endif %}" type="text" id="password2" name="password2" onkeypress="keyPressInPassword(event,2)" placeholder="Seconda parola">
                                     <input class="form-control m-2 {% if token != '' %}border-danger{% endif %}" type="text" id="password3" name="password3" onkeypress="keyPressInPassword(event,3)" placeholder="Terza parola">
