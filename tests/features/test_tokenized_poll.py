@@ -187,6 +187,17 @@ class TestTokenizedPollsVote(TestCase):
         last_vote = MajorityPreference.objects.last()
         assert_that(last_vote).is_equal_to(last_vote_old)
     
+    #test che la pagina di inserimento del token torni l'errore in modo corretto e solo quando serve
+    def test_token_request_page(self):
+        response = self.client.get(reverse('polls:vote_MJ', args=[self.poll.pk,"token_errato"]))
+        self.assertTemplateUsed(response, 'polls/token_request.html')
+        self.assertContains(response,"Wrong token")
+        self.assertContains(response,"token_errato")
+
+        response = self.client.get(reverse('polls:vote_MJ', args=[self.poll.pk]))
+        self.assertTemplateUsed(response, 'polls/token_request.html')
+        self.assertNotContains(response,"Wrong token")
+
     #test redirect se token già usato
     def test_redirect_on_used_token(self):
         self.token.used=True

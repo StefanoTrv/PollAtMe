@@ -25,7 +25,7 @@
                                     <input class="form-control m-2 {% if token != '' %}border-danger{% endif %}" type="text" id="password4" name="password4" onkeypress="keyPressInPassword(event,4)">
                                 </div>
                                 <br>
-                                {% if token != '' %}<p class="text-danger">La password che hai inserito non è corretta. Controlla che non contenga errori e prova di nuovo.</p><br>{% endif %}
+                                {% if token != '' %}<!-- Wrong token --><p class="text-danger">La password che hai inserito non è corretta. Controlla che non contenga errori e prova di nuovo.</p><br>{% endif %}
                                 <button class="btn btn-block btn-primary mb-4" onclick="submitPassword()" id="submitButton">Vai al voto</button>
                                 <br>
                                 <form action="/">
@@ -89,12 +89,16 @@
             console.log(field)
             if (field==1){
                 document.getElementById("password2").focus();
+                setTimeout(() => {  document.getElementById("password1").value=document.getElementById("password1").value.replaceAll(" ",""); }, 100);//rimuovi lo spazio che è stato aggiunto
             } else if (field==2){
                 document.getElementById("password3").focus();
+                setTimeout(() => {  document.getElementById("password2").value=document.getElementById("password2").value.replaceAll(" ",""); }, 100);
             } else if (field==3){
                 document.getElementById("password4").focus();
+                setTimeout(() => {  document.getElementById("password3").value=document.getElementById("password3").value.replaceAll(" ",""); }, 100);
             } else if (field==4){
                 document.getElementById("submitButton").focus();
+                setTimeout(() => {  document.getElementById("password4").value=document.getElementById("password4").value.replaceAll(" ",""); }, 100);
             }
         }
     }
