@@ -5,7 +5,7 @@ from django.db.models import Model
 from django.views.generic.list import ListView
 
 from polls.models import Poll, TokenizedPoll
-from polls.services import SearchPollService, render_pdf
+from polls.services import SearchPollService, TicketGenerator
 class TokensView(ListView):
     model: Optional[Type[Model]] = Poll
     paginate_by: int = 6
@@ -18,5 +18,9 @@ def download_tokens(request: http.HttpRequest, id: int) -> http.FileResponse:
     if not isinstance(poll, TokenizedPoll):
         raise http.Http404('Poll not found')
     
-    response = render_pdf(poll, request.scheme, request.get_host())
+    response = TicketGenerator(
+        poll, 
+        request.scheme if request.scheme is not None else "", 
+        request.get_host()
+        ).render()
     return response
