@@ -22,32 +22,63 @@
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Informazioni</h5>
-                        <p> Hai generato in totale <strong>{{object_list.count}}</strong> codici per questa scelta.</p>
-                        <p> Sono stati utilizzati <span style="color: #ff0000"><strong>{{ object_list | tokens_status:"True" | length }}</strong> </span>codici su <strong>{{object_list.count}}</strong>.</p>
-                        <p>Si possono utilizzare ancora <span style="color: #008000"> <strong>{{ object_list | tokens_status:"False" | length }}</strong> </span>codici su <strong>{{object_list.count}}</strong>.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3"></div>
-            <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="form-group text-center">
-                            <div class="col-sm-12 d-md-inline d-grid">
-                                <a class="btn btn-block btn-secondary mb-4" href= {% url 'polls:download_tokens' id=poll.id %}> Scarica PDF </a>
+                        <h5 class="card-title">Informazioni di riepilogo</h5>
+                        <p>Qui puoi trovare alcune informazioni di riepilogo sulla scelta e sui codici relativi ad essa.</p>
+                        <div class="row">
+                            <div class="col-md-6 col-xl-3">
+                              <div class="card bg-c-blue order-card">
+                                <div class="card-body">
+                                  <h5 class="text-white">Titolo scelta: <span class="float-end"> {{ poll.title | truncatechars:10  }} </h5>
+                                  <p class="m-b-0">Data di chiusura<span class="float-end">{{ poll.end | date:"d/m/Y H:i" }}</span></p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-6 col-xl-3">
+                                <div class="card bg-c-yellow order-card">
+                                  <div class="card-body">
+                                      <h5 class="text-white">Codici generati: <span class="float-end"> {{object_list.count}} </h5>
+                                  </div>
+                                </div>
+                              </div>
+                            <div class="col-md-6 col-xl-3">
+                              <div class="card bg-c-green order-card">
+                                <div class="card-body">
+                                  <h5 class="text-white">Codici disponibili: <span class="float-end"> {{ disponibili.count }}</h5>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-6 col-xl-3">
+                              <div class="card bg-c-red order-card">
+                                <div class="card-body">
+                                    <h5 class="text-white">Codici utilizzati: <span class="float-end"> {{ usati.count }}</h5>
+                                </div>
+                              </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="input-group">
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="input-group">
+                                    <input type="number" name="n" class="form-control" placeholder="Inserisci il numero di codici che vuoi generare" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                                    <div class="input-group-append">
+                                        <button type="submit" class="btn btn-block btn-primary"> Genera </button>
+                                    </div>
+                                </div>
+                            </form>&nbsp&nbsp&nbsp
+                        <a class="btn btn-block btn-secondary" href= {% url 'polls:download_tokens' id=poll.id %}> Scarica PDF </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="col-sm-12" style="text-align:center">
-                <a class="btn btn-block btn-primary mb-4" href="/">
-                    Torna alla home
-                </a>
-                <a class="btn btn-block btn-secondary mb-4" href="{% url 'polls:personal_polls' %}">
-                    Scelte personali
-                </a>
+                <a class="btn btn-block btn-primary mb-4" href="/">Torna alla home</a>
+                <a class="btn btn-block btn-secondary mb-4" href="{% url 'polls:personal_polls' %}">Scelte personali</a>
             </div>
         </div>
     </div>
