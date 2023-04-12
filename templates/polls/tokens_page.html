@@ -12,7 +12,9 @@
                     <div class="card-body">
                         <h3 class="card-title">Gestione dei codici</h3>
                         <p class="card-text">
-                            Nella pagina corrente puoi gestire la generazione di codici e il download del file PDF per poter stampare i bigliettini da distribuire ai votanti.
+                            Nella pagina corrente puoi gestire la generazione di codici e il download del file PDF per poter stampare i bigliettini da distribuire ai votanti. 
+                            Il file PDF che viene generato contiene tutti i i biglietti con i codici ancora <strong>inutilizzati</strong> della scelta, suddivisi 8 per pagina. In fase di stampa, si consiglia
+                            di controllare le pagine che si desidera stampare, definendo un intervallo di pagine di stampa per evitare sprechi. 
                         </p>
                     </div>
                 </div>
@@ -20,10 +22,10 @@
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Informazioni sui codici</h5>
+                        <h5 class="card-title">Informazioni</h5>
                         <p> Hai generato in totale <strong>{{object_list.count}}</strong> codici per questa scelta.</p>
-                        <p> Sono stati utilizzati <span style="color: #ff0000">{{ object_list | tokens_status:"True" | length }} </span>codici su <strong>{{object_list.count}}</strong>.</p>
-                        <p>Si possono utilizzare ancora <span style="color: #008000">{{object_list | tokens_status:"False" | length }} </span>codici su <strong>{{object_list.count}}</strong>.</p>
+                        <p> Sono stati utilizzati <span style="color: #ff0000"><strong>{{ object_list | tokens_status:"True" | length }}</strong> </span>codici su <strong>{{object_list.count}}</strong>.</p>
+                        <p>Si possono utilizzare ancora <span style="color: #008000"> <strong>{{ object_list | tokens_status:"False" | length }}</strong> </span>codici su <strong>{{object_list.count}}</strong>.</p>
                     </div>
                 </div>
             </div>
@@ -31,32 +33,12 @@
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Lista dei codici</h5>
-                        <br>
-                        <table class="table">
-                            <thead>
-                              <tr>
-                                <th scope="col">Codice</th>
-                                <th scope="col">Stato</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                                {% for token in object_list %}
-                                    <tr>
-                                        <td>{{ token.token }}</td>
-                                        <td>{{ token.used }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                          </table>
-                    </div>
-                    <!--lista codici-->
-                    <form method="POST">
-                        {% csrf_token %}
-                        <div class="col-sm-12" style="text-align:center">
-                            <button type="submit" class="btn btn-primary mb-4">Genera</button>
+                        <div class="form-group text-center">
+                            <div class="col-sm-12 d-md-inline d-grid">
+                                <a class="btn btn-block btn-secondary mb-4" href= {% url 'polls:download_tokens' id=poll.id %}> Scarica PDF </a>
+                            </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
             <div class="col-sm-12" style="text-align:center">
