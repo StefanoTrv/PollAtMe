@@ -203,7 +203,7 @@ class TestTokenizedPollsVote(TestCase):
         self.token.used=True
         self.token.save()
         response = self.client.get(self.poll_url,follow=True)
-        self.assertRedirects(response,reverse('polls:result_MJ',args=[self.poll.pk]))
+        self.assertTemplateUsed(response, 'polls/already_voted.html')
 
     def test_does_not_save_on_used_token(self):
         self.token.used=True

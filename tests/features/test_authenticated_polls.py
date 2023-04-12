@@ -170,7 +170,7 @@ class TestAuthenticatedPollsVote(TestCase):
         assert_that(response.status_code).is_equal_to(200)
 
         response = self.client.get(reverse('polls:vote_single_preference', args=[self.ap.id]))
-        self.assertContains(response, status_code=403, text="Hai già votato questo sondaggio")
+        self.assertTemplateUsed(response, 'polls/already_voted.html')
 
     def test_blocks_revote_mj(self):
         self.ap.default_type = models.Poll.PollType.MAJORITY_JUDGMENT
@@ -188,7 +188,7 @@ class TestAuthenticatedPollsVote(TestCase):
         assert_that(response.status_code).is_equal_to(200)
 
         response = self.client.get(reverse('polls:vote_single_preference', args=[self.ap.id]))
-        self.assertContains(response, status_code=403, text="Hai già votato questo sondaggio")
+        self.assertTemplateUsed(response, 'polls/already_voted.html')
     
     def test_try_revote(self):
         self.ap.default_type = models.Poll.PollType.SINGLE_PREFERENCE

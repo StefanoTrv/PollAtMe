@@ -67,10 +67,7 @@ class _VoteView(CreateView):
                 return render(self.request, 'polls/token_request.html', {'poll': self.poll, 'token': self.token})
 
         if self.poll.user_has_already_voted(user=request.user,token=self.token) and syntethic_preference is None:
-            if self.poll.authentication_type == Poll.PollAuthenticationType.AUTHENTICATED:
-                raise PermissionDenied('Hai già votato questo sondaggio')
-            elif self.poll.authentication_type == Poll.PollAuthenticationType.TOKENIZED:
-                return redirect(reverse('polls:result', args=[kwargs['id']]))
+                return render(self.request, 'polls/already_voted.html', {'poll': self.poll})
 
         if not (self.poll.get_type() == self.pollType or 'preference_id' in request.session):
             raise PermissionDenied(
