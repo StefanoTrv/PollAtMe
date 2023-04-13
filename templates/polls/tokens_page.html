@@ -25,10 +25,12 @@
                     <div class="card-body">
                         <h5 class="card-title">Informazioni di riepilogo</h5>
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-sm-12">
                               <div class="card bg-c-blue order-card">
                                 <div class="card-body">
-                                  <h5 class="text-white">Titolo scelta: <span class="float-end"> {{ poll.title }} </h5>
+                                  <h5 class="text-white">Titolo scelta: </h5> 
+                                  <h2 class="text-end text-white"><span>{{poll.title}}</span>
+                                  </h2>
                                   <h6 class="text-white">Data di apertura della scelta:</h6>
                                   <h2 class="text-end text-white"><em class="feather icon-calendar float-start"></em><span>{{ poll.start | date:"d/m/Y H:i" }}</span></h2>
                                   <p class="m-b-0">Data di chiusura<span class="float-end">{{ poll.end |  date:"d/m/Y H:i" }}</span></p>
@@ -62,23 +64,30 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-12">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-6">
                 <div class="card">
                     <div class="card-body">
                         <form method="post">
                             {% csrf_token %}
-                                <div class="input-group">
-                                    <input type="number" name="n" class="form-control" placeholder="Inserisci un numero di codici da generare compreso tra 1 e 40" aria-label="Recipient's username" aria-describedby="basic-addon2" min="1" max="40" required>
-                                    <div class="input-group-append">
-                                        <button type="submit" class="btn btn-block btn-primary"> Genera </button>
+                                <div class="row align-center">
+                                    <div class="col-sm-12 col-lg-9">
+                                        <div class="input-group">
+                                            <input type="number" name="n" class="form-control" placeholder="Inserisci un numero di codici da generare compreso tra 1 e 40" aria-label="Recipient's username" aria-describedby="basic-addon2" min="1" max="40" required>
+                                            <div class="input-group-append">
+                                                <button type="submit" class="btn btn-block btn-primary"> Genera </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-lg-3 text-center">
+                                        <a class="btn btn-block btn-secondary" href= {% url 'polls:download_tokens' id=poll.id %}> Scarica PDF </a> 
                                     </div>
                                 </div>
                         </form>
-                        <br>
-                        <a class="btn btn-block btn-secondary" href= {% url 'polls:download_tokens' id=poll.id %}> Scarica PDF </a>
                     </div>
                 </div>
             </div>
+            <div class="col-sm-3"></div>
             <div class="col-sm-12" style="text-align:center">
                 <a class="btn btn-block btn-primary mb-4" href="/">Torna alla home</a>
                 <a class="btn btn-block btn-secondary mb-4" href="{% url 'polls:personal_polls' %}">Scelte personali</a>
