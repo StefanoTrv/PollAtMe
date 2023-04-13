@@ -1,0 +1,26 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} {{block.super}} | Token generati! {% endblock title %}
+
+{% block content %}
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="row align-items-center text-center">
+                        <div class="col-md-12">
+                            <div class="card-body">
+                                <h5>Hai generato correttamente i token!</h5>
+                                <br>
+                                <a class="btn btn-block btn-secondary mb-4" href="/">Torna alla home</a>
+                                <a class="btn btn-block btn-primary mb-4" href={% url 'polls:tokens' id=poll.id %}>Pagina codici</a>
+                                <a class="btn btn-block btn-secondary mb-4" href="{% url 'polls:personal_polls' %}">Scelte personali</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

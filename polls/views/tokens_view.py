@@ -40,7 +40,7 @@ class TokensView(LoginRequiredMixin, TemplateView):
         context['all_tokens'] = Token.objects.filter(poll = self.poll).count
         context['tokens_used'] = Token.objects.filter(poll = self.poll, used=True).count
         context['tokens_available'] = Token.objects.filter(poll = self.poll, used=False).count
-        return render(self.request, 'polls/tokens_page.html', context)
+        return render(self.request, 'polls/tokens_generation_success.html', context)
 
 
 @login_required
