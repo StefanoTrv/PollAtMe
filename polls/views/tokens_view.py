@@ -45,25 +45,19 @@ class TokensView(LoginRequiredMixin, TemplateView):
 
 @login_required
 def generate_token(request: http.HttpRequest, poll: TokenizedPoll, number_of_tokens: int):
-    if poll.author != request.user:
-        raise PermissionDenied('Non hai i permessi per generare i codici di questa scelta')
-    else:
-        if not isinstance(poll, TokenizedPoll):
-            raise http.Http404('Poll not found')
-        generate_tokens(poll, number_of_tokens) 
+    if not isinstance(poll, TokenizedPoll):
+        raise http.Http404('Poll not found')
+    generate_tokens(poll, number_of_tokens) 
 
 
 @login_required
 def download_tokens(request: http.HttpRequest, id: int) -> http.FileResponse:
     poll = SearchPollService().search_by_id(id)
-    if poll.author != request.user:
-        raise PermissionDenied('Non hai i permessi per scaricare i codici di questa scelta')
-    else:
-        if not isinstance(poll, TokenizedPoll):
-            raise http.Http404('Poll not found')
-        response = TicketGenerator(
-            poll, 
-            request.scheme if request.scheme is not None else "", 
-            request.get_host()
-            ).render()
-        return response
+    if not isinstance(poll, TokenizedPoll):
+        raise http.Http404('Poll not found')
+    response = TicketGenerator(
+        poll, 
+        request.scheme if request.scheme is not None else "", 
+        request.get_host()
+        ).render()
+    return response
