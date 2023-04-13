@@ -1,0 +1,7 @@
+{% load django_bootstrap5 %}
+
+{% if poll.get_authentication_type == "Solo autenticati" %}
+    {% bootstrap_alert "<b>Attenzione</b>, il voto <b>non sarà modificabile</b> e <b>non potrai votare</b> più questa scelta con <b>questo account</b>!" alert_type="warning" %}
+{% elif poll.get_authentication_type == "Solo con password" %}
+    {% bootstrap_alert "<b>Attenzione</b>, il voto <b>non sarà modificabile</b> e <b>non potrai votare</b> più questa scelta con <b>la password che hai usato per accedere</b>!" alert_type="warning" %}
+{% endif %}

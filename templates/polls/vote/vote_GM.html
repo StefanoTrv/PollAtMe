@@ -54,6 +54,11 @@
                         <div class="col-md-6"></div>
                         {% endfor %}
                     </div>
+
+                    {%if poll.default_type.label == "Giudizio maggioritario" %}
+                        {% include "polls/includes/alert-non-modify.html"%}
+                    {% endif %}
+
                     <div class="col-sm-12">
                         <button type="submit" class="btn btn-primary">Salva</button>
                     </div>
