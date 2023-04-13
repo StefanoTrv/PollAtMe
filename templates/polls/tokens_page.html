@@ -14,7 +14,8 @@
                         <p class="card-text">
                             Nella pagina corrente puoi gestire la generazione di codici e il download del file PDF per poter stampare i bigliettini da distribuire ai votanti. 
                             Il file PDF che viene generato contiene tutti i i biglietti con i codici ancora <strong>inutilizzati</strong> della scelta, suddivisi 8 per pagina. In fase di stampa, si consiglia
-                            di controllare le pagine che si desidera stampare, definendo un intervallo di pagine di stampa per evitare sprechi. 
+                            di controllare le pagine che si desidera stampare, definendo un intervallo di pagine di stampa per evitare sprechi. Si ricorda infine che si possono generare da 1 a 40 codici 
+                            per volta e che una volta terminate le votazioni, non sarà più possibile accedere a questa pagina per generare o scaricare codici.
                         </p>
                     </div>
                 </div>
@@ -23,34 +24,37 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Informazioni di riepilogo</h5>
-                        <p>Qui puoi trovare alcune informazioni di riepilogo sulla scelta e sui codici relativi ad essa.</p>
                         <div class="row">
-                            <div class="col-md-6 col-xl-3">
+                            <div class="col-md-12">
                               <div class="card bg-c-blue order-card">
                                 <div class="card-body">
-                                  <h5 class="text-white">Titolo scelta: <span class="float-end"> {{ poll.title | truncatechars:10  }} </h5>
-                                  <p class="m-b-0">Data di chiusura<span class="float-end">{{ poll.end | date:"d/m/Y H:i" }}</span></p>
+                                  <h5 class="text-white">Titolo scelta: <span class="float-end"> {{ poll.title }} </h5>
+                                  <h6 class="text-white">Data di apertura della scelta:</h6>
+                                  <h2 class="text-end text-white"><em class="feather icon-calendar float-start"></em><span>{{ poll.start | date:"d/m/Y H:i" }}</span></h2>
+                                  <p class="m-b-0">Data di chiusura<span class="float-end">{{ poll.end |  date:"d/m/Y H:i" }}</span></p>
                                 </div>
                               </div>
                             </div>
-                            <div class="col-md-6 col-xl-3">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 col-xl-4">
                                 <div class="card bg-c-yellow order-card">
                                   <div class="card-body">
-                                      <h5 class="text-white">Codici generati: <span class="float-end"> {{object_list.count}} </h5>
+                                      <h5 class="text-white">Codici generati: <span class="float-end"> {{ all_tokens }} </h5>
                                   </div>
                                 </div>
                               </div>
-                            <div class="col-md-6 col-xl-3">
+                            <div class="col-md-6 col-xl-4">
                               <div class="card bg-c-green order-card">
                                 <div class="card-body">
-                                  <h5 class="text-white">Codici disponibili: <span class="float-end"> {{ disponibili.count }}</h5>
+                                  <h5 class="text-white">Codici disponibili: <span class="float-end"> {{ tokens_available }}</h5>
                                 </div>
                               </div>
                             </div>
-                            <div class="col-md-6 col-xl-3">
+                            <div class="col-md-6 col-xl-4">
                               <div class="card bg-c-red order-card">
                                 <div class="card-body">
-                                    <h5 class="text-white">Codici utilizzati: <span class="float-end"> {{ usati.count }}</h5>
+                                    <h5 class="text-white">Codici utilizzati: <span class="float-end"> {{ tokens_used }}</h5>
                                 </div>
                               </div>
                             </div>

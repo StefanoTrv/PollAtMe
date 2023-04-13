@@ -27,9 +27,9 @@ class TokensView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['poll'] = self.poll
-        context['object_list'] = Token.objects.filter(poll = self.poll)
-        context['usati'] = Token.objects.filter(poll = self.poll, used=True)
-        context['disponibili'] = Token.objects.filter(poll = self.poll, used=False)
+        context['all_tokens'] = Token.objects.filter(poll = self.poll).count
+        context['tokens_used'] = Token.objects.filter(poll = self.poll, used=True).count
+        context['tokens_available'] = Token.objects.filter(poll = self.poll, used=False).count
         return context
     
     def post(self, request, *args, **kwargs):
@@ -37,9 +37,9 @@ class TokensView(LoginRequiredMixin, TemplateView):
         number_of_tokens = self.request.POST.get("n")
         context['poll'] = self.poll
         generate_token(request, self.poll, int(number_of_tokens))
-        context['object_list'] = Token.objects.filter(poll = self.poll)
-        context['usati'] = Token.objects.filter(poll = self.poll, used=True)
-        context['disponibili'] = Token.objects.filter(poll = self.poll, used=False)
+        context['all_tokens'] = Token.objects.filter(poll = self.poll).count
+        context['tokens_used'] = Token.objects.filter(poll = self.poll, used=True).count
+        context['tokens_available'] = Token.objects.filter(poll = self.poll, used=False).count
         return render(self.request, 'polls/tokens_page.html', context)
 
 
