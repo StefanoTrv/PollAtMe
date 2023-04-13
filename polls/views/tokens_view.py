@@ -9,6 +9,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 
+from django.shortcuts import redirect
+from django.urls import reverse
+
 from polls.models import TokenizedPoll, Token
 from polls.services import SearchPollService, TicketGenerator
 from polls.services.token_generator import generate_tokens
@@ -40,7 +43,19 @@ class TokensView(LoginRequiredMixin, TemplateView):
         context['all_tokens'] = Token.objects.filter(poll = self.poll).count
         context['tokens_used'] = Token.objects.filter(poll = self.poll, used=True).count
         context['tokens_available'] = Token.objects.filter(poll = self.poll, used=False).count
-        return render(self.request, 'polls/tokens_generation_success.html', context)
+        request.session['poll'] = self.poll.pk
+        request.session['generated'] = context['generated']
+        return redirect(reverse('polls:tokens_success'))
+    
+
+def tokens_success(request):
+    poll = SearchPollService().search_by_id(request.session['poll'])
+    generated = request.session['generated']
+    context = {}
+    context['poll'] = poll
+    context['generated'] = generated
+    return render(request, 'polls/tokens_generation_success.html', context)
+
 
 
 @login_required

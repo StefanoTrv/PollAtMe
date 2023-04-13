@@ -5,4 +5,4 @@ from .create_poll_view import *
 from .delete_poll_view import PollDeleteView
 from .help_view import *
 from .access_poll_view import AccessPollView
-from .tokens_view import TokensView
+from .tokens_view import TokensView, tokens_success
