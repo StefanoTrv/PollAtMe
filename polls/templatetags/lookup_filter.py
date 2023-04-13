@@ -6,3 +6,7 @@ def get_value(dictionary, key):
 @register.filter
 def replace_space_with_underscore(string):
     return string.replace(" ", "_")
+
+@register.filter
+def tokens_status(object_list, used):
+    return object_list.filter(used=used)

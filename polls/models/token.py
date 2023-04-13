@@ -7,3 +7,6 @@ class Token(models.Model):
 
     def __str__(self) -> str:
         return "\""+self.token+"\" -> "+str(self.poll)+" ("+str(self.used)+")"
+
+    def get_password_for_url(self) -> str:
+        return self.token.replace(" ", "-")

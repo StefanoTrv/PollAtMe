@@ -83,10 +83,18 @@ def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Option
 
     if all((form_poll.is_valid(), formset_alternatives.is_valid(), form_mapping.is_valid(), form_options.is_valid())):
         saved_poll = create_poll_service(request.user, form_poll, form_mapping, form_options, formset_alternatives) # type: ignore
+        if hasattr(saved_poll, models.Poll.AUTH_VOTE_TYPE_FIELDNAME):
+            vote_type = 'authenticated'
+        elif hasattr(saved_poll, models.Poll.TOKEN_VOTE_TYPE_FIELDNAME):
+            vote_type = 'tokenized'
+        else:
+            vote_type = 'free'
         return render(request, f'polls/{action}_poll_success.html', {
+            'id': saved_poll.id,
             'code': saved_poll.mapping.code,
             'title': saved_poll.title,
-            'end': saved_poll.end
+            'end': saved_poll.end,
+            'vote_type': vote_type
         })
     else:
         return render(request, f'polls/create_poll/summary_and_options_{action}.html', {

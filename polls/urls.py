@@ -25,5 +25,8 @@ urlpatterns = [
     path('help/options/', views.ExplanationCreationPollView.as_view(), name='explain_options'),
     path('personal/', views.PersonalPollsView.as_view(), name='personal_polls'),
     path('<str:code>/<str:token>', views.AccessPollView.as_view(), name='access_poll'),
-    path('<str:code>', views.AccessPollView.as_view(), name='access_poll')
+    path('<str:code>', views.AccessPollView.as_view(), name='access_poll'),
+    path('tokens/<int:id>/', views.TokensView.as_view(), name='tokens'),
+    path('tokens/<int:id>/download', views.tokens_view.download_tokens, name='download_tokens'),
+    path('tokens/success/', views.tokens_view.tokens_success, name='tokens_success')
 ]
