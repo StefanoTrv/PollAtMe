@@ -51,7 +51,7 @@
         {% endif %}
 
         {% if not poll.is_ended and user.is_authenticated  and user == poll.author and poll.authentication_type == 3 %}
-            <a class="btn btn-block btn-primary mb-4" id="codici" href={% url 'polls:tokens' id=poll.id %}>Codici</a>
+            <a class="btn btn-block btn-primary mb-4" id="password" href={% url 'polls:tokens' id=poll.id %}>Password</a>
         {% endif %}
 
         <a class="btn btn-block btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#modalPollSharing" data-bs-code="{{ poll.mapping }}" data-bs-public="{{ poll.is_public }}" data-bs-title="{{ poll.title }}" data-bs-end="{{ poll.end | date:"d/m/Y, H:i" }}"> 

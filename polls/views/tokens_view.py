@@ -36,7 +36,7 @@ class TokensView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         number_of_tokens = self.request.POST.get("n")
         context['poll'] = self.poll
-        generate_token(request, self.poll, int(number_of_tokens))
+        generate_token(request, self.poll, int(number_of_tokens), context)
         context['all_tokens'] = Token.objects.filter(poll = self.poll).count
         context['tokens_used'] = Token.objects.filter(poll = self.poll, used=True).count
         context['tokens_available'] = Token.objects.filter(poll = self.poll, used=False).count
@@ -44,10 +44,14 @@ class TokensView(LoginRequiredMixin, TemplateView):
 
 
 @login_required
-def generate_token(request: http.HttpRequest, poll: TokenizedPoll, number_of_tokens: int):
+def generate_token(request: http.HttpRequest, poll: TokenizedPoll, number_of_tokens: int, context):
     if not isinstance(poll, TokenizedPoll):
         raise http.Http404('Poll not found')
-    generate_tokens(poll, number_of_tokens) 
+    context['generated'] = generate_tokens(poll, number_of_tokens)
+    lst = []
+    for token in context['generated']:
+        lst.append(token.replace(' ', '-'))
+    context['generated'] = lst
 
 
 @login_required
