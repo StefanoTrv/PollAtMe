@@ -55,7 +55,7 @@
                         {% endfor %}
                     </div>
 
-                    {%if poll.default_type.label == "Giudizio maggioritario" %}
+                    {%if poll.default_type == 1 %}
                         {% include "polls/includes/alert-non-modify.html"%}
                     {% endif %}
 

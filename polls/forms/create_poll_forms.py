@@ -175,6 +175,7 @@ class PollForm(forms.ModelForm):
         end = self.cleaned_data['end']
         start_now = self.cleaned_data['start_now']
         now = timezone.localtime(timezone.now())
+        delta = timedelta(minutes=5)
 
         # se l'utente ha scelto di iniziare il sondaggio subito
         if start_now:
@@ -186,7 +187,7 @@ class PollForm(forms.ModelForm):
             if start is None:
                 self.add_error('start', 'Devi impostare la data di inizio del sondaggio')
 
-        if start < now:
+        if start < now - delta:
             self.add_error('start', 'La data di inizio è precedente a quella attuale')
 
         if end - start < timedelta(0):
