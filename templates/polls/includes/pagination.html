@@ -1,5 +1,5 @@
 <nav>
-    <ul class="pagination justify-content-center">
+    <ul class="pagination d-flex flex-wrap justify-content-center">
         <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
             <a href="{% if page_obj.has_previous %}?page={{ page_obj.previous_page_number }}{% endif %}" class="page-link">Indietro</a>
         </li>

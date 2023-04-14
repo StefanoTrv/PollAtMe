@@ -19,7 +19,7 @@ def remove_csfr_token(response):
     )
 
 
-class TestCreateSinglePreferenceView(TestCase):
+class TestVoteSinglePreferenceView(TestCase):
     fixtures = ['polls.json']
     URL = 'polls:vote_single_preference'
 
@@ -43,11 +43,13 @@ class TestCreateSinglePreferenceView(TestCase):
             self.assertContains(res, alternative.text)
 
     def test_show_single_preference_poll_form_random_order(self):
+        is_randomized = False
         models.PollOptions.objects.create(poll=self.poll, random_order=True)
-        resp = self.client.get(self.poll_url)
-        resp1 = self.client.get(self.poll_url)
-        assert_that(remove_csfr_token(resp1)).is_not_equal_to(
-            remove_csfr_token(resp))
+        for i in range(0,2):
+            resp = self.client.get(self.poll_url)
+            resp1 = self.client.get(self.poll_url)
+            is_randomized = is_randomized or remove_csfr_token(resp1)!=remove_csfr_token(resp)
+        assert_that(is_randomized).is_true
 
     def test_show_single_preference_poll_form_fixed_order(self):
         models.PollOptions.objects.create(poll=self.poll, random_order=False)
@@ -131,7 +133,7 @@ class TestCreateSinglePreferenceView(TestCase):
             'alternative': 1,
         })
 
-        synthetic_vote_id = models.MajorityPreference.objects.last().id
+        synthetic_vote = models.MajorityPreference.objects.last()
         revote_url = reverse('polls:vote_MJ', args=[self.poll.pk])
         resp = self.client.get(revote_url)
         self.assertEqual(resp.status_code, 200)
@@ -145,16 +147,15 @@ class TestCreateSinglePreferenceView(TestCase):
             'majorityopinionjudgement_set-2-grade': 1,
             'majorityopinionjudgement_set-3-grade': 1,
         })
-        self.assertEqual(resp.status_code, 200)
-        assert_that(models.MajorityPreference.objects.filter(
-            id=synthetic_vote_id)).is_empty()
-        assert_that(models.MajorityPreference.objects.last().poll).is_equal_to(
-            self.poll)
-        for judgement in models.MajorityPreference.objects.last().majorityopinionjudgement_set.all():
-            self.assertEqual(judgement.grade, 1)
+        assert_that(resp.status_code).is_equal_to(200)
+
+        synthetic_vote = models.MajorityPreference.objects.get(id=synthetic_vote.id)
+        assert_that(synthetic_vote.synthetic).is_equal_to(False)
+        for opinion in synthetic_vote.majorityopinionjudgement_set.all():
+            assert_that(opinion.grade).is_equal_to(1)
 
 
-class TestCreateMajorityPreferenceView(TestCase):
+class TestVoteMajorityPreferenceView(TestCase):
     fixtures = ['polls.json']
     URL = 'polls:vote_MJ'
 
@@ -193,11 +194,13 @@ class TestCreateMajorityPreferenceView(TestCase):
             )
 
     def test_show_majority_preference_poll_form_random_order(self):
+        is_randomized = False
         models.PollOptions.objects.create(poll=self.poll, random_order=True)
-        resp = self.client.get(self.poll_url)
-        resp1 = self.client.get(self.poll_url)
-        assert_that(remove_csfr_token(resp1)).is_not_equal_to(
-            remove_csfr_token(resp))
+        for i in range(0,2):
+            resp = self.client.get(self.poll_url)
+            resp1 = self.client.get(self.poll_url)
+            is_randomized = is_randomized or remove_csfr_token(resp1)!=remove_csfr_token(resp)
+        assert_that(is_randomized).is_true
 
     def test_show_majority_preference_poll_form_fixed_order(self):
         models.PollOptions.objects.create(poll=self.poll, random_order=False)

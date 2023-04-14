@@ -1,0 +1,54 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} {{block.super}} | Hai già votato questa scelta {% endblock title %}
+
+{% block content %}
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <div class="card">
+            <div class="card-body">
+                <div class="container">
+                    <div class="row align-items-center text-center">
+                        <div class="col-md-12">
+                            <h1>Hai già votato!</h1>
+                            <br>
+                            {% if poll.get_authentication_type == "Solo autenticati" %}
+                            <h5>Non puoi votare perché è già presente un voto per questo account. Se vuoi, puoi vedere i risultati
+                                della scelta.<br>
+                                Ricorda: quando voti una scelta protetta da autenticazione, al fine di garantire la tua anonimità nella risposta, il voto non sarà modificabile.
+                            </h5>
+                            {% else  %}
+                            <h5>Non puoi votare perché è già presente un voto per questa password. Se vuoi, puoi vedere i risultati
+                                della scelta.<br>
+                                Ricorda: le password possono essere utilizzate una volta sola ed una volta salvato il voto questo non può essere più modificato, questo per garantire la tua anonimità nella risposta <br>
+                            </h5>
+                            {% endif %}
+                        </div>
+
+                        <div class="col m-4">
+                            <button class="btn btn-block btn-secondary" onclick="javascript:history.back()"> Torna
+                                indietro </button>
+
+                        </div>
+
+                        <div class="col m-4">
+                            <form action={% url 'polls:result' id=poll.id %}>
+                                <button class="btn btn-block btn-primary"> Risultati scelta </button>
+                            </form>
+
+                        </div>
+
+                        <div class="col m-4">
+                            <form action="/">
+                                <button class="btn btn-block btn-secondary"> Torna alla Home </button>
+                            </form>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

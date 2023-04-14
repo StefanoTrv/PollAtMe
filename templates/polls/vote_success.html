@@ -27,14 +27,14 @@
                 </div>
             </div>
         </div>
-        {% if poll.get_type == "Preferenza singola" %}
+        {% if poll.get_type == "Preferenza singola" and revote %}
             <div class="row">
                 <div class="col-md-3"></div>
                 <div class="col-md-6">
                     <div class="card align-items-center">
                         <div class="card-body text-center">
                             <h5>Vuoi esprimere la tua preferenza con un metodo diverso?</h5>
-                            <a href="{% url 'polls:vote_MJ' id=poll.id %}" class="btn btn-block btn-primary mb-4">Giudica le alternative con il giudizio maggioritario</a>
+                            <a href="{% if token == '' %}{% url 'polls:vote_MJ' id=poll.id%}{% else %}{% url 'polls:vote_MJ' id=poll.id token=token%}{% endif %}" class="btn btn-block btn-primary mb-4">Giudica le alternative con il giudizio maggioritario</a>
                             <p class="card-text m-2">Il <b>giudizio maggioritario</b> è un metodo di scelta in cui
                                 ogni votante esprime un giudizio per ogni alternativa.
                                 I giudizi non sono numerici, ma sono delle valutazioni come "<i>ottimo</i>", "<i>buono</i>",
@@ -49,7 +49,7 @@
                 </div>
                 <div class="col-md-3"></div>
             </div>
-            {% endif %}
+        {% endif %}
     </div>
 </div>
 {% endblock content %}

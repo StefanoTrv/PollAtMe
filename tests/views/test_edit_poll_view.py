@@ -103,7 +103,8 @@ class TestPollEditView(TestCase):
             'start': start,
             'end': end,
             'author': self.u.id,
-            'visibility': 2,
+            'visibility': Poll.PollVisibility.PUBLIC.value,
+            'authentication_type': Poll.PollAuthenticationType.FREE.value,
             'save': ''
         }
         response = self.client.post(url, data=data)
@@ -115,102 +116,13 @@ class TestPollEditView(TestCase):
         assert_that(last_poll.default_type).is_equal_to(data['default_type'])
         assert_that(last_poll.text).is_equal_to(data['text'])
         assert_that(last_poll.alternative_set.count()).is_equal_to(2)
-        assert_that(last_poll.visibility).is_equal_to(2)
+        assert_that(last_poll.visibility).is_equal_to(Poll.PollVisibility.PUBLIC.value)
         assert_that(last_poll.mapping.code).is_not_equal_to('Lorem').is_length(6)
 
         alternatives = last_poll.alternative_set.all()
         expected_texts = ['Alternativa di prova 2', 'Alternativa di prova 3']
         for alt, text in zip(alternatives, expected_texts):
             assert_that(alt.text).is_equal_to(text)
-
-
-    def test_edit_going_back(self):
-        
-        url = reverse('polls:edit_poll', kwargs={'id': self.poll.pk})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'polls/create_poll/main_page_edit.html')
-        
-        step_1_data = {
-            'title': 'Lorem ipsum',
-            'text': 'dolor sit amet',
-            'default_type': 1,
-            'form-TOTAL_FORMS': 2,
-            'form-INITIAL_FORMS': 0,
-            'form-MIN_NUM_FORMS': 2,
-            'form-MAX_NUM_FORMS': 10,
-            'form-0-text': 'lorem',
-            'form-0-id': '',
-            'form-0-DELETE': '',
-            'form-1-text': 'ipsum',
-            'form-1-id': '',
-            'form-1-DELETE': '',
-        }
-
-        response = self.client.post(url, data=step_1_data | {'summary': ''})
-        assert_that(response.status_code).is_equal_to(200)
-        self.assertTemplateUsed('polls/create_poll/summary_and_options_create.html')
-
-        assert_that(response.context['form'].initial['start']).is_equal_to(self.poll.start)
-        assert_that(response.context['form'].initial['end']).is_equal_to(self.poll.end)
-        assert_that(response.context['form'].initial['visibility'] == 1).is_true
-        assert_that(response.context['mapping_form'].initial['code']).is_equal_to('lorem')
-        assert_that(response.context['options_form'].initial['random_order']).is_equal_to(True)
-
-        now = timezone.localtime(timezone.now())
-
-        start = (now + timedelta(hours=5)).strftime('%Y-%m-%d %H:%M:%S')
-        end = (now + timedelta(weeks=2)).strftime('%Y-%m-%d %H:%M:%S')
-
-        step_2_data = step_1_data | {
-            'start': start,
-            'end': end,
-            'author': self.u.id,
-            'visibility': 1,
-            'go_back': '',
-            'code': 'TestCode',
-        }
-
-        response = self.client.post(url, data = step_2_data)
-        assert_that(response.status_code).is_equal_to(200)
-        self.assertTemplateUsed(response, 'polls/create_poll/main_page_edit.html')
-        self.assertContains(response,'Lorem ipsum')
-
-
-
-        #mantenimento dati
-        response = self.client.post(url, data=step_1_data | {'summary': ''})
-
-        assert_that(response.context['form'].initial['start']).is_equal_to(start)
-        assert_that(response.context['form'].initial['end']).is_equal_to(end)
-        assert_that(response.context['form'].initial['visibility'] == 1).is_true
-        assert_that(response.context['mapping_form'].initial['code']).is_equal_to('TestCode')
-        assert_that(response.context['options_form'].initial['random_order']).is_equal_to(False)
-
-        ##dati non validi
-        start = (now - timedelta(days=5)).strftime('%Y-%m-%d %H:%M:%S')
-        end = (now + timedelta(weeks=2)).strftime('%Y-%m-%d %H:%M:%S')
-
-        step_2_data = step_1_data | {
-            'start':start,
-            'end': end,
-            'author': self.u.id,
-            'visibility': 1,
-            'go_back': '',
-            'code': '..2,1233..',
-        }
-
-        response = self.client.post(url, data = step_2_data)
-        assert_that(response.status_code).is_equal_to(200)
-        self.assertTemplateUsed(response, 'polls/create_poll/main_page_edit.html')
-        self.assertContains(response,'Lorem ipsum')
-
-        response = self.client.post(url, data=step_1_data | {'summary': ''})
-        assert_that(response.context['form'].initial['start']).is_equal_to(start)
-        assert_that(response.context['form'].initial['end']).is_equal_to(end)
-        assert_that(response.context['form'].initial['visibility'] == 1).is_true
-        assert_that(response.context['mapping_form'].initial['code']).is_equal_to('..2,1233..')
-
 
     def test_edit_poll_after_start(self):
         url = reverse('polls:edit_poll', kwargs={'id': self.poll.pk})

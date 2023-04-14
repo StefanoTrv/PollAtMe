@@ -21,14 +21,16 @@
                             <img src="{% static 'img/vote.png' %}" alt="" class="img-fluid mb-4">
                             <span> <strong style="font-size: 15px"> Scegli </strong> <strong style="font-size: 20px"> Meglio </strong> </span>
 							<h4 class="mb-3 f-w-400">Login</h4>
-							<br /><br />
 
 							<form role="form" method="post" action="{% provider_login_url "google" %}">
 								{% csrf_token %}
                                 <button type='submit' class="btn btn-block btn-social btn-google">
                                     <span class="fa fa-google"></span> Sign in with google
-                                </a>
+								</button>
 							</form>
+							{% if message %}
+							<p class="text-danger mt-3"> {{ message }} </p>
+							{% endif %}
 						</div>
 					</div>
 				</div>

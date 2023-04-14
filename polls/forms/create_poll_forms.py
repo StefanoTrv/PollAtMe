@@ -1,6 +1,7 @@
 import re
 
 from datetime import timedelta
+from typing import Any
 from django import forms
 from django.utils import timezone
 
@@ -56,7 +57,8 @@ class BaseAlternativeFormSet(forms.BaseModelFormSet):
                 'text': ""
             },
             error_messages={
-                'too_few_forms': 'Inserisci almeno %(num)d alternative valide per proseguire'
+                'too_few_forms': 'Inserisci almeno %(num)d alternative valide per proseguire',
+                'too_many_forms': 'Inserisci al massimo %(num)d alternative valide per proseguire',
             },
             can_order=False, can_delete=True,
             extra=0,
@@ -94,16 +96,36 @@ class PollFormMain(forms.ModelForm):
         super(PollFormMain, self).__init__(*args, **kwargs)
         self.fields['text'].required = False
 
+    def get_temporary_poll(self) -> Poll:
+        poll: Poll = self.instance
+        if poll.start is None:
+            poll.start = timezone.now()
+            poll.end = poll.start + timedelta(weeks=1)
+        
+        if not hasattr(poll, Poll.MAPPING_FIELDNAME):
+            poll.mapping = Mapping()
+        
+        if not hasattr(poll, Poll.OPTIONS_FIELDNAME):
+            poll.polloptions = PollOptions()
+        
+        return self.save(commit=False)
 
 # Form per la seconda pagina della creazione di nuovi sondaggi
-class PollFormAdditionalOptions(forms.ModelForm):
+class PollForm(forms.ModelForm):
+    
+    start_now = forms.BooleanField(
+        label="Inizia subito (Attenzione: non potrai più modificare o eliminare il sondaggio!)",
+        required=False
+    )
+
     class Meta:
         model = Poll
         exclude = ["author"]
         labels = {
             'start': 'Data inizio votazioni',
             'end': 'Data fine votazioni',
-            'visibility': "Visibilità"
+            'visibility': "Visibilità",
+            'authentication_type': "Modalità di voto",
         } | PollFormMain.Meta.labels
 
         error_messages = {} | PollFormMain.Meta.error_messages
@@ -124,10 +146,11 @@ class PollFormAdditionalOptions(forms.ModelForm):
                 'placeholder': 'Il testo della scelta verrà lasciato vuoto'
             }),
             'visibility': forms.RadioSelect(
-                choices=[
-                    ('1', 'Nascosto'),
-                    ('2', 'Pubblico'),
-                ],
+                attrs={
+                    'class': 'btn-check'
+                }
+            ),
+            'authentication_type': forms.RadioSelect(
                 attrs={
                     'class': 'btn-check'
                 }
@@ -137,6 +160,7 @@ class PollFormAdditionalOptions(forms.ModelForm):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.fields['text'].required = False
+        self.fields['start'].required = False
         
         for f_name in self.fields:
             if f_name in PollFormMain.Meta.fields:
@@ -145,24 +169,35 @@ class PollFormAdditionalOptions(forms.ModelForm):
     def clean(self):
         if self.errors:
             return
+        cleaned_data = self.cleaned_data
 
         start = self.cleaned_data['start']
         end = self.cleaned_data['end']
-
+        start_now = self.cleaned_data['start_now']
         now = timezone.localtime(timezone.now())
+        delta = timedelta(minutes=5)
+
+        # se l'utente ha scelto di iniziare il sondaggio subito
+        if start_now:
+            cleaned_data['start'] = now
+            start = cleaned_data['start']
+        else:
+            # se l'utente non ha scelto di iniziare il sondaggio subito
+            # la data di inizio deve essere impostata
+            if start is None:
+                self.add_error('start', 'Devi impostare la data di inizio del sondaggio')
+
+        if start < now - delta:
+            self.add_error('start', 'La data di inizio è precedente a quella attuale')
 
         if end - start < timedelta(0):
             self.add_error('end', 'La data di fine è precedente alla data di inizio')
-
-        # il sondaggio deve iniziare almeno 5 minuti da adesso
-        if start - now < timedelta(minutes=5):
-            self.add_error('start', 'La scelta deve iniziare almeno 5 minuti da adesso')
 
         # il sondaggio deve durare almeno 15 minuti
         if end - start < timedelta(minutes=15):
             self.add_error('end', 'La scelta deve durare almeno 15 minuti')
 
-        return self.cleaned_data
+        return cleaned_data
 
 
 class PollMappingForm(forms.ModelForm):

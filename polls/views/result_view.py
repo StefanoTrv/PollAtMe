@@ -1,4 +1,4 @@
-from typing import Any, Callable
+from typing import Any
 
 from django.db import models
 from django import http
@@ -70,6 +70,8 @@ class SinglePreferenceResultView(_ResultView):
         context['results'] = results
         context['unique_winner'] = results[0]['position'] != results[1]['position']
         context['poll'] = poll
+        context['visibility'] = poll.get_visibility()
+        context['authentication_type'] = poll.get_authentication_type()
         context['responses_count']=tot_votes
 
         return context
@@ -88,7 +90,7 @@ class ShultzePreferenceResultView(_ResultView):
         return context
     
 
-class MajorityJudgementListView(_ResultView):
+class MajorityJudgementResultView(_ResultView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -112,6 +114,8 @@ class MajorityJudgementListView(_ResultView):
         context.update(winners)
         context.update(vote_list)
         context['poll'] = poll
+        context['visibility'] = poll.get_visibility()
+        context['authentication_type'] = poll.get_authentication_type()
         context['responses_count']=result_service.get_numero_numero_preferenze()
         context['include_synthetic']=include_synthetic
         return context

@@ -1,0 +1,100 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} {{block.super}} | Gestione password {% endblock title %}
+
+{% block content %}
+
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">Gestione delle password</h3>
+                        <p class="card-text">
+                            Nella pagina corrente puoi gestire la generazione di password e il download del file PDF per poter stampare i bigliettini da distribuire ai votanti. 
+                            Il file PDF che viene generato contiene tutti i i biglietti con i password ancora <strong>inutilizzati</strong> della scelta, suddivisi 8 per pagina. In fase di stampa, si consiglia
+                            di controllare le pagine che si desidera stampare, definendo un intervallo di pagine di stampa per evitare sprechi. Si ricorda infine che si possono generare da 1 a 10000 password
+                            per volta e che una volta terminate le votazioni, non sarà più possibile accedere a questa pagina per generare o scaricare password.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Informazioni di riepilogo</h5>
+                        <div class="row">
+                            <div class="col-sm-12">
+                              <div class="card bg-c-blue order-card">
+                                <div class="card-body">
+                                  <h5 class="text-white">Titolo scelta: </h5> 
+                                  <h2 class="text-end text-white"><span>{{poll.title}}</span>
+                                  </h2>
+                                  <h6 class="text-white">Data di apertura della scelta:</h6>
+                                  <h2 class="text-end text-white"><em class="feather icon-calendar float-start"></em><span>{{ poll.start | date:"d/m/Y H:i" }}</span></h2>
+                                  <p class="m-b-0">Data di chiusura<span class="float-end">{{ poll.end |  date:"d/m/Y H:i" }}</span></p>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 col-xl-4">
+                                <div class="card bg-c-yellow order-card">
+                                  <div class="card-body">
+                                      <h5 class="text-white">Password generate: <span class="float-end"> {{ all_tokens }} </h5>
+                                  </div>
+                                </div>
+                              </div>
+                            <div class="col-md-6 col-xl-4">
+                              <div class="card bg-c-green order-card">
+                                <div class="card-body">
+                                  <h5 class="text-white">Password disponibili: <span class="float-end"> {{ tokens_available }}</h5>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-6 col-xl-4">
+                              <div class="card bg-c-red order-card">
+                                <div class="card-body">
+                                    <h5 class="text-white">Password utilizzati: <span class="float-end"> {{ tokens_used }}</h5>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3"></div>
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                                <div class="row align-center">
+                                    <div class="col-sm-12 col-lg-1"></div>
+                                    <div class="col-sm-12 col-lg-6">
+                                        <div class="input-group">
+                                            <input type="number" name="n" class="form-control" placeholder="Inserisci un numero" aria-label="Recipient's username" aria-describedby="basic-addon2" min="1" max="10000" required>
+                                            <div class="input-group-append">
+                                                <button type="submit" class="btn btn-block btn-primary"> Genera </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-lg-5 text-center">
+                                        <a class="btn btn-block btn-secondary" href= {% url 'polls:download_tokens' id=poll.id %}> Scarica PDF </a> 
+                                    </div>
+                                </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3"></div>
+            <div class="col-sm-12" style="text-align:center">
+                <a class="btn btn-block btn-primary mb-4" href="/">Torna alla home</a>
+                <a class="btn btn-block btn-secondary mb-4" href="{% url 'polls:personal_polls' %}">Scelte personali</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

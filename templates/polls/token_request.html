@@ -1,0 +1,113 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} {{block.super}} | Inserisci la password per votare {% endblock title %}
+
+{% block content %}
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="row align-items-center text-center">
+                        <div class="col-md-12">
+                            <div class="card-body">
+                                <h1>Inserisci la password per votare</h1>
+                                Questa scelta è protetta da password: inserisci la password univoca che ti è stata fornita per votare.
+                                <br>
+                                Se non ha ricevuto una password e ritieni che dovresti essere in grado di votare, contatta il creatore di questa scelta.
+                                <br>
+                                La password è composta da quattro parole italiane, come per esempio "<i>negozio salsiccia albero acqua</i>".
+                                <br>
+                                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center flex-sm-fill">
+                                    <input class="form-control m-2 {% if token != '' %}border-danger{% endif %}" type="text" id="password1" name="password1" onkeypress="keyPressInPassword(event,1)" placeholder="Prima parola">
+                                    <input class="form-control m-2 {% if token != '' %}border-danger{% endif %}" type="text" id="password2" name="password2" onkeypress="keyPressInPassword(event,2)" placeholder="Seconda parola">
+                                    <input class="form-control m-2 {% if token != '' %}border-danger{% endif %}" type="text" id="password3" name="password3" onkeypress="keyPressInPassword(event,3)" placeholder="Terza parola">
+                                    <input class="form-control m-2 {% if token != '' %}border-danger{% endif %}" type="text" id="password4" name="password4" onkeypress="keyPressInPassword(event,4)" placeholder="Quarta parola">
+                                </div>
+                                <br>
+                                {% if token != '' %}<!-- Wrong token --><p class="text-danger">La password che hai inserito non è corretta. Controlla che non contenga errori e prova di nuovo.</p><br>{% endif %}
+                                <button class="btn btn-block btn-primary mb-4" onclick="submitPassword()" id="submitButton">Vai al voto</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="row align-items-center text-center">
+                        <div class="col-md-12">
+                            <div class="card-body">
+                                <form action="/">
+                                    <button class="btn btn-block btn-secondary m-4"> Annulla e torna alla HOME </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+{% endblock content %}
+
+{% block javascripts %}
+<script>
+    window.onload = function() {
+        prefillTextInputs();
+    }
+
+    function prefillTextInputs(){
+        token = "{{ token }}".split(" ");
+        if(token.length>0 && token[0]!=""){ 
+            document.getElementById("password1").value=token[0];
+        }
+        if(token.length>1 && token[1]!=""){
+            document.getElementById("password2").value=token[1];
+        }
+        if(token.length>2 && token[2]!=""){
+            document.getElementById("password3").value=token[2];
+        }
+        if(token.length>3 && token[3]!=""){
+            document.getElementById("password4").value=token[3];
+        }
+    }
+
+    function submitPassword(){
+        currentUrlCleaned = window.location.href.split("/").slice(0,-1).join("/")+"/";
+
+        targetUrl = currentUrlCleaned 
+            + document.getElementById("password1").value.replaceAll(" ","") + "-"
+            + document.getElementById("password2").value.replaceAll(" ","") + "-"
+            + document.getElementById("password3").value.replaceAll(" ","") + "-"
+            + document.getElementById("password4").value.replaceAll(" ","");
+
+            //Rimuove eventuali trailing "-"
+            i = targetUrl.length - 1;
+            while(i >= 0 && targetUrl[i]=="-"){
+                targetUrl = targetUrl.slice(0,-1);
+                i--;
+            }
+
+
+        window.location.href = targetUrl;
+    }
+
+    function keyPressInPassword(event,field) {
+        if (event.key == "Enter") {
+            submitPassword();
+        } else if (event.code == "Space"){
+            console.log(field)
+            if (field==1){
+                document.getElementById("password2").focus();
+                setTimeout(() => {  document.getElementById("password1").value=document.getElementById("password1").value.replaceAll(" ",""); }, 100);//rimuovi lo spazio che è stato aggiunto
+            } else if (field==2){
+                document.getElementById("password3").focus();
+                setTimeout(() => {  document.getElementById("password2").value=document.getElementById("password2").value.replaceAll(" ",""); }, 100);
+            } else if (field==3){
+                document.getElementById("password4").focus();
+                setTimeout(() => {  document.getElementById("password3").value=document.getElementById("password3").value.replaceAll(" ",""); }, 100);
+            } else if (field==4){
+                document.getElementById("submitButton").focus();
+                setTimeout(() => {  document.getElementById("password4").value=document.getElementById("password4").value.replaceAll(" ",""); }, 100);
+            }
+        }
+    }
+</script>
+{% endblock javascripts %}

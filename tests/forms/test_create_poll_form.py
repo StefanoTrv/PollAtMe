@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.utils import timezone
 
-from polls.forms import (BaseAlternativeFormSet, PollFormAdditionalOptions,
+from polls.forms import (BaseAlternativeFormSet, PollForm,
                          PollFormMain)
 from polls.forms.create_poll_forms import PollMappingForm
 from polls.models import Alternative, Poll
@@ -201,7 +201,7 @@ class TestPollFormMain(TestCase):
         assert_that(p.default_type).is_equal_to(1)
 
 
-class TestPollFormAdditionalOptions(TestCase):
+class TestPollForm(TestCase):
     def setUp(self) -> None:
         self.u = User.objects.create_user(username="test")
         self.poll =  Poll(
@@ -230,47 +230,69 @@ class TestPollFormAdditionalOptions(TestCase):
         
 
     def test_errore(self):
-        form = PollFormAdditionalOptions({})
+        form = PollForm({})
         assert_that(form.is_valid()).is_false()
         assert_that(form.errors).is_length(5)
     
     def test_fine_precedente_inizio(self):
-        form = PollFormAdditionalOptions({
+        form = PollForm({
             'title': 'Lorem',
             'text': 'ipsum',
             'default_type': 1,
+            'start_now': False,
             'start': timezone.now() + timezone.timedelta(days=2),
             'end': timezone.now() + timezone.timedelta(days=1),
             'author': self.u.id,
-            'visibility': 1
+            'visibility': 1,
+            'authentication_type': 1
         })
 
         assert_that(form.has_error('end')).is_true()
         assert_that(form.has_error('start')).is_false()
     
-    def test_inizio_precedente_5_minuti(self):
-        form = PollFormAdditionalOptions({
+    def test_inizio_precedente_attuale(self):
+        form = PollForm({
             'title': 'Lorem',
             'text': 'ipsum',
             'default_type': 1,
-            'start': timezone.now() + timezone.timedelta(minutes=4),
+            'start_now': False,
+            'start': timezone.now() - timezone.timedelta(days=1),
             'end': timezone.now() + timezone.timedelta(days=1),
             'author': self.u.id,
-            'visibility': 1
+            'visibility': 1,
+            'authentication_type': 1
         })
 
         assert_that(form.has_error('start')).is_true()
         assert_that(form.has_error('end')).is_false()
     
-    def test_sondaggio_meno_15_minuti(self):
-        form = PollFormAdditionalOptions({
+    def test_inizio_ora(self):
+        form = PollForm({
             'title': 'Lorem',
             'text': 'ipsum',
             'default_type': 1,
+            'start_now': True,
+            'end': timezone.now() + timezone.timedelta(days=1),
+            'author': self.u.id,
+            'visibility': 1,
+            'authentication_type': 1
+        })
+
+        assert_that(form.has_error('start')).is_false()
+        assert_that(form.has_error('end')).is_false()
+        assert_that(form.cleaned_data['start']).is_equal_to_ignoring_milliseconds(timezone.localtime(timezone.now()))
+
+    def test_sondaggio_meno_15_minuti(self):
+        form = PollForm({
+            'title': 'Lorem',
+            'text': 'ipsum',
+            'default_type': 1,
+            'start_now': False,
             'start': timezone.now() + timezone.timedelta(hours=1),
             'end': timezone.now() + timezone.timedelta(hours=1, minutes=14),
             'author': self.u.id,
-            'visibility': 1
+            'visibility': 1,
+            'authentication_type': 1
         })
 
         assert_that(form.has_error('end')).is_true()

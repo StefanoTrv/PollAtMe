@@ -1,8 +1,7 @@
 from polls.models import Poll, Alternative
 from polls.models.preference import MajorityOpinionJudgement, MajorityPreference
 import math
-from django.db.models import QuerySet, Count
-from typing import Any
+from django.db.models import QuerySet
 
 #classe per la rappresentazione del voto, classe contenitore
 #voto maggiore => giudizio peggiore
