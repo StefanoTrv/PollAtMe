@@ -101,7 +101,6 @@ class AuthenticatedPoll(Poll):
             raise ValidationError(_("User has already voted"))
 
 class TokenizedPoll(Poll):
-    
     def clean(self) -> None:
         if self.poll.authentication_type != Poll.PollAuthenticationType.TOKENIZED : # type: ignore
             raise ValidationError(_("TokenizedPoll is only for polls with tokens"))
@@ -110,7 +109,7 @@ class TokenizedPoll(Poll):
         return not Token.objects.filter(poll=self,token=kwargs['token']).exists()
 
     def user_has_already_voted(self, **kwargs) -> bool:
-        return Token.objects.filter(token=kwargs['token'],poll=self).first().used # type: ignore
+        return Token.objects.get(token=kwargs['token'],poll=self).used
 
     def set_authentication_method_as_used(self, **kwargs) -> None:
         if self.failed_authentication(**kwargs):
@@ -118,6 +117,6 @@ class TokenizedPoll(Poll):
         elif self.user_has_already_voted(**kwargs):
             raise ValidationError(_("The token was already used"))
         else:
-            token_object = Token.objects.filter(token=kwargs['token'],poll=self).first()
-            token_object.used = True # type: ignore
-            token_object.save() # type: ignore
+            token_object = Token.objects.get(token=kwargs['token'],poll=self)
+            token_object.used = True
+            token_object.save()

@@ -11,12 +11,15 @@ f.close()
 
 def generate_tokens(poll : TokenizedPoll, n = 0):
     new_tokens_list: List[str] = []
-    for i in range(n):
+    existing_tokens = list(Token.objects.filter(poll=poll).all().values_list('token', flat=True))
+    for _ in range(n):
         token = __create_token()
-        while Token.objects.filter(token=token,poll=poll).exists():
+        while token in existing_tokens:
             token = __create_token()
-        Token.objects.create(poll=poll, token=token, used=False)
         new_tokens_list.append(token)
+        existing_tokens.append(token)
+    
+    Token.objects.bulk_create([Token(poll=poll, token=t, used=False) for t in new_tokens_list])
     return new_tokens_list
 
 def __create_token():

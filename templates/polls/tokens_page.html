@@ -1,100 +1,192 @@
 {% extends 'layouts/base.html' %}
 {% load lookup_filter %}
+{% load django_bootstrap5 %}
+{% load qr_code %}
+
 {% block title %} {{block.super}} | Gestione password {% endblock title %}
 
 {% block content %}
 
 <div class="pcoded-main-container">
-    <div class="pcoded-content">
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h3 class="card-title">Gestione delle password</h3>
-                        <p class="card-text">
-                            Nella pagina corrente puoi gestire la generazione di password e il download del file PDF per poter stampare i bigliettini da distribuire ai votanti. 
-                            Il file PDF che viene generato contiene tutti i i biglietti con i password ancora <strong>inutilizzati</strong> della scelta, suddivisi 8 per pagina. In fase di stampa, si consiglia
-                            di controllare le pagine che si desidera stampare, definendo un intervallo di pagine di stampa per evitare sprechi. Si ricorda infine che si possono generare da 1 a 10000 password
-                            per volta e che una volta terminate le votazioni, non sarà più possibile accedere a questa pagina per generare o scaricare password.
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Informazioni di riepilogo</h5>
-                        <div class="row">
-                            <div class="col-sm-12">
-                              <div class="card bg-c-blue order-card">
-                                <div class="card-body">
-                                  <h5 class="text-white">Titolo scelta: </h5> 
-                                  <h2 class="text-end text-white"><span>{{poll.title}}</span>
-                                  </h2>
-                                  <h6 class="text-white">Data di apertura della scelta:</h6>
-                                  <h2 class="text-end text-white"><em class="feather icon-calendar float-start"></em><span>{{ poll.start | date:"d/m/Y H:i" }}</span></h2>
-                                  <p class="m-b-0">Data di chiusura<span class="float-end">{{ poll.end |  date:"d/m/Y H:i" }}</span></p>
-                                </div>
-                              </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 col-xl-4">
-                                <div class="card bg-c-yellow order-card">
-                                  <div class="card-body">
-                                      <h5 class="text-white">Password generate: <span class="float-end"> {{ all_tokens }} </h5>
-                                  </div>
-                                </div>
-                              </div>
-                            <div class="col-md-6 col-xl-4">
-                              <div class="card bg-c-green order-card">
-                                <div class="card-body">
-                                  <h5 class="text-white">Password disponibili: <span class="float-end"> {{ tokens_available }}</h5>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="col-md-6 col-xl-4">
-                              <div class="card bg-c-red order-card">
-                                <div class="card-body">
-                                    <h5 class="text-white">Password utilizzati: <span class="float-end"> {{ tokens_used }}</h5>
-                                </div>
-                              </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-3"></div>
-            <div class="col-sm-6">
-                <div class="card">
-                    <div class="card-body">
-                        <form method="post">
-                            {% csrf_token %}
-                                <div class="row align-center">
-                                    <div class="col-sm-12 col-lg-1"></div>
-                                    <div class="col-sm-12 col-lg-6">
-                                        <div class="input-group">
-                                            <input type="number" name="n" class="form-control" placeholder="Inserisci un numero" aria-label="Recipient's username" aria-describedby="basic-addon2" min="1" max="10000" required>
-                                            <div class="input-group-append">
-                                                <button type="submit" class="btn btn-block btn-primary"> Genera </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-12 col-lg-5 text-center">
-                                        <a class="btn btn-block btn-secondary" href= {% url 'polls:download_tokens' id=poll.id %}> Scarica PDF </a> 
-                                    </div>
-                                </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-3"></div>
-            <div class="col-sm-12" style="text-align:center">
-                <a class="btn btn-block btn-primary mb-4" href="/">Torna alla home</a>
-                <a class="btn btn-block btn-secondary mb-4" href="{% url 'polls:personal_polls' %}">Scelte personali</a>
-            </div>
+  <div class="pcoded-content">
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-body">
+            <h3 class="card-title">Gestione delle password</h3>
+            <p class="card-text">
+              Nella pagina corrente puoi gestire la generazione di password e il download del file PDF per poter
+              stampare i bigliettini da distribuire ai votanti.
+              Il file PDF che viene generato contiene tutti i i biglietti con i password ancora
+              <strong>inutilizzati</strong> della scelta, suddivisi 8 per pagina. In fase di stampa, si consiglia
+              di controllare le pagine che si desidera stampare, definendo un intervallo di pagine di stampa per evitare
+              sprechi. Si ricorda infine che si possono generare da 1 a 10000 password
+              per volta e che una volta terminate le votazioni, non sarà più possibile accedere a questa pagina per
+              generare o scaricare password.
+            </p>
+          </div>
         </div>
+      </div>
     </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Informazioni di riepilogo</h5>
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="card bg-c-blue order-card">
+                  <div class="card-body">
+                    <h5 class="text-white">Titolo scelta: </h5>
+                    <h2 class="text-end text-white"><span>{{poll.title}}</span>
+                    </h2>
+                    <h6 class="text-white">Data di apertura della scelta:</h6>
+                    <h2 class="text-end text-white">
+                      <em class="feather icon-calendar float-start"></em>
+                      <span>{{ poll.start | date:"d/m/Y H:i" }}</span>
+                    </h2>
+                    <p class="m-b-0">Data di chiusura<span class="float-end">{{ poll.end | date:"d/m/Y H:i" }}</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 col-xl-4">
+                <div class="card bg-c-yellow order-card">
+                  <div class="card-body">
+                    <h5 class="text-white">Password generate: <span class="float-end"> {{ all_tokens }} </h5>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-xl-4">
+                <div class="card bg-c-green order-card">
+                  <div class="card-body">
+                    <h5 class="text-white">Password disponibili: <span class="float-end"> {{ tokens_available }}</h5>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-xl-4">
+                <div class="card bg-c-red order-card">
+                  <div class="card-body">
+                    <h5 class="text-white">Password utilizzate: <span class="float-end"> {{ tokens_used }}</h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <div class="d-flex flex-row mb-4">
+      <h5 class="card-title mt-2">Password generate</h5>
+      <a href="{% url 'polls:download_tokens' id=poll.id %}" role="button" class="btn btn-danger p-2 ms-3 mb-3">
+        Download PDF <i class="fas fa-file-pdf ms-2"></i>
+      </a>
+      <button type="button" data-bs-toggle="modal" data-bs-target="#generate-password"
+        class="btn btn-secondary p-2 ms-3 mb-3">
+        Genera
+      </button>
+    </div>
+    <div class="row row-cols-1 row-cols-md-3 g-3">
+      {% for token, link in object_list %}
+      <div class="col">
+        <div class="card h-100 border {% if token.used %} border-danger {% else %} border-success {% endif %}">
+          <div class="card-body">
+            <h6 class="card-text">{{ token.token }}
+              {% if token.used %}<span class="badge rounded-pill bg-danger">Usato</span>{% endif %}
+            </h6>
+            {% if not token.used %}
+            <div class="d-md-grid d-xl-flex gap-2">
+              <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapse{{ token.id }}" aria-expanded="false" aria-controls="collapse{{ token.id }}">
+                QR <span class="fas fa-qrcode me-2"></span>
+              </button>
+              <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#delete-password"
+                data-bs-action="{% url 'polls:tokens_delete' pk=token.pk %}">
+                Elimina <span class="fas fa-trash-alt me-2"></span></button>
+              <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#modalPollSharing"
+                data-bs-code="{{ poll.mapping.code|add:'/'|add:token.get_password_for_url }}"
+                data-bs-public="{{ poll.is_public }}" data-bs-title="{{ poll.title }}" data-bs-end="{{ poll.end | date:"
+                d/m/Y, H:i" }}">
+                Condividi <span class="fas fa-share me-2"></span></button>
+            </div>
+            <div class="collapse mt-4 text-center" id="collapse{{ token.id }}">
+              {% qr_from_text link size=8 border=1 %}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <hr>
+    {% include 'polls/includes/pagination.html' with page_obj=page_obj %}
+    <div class="row">
+      <div class="form-group text-center">
+        <div class="col-sm-12 d-md-inline d-grid align-middle">
+          <a class="btn btn-block btn-primary mb-3" href="/">Torna alla home</a>
+          <a class="btn btn-block btn-secondary mb-3" href="{% url 'polls:personal_polls' %}">Scelte personali</a>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-{% endblock content %}
+<div class="modal fade" id="generate-password" tabindex="-1" aria-labelledby="generate-password-label"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="generate-password-label">Genera nuove password</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="post">
+        <div class="modal-body">
+          {% csrf_token %}
+          {% bootstrap_field form.tokens_to_be_generated show_label='skip' %}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+          <button type="submit" class="btn btn-primary">Continua</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="delete-password" tabindex="-1" aria-labelledby="delete-password-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="delete-password-label">Elimina password</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p> Vuoi veramente eliminare questa password ?</p>
+      </div>
+      <div class="modal-footer">
+        <form method="POST" action="" id="deletePasswordForm">
+          {% csrf_token %}
+          <input type="submit" class="btn btn-danger" value="Elimina">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+  {% include 'polls/includes/modal-poll_sharing.html' %}
+
+  {% endblock content %}
+
+  {% block javascripts %}
+  <script>
+    var confirmModal = document.getElementById('delete-password')
+    confirmModal.addEventListener('show.bs.modal', event => {
+      var button = event.relatedTarget
+      var form = confirmModal.querySelector('#deletePasswordForm')
+      form.action = button.getAttribute('data-bs-action')
+    })
+  </script>
+  {% endblock javascripts %}

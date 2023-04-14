@@ -13,8 +13,8 @@
                             <div class="card-body">
                                 <h5>Hai generato correttamente le password!</h5>
                                 <br>
-                                <a class="btn btn-block btn-secondary mb-4" href="/">Torna alla home</a>
-                                <a class="btn btn-block btn-primary mb-4" href={% url 'polls:tokens' id=poll.id %}>Pagina password</a>
+                                <a class="btn btn-block btn-secondary mb-4" href="{% url 'polls:index' %}">Torna alla home</a>
+                                <a class="btn btn-block btn-primary mb-4" href="{% url 'polls:tokens' id=id %}">Pagina password</a>
                                 <a class="btn btn-block btn-secondary mb-4" href="{% url 'polls:personal_polls' %}">Scelte personali</a>
                             </div>
                         </div>
@@ -26,12 +26,10 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="card-body">
-                                <h5>Lista password generate</h5>
-                                <br>
                                 <table class="table">
                                     <thead>
                                       <tr>
-                                        <th scope="col">Password generata</th>
+                                        <th scope="col">Password generate</th>
                                       </tr>
                                     </thead>
                                     <tbody>

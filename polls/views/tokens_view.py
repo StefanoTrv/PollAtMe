@@ -1,82 +1,96 @@
-from ast import Dict
-from typing import Any, Optional, Type
 
 from django import http
-from django.db.models import Model
-from django.views.generic import TemplateView
-from django.shortcuts import render
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
+from django.shortcuts import render
+from django.views.generic import FormView, ListView, DeleteView
 
-from django.shortcuts import redirect
-from django.urls import reverse
-
-from polls.models import TokenizedPoll, Token
+from polls.forms import TokenGeneratorForm
+from polls.models import Token, TokenizedPoll, Poll
 from polls.services import SearchPollService, TicketGenerator
 from polls.services.token_generator import generate_tokens
+from django.urls import reverse
 
 
-class TokensView(LoginRequiredMixin, TemplateView):
-    model: Optional[Type[Model]] = Token
-    template_name: str = 'polls/tokens_page.html'
+class TokensView(LoginRequiredMixin, FormView, ListView):
+    template_name = 'polls/tokens_page.html'
+    form_class = TokenGeneratorForm
+    paginate_by = 9
 
     def dispatch(self, request, *args, **kwargs):
         self.poll = SearchPollService().search_by_id(kwargs['id'])
+        self.tokens = Token.objects.filter(poll = self.poll)
+
         if self.poll.author != request.user:
-            raise PermissionDenied('Non è possibile accedere a questa pagina')
+            raise PermissionDenied('Non è possibile accedere a questa pagina perchè non sei il creatore della scelta')
+        
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['poll'] = self.poll
-        context['all_tokens'] = Token.objects.filter(poll = self.poll).count
-        context['tokens_used'] = Token.objects.filter(poll = self.poll, used=True).count
-        context['tokens_available'] = Token.objects.filter(poll = self.poll, used=False).count
+        context['all_tokens'] = self.tokens.count()
+        context['tokens_used'] = self.tokens.filter(used=True).count()
+        context['tokens_available'] = self.tokens.filter(used=False).count()
         return context
+
+    def get_queryset(self):
+        tokens = self.tokens.order_by('used', '-id')
+        links = [
+            f"{self.request.scheme}://{self.request.get_host()}/{self.poll.mapping.code}/{token.get_password_for_url()}"
+            for token in tokens
+        ]
+        return list(zip(tokens, links))
+
+    def form_valid(self, form) -> http.HttpResponse:
+        generated_tokens = generate_tokens(self.poll, form.cleaned_data['tokens_to_be_generated'])
+        self.request.session['generated'] = generated_tokens
+        return super().form_valid(form)
+
+    def get_success_url(self) -> str:
+        return reverse('polls:tokens_success', kwargs={'id': self.poll.id})
     
-    def post(self, request, *args, **kwargs):
-        context = super().get_context_data(**kwargs)
-        number_of_tokens = self.request.POST.get("n")
-        context['poll'] = self.poll
-        generate_token(request, self.poll, int(number_of_tokens), context)
-        context['all_tokens'] = Token.objects.filter(poll = self.poll).count
-        context['tokens_used'] = Token.objects.filter(poll = self.poll, used=True).count
-        context['tokens_available'] = Token.objects.filter(poll = self.poll, used=False).count
-        request.session['poll'] = self.poll.pk
-        request.session['generated'] = context['generated']
-        return redirect(reverse('polls:tokens_success'))
-    
-
-def tokens_success(request):
-    poll = SearchPollService().search_by_id(request.session['poll'])
-    generated = request.session['generated']
-    context = {}
-    context['poll'] = poll
-    context['generated'] = generated
-    return render(request, 'polls/tokens_generation_success.html', context)
-
-
-
 @login_required
-def generate_token(request: http.HttpRequest, poll: TokenizedPoll, number_of_tokens: int, context):
-    if not isinstance(poll, TokenizedPoll):
-        raise http.Http404('Poll not found')
-    context['generated'] = generate_tokens(poll, number_of_tokens)
-    lst = []
-    for token in context['generated']:
-        lst.append(token.replace(' ', '-'))
-    context['generated'] = lst
-
+def tokens_success(request: http.HttpRequest, id):
+    return render(request, 'polls/tokens_generation_success.html', {
+        'id': id,
+        'generated': request.session.pop('generated', [])
+    })
 
 @login_required
 def download_tokens(request: http.HttpRequest, id: int) -> http.FileResponse:
     poll = SearchPollService().search_by_id(id)
     if not isinstance(poll, TokenizedPoll):
-        raise http.Http404('Poll not found')
+        raise http.Http404('Questa scelta non prevede votazione tramite password')
     response = TicketGenerator(
         poll, 
         request.scheme if request.scheme is not None else "", 
         request.get_host()
         ).render()
     return response
+
+class TokenDeleteView(LoginRequiredMixin, DeleteView):
+    model = Token
+    http_method_names = ['post']
+
+    def get_object(self, queryset = None):
+        token: Token = super().get_object(queryset) # type: ignore
+        self.poll: Poll = token.poll # type: ignore
+
+        if not isinstance(self.poll, TokenizedPoll):
+            raise http.Http404('Questa scelta non prevede votazione tramite password')
+
+        if self.poll.author != self.request.user:
+            raise PermissionDenied('Non hai i permessi per eliminare questa password')
+
+        if token.used:
+            raise PermissionDenied('Non è possibile eliminare una password dopo che è stata utilizzata')
+        
+        if self.poll.is_ended():
+            raise PermissionDenied('Non è possibile eliminare una password dopo che la votazione è terminata')
+        
+        return token
+    
+    def get_success_url(self) -> str:
+        return reverse('polls:tokens', kwargs={'id': self.poll.id}) # type: ignore

@@ -1,20 +1,22 @@
-from typing import Optional
+from typing import Any, Optional
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import QuerySet
-from django.http import HttpRequest
-from django.shortcuts import get_object_or_404, render
+from django import http
+from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import TemplateView
 
 from polls import forms
 from polls import models
 from polls.services import create_poll_service
+from django.urls import reverse
+
 
 ALTERNATIVE_FORMSET = forms.BaseAlternativeFormSet.get_formset_class()
 
 
-def select_action(request: HttpRequest, poll=None):
+def select_action(request: http.HttpRequest, poll=None):
     action, queryset_alternatives = ('create', models.Poll.objects.none(
     )) if poll is None else ('edit', poll.alternative_set.all())
 
@@ -28,7 +30,7 @@ def select_action(request: HttpRequest, poll=None):
         return save(request, action, queryset_alternatives, poll)
 
 
-def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Optional[models.Poll] = None):
+def summary(request: http.HttpRequest, action: str, alternatives: QuerySet, poll: Optional[models.Poll] = None):
     form_mainpoll = forms.PollFormMain(request.POST, instance=poll)
     formset_alternatives: forms.BaseAlternativeFormSet = ALTERNATIVE_FORMSET(request.POST, queryset=alternatives)
 
@@ -64,7 +66,7 @@ def summary(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
         })
 
 
-def go_back(request: HttpRequest, action: str, alternatives: QuerySet, poll: Optional[models.Poll] = None):
+def go_back(request: http.HttpRequest, action: str, alternatives: QuerySet, poll: Optional[models.Poll] = None):
 
     request.session[action]['page_2'] = request.POST.dict()
     request.session.modified = True
@@ -75,7 +77,7 @@ def go_back(request: HttpRequest, action: str, alternatives: QuerySet, poll: Opt
     })
 
 
-def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Optional[models.Poll] = None):
+def save(request: http.HttpRequest, action: str, alternatives: QuerySet, poll: Optional[models.Poll] = None):
     form_poll = forms.PollForm(request.POST, instance=poll)
     formset_alternatives: forms.BaseAlternativeFormSet = ALTERNATIVE_FORMSET(request.session[action]['page_1'], queryset=alternatives)
     form_mapping = forms.PollMappingForm(request.POST, instance=poll.mapping if poll is not None else None)
@@ -89,13 +91,18 @@ def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Option
             vote_type = 'tokenized'
         else:
             vote_type = 'free'
-        return render(request, f'polls/{action}_poll_success.html', {
+        
+        request.session.update({
+            'action': action,
             'id': saved_poll.id,
             'code': saved_poll.mapping.code,
             'title': saved_poll.title,
-            'end': saved_poll.end,
+            'end': saved_poll.end.strftime('%d/%m/%Y %H:%M'),
             'vote_type': vote_type
         })
+        request.session.modified = True
+
+        return redirect(reverse('polls:poll_created_success'))
     else:
         return render(request, f'polls/create_poll/summary_and_options_{action}.html', {
             'form': form_poll,
@@ -107,19 +114,19 @@ def save(request: HttpRequest, action: str, alternatives: QuerySet, poll: Option
 
 class CreatePollView(LoginRequiredMixin, TemplateView):
 
-    def get(self, request: HttpRequest, *args, **kwargs):
+    def get(self, request: http.HttpRequest, *args, **kwargs):
         return render(request, 'polls/create_poll/main_page_create.html', {
             'form': forms.PollFormMain(),
             'formset': forms.BaseAlternativeFormSet.get_formset_class()(queryset=models.Poll.objects.none())
         })
 
-    def post(self, request: HttpRequest, *args, **kwargs):
+    def post(self, request: http.HttpRequest, *args, **kwargs):
         return select_action(request)
 
 
 class EditPollView(LoginRequiredMixin, TemplateView):
 
-    def dispatch(self, request: HttpRequest, *args, **kwargs):
+    def dispatch(self, request: http.HttpRequest, *args, **kwargs):
         self.__poll: models.Poll = get_object_or_404(models.Poll, id=kwargs['id'])
 
         if self.__poll.is_active():
@@ -136,11 +143,26 @@ class EditPollView(LoginRequiredMixin, TemplateView):
 
         return super().dispatch(request, *args, **kwargs)
 
-    def get(self, request: HttpRequest, *args, **kwargs):
+    def get(self, request: http.HttpRequest, *args, **kwargs):
         return render(request, 'polls/create_poll/main_page_edit.html', {
             'form': forms.PollFormMain(instance=self.__poll),
             'formset': forms.BaseAlternativeFormSet.get_formset_class()(queryset=self.__poll.alternative_set.all())
         })
 
-    def post(self, request: HttpRequest, *args, **kwargs):
+    def post(self, request: http.HttpRequest, *args, **kwargs):
         return select_action(request, self.__poll)
+
+class CreatePollSuccessView(LoginRequiredMixin, TemplateView):
+
+    def get_template_names(self) -> list[str]:
+        action = self.request.session.pop('action')
+        return [f'polls/{action}_poll_success.html']
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        return {
+            'id': self.request.session.pop('id'),
+            'code': self.request.session.pop('code'),
+            'title': self.request.session.pop('title'),
+            'end': self.request.session.pop('end'),
+            'vote_type': self.request.session.pop('vote_type')
+        }

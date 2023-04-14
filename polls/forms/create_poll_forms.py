@@ -99,7 +99,7 @@ class PollFormMain(forms.ModelForm):
     def get_temporary_poll(self) -> Poll:
         poll: Poll = self.instance
         if poll.start is None:
-            poll.start = timezone.now()
+            poll.start = timezone.now() + timedelta(minutes=10)
             poll.end = poll.start + timedelta(weeks=1)
         
         if not hasattr(poll, Poll.MAPPING_FIELDNAME):

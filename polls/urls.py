@@ -17,6 +17,7 @@ urlpatterns = [
     path('result/majorityjudgment/<int:id>/', views.MajorityJudgementResultView.as_view(), name = 'result_MJ'),
     path('result/majorityjudgment/<int:id>/<str:include_synthetic>', views.MajorityJudgementResultView.as_view(), name = 'result_MJ_realonly'),
     path('new/', views.CreatePollView.as_view(), name='create_poll'),
+    path('success/', views.CreatePollSuccessView.as_view(), name='poll_created_success'),
     path('delete/<int:pk>/', views.PollDeleteView.as_view(), name='delete_poll'),
     path('edit/<int:id>/', views.EditPollView.as_view(), name='edit_poll'),
     path('search/', views.SearchView.as_view(), name='search_poll'),
@@ -27,6 +28,7 @@ urlpatterns = [
     path('<str:code>/<str:token>', views.AccessPollView.as_view(), name='access_poll'),
     path('<str:code>', views.AccessPollView.as_view(), name='access_poll'),
     path('tokens/<int:id>/', views.TokensView.as_view(), name='tokens'),
-    path('tokens/<int:id>/download', views.tokens_view.download_tokens, name='download_tokens'),
-    path('tokens/success/', views.tokens_view.tokens_success, name='tokens_success')
+    path('tokens/<int:id>/download/', views.tokens_view.download_tokens, name='download_tokens'),
+    path('tokens/<int:id>/success/', views.tokens_view.tokens_success, name='tokens_success'),
+    path('tokens/<int:pk>/delete/', views.tokens_view.TokenDeleteView.as_view(), name='tokens_delete')
 ]

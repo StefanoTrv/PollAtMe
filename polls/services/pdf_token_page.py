@@ -22,7 +22,7 @@ class TicketGenerator:
         self.poll = poll
         self.base_url = f"{scheme}://{host}/{poll.mapping.code}"
         self.p = canvas.Canvas(self.buffer)
-        self.tokens = self.poll.token_set.filter(used=False)
+        self.tokens = self.poll.token_set.filter(used=False).order_by('-id')
 
         self.TICKET_WIDTH = self.width / self.TICKETS_PER_ROW
         self.TICKET_HEIGHT = self.height / self.TICKETS_PER_COLUMN

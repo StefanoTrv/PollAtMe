@@ -67,7 +67,7 @@
     var link = domain + '{{code}}';
     text.value = link;
     var title = 'Scelta sociale ' + '{{title}}';
-    var msg = 'Ho creato la ' + title.charAt(0).toLowerCase() + title.slice(1) + '. Visitate il link per esprimere la vostra preferenza o per vedere i risultati. Si può votare fino al giorno ' + '{{ end | date:"d/m/Y, H:i" }}' + '. '
+    var msg = 'Ho creato la ' + title.charAt(0).toLowerCase() + title.slice(1) + '. Visitate il link per esprimere la vostra preferenza o per vedere i risultati. Si può votare fino al giorno ' + '{{ end }}' + '. '
     socialLinks(link, msg, title)
 </script>
 {% endblock javascripts %}
