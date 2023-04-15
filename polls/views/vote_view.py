@@ -56,9 +56,7 @@ class _VoteView(CreateView):
         self.alternatives = self.poll.alternative_set.all()
 
         if not self.poll.is_active():
-            raise PermissionDenied(
-                f'''Non è ancora possibile votare questo sondaggio:
-                    la votazione inizia il {self.poll.start.strftime('%d/%m/%Y')} alle {self.poll.start.strftime('%H:%M')}.''')
+            raise PermissionDenied('Non è ancora possibile votare questo sondaggio: la votazione inizia il '+str(self.poll.start.astimezone().date())+' alle '+str(self.poll.start.astimezone().time())+'.')
 
         self.token = kwargs.get('token', '').replace('-', ' ')
 

@@ -53,7 +53,7 @@ class TicketGenerator:
         self.p.drawString(start_x, start_y-(5*spacing), "OPPURE")
         self.p.drawString(start_x, start_y-(6*spacing), "Scansiona il QR code")
         self.p.drawString(start_x, start_y-(7*spacing + 10), "Potrai votare fino al")
-        self.p.drawString(start_x, start_y-(8*spacing + 10), self.poll.end.strftime('%d/%m/%Y %H:%M'))
+        self.p.drawString(start_x, start_y-(8*spacing + 10), self.poll.end.astimezone().strftime('%d/%m/%Y %H:%M'))
     
     def print_grid_on_page(self) -> None:
         self.p.grid(
