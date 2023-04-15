@@ -66,8 +66,8 @@ class CreatePollViewTest(TestCase):
         assert_that(response).contains_form(PollOptionsForm)
 
         response = self.client.post(self.url, data=step_2_data)
-        assert_that(response.status_code).is_equal_to(200)
-        self.assertTemplateUsed(response, 'polls/create_poll_success.html')
+        assert_that(response.status_code).is_equal_to(302)
+        assert_that(response.url).is_equal_to(reverse('polls:poll_created_success'))
 
         assert_that(Poll.objects.count()).is_equal_to(1)
         assert_that(Alternative.objects.count()).is_equal_to(2)
@@ -201,7 +201,8 @@ class CreatePollViewTest(TestCase):
         }
 
         response = self.client.post(self.url, data=step_2_data)
-        assert_that(response.status_code).is_equal_to(200)
+        assert_that(response.status_code).is_equal_to(302)
+        assert_that(response.url).is_equal_to(reverse('polls:poll_created_success'))
 
         #testiamo che sia stato salvato il mapping
         assert_that(Mapping.objects.filter(code='TestCode').count()).is_equal_to(1)
@@ -243,7 +244,8 @@ class CreatePollViewTest(TestCase):
         }
 
         response = self.client.post(self.url, data=step_2_data)
-        assert_that(response.status_code).is_equal_to(200)
+        assert_that(response.status_code).is_equal_to(302)
+        assert_that(response.url).is_equal_to(reverse('polls:poll_created_success'))
 
         #testiamo che sia stato salvato il mapping
 
@@ -339,8 +341,8 @@ class CreatePollViewTest(TestCase):
 
         # salvo la scelta
         response = self.client.post(self.url, data=step_2_data_modified | {'save': ''})
-        assert_that(response.status_code).is_equal_to(200)
-        self.assertTemplateUsed(response, 'polls/create_poll_success.html')
+        assert_that(response.status_code).is_equal_to(302)
+        assert_that(response.url).is_equal_to(reverse('polls:poll_created_success'))
 
         created_poll = Poll.objects.last()
         assert_that(created_poll.title).is_equal_to('Test modifica')

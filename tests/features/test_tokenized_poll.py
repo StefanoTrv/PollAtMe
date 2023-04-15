@@ -47,7 +47,8 @@ class TestTokenizedPollsCreate(TestCase):
             'save': ''
         }
         response = self.client.post(reverse('polls:create_poll'), data=step_2_data)
-        assert_that(response.status_code).is_equal_to(200)
+        assert_that(response.status_code).is_equal_to(302)
+        assert_that(response.url).is_equal_to(reverse('polls:poll_created_success'))
 
         try:
             p = Poll.objects.get(title='Lorem ipsum')
@@ -112,7 +113,8 @@ class TestTokenizedPollsCreate(TestCase):
         response = self.client.post(reverse('polls:edit_poll', args=[tp.pk]), data=step_1_data)
         assert_that(response.status_code).is_equal_to(200)
         response = self.client.post(reverse('polls:edit_poll', args=[tp.pk]), data=step_2_data)
-        self.assertContains(response, 'Fatto! La tua scelta è stata modificata.')
+        assert_that(response.status_code).is_equal_to(302)
+        assert_that(response.url).is_equal_to(reverse('polls:poll_created_success'))
 
         tp = Poll.objects.get(id=tp.pk)
         assert_that(tp.authentication_type).is_equal_to(Poll.PollAuthenticationType.FREE.value)

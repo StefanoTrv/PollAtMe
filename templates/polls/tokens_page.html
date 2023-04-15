@@ -89,7 +89,7 @@
         Genera
       </button>
     </div>
-    <div class="row row-cols-1 row-cols-md-3 g-3">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
       {% for token, link in object_list %}
       <div class="col">
         <div class="card h-100 border {% if token.used %} border-danger {% else %} border-success {% endif %}">
@@ -98,7 +98,7 @@
               {% if token.used %}<span class="badge rounded-pill bg-danger">Usato</span>{% endif %}
             </h6>
             {% if not token.used %}
-            <div class="d-md-grid d-xl-flex gap-2">
+            <div class="d-grid d-xl-flex gap-2">
               <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
                 data-bs-target="#collapse{{ token.id }}" aria-expanded="false" aria-controls="collapse{{ token.id }}">
                 QR <span class="fas fa-qrcode me-2"></span>
@@ -182,10 +182,10 @@
 
   {% block javascripts %}
   <script>
-    var confirmModal = document.getElementById('delete-password')
+    const confirmModal = document.getElementById('delete-password')
     confirmModal.addEventListener('show.bs.modal', event => {
-      var button = event.relatedTarget
-      var form = confirmModal.querySelector('#deletePasswordForm')
+      const button = event.relatedTarget
+      const form = confirmModal.querySelector('#deletePasswordForm')
       form.action = button.getAttribute('data-bs-action')
     })
   </script>

@@ -56,7 +56,7 @@ class AuthenticatedPollFactory(PollFactory):
         saved_poll = AuthenticatedPoll(poll_ptr=base_poll)
         saved_poll.save_base(raw=True)
 
-        return saved_poll
+        return AuthenticatedPoll.objects.get(pk=base_poll.pk)
 
 
 class TokenizedPollFactory(PollFactory):
@@ -66,4 +66,4 @@ class TokenizedPollFactory(PollFactory):
         saved_poll = TokenizedPoll(poll_ptr=base_poll)
         saved_poll.save_base(raw=True)
 
-        return saved_poll
+        return TokenizedPoll.objects.get(pk=base_poll.pk)

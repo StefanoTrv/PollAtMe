@@ -16,7 +16,7 @@ from django.urls import reverse
 class TokensView(LoginRequiredMixin, FormView, ListView):
     template_name = 'polls/tokens_page.html'
     form_class = TokenGeneratorForm
-    paginate_by = 9
+    paginate_by = 12
 
     def dispatch(self, request, *args, **kwargs):
         self.poll = SearchPollService().search_by_id(kwargs['id'])

@@ -108,8 +108,8 @@ class TestPollEditView(TestCase):
             'save': ''
         }
         response = self.client.post(url, data=data)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'polls/edit_poll_success.html')
+        assert_that(response.status_code).is_equal_to(302)
+        assert_that(response.url).is_equal_to(reverse('polls:poll_created_success'))
 
         last_poll = Poll.objects.last()
         assert_that(last_poll.title).is_equal_to(data['title'])
