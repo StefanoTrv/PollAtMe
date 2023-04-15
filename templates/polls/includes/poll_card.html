@@ -45,7 +45,8 @@
         <a class="btn btn-block btn-warning mb-4" href={% url 'polls:edit_poll' id=poll.id %}>
             Modifica
         </a>
-        <button type="button" class="btn btn-block btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#modalDeletePollConfirm" data-bs-poll="{{ poll.id }}">
+        <button type="button" class="btn btn-block btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#modal-delete-confirm" 
+        data-bs-action="{% url 'polls:delete_poll' pk=poll.pk %}">
             Cancella
         </button>
         {% endif %}

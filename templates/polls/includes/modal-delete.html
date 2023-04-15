@@ -1,15 +1,15 @@
-<div class="modal fade" id="modalDeletePollConfirm" tabindex="-1" aria-labelledby="modalDeletePollConfirmLabel" aria-hidden="true">
+<div class="modal fade" id="modal-delete-confirm" tabindex="-1" aria-labelledby="modal-delete-confirm-label" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Attenzione!</h5>
+          <h5 class="modal-title" id="modal-delete-confirm-label">Attenzione!</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-            <p> Vuoi veramente cancellare la scelta?</p>
+            <p>Vuoi veramente eliminare questa {{ entity }}?</p>
         </div>
         <div class="modal-footer">
-            <form method="POST" action="{% url 'polls:delete_poll' pk=0 %}" id="deletePollForm">
+            <form method="POST" action="" id="delete-form">
                 {% csrf_token %}
                 <input type="submit" class="btn btn-danger" value="Elimina">
             </form>
@@ -19,11 +19,10 @@
 </div>
 
 <script>
-    var confirmModal = document.getElementById('modalDeletePollConfirm')
+    var confirmModal = document.getElementById('modal-delete-confirm')
     confirmModal.addEventListener('show.bs.modal', event => {
-        var button = event.relatedTarget
-        var pollId = button.getAttribute('data-bs-poll')
-        var form = confirmModal.querySelector('#deletePollForm')
-        form.action = form.action.replace(/\/\d+\/$/gm, `/${pollId}/`)
+        const button = event.relatedTarget
+        const form = confirmModal.querySelector('#delete-form')
+        form.action = button.getAttribute('data-bs-action')
     })
 </script>

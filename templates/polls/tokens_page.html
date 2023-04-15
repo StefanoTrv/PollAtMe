@@ -103,7 +103,7 @@
                 data-bs-target="#collapse{{ token.id }}" aria-expanded="false" aria-controls="collapse{{ token.id }}">
                 QR <span class="fas fa-qrcode me-2"></span>
               </button>
-              <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#delete-password"
+              <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#modal-delete-confirm"
                 data-bs-action="{% url 'polls:tokens_delete' pk=token.pk %}">
                 Elimina <span class="fas fa-trash-alt me-2"></span></button>
               <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#modalPollSharing"
@@ -155,38 +155,7 @@
     </div>
   </div>
 </div>
+{% include 'polls/includes/modal-poll_sharing.html' %}
+{% include 'polls/includes/modal-delete.html' with entity='password' %}
 
-<div class="modal fade" id="delete-password" tabindex="-1" aria-labelledby="delete-password-label" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="delete-password-label">Elimina password</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p> Vuoi veramente eliminare questa password ?</p>
-      </div>
-      <div class="modal-footer">
-        <form method="POST" action="" id="deletePasswordForm">
-          {% csrf_token %}
-          <input type="submit" class="btn btn-danger" value="Elimina">
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-  {% include 'polls/includes/modal-poll_sharing.html' %}
-
-  {% endblock content %}
-
-  {% block javascripts %}
-  <script>
-    const confirmModal = document.getElementById('delete-password')
-    confirmModal.addEventListener('show.bs.modal', event => {
-      const button = event.relatedTarget
-      const form = confirmModal.querySelector('#deletePasswordForm')
-      form.action = button.getAttribute('data-bs-action')
-    })
-  </script>
-  {% endblock javascripts %}
+{% endblock content %}
