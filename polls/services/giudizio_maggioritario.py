@@ -131,20 +131,18 @@ class VoteTuple:
             self.giudizi_peggiori() == __o.giudizi_peggiori()
         )
     
-    
-
-#classe che incapsula la logica per il calcolo del risultato del giudizio maggioritario
 class GiudizioMaggioritario:
-
-    ##istanziatore della classe 
-    def __init__(self, id:int, include_synthetic:bool=True) -> None:
-        self.tuple_list  = None
-        self._question_id = id
-        self.include_synthetic=include_synthetic
-
-    def question_id(self) -> int:
-        return self._question_id
     
+    """
+        L'input deve essere nella forma di una lista di dictionary
+        dove ogni dictionary è nella forma:
+            'choice_id' : "id"
+            "voti" : lista_voti
+
+    """
+    def __init__(self, dict_voti) -> None:
+        self.dict_voti = dict_voti
+
     ##ritorna l'id del vincitore secondo il giudizio maggioritario
     def get_winner_id(self) -> int:
         vote_tuple_list = self.__calculate_tuple_list()
@@ -155,7 +153,7 @@ class GiudizioMaggioritario:
         vote_tuple_list = self.__calculate_tuple_list()
         return vote_tuple_list[0]
     
-    ##ritorna la lista ordinata secondo il giudizio maggioritario
+        ##ritorna la lista ordinata secondo il giudizio maggioritario
     def get_tuple_list(self) -> list:
         vote_tuple_list = self.__calculate_tuple_list()
         return vote_tuple_list
@@ -168,11 +166,10 @@ class GiudizioMaggioritario:
             self.tuple_list = vote_tuple_list
         return self.tuple_list
     
-    ##ritorna il nome dell'alternativa vincitrice
-    def get_winner_name(self) -> str:
-        winner = Alternative.objects.get(id = self.get_winner_id())
-        return winner.text
+    def __get_result_list(self):
+        return self.dict_voti
     
+    ##ritorna la classifica nella forma di una lista ordinata
     def get_classifica(self) -> list:
         
         ordered_tuple_list = self.__calculate_tuple_list()
@@ -189,24 +186,37 @@ class GiudizioMaggioritario:
                     place += offset
                     offset = 0
             
-            current_alternative_name = Alternative.objects.get(id = ordered_tuple_list[index].choice_id()).text
-            classifica.append({'alternative' : current_alternative_name, 'place' : place, 'judgment' : ordered_tuple_list[index]})                 
+            classifica.append({'alternative' : ordered_tuple_list[index].choice_id(), 'place' : place, 'judgment' : ordered_tuple_list[index]})                 
             index += 1
             offset += 1
 
-        return classifica    
+        return classifica
+
+
+
+
+#classe che incapsula la logica per il calcolo del risultato del giudizio maggioritario
+class GiudizioMaggioritarioPoll(GiudizioMaggioritario):
+
+    ##istanziatore della classe 
+    def __init__(self, id:int, include_synthetic:bool=True) -> None:
+        super(GiudizioMaggioritarioPoll, self).__init__(None)
+        self._question_id = id
+        self._include_synthetic=include_synthetic
+        
 
     ##ritorna una lista di dictionary nella forma {'choice_id': id, 'voti': <1,4,2,...,4,1>
     ##voti più alti corrispondono a voti migliori!
+    ##override del metodo della superclasse
     def __get_result_list(self) -> list:
         
         result_list = []
         #dobbiamo prendiamo tutte le alternative per la domanda corrente
-        alternative_all : QuerySet[Alternative] = Alternative.objects.filter(poll = self.question_id())
+        alternative_all : QuerySet[Alternative] = Alternative.objects.filter(poll = self._question_id)
         for alternative_key in alternative_all.values_list('pk', flat=True):
             #dobbiamo andare a prendere i giudizi
             giudizi = MajorityOpinionJudgement.objects.filter(alternative = alternative_key)
-            if (not self.include_synthetic):
+            if (not self._include_synthetic):
                 giudizi=giudizi.filter(preference__synthetic=False)
             #abbiamo i giudizi per questa alternativa, dobbiamo costruire la lista
             lista_giudizi = []
@@ -217,6 +227,24 @@ class GiudizioMaggioritario:
             result_list.append({'choice_id': alternative_key, 'voti': lista_giudizi})
 
         return result_list
+        
+    
+    ##ritorna il nome dell'alternativa vincitrice
+    def get_winner_name(self) -> str:
+        winner = Alternative.objects.get(id = self.get_winner_id())
+        return winner.text
+    
+    def get_classifica_con_nome(self) -> list:
+        
+        classifica = self.get_classifica()
+
+        for item in classifica:
+            current_alternative_name = Alternative.objects.get(id = item['alternative']).text
+            item['alternative'] = current_alternative_name                
+
+        return classifica    
+
+    
 
     #ritorna una lista di dict del tipo 
     #{'alternativa' : alternativa, 'lista_voti' : lista_voti} dove lista voti è una lista di dict della forma {'voto':voto, 'amount' : numero}
@@ -253,8 +281,16 @@ class GiudizioMaggioritario:
 
         return out_list
 
-        
-##non dipende dall'istanza della classe quindi lo facciamo statico, così può essere testato
+
+
+
+"""
+    A partire da una dictionari del tipo
+        'choice_id' : "id"
+        "voti" : lista_voti
+    produce le tuple
+
+"""
 def produce_vote_tuple_list(result_query: list) -> list:
         
     result_list = []
@@ -311,7 +347,7 @@ class MajorityJudgementService:
     def __init__(self, poll: Poll, include_synthetic:bool=True) -> None:
         self.__poll = poll
         self.include_synthetic=include_synthetic
-        self.giudizio_maggioritario = GiudizioMaggioritario(self.__poll.id,include_synthetic=self.include_synthetic)
+        self.giudizio_maggioritario = GiudizioMaggioritarioPoll(self.__poll.id,include_synthetic=self.include_synthetic)
     
     """
     Metodi per ottenere informazioni sul risultato del sondaggio a giudizio
