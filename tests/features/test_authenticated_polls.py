@@ -44,6 +44,7 @@ class TestAuthenticatedPollsCreate(TestCase):
             'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
             'visibility': models.Poll.PollVisibility.PUBLIC.value,
             'authentication_type': models.Poll.PollAuthenticationType.AUTHENTICATED.value,
+            'results_restriction': models.Poll.PollResultsRestriction.ALL.value,
             'save': ''
         }
         response = self.client.post(reverse('polls:create_poll'), data=step_2_data)
@@ -107,6 +108,7 @@ class TestAuthenticatedPollsCreate(TestCase):
             'end': tp.end.strftime('%Y-%m-%d %H:%M:%S'),
             'visibility': models.Poll.PollVisibility.PUBLIC.value,
             'authentication_type': models.Poll.PollAuthenticationType.FREE.value,
+            'results_restriction': models.Poll.PollResultsRestriction.ALL.value,
             'save': ''
         }
 

@@ -210,6 +210,7 @@ class TestPollForm(TestCase):
             start = timezone.now() + timedelta(days=1), 
             end = timezone.now() + timedelta(weeks=1),
             visibility = Poll.PollVisibility.PUBLIC,
+            results_restriction = Poll.PollResultsRestriction.ALL,
             author=self.u
         )
         self.poll2 =  Poll(
@@ -218,6 +219,7 @@ class TestPollForm(TestCase):
             start = timezone.now() + timedelta(days=1), 
             end = timezone.now() + timedelta(weeks=1),
             visibility = Poll.PollVisibility.PUBLIC,
+            results_restriction = Poll.PollResultsRestriction.ALL,
             author=self.u
         )
         self.poll.save()
@@ -232,7 +234,7 @@ class TestPollForm(TestCase):
     def test_errore(self):
         form = PollForm({})
         assert_that(form.is_valid()).is_false()
-        assert_that(form.errors).is_length(5)
+        assert_that(form.errors).is_length(6)
     
     def test_fine_precedente_inizio(self):
         form = PollForm({
@@ -244,7 +246,8 @@ class TestPollForm(TestCase):
             'end': timezone.now() + timezone.timedelta(days=1),
             'author': self.u.id,
             'visibility': 1,
-            'authentication_type': 1
+            'authentication_type': 1,
+            'results_restriction': 1
         })
 
         assert_that(form.has_error('end')).is_true()
@@ -260,7 +263,8 @@ class TestPollForm(TestCase):
             'end': timezone.now() + timezone.timedelta(days=1),
             'author': self.u.id,
             'visibility': 1,
-            'authentication_type': 1
+            'authentication_type': 1,
+            'results_restriction': 1
         })
 
         assert_that(form.has_error('start')).is_true()
@@ -275,7 +279,8 @@ class TestPollForm(TestCase):
             'end': timezone.now() + timezone.timedelta(days=1),
             'author': self.u.id,
             'visibility': 1,
-            'authentication_type': 1
+            'authentication_type': 1,
+            'results_restriction': 1
         })
 
         assert_that(form.has_error('start')).is_false()
@@ -292,7 +297,8 @@ class TestPollForm(TestCase):
             'end': timezone.now() + timezone.timedelta(hours=1, minutes=14),
             'author': self.u.id,
             'visibility': 1,
-            'authentication_type': 1
+            'authentication_type': 1,
+            'results_restriction': 1
         })
 
         assert_that(form.has_error('end')).is_true()
