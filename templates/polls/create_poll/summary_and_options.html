@@ -134,6 +134,29 @@
                             {% if form.authentication_type.value == 3 or form.authentication_type.value == "3" %} style="display: block;" {% else %} style="display: none;" {% endif %}>
                                 <b>Solo con password</b>: per votare la scelta è necessario conoscere una password generata dal sistema e distribuita ai votanti dal creatore della scelta. Si può votare una sola volta e non si può modificare il voto. Potrai creare le password in una pagina apposita a creazione terminata.
                             </div>
+
+                            <!-- {{ form.results_restriction }} -->
+                            <p>{{ form.results_restriction.label }}</p>
+                            <div class="d-grid gap-2 d-xl-flex justify-content-xl-center flex-xl-fill mb-3">
+                                {% for radio in form.results_restriction %}
+                                {{ radio.tag }}
+                                <label class="btn btn-outline-secondary w-100" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                                {% endfor %}
+                            </div>
+                            <div class="alert alert-primary" role="alert" id="free_results_alert_id"
+                                {% if form.results_restriction.value == 1 or form.results_restriction.value == "1" %} style="display: block;" {% else %} style="display: none;" {% endif %}>
+                                <b>Sempre - tutti</b>: tutti possono vedere i risultati della scelta, sia durante che dopo le votazioni.
+                            </div>
+                            
+                            <div class="alert alert-primary" role="alert" id="author_results_alert_id"
+                                {% if form.results_restriction.value == 2 or form.results_restriction.value == "2" %} style="display: block;" {% else %} style="display: none;" {% endif %}>
+                                <b>Sempre - solo creatore</b>: solo il creatore può visualizzare i risultati della scelta quando è in corso o è terminata. I votanti possono vederli solo quando è terminata.    
+                            </div>
+
+                            <div class="alert alert-primary" role="alert" id="nobody_results_alert_id"
+                                {% if form.results_restriction.value == 3 or form.results_restriction.value == "3" %} style="display: block;" {% else %} style="display: none;" {% endif %}>
+                                <b>Solo alla fine - tutti</b>: nessuno può vedere i risultati della scelta quando è in corso. Tutti possono vederli quando è terminata.
+                            </div>
                         </div>
                     </div>
                     <div class="card">
@@ -195,6 +218,9 @@
     var free_alert = document.getElementById('free_alert_id')
     var auth_alert = document.getElementById('auth_alert_id')
     var token_alert = document.getElementById('token_alert_id')
+    var free_results_alert = document.getElementById('free_results_alert_id')
+    var author_results_alert = document.getElementById('author_results_alert_id')
+    var nobody_results_alert = document.getElementById('nobody_results_alert_id')
 
     document.querySelector('#id_visibility_0').onclick = () => {
         public_alert.style.display = "block"
@@ -222,6 +248,24 @@
         free_alert.style.display = "none"
         auth_alert.style.display = "none"
         token_alert.style.display = "block"
+    }
+
+    document.querySelector('#id_results_restriction_0').onclick = () => {
+        free_results_alert.style.display = "block"
+        author_results_alert.style.display = "none"
+        nobody_results_alert.style.display = "none"
+    }
+
+    document.querySelector('#id_results_restriction_1').onclick = () => {
+        free_results_alert.style.display = "none"
+        author_results_alert.style.display = "block"
+        nobody_results_alert.style.display = "none"
+    }
+
+    document.querySelector('#id_results_restriction_2').onclick = () => {
+        free_results_alert.style.display = "none"
+        author_results_alert.style.display = "none"
+        nobody_results_alert.style.display = "block"
     }
 
 </script>

@@ -23,6 +23,11 @@ class Poll(models.Model):
         AUTHENTICATED = 2, _("Solo autenticati")
         TOKENIZED = 3, _("Solo con password")
 
+    class PollResultsRestriction(models.IntegerChoices):
+        ALL = 1, _("Sempre - tutti")
+        AUTHOR = 2, _("Sempre - solo creatore")
+        NOBODY = 3, _("Solo alla fine - tutti")
+
     title = models.CharField(max_length=100)
     text = models.TextField(default="")
     default_type = models.IntegerField(choices=PollType.choices, default=PollType.MAJORITY_JUDGMENT)
@@ -39,6 +44,8 @@ class Poll(models.Model):
     AUTH_VOTE_TYPE_FIELDNAME = 'authenticatedpoll'
     TOKEN_VOTE_TYPE_FIELDNAME = 'tokenizedpoll'
     authentication_type = models.IntegerField(choices=PollAuthenticationType.choices, default=PollAuthenticationType.FREE)
+
+    results_restriction = models.IntegerField(choices=PollResultsRestriction.choices, default=PollResultsRestriction.ALL)
 
     MAPPING_FIELDNAME = 'mapping'
     OPTIONS_FIELDNAME = 'polloptions'

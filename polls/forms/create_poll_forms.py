@@ -126,6 +126,7 @@ class PollForm(forms.ModelForm):
             'end': 'Data fine votazioni',
             'visibility': "Visibilità",
             'authentication_type': "Modalità di voto",
+            'results_restriction': "Restrizione sui risultati",
         } | PollFormMain.Meta.labels
 
         error_messages = {} | PollFormMain.Meta.error_messages
@@ -151,6 +152,11 @@ class PollForm(forms.ModelForm):
                 }
             ),
             'authentication_type': forms.RadioSelect(
+                attrs={
+                    'class': 'btn-check'
+                }
+            ),
+            'results_restriction': forms.RadioSelect(
                 attrs={
                     'class': 'btn-check'
                 }
