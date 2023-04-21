@@ -184,7 +184,7 @@ SOCIALACCOUNT_PROVIDERS = {
         'APP': {
             'client_id': environ.get('GOOGLE_AUTH_CLIENT_ID', ''),
             'secret': environ.get('GOOGLE_AUTH_CLIENT_SECRET', ''),
-            'key': environ.get('GOOGLE_AUTH_CLIENT_KEY')
+            'key': environ.get('GOOGLE_AUTH_CLIENT_KEY', '')
         },
         'SCOPE': [
             'profile'
