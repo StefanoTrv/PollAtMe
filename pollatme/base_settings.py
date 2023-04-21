@@ -181,9 +181,13 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
+        'APP': {
+            'client_id': environ.get('GOOGLE_AUTH_CLIENT_ID', ''),
+            'secret': environ.get('GOOGLE_AUTH_CLIENT_SECRET', ''),
+            'key': environ.get('GOOGLE_AUTH_CLIENT_KEY')
+        },
         'SCOPE': [
-            'profile',
-            'email',
+            'profile'
         ],
         'AUTH_PARAMS': {
             'access_type': 'online',
