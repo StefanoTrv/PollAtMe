@@ -13,22 +13,24 @@ from polls.forms import MajorityPreferenceFormSet, SinglePreferenceForm
 from polls.models import MajorityPreference, Poll
 from polls.models.preference import SinglePreference
 from polls.services import SearchPollService
+from polls.services import check
 from django.contrib.auth.views import redirect_to_login
 
 
 # se si accede alla pagina di voto generica, si viene reindirizzati alla pagina di voto del metodo principale
 
 
-def vote_redirect_view(request, id, token=''):
+def vote_redirect_view(request, id, token=None):
     poll = SearchPollService().search_by_id(id)
-    if token == '':
+    if token is None:
         args = [id]
     else:
         args = [id, token]
-    if poll.default_type == 3:
+
+    if poll.default_type == Poll.PollType.SINGLE_PREFERENCE:
         return redirect(reverse('polls:vote_single_preference', args=args))
 
-    if poll.default_type == 1:
+    if poll.default_type == Poll.PollType.MAJORITY_JUDGMENT:
         return redirect(reverse('polls:vote_MJ', args=args))
 
 
@@ -54,31 +56,18 @@ class _VoteView(CreateView):
         syntethic_preference = self.__get_syntethic_preference(
             request.session.get('preference_id', None))
         self.alternatives = self.poll.alternative_set.all()
-
-        if not self.poll.is_active():
-            start = self.poll.start.astimezone()
-            raise PermissionDenied(
-                f'Non è ancora possibile votare questo sondaggio: la votazione inizia il {start.date()} alle {start.time()}')
-
         self.token = kwargs.get('token', '').replace('-', ' ')
 
-        if self.poll.failed_authentication(user=request.user.is_authenticated, token=self.token):
-            return self.__failed_authentication()
+        check_activeness = check.CheckPollActiveness(self.poll)
+        check_authentication = check.CheckAuthentication(self.poll, request.user.is_authenticated, self.token, self.__failed_authentication)
+        check_already_voted = check.CheckUserHasVoted(self.poll, request.user, self.token, syntethic_preference, 
+                                                      lambda: render(self.request, 'polls/already_voted.html', {'poll': self.poll}))
+        check_revote = check.CheckRevoteSession(self.poll, self.pollType, 'preference_id' in request.session, syntethic_preference)
 
-        if self.poll.user_has_already_voted(user=request.user, token=self.token) and syntethic_preference is None:
-            return render(self.request, 'polls/already_voted.html', {'poll': self.poll})
+        check_activeness.set_next(check_authentication).set_next(check_already_voted).set_next(check_revote)
+        passed = check_activeness.handle()
 
-        if not (self.poll.get_type() == self.pollType or 'preference_id' in request.session):
-            raise PermissionDenied(
-                'Il voto con metodi alternativi è concesso solo durante il rivoto')
-
-        if not (syntethic_preference is None or syntethic_preference.poll.pk == self.poll.pk):
-            raise PermissionDenied(
-                '''Il voto con metodi alternativi è concesso solo durante il rivoto
-                (Dettagli dell'errore: la preferenza sintetica è riferita ad una scelta diversa)'''
-            )
-
-        return super().dispatch(request, *args, **kwargs)
+        return passed if passed else super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         """

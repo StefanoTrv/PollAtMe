@@ -4,7 +4,7 @@ from django import http
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Model, QuerySet
 from django.shortcuts import render
-from django.views.generic import FormView
+from django.views.generic import FormView, View
 from django.views.generic.list import ListView
 
 from polls.forms import SearchPollForm
@@ -50,3 +50,10 @@ class PersonalPollsView(LoginRequiredMixin, ListView):
 
     def get_queryset(self) -> QuerySet[Poll]:
         return self.__active_poll_service.get_my_polls(self.request.user)
+
+class ClosePollView(LoginRequiredMixin, View):
+    http_method_names = ['post']
+
+    def post(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.HttpResponse:
+        return http.HttpResponse('ok')
+        
