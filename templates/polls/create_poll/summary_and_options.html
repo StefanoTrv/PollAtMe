@@ -162,7 +162,7 @@
 <form method="POST" id="go_back-form" class="d-none">
     {% csrf_token %}
 </form>
-{% include 'polls/includes/modal.html' with id_modal='exampleModal' %}
+{% include 'polls/includes/modal.html' with id_modal='exampleModal' action=action %}
 {% endblock content %}
 
 {% block javascripts %}
