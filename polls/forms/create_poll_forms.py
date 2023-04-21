@@ -124,9 +124,9 @@ class PollForm(forms.ModelForm):
         labels = {
             'start': 'Data inizio votazioni',
             'end': 'Data fine votazioni',
-            'visibility': "Visibilità",
+            'visibility': "Visibilità della scelta",
             'authentication_type': "Modalità di voto",
-            'results_restriction': "Restrizione sui risultati",
+            'results_restriction': "Visibilità dei risultati durante la votazione",
         } | PollFormMain.Meta.labels
 
         error_messages = {} | PollFormMain.Meta.error_messages

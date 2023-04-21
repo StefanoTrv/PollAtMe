@@ -24,9 +24,9 @@ class Poll(models.Model):
         TOKENIZED = 3, _("Solo con password")
 
     class PollResultsRestriction(models.IntegerChoices):
-        ALL = 1, _("Sempre - tutti")
-        AUTHOR = 2, _("Sempre - solo creatore")
-        NOBODY = 3, _("Solo alla fine - tutti")
+        ALL = 1, _("Libero")
+        AUTHOR = 2, _("Solo creatore")
+        NOBODY = 3, _("Nessuno")
 
     title = models.CharField(max_length=100)
     text = models.TextField(default="")
