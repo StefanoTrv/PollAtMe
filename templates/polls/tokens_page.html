@@ -108,8 +108,7 @@
                 Elimina <span class="fas fa-trash-alt me-2"></span></button>
               <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#modalPollSharing"
                 data-bs-code="{{ poll.mapping.code|add:'/'|add:token.get_password_for_url }}"
-                data-bs-public="{{ poll.is_public }}" data-bs-title="{{ poll.title }}" data-bs-end="{{ poll.end | date:"
-                d/m/Y, H:i" }}">
+                data-bs-public="{{ poll.is_public }}" data-bs-title="{{ poll.title }}" data-bs-end="{{ poll.end | date:"d/m/Y, H:i" }}">
                 Condividi <span class="fas fa-share me-2"></span></button>
             </div>
             <div class="collapse mt-4 text-center" id="collapse{{ token.id }}">
@@ -156,6 +155,6 @@
   </div>
 </div>
 {% include 'polls/includes/modal-poll_sharing.html' %}
-{% include 'polls/includes/modal-delete.html' with entity='password' %}
+{% include 'polls/includes/modal-delete.html' with msg='Vuoi veramente eliminare questa password?' id='modal-delete-confirm' %}
 
 {% endblock content %}
