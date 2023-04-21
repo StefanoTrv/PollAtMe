@@ -10,6 +10,7 @@ from polls.forms import TokenGeneratorForm
 from polls.models import Token, TokenizedPoll, Poll
 from polls.services import SearchPollService, TicketGenerator
 from polls.services.token_generator import generate_tokens
+from polls.services import check
 from django.urls import reverse
 
 
@@ -22,10 +23,9 @@ class TokensView(LoginRequiredMixin, FormView, ListView):
         self.poll = SearchPollService().search_by_id(kwargs['id'])
         self.tokens = Token.objects.filter(poll = self.poll)
 
-        if self.poll.author != request.user:
-            raise PermissionDenied('Non è possibile accedere a questa pagina perchè non sei il creatore della scelta')
+        passed = check.CheckPollOwnership(self.poll, request.user).handle()
         
-        return super().dispatch(request, *args, **kwargs)
+        return passed if passed else super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -61,10 +61,11 @@ def tokens_success(request: http.HttpRequest, id):
 @login_required
 def download_tokens(request: http.HttpRequest, id: int) -> http.FileResponse:
     poll = SearchPollService().search_by_id(id)
-    if not isinstance(poll, TokenizedPoll):
-        raise http.Http404('Questa scelta non prevede votazione tramite password')
+
+    check.CheckPollAuthenticationType(poll, TokenizedPoll).handle()
+    
     response = TicketGenerator(
-        poll, 
+        poll, # type: ignore
         request.scheme if request.scheme is not None else "", 
         request.get_host()
         ).render()
@@ -78,17 +79,11 @@ class TokenDeleteView(LoginRequiredMixin, DeleteView):
         token: Token = super().get_object(queryset) # type: ignore
         self.poll: Poll = token.poll # type: ignore
 
-        if not isinstance(self.poll, TokenizedPoll):
-            raise http.Http404('Questa scelta non prevede votazione tramite password')
-
-        if self.poll.author != self.request.user:
-            raise PermissionDenied('Non hai i permessi per eliminare questa password')
-
-        if token.used:
-            raise PermissionDenied('Non è possibile eliminare una password dopo che è stata utilizzata')
-        
-        if self.poll.is_ended():
-            raise PermissionDenied('Non è possibile eliminare una password dopo che la votazione è terminata')
+        handler = check.CheckPollAuthenticationType(self.poll, TokenizedPoll)
+        handler.set_next(check.CheckPollOwnership(self.poll, self.request.user))
+        handler.set_next(check.CheckTokenNotUsed(token))
+        handler.set_next(check.CheckPollIsNotEnded(self.poll))
+        handler.handle()
         
         return token
     

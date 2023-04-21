@@ -6,7 +6,7 @@ from typing import Any, Optional
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
 
-from polls.models import Poll, Preference
+from polls.models import Poll, Preference, Token
 
 
 class Handler(ABC):
@@ -49,6 +49,30 @@ class CheckPollActiveness(AbstractHandler):
                 f'Non è ancora possibile votare questo sondaggio: la votazione inizia il {start.date()} alle {start.time()}')
         
         return super().handle()
+
+class CheckPollIsNotStarted(AbstractHandler):
+
+    def __init__(self, poll: Poll) -> None:
+        self.poll = poll
+        super().__init__()
+    
+    def handle(self):
+        if not self.poll.is_not_started():
+            raise PermissionDenied('Non è possibile effettuare questa operazione dopo che la votazione è iniziata')
+        
+        return super().handle()
+
+class CheckPollIsNotEnded(AbstractHandler):
+    
+        def __init__(self, poll: Poll) -> None:
+            self.poll = poll
+            super().__init__()
+        
+        def handle(self):
+            if self.poll.is_ended():
+                raise PermissionDenied('Non è possibile effettuare questa operazione dopo che la votazione è terminata')
+            
+            return super().handle()
 
 class CheckAuthentication(AbstractHandler):
     """
@@ -101,7 +125,7 @@ class CheckRevoteSession(AbstractHandler):
         super().__init__()
     
     def handle(self):
-        if not (self.poll.get_type() == self.pollType or self.is_preference_in_session):
+        if not (self.poll.get_type() == self.session_vote_type or self.is_preference_in_session):
             raise PermissionDenied(
                 'Il voto con metodi alternativi è concesso solo durante il rivoto')
         
@@ -111,4 +135,41 @@ class CheckRevoteSession(AbstractHandler):
                 (Dettagli dell'errore: la preferenza sintetica è riferita ad una scelta diversa)'''
             )
 
+        return super().handle()
+
+class CheckPollOwnership(AbstractHandler):
+
+    def __init__(self, poll: Poll, user) -> None:
+        self.poll = poll
+        self.user = user
+        super().__init__()
+    
+    def handle(self):
+        if self.poll.author != self.user:
+            raise PermissionDenied('Non hai i permessi per cancellare questo sondaggio')
+        
+        return super().handle()
+
+class CheckPollAuthenticationType(AbstractHandler):
+    def __init__(self, poll: Poll, vote_type: type) -> None:
+        self.poll = poll
+        self.vote_type = vote_type
+        super().__init__()
+    
+    def handle(self):
+        if not isinstance(self.poll, self.vote_type):
+            raise PermissionDenied('Non è possibile effettuare questa operazione con questo metodo di voto')
+        
+        return super().handle()
+
+class CheckTokenNotUsed(AbstractHandler):
+    def __init__(self, token: Token, msg: str) -> None:
+        self.token = token
+        self.msg = msg
+        super().__init__()
+    
+    def handle(self):
+        if self.token.used:
+            raise PermissionDenied(self.msg)
+        
         return super().handle()
