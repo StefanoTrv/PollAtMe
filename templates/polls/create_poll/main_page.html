@@ -71,7 +71,7 @@
     {{ formset.empty_form }}
     <input type="button" class="btn btn-danger" value="-" onclick="remove_row(this)"/>
 </div>
-{% include 'polls/includes/modal.html' with id_modal='modal-return-home' %}
+{% include 'polls/includes/modal.html' with id_modal='modal-return-home' action=action %}
 
 {% endblock content %}
 
