@@ -33,7 +33,7 @@
             {% if poll.is_ended %} Terminato il {{ poll.end | date:"d/m/Y, H:i" }} {% endif %}
         </p>
 
-        <div class="btn-group" role="group">
+        <div class="btn-group flex-wrap" role="group">
             {% if poll.is_active %}
             <a role="button" class="btn btn-block btn-primary" href={% url 'polls:vote' id=poll.id %}>
                 {% if poll.default_type == 1 %}
@@ -56,10 +56,12 @@
                 <a role="button" class="btn btn-block btn-secondary" href={% url 'polls:result' id=poll.id %}>Risultati</a>
                 {% endif %}
 
-                {% if poll.results_restriction == 2 and user.is_authenticated and user == poll.author %}
-                <a role="button" class="btn btn-block btn-secondary" href={% url 'polls:result' id=poll.id %}>Risultati</a>
-                {% elif poll.results_restriction == 2 and user.is_authenticated and user != poll.author %}
-                <a role="button" class="btn btn-block btn-secondary" href={% url 'polls:result' id=poll.id %}>Riepilogo</a>
+                {% if poll.results_restriction == 2 %}
+                    {% if user.is_authenticated and user == poll.author %}
+                    <a role="button" class="btn btn-block btn-secondary" href={% url 'polls:result' id=poll.id %}>Risultati</a>
+                    {% elif user != poll.author %}
+                    <a role="button" class="btn btn-block btn-secondary" href={% url 'polls:result' id=poll.id %}>Riepilogo</a>
+                    {% endif %}
                 {% endif %}
 
                 {% if poll.results_restriction == 3%}
