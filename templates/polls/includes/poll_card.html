@@ -70,31 +70,33 @@
             <a role="button" class="btn btn-block btn-success" data-bs-toggle="modal" data-bs-target="#modalPollSharing"
                 data-bs-code="{{ poll.mapping }}" data-bs-public="{{ poll.is_public }}" data-bs-title="{{ poll.title }}"
                 data-bs-end="{{ poll.end | date:" d/m/Y, H:i" }}">
-                <span class="fas fa-share"></span>
+                <span class="feather icon-share-2"></span>
             </a>
 
             {% if user.is_authenticated and user == poll.author and request.path != '/' %}
-            <div class="btn-group" role="group">
-                <a role="button" id="btnGroupDrop1" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    Gestisci
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                    {% if poll.is_not_started %}
-                    <li><a class="dropdown-item" href="{% url 'polls:edit_poll' id=poll.id %}">Modifica</a></li>
-                    <li><a class="dropdown-item" href='#' data-bs-toggle="modal" data-bs-target="#modal-delete-confirm" 
-                        data-bs-action="{% url 'polls:delete_poll' pk=poll.pk %}">Elimina</a></li>
-                    {% endif %}
+                {% if poll.is_not_started or not poll.is_ended and poll.authentication_type == 3 or poll.results_restriction == 3 and poll.is_active %}
+                <div class="btn-group" role="group">
+                    <a role="button" id="btnGroupDrop1" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        Gestisci
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                        {% if poll.is_not_started %}
+                        <li><a class="dropdown-item" href="{% url 'polls:edit_poll' id=poll.id %}">Modifica</a></li>
+                        <li><a class="dropdown-item" href='#' data-bs-toggle="modal" data-bs-target="#modal_delete_confirm"
+                            data-bs-action="{% url 'polls:delete_poll' pk=poll.pk %}">Elimina</a></li>
+                        {% endif %}
 
-                    {% if not poll.is_ended and poll.authentication_type == 3 %}
-                    <li><a class="dropdown-item" href={% url 'polls:tokens' id=poll.id %}>Password</a></li>
-                    {% endif %}
+                        {% if not poll.is_ended and poll.authentication_type == 3 %}
+                        <li><a class="dropdown-item" href={% url 'polls:tokens' id=poll.id %}>Password</a></li>
+                        {% endif %}
 
-                    {% if poll.results_restriction == 3 and poll.is_active %}
-                    <li><a class="dropdown-item" href='#' data-bs-toggle="modal" data-bs-target="#modal-close-confirm"
-                        data-bs-action="{% url 'polls:close_poll' id=poll.id %}">Chiudi</a></li>
-                    {% endif %}
-                </ul>
-            </div>               
+                        {% if poll.results_restriction == 3 and poll.is_active %}
+                        <li><a class="dropdown-item" href='#' data-bs-toggle="modal" data-bs-target="#modal_close_confirm"
+                            data-bs-action="{% url 'polls:close_poll' id=poll.id %}">Chiudi</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                {% endif%} 
             {% endif %}
         </div>
     </div>
