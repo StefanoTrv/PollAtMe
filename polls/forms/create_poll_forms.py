@@ -172,6 +172,14 @@ class PollForm(forms.ModelForm):
             if f_name in PollFormMain.Meta.fields:
                 self.fields[f_name].widget.attrs['readonly'] = True
 
+    def clean_start(self):
+        start_cleaned = timezone.localtime(self.cleaned_data.get('start'))
+        return start_cleaned
+    
+    def clean_end(self):
+        end_cleaned = timezone.localtime(self.cleaned_data.get('end'))
+        return end_cleaned
+
     def clean(self):
         if self.errors:
             return
