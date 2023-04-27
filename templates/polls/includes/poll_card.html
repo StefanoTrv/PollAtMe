@@ -21,7 +21,7 @@
         <h5 class="card-title"> {{ poll.title }} </h5>
 
         <p class="card-subtitle mb-2 text-muted">
-            {% if poll.results_restriction == 3 and poll.is_active %}
+            {% if poll.results_restriction == 3 or poll.results_restriction == 1 and poll.is_active %}
             <i class="bi bi-exclamation-triangle-fill text-warning fs-3" data-bs-toggle="tooltip"
                 data-bs-placement="top"
                 title="Attenzione: per questa scelta il creatore potrebbe chiudere le votazioni in anticipo rispetto alla data indicata!">
@@ -41,11 +41,11 @@
                 {% elif poll.default_type == 3 %}
                 Scegli
                 {% endif %}
-                {% if poll.authentication_type == 1 %} <!--free-->
+                {% if poll.authentication_type == 1 %}
                 &nbsp<i class="bi bi-universal-access"></i>
-                {% elif poll.authentication_type == 2 %} <!--authenticated-->
+                {% elif poll.authentication_type == 2 %}
                 &nbsp<i class="bi bi-people-fill"></i>
-                {% elif poll.authentication_type == 3 %} <!--tokenized-->
+                {% elif poll.authentication_type == 3 %}
                 &nbsp<i class="bi bi-lock-fill"></i>
                 {% endif %}
             </a>
@@ -80,7 +80,7 @@
             </a>
 
             {% if user.is_authenticated and user == poll.author and request.path != '/' %}
-                {% if poll.is_not_started or not poll.is_ended and poll.authentication_type == 3 or poll.results_restriction == 3 and poll.is_active %}
+                {% if poll.is_not_started or not poll.is_ended and poll.authentication_type == 3 or poll.results_restriction == 3 or poll.results_restriction == 1 and poll.is_active %}
                 <div class="btn-group" role="group">
                     <a role="button" id="btnGroupDrop1" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                         Gestisci
@@ -96,7 +96,7 @@
                         <li><a class="dropdown-item" href={% url 'polls:tokens' id=poll.id %}>Password</a></li>
                         {% endif %}
 
-                        {% if poll.results_restriction == 3 and poll.is_active %}
+                        {% if poll.results_restriction == 3 or poll.results_restriction == 1 and poll.is_active %}
                         <li><a class="dropdown-item" href='#' data-bs-toggle="modal" data-bs-target="#modal_close_confirm"
                             data-bs-action="{% url 'polls:close_poll' id=poll.id %}">Chiudi</a></li>
                         {% endif %}

@@ -1,15 +1,21 @@
+from datetime import datetime
+from django.urls import reverse_lazy
+
 from typing import Any, Optional, Type
 
 from django import http
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Model, QuerySet
 from django.shortcuts import render
+from django.http import HttpResponseRedirect
+
 from django.views.generic import FormView, View
 from django.views.generic.list import ListView
 
 from polls.forms import SearchPollForm
 from polls.models import Poll
 from polls.services import PollsListService
+from polls.services.active_polls import SearchPollService
 
 
 class IndexView(ListView):
@@ -55,5 +61,10 @@ class ClosePollView(LoginRequiredMixin, View):
     http_method_names = ['post']
 
     def post(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.HttpResponse:
-        return http.HttpResponse('ok')
+        poll = SearchPollService().search_by_id(kwargs['id'])
+        print(poll.end)
+        poll.end = datetime.now().astimezone()
+        poll.save()
+        print(poll.end)
+        return HttpResponseRedirect(reverse_lazy('polls:personal_polls'))
         
