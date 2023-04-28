@@ -82,18 +82,18 @@ class _VoteView(CreateView):
             self.poll, 
             request.user.is_authenticated, 
             self.token, 
-            self.__failed_authentication))
-        handler.set_next(check.CheckUserHasVoted(
-            self.poll, 
-            request.user, 
-            self.token, 
-            syntethic_preference,
-            lambda: render(self.request, 'polls/already_voted.html', {'poll': self.poll})))
-        handler.set_next(check.CheckRevoteSession(
-            self.poll, 
-            self.pollType, 
-            'preference_id' in request.session, 
-            syntethic_preference))
+            self.__failed_authentication)) \
+            .set_next(check.CheckUserHasVoted(
+                self.poll, 
+                request.user, 
+                self.token, 
+                syntethic_preference,
+                lambda: render(self.request, 'polls/already_voted.html', {'poll': self.poll}))) \
+            .set_next(check.CheckRevoteSession(
+                self.poll, 
+                self.pollType, 
+                'preference_id' in request.session, 
+                syntethic_preference))
         return handler
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
