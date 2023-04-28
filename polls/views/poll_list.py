@@ -62,9 +62,7 @@ class ClosePollView(LoginRequiredMixin, View):
 
     def post(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.HttpResponse:
         poll = SearchPollService().search_by_id(kwargs['id'])
-        print(poll.end)
         poll.end = datetime.now().astimezone()
         poll.save()
-        print(poll.end)
         return HttpResponseRedirect(reverse_lazy('polls:personal_polls'))
         
