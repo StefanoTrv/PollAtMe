@@ -2,6 +2,7 @@ from django.test import TestCase
 from polls.services.giudizio_maggioritario import Grade
 from polls.services.giudizio_maggioritario import VoteTuple
 from polls.services.giudizio_maggioritario import GiudizioMaggioritario
+from polls.services.giudizio_maggioritario import GiudizioMaggioritarioPoll
 from polls.services.giudizio_maggioritario import produce_vote_tuple_list
 
 class GiudizioMaggioritarioTest(TestCase):
@@ -115,14 +116,14 @@ class GiudizioMaggioritarioTest(TestCase):
 
 
     def test_calculation_from_database(self):
-        giudizio_maggioritario = GiudizioMaggioritario(1)
+        giudizio_maggioritario = GiudizioMaggioritarioPoll(1)
         winner = giudizio_maggioritario.get_winner_tuple()
         expected_winner = VoteTuple(3, 2, Grade(3, True), 1)
         self.assertEqual(winner, expected_winner)
 
     def test_classifica(self):
         #la classifica per il poll 1 dovrebbe essere {'C' : 1, 'B' : 3 'A' : 2}
-        giudizio_maggioritario = GiudizioMaggioritario(1)
+        giudizio_maggioritario = GiudizioMaggioritarioPoll(1)
         classifica = giudizio_maggioritario.get_classifica()
 
         #dobbiamo verificare che le tuple siano corrette
@@ -136,7 +137,7 @@ class GiudizioMaggioritarioTest(TestCase):
 
     ##testiamo che per il sondaggio numero 2 venga ritornata la classifica corretta anche se votata solamente da una persona
     def test_one_preference(self):
-        giudizio_maggioritario = GiudizioMaggioritario(2)
+        giudizio_maggioritario = GiudizioMaggioritarioPoll(2)
         classifica = giudizio_maggioritario.get_classifica()
 
         expected_classifica = [{'alternative' : 'Bella', 'place' : 1, 'judgment' :  VoteTuple(4, 0, Grade(5, False), 0)}
