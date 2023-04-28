@@ -19,10 +19,9 @@
 </div>
 
 <script>
-    var confirmModal{{id}} = document.getElementById('{{ id }}')
-    confirmModal{{id}}.addEventListener('show.bs.modal', event => {
+    document.getElementById('{{ id }}').addEventListener('show.bs.modal', event => {
         const button = event.relatedTarget
-        const form = confirmModal{{id}}.querySelector('#delete-form-{{id}}')
+        const form = document.getElementById('{{ id }}').querySelector('#delete-form-{{id}}')
         form.action = button.getAttribute('data-bs-action')
     })
 </script>
