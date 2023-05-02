@@ -145,17 +145,20 @@
                             </div>
                             <div class="alert alert-primary" role="alert" id="free_results_alert_id"
                                 {% if form.results_restriction.value == 1 or form.results_restriction.value == "1" %} style="display: block;" {% else %} style="display: none;" {% endif %}>
-                                <b>Libero</b>: tutti possono vedere i risultati della scelta, sia durante che dopo le votazioni.
+                                <b>Libero</b>: tutti possono vedere i risultati della scelta, sia durante che dopo le votazioni. Potrai terminare le votazioni in anticipo rispetto alla data 
+                                di scadenza.
                             </div>
                             
                             <div class="alert alert-primary" role="alert" id="author_results_alert_id"
                                 {% if form.results_restriction.value == 2 or form.results_restriction.value == "2" %} style="display: block;" {% else %} style="display: none;" {% endif %}>
-                                <b>Solo creatore</b>: solo il creatore può visualizzare i risultati della scelta quando è in corso. Tutti possono vederli solo quando è terminata.    
+                                <b>Solo creatore</b>: solo tu potrai visualizzare i risultati della scelta quando è in corso. Tutti possono vederli solo quando è terminata. Non potrai tuttavia 
+                                terminare le votazioni in anticipo rispetto alla data di scadenza.
                             </div>
 
                             <div class="alert alert-primary" role="alert" id="nobody_results_alert_id"
                                 {% if form.results_restriction.value == 3 or form.results_restriction.value == "3" %} style="display: block;" {% else %} style="display: none;" {% endif %}>
-                                <b>Nessuno</b>: nessuno può vedere i risultati della scelta quando è in corso. Tutti possono vederli quando è terminata.
+                                <b>Nessuno</b>: nessuno può vedere i risultati della scelta quando è in corso. Tutti possono vederli quando è terminata. Potrai terminare le votazioni in anticipo rispetto alla data 
+                                di scadenza.
                             </div>
                         </div>
                     </div>
