@@ -65,6 +65,7 @@ class ClosePollView(LoginRequiredMixin, View):
         poll = SearchPollService().search_by_id(kwargs['id'])
         handler = check.CheckPollActiveness(poll)
         handler.set_next(check.CheckPollOwnership(poll, self.request.user))
+        handler.handle()
         
         if poll.results_restriction != 2:
             poll.end = datetime.now().astimezone()
