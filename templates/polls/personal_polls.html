@@ -25,7 +25,7 @@
         {% include 'polls/includes/pagination.html' with page_obj=page_obj %}
         {% include 'polls/includes/footer.html' %}
         {% include 'polls/includes/modal-delete.html' with msg='Vuoi veramente eliminare questa scelta?' id='modal_delete_confirm' %}
-        {% include 'polls/includes/modal-delete.html' with msg='Vuoi veramente chiudere questa scelta?' id='modal_close_confirm' confirm_message="Chiudi" %}
+        {% include 'polls/includes/modal-delete.html' with msg='Sicuro di voler terminare le votazioni? Se prosegui la scelta sarà chiusa <strong>permanentemente</strong> e non potrà più essere riaperta!' id='modal_close_confirm' confirm_message="Chiudi" %}
         {% include 'polls/includes/modal-poll_sharing.html' %}
     </div>
 </div>
