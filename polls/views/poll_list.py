@@ -16,6 +16,7 @@ from polls.forms import SearchPollForm
 from polls.models import Poll
 from polls.services import PollsListService
 from polls.services.active_polls import SearchPollService
+from polls.services import check
 
 
 class IndexView(ListView):
@@ -62,6 +63,9 @@ class ClosePollView(LoginRequiredMixin, View):
 
     def post(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.HttpResponse:
         poll = SearchPollService().search_by_id(kwargs['id'])
+        handler = check.CheckPollActiveness(poll)
+        handler.set_next(check.CheckPollOwnership(poll, self.request.user))
+        
         if poll.results_restriction != 2:
             poll.end = datetime.now().astimezone()
             poll.save()

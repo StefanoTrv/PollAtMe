@@ -1,3 +1,4 @@
+from datetime import datetime
 from assertpy import assert_that  # type: ignore
 from django.test import Client, TestCase
 from polls.models import Poll
@@ -93,6 +94,7 @@ class ClosePollViewTest(TestCase):
 
     def setUp(self):
         self.u = User.objects.create_user(username='test', password='test')
+        self.client.login(username="test", password="test")
         self.poll1 = Poll(
             title="Tutti possono vedere i risultati", 
             text = "Sondaggio di prova",
@@ -103,6 +105,7 @@ class ClosePollViewTest(TestCase):
             results_restriction = Poll.PollResultsRestriction.ALL
         )
         self.poll1.save()
+        self.a1 = self.poll1.alternative_set.create(text="Risposta 1")
         self.poll2 = Poll(
             title="Solo il creatore può vedere i risultati", 
             text = "Sondaggio di prova",
@@ -113,6 +116,7 @@ class ClosePollViewTest(TestCase):
             results_restriction = Poll.PollResultsRestriction.AUTHOR
         )
         self.poll2.save()
+        self.a1 = self.poll2.alternative_set.create(text="Risposta 1")
         self.poll3 = Poll(
             title="Nessuno può vedere i risultati", 
             text = "Sondaggio di prova",
@@ -123,21 +127,21 @@ class ClosePollViewTest(TestCase):
             results_restriction = Poll.PollResultsRestriction.NOBODY
         )
         self.poll3.save()
+        self.a1 = self.poll3.alternative_set.create(text="Risposta 1")
 
     def test_chiusura_all(self):
         response = self.client.post(reverse('polls:close_poll', kwargs={'id': self.poll1.pk}))
-        assert_that(self.poll1.end).is_not_equal_to(timezone.now())
-        response = self.client.get(reverse(self.URL))
-        assert_that(response == 'polls:personal_polls')
+        assert_that(Poll.objects.get(pk=self.poll1.pk).end).is_less_than(datetime.now().astimezone())
+        assert_that(response.url).is_equal_to(reverse(self.URL))
+        
 
     def test_chiusura_only_creator(self):
         response = self.client.post(reverse('polls:close_poll', kwargs={'id': self.poll2.pk}))
-        assert_that(self.poll2.end).is_not_equal_to(timezone.now())
-        response = self.client.get(reverse(self.URL))
-        assert_that(response == 'polls:personal_polls')
+        assert_that(Poll.objects.get(pk=self.poll2.pk).end).is_greater_than(datetime.now().astimezone())
+        assert_that(response.url).is_equal_to(reverse(self.URL))
+
 
     def test_chiusura_nobody(self):
         response = self.client.post(reverse('polls:close_poll', kwargs={'id': self.poll3.pk}))
-        assert_that(self.poll3.end).is_not_equal_to(timezone.now())
-        response = self.client.get(reverse(self.URL))
-        assert_that(response == 'polls:personal_polls')
+        assert_that(Poll.objects.get(pk=self.poll3.pk).end).is_less_than(datetime.now().astimezone())
+        assert_that(response.url).is_equal_to(reverse(self.URL))

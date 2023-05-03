@@ -32,24 +32,28 @@
     
     {% if poll.is_active %}
       {% if poll.results_restriction == 1 %}
+      <!-- {{poll.results_restriction}}-show -->>
       {% include 'polls/includes/classifica_grafici_SP.html' %}
       {% endif %}
 
       {% if poll.results_restriction == 2 %}
-          {% if user.is_authenticated and user == poll.author %}
-          {% include 'polls/includes/classifica_grafici_SP.html' %}
-          {% elif user != poll.author %}
-          <div class="card text-center">
-            <div class="card-body">
-              <h5 class="mt-4">Potrai vedere i risultati della scelta solo quando saranno terminate le votazioni</h5>
-              <br>
-              <i class="fas fa-lock fa-10x"></i>
-            </div>
-          </div>
-          {% endif %}
+      {% if user.is_authenticated and user == poll.author %}
+      <!-- {{poll.results_restriction}}-show -->
+      {% include 'polls/includes/classifica_grafici_SP.html' %}
+      {% elif user != poll.author %}
+      <!-- {{poll.results_restriction}}-lock -->
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="mt-4">Potrai vedere i risultati della scelta solo quando saranno terminate le votazioni</h5>
+          <br>
+          <i class="fas fa-lock fa-10x"></i>
+        </div>
+      </div>
+      {% endif %}
       {% endif %}
 
       {% if poll.results_restriction == 3%}
+      <!-- {{poll.results_restriction}}-lock -->>
       <div class="card text-center">
         <div class="card-body">
           <h5 class="mt-4">Potrai vedere i risultati della scelta solo quando saranno terminate le votazioni</h5>

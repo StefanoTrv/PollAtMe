@@ -79,13 +79,16 @@
 
     {% if poll.is_active %}
       {% if poll.results_restriction == 1 %}
+      <!-- {{poll.results_restriction}}-show -->>
       {% include 'polls/includes/classifica_grafici_GM.html' %}
       {% endif %}
 
       {% if poll.results_restriction == 2 %}
           {% if user.is_authenticated and user == poll.author %}
+          <!-- {{poll.results_restriction}}-show -->
           {% include 'polls/includes/classifica_grafici_GM.html' %}
           {% elif user != poll.author %}
+          <!-- {{poll.results_restriction}}-lock -->
           <div class="card text-center">
             <div class="card-body">
               <h5 class="mt-4">Potrai vedere i risultati della scelta solo quando saranno terminate le votazioni</h5>
@@ -97,6 +100,7 @@
       {% endif %}
 
       {% if poll.results_restriction == 3%}
+          <!-- {{poll.results_restriction}}-lock -->>
           <div class="card text-center">
             <div class="card-body">
               <h5 class="mt-4">Potrai vedere i risultati della scelta solo quando saranno terminate le votazioni</h5>
