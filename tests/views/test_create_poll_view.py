@@ -52,6 +52,7 @@ class CreatePollViewTest(TestCase):
             'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
             'visibility': Poll.PollVisibility.HIDDEN.value,
             'authentication_type': Poll.PollAuthenticationType.FREE.value,
+            'results_restriction': Poll.PollResultsRestriction.ALL.value,
             'random_order': False,
             'save': ''
         }
@@ -196,6 +197,7 @@ class CreatePollViewTest(TestCase):
             'author': self.u.id,
             'visibility': Poll.PollVisibility.PUBLIC.value,
             'authentication_type': Poll.PollAuthenticationType.FREE.value,
+            'results_restriction': Poll.PollResultsRestriction.ALL.value,
             'save': '',
             'code': 'TestCode',
         }
@@ -239,6 +241,7 @@ class CreatePollViewTest(TestCase):
             'author': self.u.id,
             'visibility': Poll.PollVisibility.PUBLIC.value,
             'authentication_type': Poll.PollAuthenticationType.FREE.value,
+            'results_restriction': Poll.PollResultsRestriction.ALL.value,
             'save': '',
             'code': '',
         }
@@ -309,6 +312,7 @@ class CreatePollViewTest(TestCase):
             'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
             'visibility': Poll.PollVisibility.HIDDEN.value,
             'authentication_type': Poll.PollAuthenticationType.FREE.value,
+            'results_restriction': Poll.PollResultsRestriction.ALL.value,
             'random_order': False,
             'save': ''
         }
@@ -321,6 +325,7 @@ class CreatePollViewTest(TestCase):
             'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
             'visibility': Poll.PollVisibility.HIDDEN.value,
             'authentication_type': Poll.PollAuthenticationType.FREE.value,
+            'results_restriction': Poll.PollResultsRestriction.ALL.value,
             'random_order': False,
             'save': ''
         }

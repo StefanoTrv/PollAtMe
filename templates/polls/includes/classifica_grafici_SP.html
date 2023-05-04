@@ -1,0 +1,96 @@
+<h5 class="mt-4">Numero di preferenze per alternativa</h5>
+    <hr>
+    <div class="row row-cols-md-3 row-cols-sm-1 g-4">
+      {% for alternative in results %}
+      {% if alternative.position == 1 and unique_winner %}
+      <div class="col-md-12">
+        <div class="card bg-success">
+          <div class="card-body text-white">
+            <h3 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.position }}° posizione</span></h3>
+            <h4 class="card-title text-white">{{ alternative.text|upper }}</h4>
+            <div class="row">
+              <div class="col h4 card-text text-white text-start">{{ alternative.count }}<span class="fw-normal"> {%if alternative.count == 1%}voto{%else%}voti{%endif%}</span></div>
+              <div class="col h4 fw-normal text-white text-end">({{ alternative.percentage }}%)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% elif alternative.position == 1 %}
+      <div class="col">
+        <div class="card bg-warning h-100">
+          <div class="card-body">
+            <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.position }}° posizione</span></h4>
+            <h5 class="card-title">{{ alternative.text|upper }}</h5>
+            <div class="row">
+              <div class="col h5 card-text text-start">{{ alternative.count }}<span class="fw-normal"> {%if alternative.count == 1%}voto{%else%}voti{%endif%}</span></div>
+              <div class="col h5 fw-normal text-end">({{ alternative.percentage }}%)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-body">
+            <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.position }}° posizione</span></h4>
+            <h5 class="card-title">{{ alternative.text|upper }}</h5>
+            <div class="row">
+              <div class="col h5 card-text text-start">{{ alternative.count }}<span class="fw-normal"> {%if alternative.count == 1%}voto{%else%}voti{%endif%}</span></div>
+              <div class="col h5 fw-normal text-end">({{ alternative.percentage }}%)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+    
+    <h5 class="mt-4">Grafici</h5>
+    <hr>
+    <div class="row row-cols-md-2 row-cols-sm-1 g-4">
+      <div class="col-md-6 h-100">
+        <div class="card">
+          <div class="card-header">
+            <h5>Istogramma risposte</h5>
+          </div>
+          <div class="card-body">
+            <div id="bar-chart"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 h-100">
+        <div class="card">
+          <div class="card-header">
+            <h5>Diagramma a torta</h5>
+          </div>
+          <div class="card-body" style="position: relative;">
+            <div id="pie-chart"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr>
+    {% if poll.get_type == "Preferenza singola" %}
+    <div class="card bg-white">
+      <div class="card-body">
+        <h5 class="card-header text-info">E se avessimo votato con un altro metodo?</h5>
+        <div class="card-body">
+          <p>Scopri quale alternativa sarebbe stata scelta se il metodo di voto fosse stato diverso.</p>
+          <div class="row align-items-center text-center">
+            <div class="col">
+              <a role="button" href={% url 'polls:result_MJ' id=poll.id %} class="btn btn-block btn-info mb-4"> Risultati usando il giudizio maggioritario </a>
+            </div>
+          </div>
+          <p>Se vuoi sapere come questi risultati vengono calcolati, <a href="{% url 'polls:help_simulated_results' %}" class="text-info">qui trovi la spiegazione</a>.</p>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+      <div class="col text-center">
+        <a role="button" href="{% url 'polls:index' %}" class="btn btn-block btn-primary">Torna alla home</a>
+      </div>
+    </div>
+    <!-- [ Main Content ] end -->
+  </div>

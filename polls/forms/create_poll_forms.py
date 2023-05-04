@@ -124,8 +124,9 @@ class PollForm(forms.ModelForm):
         labels = {
             'start': 'Data inizio votazioni',
             'end': 'Data fine votazioni',
-            'visibility': "Visibilità",
+            'visibility': "Visibilità della scelta",
             'authentication_type': "Modalità di voto",
+            'results_restriction': "Visibilità dei risultati durante la votazione",
         } | PollFormMain.Meta.labels
 
         error_messages = {} | PollFormMain.Meta.error_messages
@@ -155,6 +156,11 @@ class PollForm(forms.ModelForm):
                     'class': 'btn-check'
                 }
             ),
+            'results_restriction': forms.RadioSelect(
+                attrs={
+                    'class': 'btn-check'
+                }
+            ),
         }
 
     def __init__(self, *args, **kwargs) -> None:
@@ -165,6 +171,14 @@ class PollForm(forms.ModelForm):
         for f_name in self.fields:
             if f_name in PollFormMain.Meta.fields:
                 self.fields[f_name].widget.attrs['readonly'] = True
+
+    def clean_start(self):
+        start_cleaned = timezone.localtime(self.cleaned_data.get('start'))
+        return start_cleaned
+    
+    def clean_end(self):
+        end_cleaned = timezone.localtime(self.cleaned_data.get('end'))
+        return end_cleaned
 
     def clean(self):
         if self.errors:

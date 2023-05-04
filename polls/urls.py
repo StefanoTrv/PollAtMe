@@ -20,6 +20,7 @@ urlpatterns = [
     path('success/', views.CreatePollSuccessView.as_view(), name='poll_created_success'),
     path('delete/<int:pk>/', views.PollDeleteView.as_view(), name='delete_poll'),
     path('edit/<int:id>/', views.EditPollView.as_view(), name='edit_poll'),
+    path('close/<int:id>/', views.poll_list.ClosePollView.as_view(), name='close_poll'),
     path('search/', views.SearchView.as_view(), name='search_poll'),
     path('help/simulated_results/', views.HelpSimulatedResultsView.as_view(), name='help_simulated_results'),
     path('help/majorityjudgment/', views.ExplanationGMView.as_view(), name='explain_gm'),
