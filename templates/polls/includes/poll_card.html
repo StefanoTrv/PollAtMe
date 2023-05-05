@@ -82,8 +82,7 @@
             </a>
 
             {% if user.is_authenticated and user == poll.author and request.path != '/' %}
-                {% if poll.is_not_started or not poll.is_ended %}
-                    {% if poll.results_restriction != 2 %}
+                {% if not poll.is_ended %}
                     <div class="btn-group" role="group">
                         <a role="button" id="btnGroupDrop1" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                             Gestisci
@@ -109,7 +108,6 @@
                             {% endif %}
                         </ul>
                     </div>
-                    {% endif %}
                 {% endif %}
             {% endif %}
         </div>
