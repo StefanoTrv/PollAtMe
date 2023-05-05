@@ -128,12 +128,24 @@ class ClosePollViewTest(TestCase):
         )
         self.poll3.save()
         self.a1 = self.poll3.alternative_set.create(text="Risposta 1")
+        self.poll4 = Poll(
+            title="Test", 
+            text = "Sondaggio di prova",
+            start = timezone.now() + timedelta(weeks=1), 
+            end = timezone.now() + timedelta(weeks=2),
+            visibility = Poll.PollVisibility.PUBLIC,
+            author=self.u,
+            results_restriction = Poll.PollResultsRestriction.ALL
+        )
+        self.poll4.save()
+        self.a1 = self.poll4.alternative_set.create(text="Risposta 1")
 
 
     def test_close_poll_all_creator(self):
         self.client.login(username="test", password="test")
+        assert_that(self.poll1.is_active)
         response = self.client.post(reverse('polls:close_poll', kwargs={'id': self.poll1.pk}))
-        assert_that(Poll.objects.get(pk=self.poll1.pk).end).is_less_than(datetime.now().astimezone())
+        assert_that(self.poll1.is_ended)
         assert_that(response.url).is_equal_to(reverse(self.URL))
 
     def test_close_poll_all_creator_fails(self):
@@ -150,12 +162,27 @@ class ClosePollViewTest(TestCase):
 
     def test_close_poll_nobody_creator(self):
         self.client.login(username="test", password="test")
+        assert_that(self.poll1.is_active)
         response = self.client.post(reverse('polls:close_poll', kwargs={'id': self.poll3.pk}))
-        assert_that(Poll.objects.get(pk=self.poll3.pk).end).is_less_than(datetime.now().astimezone())
+        assert_that(self.poll1.is_ended)
         assert_that(response.url).is_equal_to(reverse(self.URL))
 
     def test_close_poll_nobody_creator_fails(self):
         self.client.login(username="test1", password="test1")
         response = self.client.post(reverse('polls:close_poll', kwargs={'id': self.poll1.pk}))
         assert_that(Poll.objects.get(pk=self.poll1.pk).end).is_greater_than(datetime.now().astimezone())
+        assert_that(response.status_code).is_equal_to(403)
+
+    def test_start_now_poll(self):
+        self.client.login(username="test", password="test")
+        assert_that(self.poll4.is_not_started)
+        response = self.client.post(reverse('polls:start_poll', kwargs={'id': self.poll4.pk}))
+        assert_that(self.poll1.is_active)
+        assert_that(response.url).is_equal_to(reverse(self.URL))
+
+    def test_start_now_poll__fails(self):
+        self.client.login(username="test1", password="test1")
+        assert_that(self.poll1.is_not_started)
+        response = self.client.post(reverse('polls:start_poll', kwargs={'id': self.poll4.pk}))
+        assert_that(self.poll1.is_not_started)
         assert_that(response.status_code).is_equal_to(403)
