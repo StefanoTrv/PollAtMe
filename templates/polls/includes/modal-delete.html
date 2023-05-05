@@ -11,7 +11,7 @@
         <div class="modal-footer">
             <form method="POST" action="" id="form-{{id}}">
                 {% csrf_token %}
-                <input id = "confirm_message" type="submit" class="btn btn-primary">
+                <input id = "confirm_message" type="submit" class="btn btn-primary" value='{{confirm_message}}'>
             </form>
         </div>
       </div>
@@ -21,7 +21,6 @@
 <script>
     document.getElementById('{{ id }}').addEventListener('show.bs.modal', event => {
         const button = event.relatedTarget
-        document.getElementById('confirm_message').value = '{{confirm_message}}'
         const form = document.getElementById('{{ id }}').querySelector('#form-{{id}}')
         form.action = button.getAttribute('data-bs-action')
     })
