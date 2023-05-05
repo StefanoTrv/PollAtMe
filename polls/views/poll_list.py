@@ -71,4 +71,18 @@ class ClosePollView(LoginRequiredMixin, View):
             poll.end = datetime.now().astimezone()
             poll.save()
         return HttpResponseRedirect(reverse_lazy('polls:personal_polls'))
+    
+
+class StartPollView(LoginRequiredMixin, View):
+    http_method_names = ['post']
+
+    def post(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.HttpResponse:
+        poll = SearchPollService().search_by_id(kwargs['id'])
+        handler = check.CheckPollIsNotStarted(poll)
+        handler.set_next(check.CheckPollOwnership(poll, self.request.user))
+        handler.handle()
+        
+        poll.start = datetime.now().astimezone()
+        poll.save()
+        return HttpResponseRedirect(reverse_lazy('polls:personal_polls'))
         

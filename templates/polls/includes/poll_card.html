@@ -91,6 +91,8 @@
                         <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                             {% if poll.is_not_started %}
                             <li><a class="dropdown-item" href="{% url 'polls:edit_poll' id=poll.id %}">Modifica</a></li>
+                            <li><a class="dropdown-item" href='#' data-bs-toggle="modal" data-bs-target="#modal_start_confirm"
+                                data-bs-action="{% url 'polls:start_poll' id=poll.id %}">Avvia subito</a></li>
                             <li><a class="dropdown-item" href='#' data-bs-toggle="modal" data-bs-target="#modal_delete_confirm"
                                 data-bs-action="{% url 'polls:delete_poll' pk=poll.pk %}">Elimina</a></li>
                             {% endif %}
