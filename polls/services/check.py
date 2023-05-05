@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Optional
 
 from django.core.exceptions import PermissionDenied
+from django.utils import timezone
 
 from polls.models import Poll, Preference, Token
 
@@ -43,9 +44,12 @@ class CheckPollActiveness(AbstractHandler):
 
     def handle(self):
         if not self.poll.is_active():
-            start = self.poll.start.astimezone()
-            raise PermissionDenied(
-                f'Non è ancora possibile votare questo sondaggio: la votazione inizia il {start.date()} alle {start.time()}')
+            start = timezone.localtime(self.poll.start)
+            if timezone.now() < start:
+                raise PermissionDenied(f'Le votazioni inizieranno il {start.strftime("%d/%m/%Y")} alle {start.strftime("%H:%M")}')
+            else:
+                end = timezone.localtime(self.poll.end)
+                raise PermissionDenied(f'Il sondaggio è terminato il {end.strftime("%d/%m/%Y")} alle {end.strftime("%H:%M")}')
         
         return super().handle()
 
