@@ -133,6 +133,22 @@
     create_alert()
 </script>
 
+<script>
+    menu = document.querySelector('#id_default_type')
+    menu.addEventListener("change", () => {
+        const index = menu.selectedIndex;
+        if (index == 1) {
+            alert = document.querySelector('#alert-default-type')
+            alert.innerHTML += 
+            `<br> Non sai che cos' è il metodo Shultze? Clicca <a href={% url 'polls:explain_gm' %} class='alert-link'>qui</a>`
+        } else {
+            alert.innerHTML = 
+            `Vuoi ottenere più informazioni dalla tua scelta? Prova il <a href={% url 'polls:explain_gm' %} class='alert-link'>giudizio maggioritario</a>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`
+        }
+    });
+</script>
+
 {% include 'polls/includes/lock_sidebar.html' with id_modal='modal-return-home' %}
 
 {% endblock javascripts %}
