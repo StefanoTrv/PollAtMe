@@ -131,12 +131,165 @@ class VoteTuple:
             self.giudizi_peggiori() == __o.giudizi_peggiori()
         )
     
+
+"""
+    Classe che incapsula il risultato di una scelta a giudizio maggioritario
+"""
+class VoteSequence:
+
+    def __init__(self, choice_id: int, votes:list) -> None:
+        self.__votes = votes
+        self.__choice_id = choice_id
+
+    def get_choice_id(self) -> int: 
+        return self.__choice_id
+
+    def get_median_grade(self) -> int:
+        return self.__calculate_median_grade(self.__votes)
+    
+    def get_as_tuple(self):
+        tupla = None
+
+        ##se la lista è vuota si crea una tupla nulla
+        if len(self.__votes) == 0:
+            tupla = VoteTuple(self.__choice_id,
+                giudizi_migliori = 0,
+                giudizi_peggiori = 0,
+                grade=Grade(vote=1, positive=False))
+        else:
+            self.__votes.sort(reverse = True)
+            giudizio_mediano = None
+
+            giudizio_mediano = self.__votes[int(len(self.__votes) / 2)]
+
+                
+            ##calcolo del numero di giudizi (strettamente) migliori
+            giudizi_peggiori = 0
+            giudizi_migliori = 0
+            for voto in self.__votes: #probabilmente ottimizzabile
+                if voto > giudizio_mediano:
+                    giudizi_migliori += 1
+                if voto < giudizio_mediano:
+                    giudizi_peggiori += 1   
+                
+            positive = (giudizi_migliori > giudizi_peggiori)
+
+            grade = Grade(giudizio_mediano, positive)
+            tupla = VoteTuple(self.__choice_id,
+                giudizi_migliori = giudizi_migliori,
+                giudizi_peggiori = giudizi_peggiori,
+                grade=grade)
+            
+            return tupla
+
+
+    #get the Ith majority grade
+    #  if index == 0 returnse the first majority grade
+    #  if index > len(votes) raise exception
+    def get_ith_median_grade(self, index) -> int:
+
+        if index > len(self.__votes):
+            raise Exception("too big index")
+        
+        i = 0
+        temp_list = list(self.__votes)
+
+        while i < index:
+            temp_list.sort(reverse=True)
+            current_median_grade = self.__calculate_median_grade(temp_list)
+            temp_list.remove(current_median_grade)
+            i += 1
+
+        return self.__calculate_median_grade(temp_list)
+
+    def __calculate_median_grade(self, votes) -> int:
+
+        votes.sort(reverse = True)
+
+        if(len(votes) == 0):
+            raise Exception("empty vote list")
+
+        giudizio_mediano = votes[int(len(votes) / 2)]
+
+        return giudizio_mediano
+
+    #Funzioni di ordinamento
+
+    #self <= __o allora: o sono uguali o self < other
+    def __le__(self, __o) -> bool:
+        if self.__eq__(__o):
+            return True
+        return self.__lt__(__o)
+
+    #self < __o 
+    def __lt__(self, __o) -> bool:
+        if self == __o:
+            return False
+        else:
+            index = 0
+            while True:
+
+                this_grade = self.get_ith_median_grade(index)
+                other_grade = __o.get_ith_median_grade(index)
+
+                if this_grade > other_grade:
+                    return False
+                if this_grade < other_grade:
+                    return True
+                
+                index += 1
+    
+    #self => __o allora o sono uguali o self > __o
+    def __ge__(self, __o) -> bool:
+        if self.__eq__(__o):
+            return True
+        return self.__gt__(__o)
+
+    
+    #self > __o 
+    def __gt__(self, __o) -> bool:
+        if self == __o:
+            return False
+        else:
+            index = 0
+            while True:
+
+                this_grade = self.get_ith_median_grade(index)
+                other_grade = __o.get_ith_median_grade(index)
+
+                if this_grade < other_grade:
+                    return False
+                if this_grade > other_grade:
+                    return True
+                        
+                index += 1
+            
+
+
+    def __eq__(self, __o) -> bool:
+        index = 0
+        try:
+            while True:
+
+                this_median = self.get_ith_median_grade(index)
+                other_median = __o.get_ith_median_grade(index)
+
+                if this_median != other_median:
+                    return False
+                index += 1
+        except: 
+            return True
+
+
+
+
+
 class GiudizioMaggioritario:
     
     """
         L'input deve essere nella forma di una lista di dictionary
         dove ogni dictionary è nella forma:
-            "choice_id" : "id"
+            "choice_id" : id
             "voti" : lista_voti
 
         la lista dei voti deve essere una lista di interi, valori più alti
@@ -145,35 +298,40 @@ class GiudizioMaggioritario:
     """
     def __init__(self, dict_voti) -> None:
         self.dict_voti = dict_voti
-        self.tuple_list = None
+        self.sequence_list = None
 
     ##ritorna l'id del vincitore secondo il giudizio maggioritario
     def get_winner_id(self) -> int:
-        vote_tuple_list = self._calculate_tuple_list()
+        vote_tuple_list = self._calculate_tuple_sequence()
         return vote_tuple_list[0].choice_id()
     
     ##ritorna la tupla del vincitore secondo il giudizio maggioritario
     def get_winner_tuple(self) -> VoteTuple:
-        vote_tuple_list = self._calculate_tuple_list()
+        vote_tuple_list = self._calculate_tuple_sequence()
         return vote_tuple_list[0]
     
     ##ritorna la lista ordinata secondo il giudizio maggioritario
     def get_tuple_list(self) -> list:
-        vote_tuple_list = self._calculate_tuple_list()
+        vote_tuple_list = self._calculate_tuple_sequence()
         return vote_tuple_list
     
-    def _calculate_tuple_list(self):
-        if self.tuple_list is None:  ##evitiamo di rieseguire le query!
-            vote_tuple_list = produce_vote_tuple_list(self.dict_voti)
-            vote_tuple_list.sort(reverse = True)
-            self.tuple_list = vote_tuple_list
-        return self.tuple_list
+    def _calculate_tuple_sequence(self):
+        if self.sequence_list is None:  ##evitiamo di rieseguire le query!
+            self.__prepare_vote_sequence_list()
+            self.sequence_list.sort(reverse = True)
+        return self.sequence_list
 
-    
+    def __prepare_vote_sequence_list(self):
+        seqence_list = []
+        for element in self.dict_voti:
+            seqence_list.append(VoteSequence(element['choice_id'], element['voti']))
+
+        self.sequence_list = seqence_list
+        
     ##ritorna la classifica nella forma di una lista ordinata
     def get_classifica_id(self) -> list:
         
-        ordered_tuple_list = self._calculate_tuple_list()
+        ordered_tuple_list = self._calculate_tuple_sequence()
         
         classifica = []
 
@@ -183,11 +341,11 @@ class GiudizioMaggioritario:
         length = len(ordered_tuple_list)
         while index < length:
             if index != 0:
-                if not ordered_tuple_list[index].sameScore(ordered_tuple_list[index-1]):
+                if not ordered_tuple_list[index] == (ordered_tuple_list[index-1]):
                     place += offset
                     offset = 0
             
-            classifica.append({'alternative' : ordered_tuple_list[index].choice_id(), 'place' : place, 'judgment' : ordered_tuple_list[index]})                 
+            classifica.append({'alternative' : ordered_tuple_list[index].get_choice_id(), 'place' : place, 'judgment' : ordered_tuple_list[index].get_as_tuple()})                 
             index += 1
             offset += 1
 
@@ -255,7 +413,7 @@ class GiudizioMaggioritarioPoll(GiudizioMaggioritario):
 
         results_list = super()._get_result_list()
         
-        tuple_list = self._calculate_tuple_list() #utilizziamo questo ordine per salvarci la lista di voti
+        tuple_list = self._calculate_tuple_sequence() #utilizziamo questo ordine per salvarci la lista di voti
 
         out_list = [None] * len(tuple_list)
         #iteriamo per ottenere il risultato desiderato
@@ -276,7 +434,7 @@ class GiudizioMaggioritarioPoll(GiudizioMaggioritario):
             #salviamola nella corretta posizione della lista
             position = None
             for i in range(0,len(tuple_list), 1):
-                if tuple_list[i].choice_id()== result['choice_id']:
+                if tuple_list[i].get_choice_id() == result['choice_id']:
                     position = i
 
             out_list[position]={'alternativa' : alternativa, 'lista_voti' : lista_voti}

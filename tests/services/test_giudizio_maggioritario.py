@@ -147,3 +147,17 @@ class GiudizioMaggioritarioTest(TestCase):
                               
         self.assertEqual(classifica, expected_classifica)
 
+    
+    ##testiamo che il risultato per il caso problematico mostrato dal prod adesso ritorni il risultato atteso
+    def test_caso_problematico(self):
+        prima_alternativa = {'choice_id' : 1, 'voti' : [5,4,4,4,4,4,3,3]}
+        seconda_alternativa = {'choice_id' : 2, 'voti' : [5,5,4,4,4,4,3,1]}
+
+        giudizioMaggioritario = GiudizioMaggioritario([prima_alternativa, seconda_alternativa])
+
+        expected_classifica = [{'alternative' : 2, 'place' : 1, 'judgment' :  VoteTuple(2, 2, Grade(4, False), 2)}
+                              ,{'alternative' : 1, 'place' : 2, 'judgment' :  VoteTuple(1, 1, Grade(4, False), 2)}]
+        
+        classifica = giudizioMaggioritario.get_classifica_id()
+
+        self.assertEqual(classifica, expected_classifica)
