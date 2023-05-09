@@ -42,7 +42,10 @@
                 Giudica
                 {% elif poll.default_type == 3 %}
                 Scegli
+                {% elif poll.default_type == 2 %}
+                Ordina
                 {% endif %}
+                
                 {% if poll.authentication_type == 1 %}
                 &nbsp<i class="bi bi-universal-access"></i>
                 {% elif poll.authentication_type == 2 %}

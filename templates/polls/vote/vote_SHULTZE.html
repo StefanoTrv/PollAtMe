@@ -1,0 +1,49 @@
+{% extends 'layouts/base.html' %}
+{% load django_bootstrap5 %}
+{% load shuffle %}
+{% load static %}
+
+{% block title %} {{block.super}} | {{ poll.title }} {% endblock title %}
+
+{% block content %}
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">{{ poll.title }}</h5>
+                            {{ poll.text }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+        <!-- [ Main Content ] start -->
+        <div class="row">
+            <!-- [ sample-page ] start -->
+            <div class="col-sm-12">
+                <ul id="items">
+                    <li>item 1</li>
+                    <li>item 2</li>
+                    <li>item 3</li>
+                </ul>
+            </div>
+            <!-- [ sample-page ] end -->
+        </div>
+        <!-- [ Main Content ] end -->
+    </div>
+</div>
+{% endblock content %}
+
+
+{% block javascripts %}
+<script src="{% static 'js/plugins/Sortable.min.js' %}"></script>
+<script type="text/javascript">
+    var el = document.getElementById('items');
+    var sortable = Sortable.create(el);
+</script>
+{% endblock javascripts %}

@@ -2,15 +2,15 @@ from typing import Any, Optional, Type
 
 from django import forms, http
 from django.db.models.query import QuerySet
+from django.forms.models import BaseModelForm
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.views import View
 from django.views.generic.edit import CreateView
 
 from polls.exceptions import PollWithoutAlternativesException
-from polls.forms import MajorityPreferenceFormSet, SinglePreferenceForm
-from polls.models import MajorityPreference, Poll
-from polls.models.preference import SinglePreference
+from polls.forms import MajorityPreferenceFormSet, SinglePreferenceForm, ShultzeOpinionForm, ShultzePreferenceFormSet
+from polls.models import Poll
+from polls.models.preference import SinglePreference, ShultzePreference, MajorityPreference
 from polls.services import SearchPollService
 from polls.services import check
 from django.contrib.auth.views import redirect_to_login
@@ -29,6 +29,9 @@ def vote_redirect_view(request, id, token=None):
 
     if poll.default_type == Poll.PollType.MAJORITY_JUDGMENT:
         return redirect(reverse('polls:vote_MJ', args=args))
+    
+    if poll.default_type == Poll.PollType.SHULTZE_METHOD:
+        return redirect(reverse('polls:vote_shultze', args=args))
 
 
 class _VoteView(CreateView):
@@ -78,11 +81,12 @@ class _VoteView(CreateView):
 
     def __get_authorization_checker(self, request: http.HttpRequest, syntethic_preference):
         handler = check.CheckPollActiveness(self.poll)
-        handler.set_next(check.CheckAuthentication(
-            self.poll, 
-            request.user.is_authenticated, 
-            self.token, 
-            self.__failed_authentication)) \
+        handler \
+            .set_next(check.CheckAuthentication(
+                self.poll, 
+                request.user.is_authenticated, 
+                self.token, 
+                self.__failed_authentication)) \
             .set_next(check.CheckUserHasVoted(
                 self.poll, 
                 request.user, 
@@ -175,7 +179,22 @@ class VoteMajorityJudgmentView(_VoteView):
         return MajorityPreferenceFormSet.get_formset_class(num_judges)
 
 
-class VoteShultzeView(View):
+class VoteShultzeView(_VoteView):
     """
     Class view per l'inserimento delle risposte ai sondaggi con metodo Shultze
     """
+    template_name: str = 'polls/vote/vote_SHULTZE.html'
+
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.pollType = Poll.PollType.SHULTZE_METHOD.label
+    
+    def get_form_kwargs(self) -> dict[str, Any]:
+        kwargs = super().get_form_kwargs()
+        kwargs['queryset'] = self.alternatives
+        return kwargs
+    
+    def get_form_class(self) -> Type[BaseModelForm]:
+        num_judges = self.alternatives.count()
+        return ShultzePreferenceFormSet.get_formset_class(num_judges)

@@ -88,6 +88,18 @@ class Modeltest(TestCase):
         
         self.assertEqual(poll.get_type(), 'Giudizio maggioritario')
 
+    def test_poll_type_shultze_method(self):
+        poll = Poll(
+            title=self.poll_title, 
+            text=self.poll_text,
+            default_type=Poll.PollType.SHULTZE_METHOD,
+            start=timezone.now() - timedelta(weeks=1), 
+            end=timezone.now() + timedelta(weeks=1),
+            author=self.u)
+        poll.save()
+        
+        self.assertEqual(poll.get_type(), 'Metodo Shultze')
+
     def test_choice_fk(self):
         poll = Poll.objects.get(text=self.poll_text)
         alternative = Alternative.objects.get(poll = poll, text="32")
