@@ -1,10 +1,48 @@
 from django.test import TestCase
-from polls.services.giudizio_maggioritario import GiudizioMaggioritario
+from polls.services.giudizio_maggioritario import GiudizioMaggioritario, VoteSequence
 from polls.services.giudizio_maggioritario import GiudizioMaggioritarioPoll
 
 class GiudizioMaggioritarioTest(TestCase):
 
     fixtures: list[str] = ['test_giudizio_maggioritario.json']
+
+    def test_vote_sequence(self):
+        sequence = VoteSequence(1, [5,4,4,4,4,4,3,3,1,1])
+
+        ##corretto l'id
+        self.assertEqual(1, sequence.get_choice_id())
+
+        ##corretti i giudizi mediani
+        self.assertEqual(4, sequence.get_median_grade())
+        self.assertEqual(4, sequence.get_ith_median_grade(0))        
+        self.assertEqual(4, sequence.get_ith_median_grade(1))
+        self.assertEqual(3, sequence.get_ith_median_grade(2))
+        self.assertEqual(4, sequence.get_ith_median_grade(3))
+        self.assertEqual(3, sequence.get_ith_median_grade(4))
+        self.assertEqual(4, sequence.get_ith_median_grade(5))
+        self.assertEqual(1, sequence.get_ith_median_grade(6))
+        self.assertEqual(4, sequence.get_ith_median_grade(7))
+        self.assertEqual(1, sequence.get_ith_median_grade(8))
+        self.assertEqual(5, sequence.get_ith_median_grade(9))
+        self.assertRaises(Exception, sequence.get_ith_median_grade, 10)
+
+    def test_vote_sequence_order(self):
+
+        first_sequence = VoteSequence(1, [5,4,4,4,4,3,3,1,1])
+        second_sequence = VoteSequence(1, [5,4,4,4,3,3,3,1,1])
+
+        self.assertEqual(first_sequence,first_sequence)
+        self.assertEqual(second_sequence,second_sequence)
+
+        self.assertTrue(first_sequence > second_sequence)
+        self.assertTrue(first_sequence >= second_sequence)
+        self.assertFalse(first_sequence < second_sequence)
+        self.assertFalse(first_sequence <= second_sequence)
+
+        self.assertFalse(first_sequence > first_sequence)
+        self.assertTrue(first_sequence >= first_sequence)
+        self.assertFalse(first_sequence < first_sequence)
+        self.assertTrue(first_sequence <= first_sequence)
 
     def test_classifica(self):
         #la classifica per il poll 1 dovrebbe essere {'C' : 1, 'B' : 3 'A' : 2}
@@ -58,3 +96,26 @@ class GiudizioMaggioritarioTest(TestCase):
         classifica = giudizioMaggioritario.get_classifica_id()
 
         self.assertTrue(classifica == expected_classifica1 or classifica == expected_classifica2)
+
+    
+    def test_misto_pareggio(self):
+        prima_alternativa =   {'choice_id' : 1, 'voti' : [5,4,4,5,4,4,5,5]} #1
+        seconda_alternativa = {'choice_id' : 2, 'voti' : [5,5,4,4,4,4,3,3]} #2
+        terza_alternativa =   {'choice_id' : 3, 'voti' : [5,4,4,5,4,4,3,3]} #2
+        quarta_alternativa = {'choice_id' : 4, 'voti' : [5,5,4,4,4,4,3,3]} #2
+        quinta_alternativa =   {'choice_id' : 5, 'voti' : [4,4,4,3,3,2,2,2]} #5
+        sesta_alternativa = {'choice_id' : 6, 'voti' : [4,4,4,3,2,2,3,2]} #5
+        settima_alternativa = {'choice_id' : 7, 'voti' : [3,3,3,2,2,2,1,1]} #7
+
+        classifica_attesa = [1,2,2,2,5,5,7]
+
+
+        giudizioMaggioritario = GiudizioMaggioritario([prima_alternativa, seconda_alternativa, terza_alternativa, 
+                                                       quarta_alternativa, quinta_alternativa, sesta_alternativa, 
+                                                       settima_alternativa
+                                                    ])
+        
+        classifica = giudizioMaggioritario.get_classifica_id()
+
+        for element in classifica:
+            self.assertEqual(classifica_attesa[element['alternative'] - 1], element['place']) 

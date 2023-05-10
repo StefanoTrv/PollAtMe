@@ -159,6 +159,11 @@ class GiudizioMaggioritario:
         self.sequence_list = seqence_list
         
     ##ritorna la classifica nella forma di una lista ordinata
+    """
+        Ritorna una lista ordinata contenente dei dictionary nella forma:
+        'alternative' : value   ##id dell'alternativa
+        'place' : value         ##posizione nella classifica
+    """
     def get_classifica_id(self) -> list:
         
         ordered_tuple_list = self._calculate_tuple_sequence()

@@ -44,53 +44,29 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Come si decide il vincitore?</h5>
-                        <p class="card-text">Il metodo per calcolare il vincitore è più complesso di quello della preferenza singola e richiede di applicare un particolare algoritmo diviso in due parti:</p>
+                        <p class="card-text">Il metodo per calcolare il vincitore è più complesso di quello della preferenza singola e richiede di applicare un particolare algoritmo:</p>
                         <ol>
                             <li>
-                                Prima si sintetizzano i voti in una tripla di valori (voti migliori, giudizio mediano con segno, voti peggiori)
+                                Per ogni alternativa si calcola il giudizio mediano, ovvero il voto a metà della sequenza ordinata in ordine decrescente dei voti (in caso di giudizi in numero pari si prende il peggiore).
                             </li>
                             <li>
-                                Quando si hanno le triple di ogni alternativa si può selezionare il vincitore prendendo la tripla migliore di tutte le altre
+                                Le alternative vengono ordinate secondo tale giudizio dal migliore al peggiore, che fornisce una prima classifica. 
+                            </li>
+                            <li>
+                                Nel caso ci siano alternative con lo stesso giudizio mediano bisogna procedere con lo spareggio:
+                                <ol>
+                                    <li>
+                                        Rimuovo dalla lista di voti delle alternative che voglio spareggiare un voto pari al giudizio mediano
+                                    </li>
+                                    <li>
+                                        Ricalcolo il giudizio mediano sulle nuove liste di voti di queste alternative
+                                    </li>
+                                    <li>
+                                        Ordino secondo il giudizio mediano, nel caso di nuovi pareggi ripeto questo procedimento. Se arrivo ad una lista vuota di voti allora ho un pareggio.
+                                    </li>
+                                </ol>
                             </li>
                         </ol>
-
-                        <h6 class="card-title">Sintesi dei voti</h5>
-                        <p class="card-text">
-                            Il primo passo per trovare il vincitore in una votazione a giudizio maggioritario consiste nel calcolare per ciascuna alternativa una tripla di valori:
-                        </p>
-                        <ol>
-                            <li>
-                                Per ogni alternativa si raccolgono tutti i giudizi ottenuti durante il voto e si ordinano in ordine decrescente di importanza (Ottimo > Buono > Sufficiente > Scarso > Pessimo).
-                            </li>
-                            <li>
-                                Si prende il voto al centro della sequenza ordinata se questi sono in numero dispari, altrimenti se sono in numero pari si prende il peggiore dei due possibili. Questo voto in particolare prende il nome di <b>giudizio mediano</b>
-                            </li>
-                            <li>
-                                Poi si calcola il numero di voti <b>strettamente migliori</b> ed il numero di voti <b>strettamente peggiori</b> al giudizio mediano per ciascuna alternativa. Viene inoltre assegnato un segno al giudizio mediano, positivo se <i>il numero di voti strettamente migliori è maggiore del numero di voti strettamente peggiori</i>, negativo <i>altrimenti</i> (in caso di pareggio è negativo).
-                            </li>
-                            <li>
-                                Per ogni alternativa si costruisce la corrispondente tripla (voti migliori, giudizio mediano con segno, voti peggiori) con i dati ottenuti nello step precedente.
-                            </li>
-                        </ol>
-
-                        <h6 class="card-title">Calcolo del vincitore</h5>
-                        <p class="card-text">
-                            A partire dai valori calcolati in fase di sintesi si seleziona l'alternativa migliore di tutte.
-                            Una alternativa "A", è migliore di un'altra alternativa "B" se:
-                        </p>
-                        <ul>
-                            <li>Il giudizio mediano di A è migliore del giudizio mediano di B</li>
-                            <li>In caso di stesso giudizio mediano, prevale l'alternativa con segno positivo</li>
-                            <li>A parità di segno si comparano il numero di giudizi migliori/peggiori del giudizio mediano:</li>
-                            <ul>
-                                <li>
-                                Se il segno è negativo allora vince quella con il numero inferiore di voti strettamente peggiori del giudizio mediano
-                                </li>
-                                <li>
-                                    Se il segno è positivo allora vince quella con il numero maggiore di voti strettamente migliori del giudizio mediano
-                                </li>
-                            </ul>
-                        </ul>
                     </div>
                 </div>
             </div>
@@ -119,40 +95,29 @@
                             </table>
                         </div>
                         <p class="card-text">
-                            Partiamo dalla prima alternativa: "Mare". Il primo passo consiste nell'ordinare i giudizi ricevuti in ordine decresente di importanza:
+                            Il primo passo consiste nell'ordinare i giudizi ricevuti in ordine decresente di importanza per ogni alternativa:
                         </p>
                         <ul>
-                            <li>Ottimo, Buono, Buono, Buono, Scarso</li>
+                            <li>Mare: Ottimo, Buono, Buono, Buono, Scarso</li>
+                            <li>Montagna: Buono, Sufficiente, Scarso, Scarso, Pessimo</li>
+                            <li>Città d'arte: Buono, Buono, Scarso, Pessimo, Pessimo</li>
                         </ul>
-                        <p class="card-text">
-                            Il secondo punto ci dice di prendere il voto centrale alla sequenza ordinata di valori, visto che questi sono in numero dispari prendiamo "Buono", che diventa il giudizio mediano per l'alternativa "Mare".
-                        </p>
-                        <p class="card-text">
-                            Bisogna poi calcolare i giudizi strettamente migliori e strettamente peggiori del giudizio mediano. Di giudizi strettamente migliori di "Buono" l'alternativa "Mare" ha ottenuto solamente un "Ottimo", mentre di voti peggiori "Mare" ha ottenuto solamente uno "Scarso".
-                            Di conseguenza per l'alternativa "Mare" il numero di voti strettamente migliori del giudizio mediano è 1, stessa cosa per i voti strettamente peggiori.
-                        </p>
-                        <p class="card-text"> 
-                            L'ultima cosa da fare è calcolare il segno.
-                            Dato che il numero di giudizi strettamente migliori del giudizio mediano non è maggiore del numero di voti strettamente il segno è negativo.
-                        </p>
-                        <p class="card-text">
-                            Ripetendo per ciascuna alternative questo processo otteniamo le seguenti triple:
-                        </p>
+                        Per ciascuna alternativa calcoliamo il relativo giudizio mediano.
                         <ul>
-                            <li>Mare : (1, Buono-, 1)</li>
-                            <li>Montagna : (2, Scarso+, 1)</li>
-                            <li>Città d'arte : (2, Scarso-, 2)</li>
+                            <li>Mare: Buono</li>
+                            <li>Montagna: Scarso</li>
+                            <li>Città d'arte: Scarso</li>
                         </ul>
 
-                        <p class="card-text">Se compariamo le triple secondo il criterio descritto in precedenza otteniamo che:</p>
+                        Mare è chiaramente il vincitore, per decidere chi è in seconda posizione e chi è in terza però dobbiamo procedere con lo spareggio, dato che 
+                        Montagna e città d'arte condividono lo stesso giudizio mediano.
+                        <br>
+                        Togliamo dai voti di Montagna e Città d'arte un giudizio "Scarso", ottenendo le seguenti liste di voti:
                         <ul>
-                            <li>
-                                Mare batte Montagna e Città d'arte dato che ha il giudizio mediano maggiore dei tre
-                            </li>
-                            <li>
-                                Montagna batte Città d'arte dato che a parità di giudizio mediano l'alternativa Montagna ha segno positivo a differenza di Città d'arte che ha segno negativo.
-                            </li>
+                            <li>Montagna: Buono, Sufficiente, Scarso, Pessimo</li>
+                            <li>Città d'arte: Buono, Buono, Pessimo, Pessimo</li>
                         </ul>
+                        Per Montagna il nuovo giudizio mediano, ovvero Scarso, è migliore del nuovo giudizio mediano di Città d'arte, che è Pessimo, per tale motivo Montagna batte Città d'arte
                         <p class="card-text">
                             Di conseguenza la classifica finale consiste in Mare al primo posto, seguito da Montagna ed infine Città d'arte
                         </p>
