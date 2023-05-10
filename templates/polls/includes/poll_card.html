@@ -43,10 +43,8 @@
                 {% elif poll.default_type == 3 %}
                 Scegli
                 {% endif %}
-                {% if poll.authentication_type == 1 %}
-                &nbsp<i class="bi bi-universal-access"></i>
-                {% elif poll.authentication_type == 2 %}
-                &nbsp<i class="bi bi-people-fill"></i>
+                {% if poll.authentication_type == 2 %}
+                &nbsp<i class="bi bi-person-fill"></i>
                 {% elif poll.authentication_type == 3 %}
                 &nbsp<i class="bi bi-lock-fill"></i>
                 {% endif %}

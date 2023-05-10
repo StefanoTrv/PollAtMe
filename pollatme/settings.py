@@ -32,3 +32,5 @@ DATABASES = {
         "PORT": environ.get('DB_PORT', '')
     }
 }
+
+SITE_ID = 2
