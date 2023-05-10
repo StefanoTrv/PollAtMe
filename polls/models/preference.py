@@ -58,6 +58,20 @@ class MajorityPreference(Preference):
 class ShultzePreference(Preference):
     responses = models.ManyToManyField(Alternative, through="ShultzeOpinionJudgement")
 
+    def __str__(self) -> str:
+        opinion_list=[]
+        for opinion in self.shultzeopinionjudgement_set.all():
+            opinion_list.append(str(opinion))
+        return self.poll.title +'\n\t'+'\n\t'.join(opinion_list) +'\n'
+
+    def save_shulze_judgements(self, judgements):
+        if self.pk:
+            self.shultzeopinionjudgement_set.all().delete()
+
+        for j in judgements:
+            j.preference = self
+        ShultzeOpinionJudgement.objects.bulk_create(judgements)
+
 class MajorityOpinionJudgement(models.Model):
     class JudgementType(models.IntegerChoices):
         """

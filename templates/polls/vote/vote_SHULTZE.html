@@ -26,24 +26,62 @@
         <div class="row">
             <!-- [ sample-page ] start -->
             <div class="col-sm-12">
-                <ul id="items">
-                    <li>item 1</li>
-                    <li>item 2</li>
-                    <li>item 3</li>
-                </ul>
+                {% bootstrap_alert "Non sai come funziona questa modalità di voto? Clicca <a class='alert-link' data-bs-toggle='modal' data-bs-target='#modal-shultze-explanation' href='#'>qui</a> per ulteriori informazioni." %}
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.management_form }}
+                    <div class="card">
+                        <div class="card-body">
+                            <ol class="list-group list-group-numbered gap-2" id="items">
+                            {% for f in form|shuffle:poll.polloptions.random_order %}
+                                <li class="list-group-item d-flex justify-content-between align-items-start p-4 border border-primary">
+                                    <div class="ms-2 me-auto">
+                                        {{ f.order.label }}
+                                        {{ f.order }}
+                                    </div>
+                                </li>
+                            {% endfor %}
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <button type="submit" class="btn btn-primary">Salva</button>
+                    </div>
+                </form>
             </div>
             <!-- [ sample-page ] end -->
         </div>
         <!-- [ Main Content ] end -->
     </div>
 </div>
+
+{% include 'polls/includes/modal_spiegazione_metodo_shultze.html'%}
+
 {% endblock content %}
 
 
 {% block javascripts %}
 <script src="{% static 'js/plugins/Sortable.min.js' %}"></script>
 <script type="text/javascript">
-    var el = document.getElementById('items');
-    var sortable = Sortable.create(el);
+    const alternatives = document.getElementById('items');
+
+    // Set the index of each item
+    const setIndex = arr => arr.forEach((item, index) => {
+        const input = item.getElementsByTagName('input')[0];
+        input.value = index + 1;
+    })
+
+    // Set the index of each item on load
+    setIndex([...alternatives.children])
+    Sortable.create(alternatives, {
+        animation: 150,
+        ghostClass: 'blue-background-class',
+        chosenClass: 'blue-background-class',
+        dragClass: 'blue-background-class',
+
+        onEnd: (/**Event*/evt) => {
+            setIndex([...alternatives.children])
+        },
+    });
 </script>
 {% endblock javascripts %}

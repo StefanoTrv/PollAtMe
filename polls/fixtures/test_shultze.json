@@ -1,0 +1,93 @@
+[
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "!2w3FdPcMToeiZAE7zRClx78H9ijK0pd7gQjPY5ni",
+    "last_login": "2023-05-10T09:36:39.713Z",
+    "is_superuser": false,
+    "username": "riccardo",
+    "first_name": "Riccardo",
+    "last_name": "Belliato",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2023-05-10T09:36:39.676Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "polls.poll",
+  "pk": 1,
+  "fields": {
+    "title": "Test metodo shultze",
+    "text": "",
+    "default_type": 2,
+    "author": 1,
+    "start": "2023-05-10T09:38:55.738Z",
+    "end": "2025-12-30T23:00:00Z",
+    "creation_date": "2023-05-10T09:38:55.746Z",
+    "last_update": "2023-05-10T09:38:55.746Z",
+    "visibility": 1,
+    "authentication_type": 1,
+    "results_restriction": 1
+  }
+},
+{
+  "model": "polls.polloptions",
+  "pk": 1,
+  "fields": {
+    "poll": 1,
+    "random_order": true
+  }
+},
+{
+  "model": "polls.mapping",
+  "pk": 1,
+  "fields": {
+    "poll": 1,
+    "code": "ATzc2k"
+  }
+},
+{
+  "model": "polls.alternative",
+  "pk": 1,
+  "fields": {
+    "poll": 1,
+    "text": "Lorem"
+  }
+},
+{
+  "model": "polls.alternative",
+  "pk": 2,
+  "fields": {
+    "poll": 1,
+    "text": "Ipsum"
+  }
+},
+{
+  "model": "polls.alternative",
+  "pk": 3,
+  "fields": {
+    "poll": 1,
+    "text": "dolor sit amet"
+  }
+},
+{
+  "model": "polls.alternative",
+  "pk": 4,
+  "fields": {
+    "poll": 1,
+    "text": "consectetur adipiscing elit"
+  }
+},
+{
+  "model": "polls.alternative",
+  "pk": 5,
+  "fields": {
+    "poll": 1,
+    "text": "Integer tristique"
+  }
+}
+]

@@ -3,6 +3,7 @@ from typing import Any, Optional, Type
 from django import forms, http
 from django.db.models.query import QuerySet
 from django.forms.models import BaseModelForm
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.generic.edit import CreateView
@@ -190,6 +191,17 @@ class VoteShultzeView(_VoteView):
         super().__init__(**kwargs)
         self.pollType = Poll.PollType.SHULTZE_METHOD.label
     
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        self.poll.set_authentication_method_as_used(
+            user=self.request.user, token=self.token)
+    
+        preference = ShultzePreference()
+        preference.poll = self.poll
+        preference.save()
+        preference.save_shulze_judgements(form.save(commit=False))
+
+        return render(self.request, 'polls/vote_success.html', {'poll': self.poll})
+
     def get_form_kwargs(self) -> dict[str, Any]:
         kwargs = super().get_form_kwargs()
         kwargs['queryset'] = self.alternatives

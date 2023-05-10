@@ -80,8 +80,15 @@ class ShultzeOpinionForm(forms.ModelForm):
     class Meta:
         model: type[models.Model] = pm.preference.ShultzeOpinionJudgement
         fields: list[str] = ['order']
-    
+        widgets: dict = {
+            'order': forms.HiddenInput()
+        }
+
     def __init__(self, *args, **kwargs):
         self.alternative: pm.Alternative = kwargs.pop('alternative', None)
         super().__init__(*args, **kwargs)
-        self.fields['order'] = forms.HiddenInput()
+        self.fields['order'].label = self.alternative.text
+    
+    def save(self, commit: bool = ...) -> Any:  # type: ignore
+        self.instance.alternative = self.alternative
+        return super().save(commit)
