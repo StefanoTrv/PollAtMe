@@ -26,7 +26,7 @@
         <div class="row">
             <!-- [ sample-page ] start -->
             <div class="col-sm-12">
-                {% bootstrap_alert "Non sai come funziona questa modalità di voto? Clicca <a class='alert-link' data-bs-toggle='modal' data-bs-target='#modal-shultze-explanation' href='#'>qui</a> per ulteriori informazioni." %}
+                {% bootstrap_alert "Ordina le alternative in base alle tue preferenze dalla migliore (1) alla peggiore. Clicca <a class='alert-link' data-bs-toggle='modal' data-bs-target='#modal-shultze-explanation' href='#'>qui</a> per ulteriori informazioni." %}
                 <form method="post">
                     {% csrf_token %}
                     {{ form.management_form }}
