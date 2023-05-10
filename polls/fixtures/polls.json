@@ -88,6 +88,23 @@
     }
   },
   {
+    "model": "polls.poll",
+    "pk": 6,
+    "fields": {
+      "title": "Test metodo shultze",
+      "text": "",
+      "default_type": 2,
+      "author": 1,
+      "start": "2023-05-10T09:38:55.738Z",
+      "end": "2025-12-30T23:00:00Z",
+      "creation_date": "2023-05-10T09:38:55.746Z",
+      "last_update": "2023-05-10T09:38:55.746Z",
+      "visibility": 1,
+      "authentication_type": 1,
+      "results_restriction": 1
+    }
+  },
+  {
     "model": "polls.alternative",
     "pk": 1,
     "fields": {
@@ -237,6 +254,22 @@
     "fields": {
       "poll": 5,
       "text": "Baratto"
+    }
+  },
+  {
+    "model": "polls.alternative",
+    "pk": 20,
+    "fields": {
+      "poll": 6,
+      "text": "Lorem"
+    }
+  },
+  {
+    "model": "polls.alternative",
+    "pk": 21,
+    "fields": {
+      "poll": 6,
+      "text": "Ipsum"
     }
   },
   {

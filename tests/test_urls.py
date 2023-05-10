@@ -47,3 +47,7 @@ class TestVoteRedirect(TestCase):
     def test_redirect_to_majority_judgment(self):
         resp = self.client.get(reverse(self.URL,args=[2]))
         self.assertRedirects(resp, reverse('polls:vote_MJ',args=[2]))
+    
+    def test_redirect_to_shultze(self):
+        resp = self.client.get(reverse(self.URL,args=[6]))
+        self.assertRedirects(resp, reverse('polls:vote_shultze',args=[6]))
