@@ -1,11 +1,8 @@
+from polls.models.preference import ShultzePreference, ShultzeOpinionJudgement, Poll
 
-test = {
-    ('A', 'C', 'B', 'E', 'D'): 5,
-    ('A', 'D', 'E', 'C', 'B'): 5,
-    ('B', 'E', 'D', 'A', 'C'): 8,
-    ('C', 'A', 'B', 'E', 'D'): 3,
-    ('C', 'A', 'E', 'B', 'D'): 7,
-    ('C', 'B', 'A', 'D', 'E'): 2,
-    ('D', 'C', 'E', 'B', 'A'): 7,
-    ('E', 'B', 'A', 'D', 'C'): 8
-}
+def calculate_sequences_from_db(poll: Poll):
+    preferences = ShultzePreference.objects.filter(poll=poll)
+    sequences: dict = {}
+
+    for preference in preferences:
+        pass

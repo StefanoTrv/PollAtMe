@@ -1,9 +1,14 @@
 from django.test import TestCase
 
+from polls.models.preference import ShultzePreference
+
 class TestShultze(TestCase):
+    fixtures = ['test_shultze.json']
 
     def test_calculate_occurrences(self):
-        pass
+        p = ShultzePreference.objects.get(pk=2)
+        input = p.get_sequence()
+        assert input == (1, 2, 3, 4, 5)
 
     def test_preference_matrix(self):
         input = {
@@ -51,5 +56,5 @@ class TestShultze(TestCase):
             [25, 28, 28, 31, 0]
         ]
 
-        # Indici delle righe coi vincitori
-        expected = (4)
+        # Classifica
+        expected = ((4), (0), (2), (1), (3))

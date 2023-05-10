@@ -71,6 +71,11 @@ class ShultzePreference(Preference):
         for j in judgements:
             j.preference = self
         ShultzeOpinionJudgement.objects.bulk_create(judgements)
+    
+    def get_sequence(self):
+        return tuple(
+            self.shultzeopinionjudgement_set.all().order_by('order').values_list('alternative', flat=True)
+        )
 
 class MajorityOpinionJudgement(models.Model):
     class JudgementType(models.IntegerChoices):
