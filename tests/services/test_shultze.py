@@ -29,14 +29,22 @@ class TestShultze(TestCase):
             ('D', 'C', 'E', 'B', 'A'): 7,
             ('E', 'B', 'A', 'D', 'C'): 8
         }
-
-        expected = [
+        sequences = shultze_calculator.build_preference_matrix(input)
+        original = [
             [0, 20, 26, 30, 22],
             [25, 0, 16, 33, 18],
-            [19, 29, 0, 17, 24],
+            [19, 29, 0, 17, 24],  #ordine delle righe e colonne originarie (esempio Wikipedia): A B C E D
             [15, 12, 28, 0, 14],
             [23, 27, 21, 31, 0]
         ]
+        expected = [
+            [0, 26, 20, 22, 30],
+            [19, 0, 29, 24, 17],
+            [25, 16, 0, 18, 33],  #ordine delle righe e colonne restituite dall'algoritmo: A C B E D
+            [23, 21, 27, 0, 31],
+            [15, 28, 12, 14, 0]
+        ]
+        self.assertEqual(sequences, expected)
     
     def test_widest_paths(self):
         input = [
