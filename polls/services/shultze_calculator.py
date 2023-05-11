@@ -43,6 +43,7 @@ def calculate_rankings(p_mat: list[list], candidates: tuple) -> tuple:
 # returns True if in given key the item in position fst precedes the item in position snd, False otherwise
 def precedes(alph: dict, key: tuple, fst: int, snd: int) -> bool:
     n = len(key)
+
     for el1 in range(n-1):
         if list(alph.keys())[list(alph.values()).index(fst)] == key[el1]:
             for el2 in range(el1 + 1, n):
@@ -55,9 +56,11 @@ def precedes(alph: dict, key: tuple, fst: int, snd: int) -> bool:
 def alphabet(tuple: tuple) -> dict[Any, int]:
     alph = {}
     ctr = 0
+
     for el in tuple:
         alph[el] = ctr
         ctr += 1
+
     return alph
     
 def build_preference_matrix(sequences: dict[tuple, int]) -> list[list[int]]:
@@ -65,10 +68,33 @@ def build_preference_matrix(sequences: dict[tuple, int]) -> list[list[int]]:
     dim = len(keys[0])
     alph = alphabet(keys[0])
     mat = [[0 for i in range(dim)] for j in range(dim)]
+
     for row in range(dim):
         for col in range(dim):
             if row != col:
                 for key in keys:
                     if precedes(alph, key, row, col):
                         mat[row][col] += sequences[key]
+
     return mat
+
+def widest_paths(pref_mat: list[list[int]]) -> list[list[int]]:
+    c = len(pref_mat)
+    w_paths = [[0 for i in range(c)] for j in range(c)]
+
+    for i in range(c):
+        for j in range(c):
+            if i != j:
+                if pref_mat[i][j] > pref_mat[j][i]:
+                    w_paths[i][j] = pref_mat[i][j]
+                else:
+                    w_paths[i][j] = 0
+
+    for i in range(c):
+        for j in range(c):
+            if i != j:
+                for k in range(c):
+                    if i != k and j != k:
+                        w_paths[j][k] = max(w_paths[j][k], min(w_paths[j][i], w_paths[i][k]))
+
+    return w_paths
