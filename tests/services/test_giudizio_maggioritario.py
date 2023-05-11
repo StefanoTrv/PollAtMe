@@ -12,18 +12,34 @@ class GiudizioMaggioritarioTest(TestCase):
         ##corretto l'id
         self.assertEqual(1, sequence.get_choice_id())
 
-        ##corretti i giudizi mediani
+        ##prima passata dei giudizi mediani
         self.assertEqual(4, sequence.get_median_grade())
         self.assertEqual(4, sequence.get_ith_median_grade(0))        
-        self.assertEqual(4, sequence.get_ith_median_grade(1))
+        
         self.assertEqual(3, sequence.get_ith_median_grade(2))
         self.assertEqual(4, sequence.get_ith_median_grade(3))
-        self.assertEqual(3, sequence.get_ith_median_grade(4))
+        
         self.assertEqual(4, sequence.get_ith_median_grade(5))
         self.assertEqual(1, sequence.get_ith_median_grade(6))
-        self.assertEqual(4, sequence.get_ith_median_grade(7))
+        
         self.assertEqual(1, sequence.get_ith_median_grade(8))
         self.assertEqual(5, sequence.get_ith_median_grade(9))
+
+        self.assertRaises(Exception, sequence.get_ith_median_grade, 10)
+
+        ##seconda passata dei giudizi mediani
+        self.assertEqual(4, sequence.get_median_grade())
+                
+        self.assertEqual(4, sequence.get_ith_median_grade(1))
+        self.assertEqual(3, sequence.get_ith_median_grade(2))
+        
+        self.assertEqual(3, sequence.get_ith_median_grade(4))
+        self.assertEqual(4, sequence.get_ith_median_grade(5))
+        
+        self.assertEqual(4, sequence.get_ith_median_grade(7))
+        
+        self.assertEqual(5, sequence.get_ith_median_grade(9))
+
         self.assertRaises(Exception, sequence.get_ith_median_grade, 10)
 
     def test_vote_sequence_order(self):
@@ -118,4 +134,4 @@ class GiudizioMaggioritarioTest(TestCase):
         classifica = giudizioMaggioritario.get_classifica_id()
 
         for element in classifica:
-            self.assertEqual(classifica_attesa[element['alternative'] - 1], element['place']) 
+            self.assertEqual(classifica_attesa[element['alternative'] - 1], element['place'])

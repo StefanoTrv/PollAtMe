@@ -8,9 +8,15 @@ from django.db.models import QuerySet
 """
 class VoteSequence:
 
+    """
+        Constructor:
+        @param choice_id: an int that identifies ths sequence
+        @param votes: lista di voti, maggiore è l'intero migliore è il giudizio
+    """
     def __init__(self, choice_id: int, votes:list) -> None:
         self.__votes = votes
         self.__choice_id = choice_id
+        self.__medians: list = []
 
     def get_choice_id(self) -> int: 
         return self.__choice_id
@@ -18,20 +24,29 @@ class VoteSequence:
     def get_median_grade(self) -> int:
         return self.__calculate_median_grade(self.__votes)
 
-    #get the Ith majority grade
-    #  if index == 0 returnse the first majority grade
-    #  if index > len(votes) raise exception
+    """
+        get the Ith majority grade
+          if index == 0 returnse the first majority grade
+          if index > len(votes) raise exception
+    """
     def get_ith_median_grade(self, index) -> int:
 
         if index > len(self.__votes):
             raise Exception("too big index")
         
+        if index < len(self.__medians):
+            return self.__medians[index]
+
         i = 0
         temp_list = list(self.__votes)
 
         while i < index:
             temp_list.sort(reverse=True)
             current_median_grade = self.__calculate_median_grade(temp_list)
+
+            if i == len(self.__medians):
+                self.__medians.append(current_median_grade)
+
             temp_list.remove(current_median_grade)
             i += 1
 
