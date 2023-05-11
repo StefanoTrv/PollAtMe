@@ -1,4 +1,5 @@
-<div class="card mb-3" style="text-align:center">
+<div class="card h-100 text-center">
+
     {% if poll.is_active %}
     <span class="badge rounded-pill position-absolute top-0 start-50 translate-middle bg-success">
         Votazione in corso
@@ -12,53 +13,103 @@
         Votazione non avviata
     </span>
     {% endif %}
-    <img class="img-fluid card-img-top" src="https://appsrv1-147a1.kxcdn.com/gradient/images/slider/img-slide-3.jpg" alt="Card Image cap">
+
+    <img class="img-fluid card-img-top" src="https://appsrv1-147a1.kxcdn.com/gradient/images/slider/img-slide-3.jpg"
+        alt="Card Image cap">
+
     <div class="card-body">
-        <h5 class="card-title"> {{ poll.title }} </h6>
+        <h5 class="card-title"> {{ poll.title }} </h5>
+
         <p class="card-subtitle mb-2 text-muted">
+            {% if poll.results_restriction == 3 or poll.results_restriction == 1 %}
+                {% if poll.is_active %} 
+                <i class="bi bi-exclamation-triangle-fill text-warning fs-3" data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title="Attenzione: per questa scelta il creatore potrebbe chiudere le votazioni in anticipo rispetto alla data indicata!">
+                </i>
+                {% endif %}
+            {% endif %}
+
             {% if poll.is_not_started %} Parte il {{ poll.start | date:"d/m/Y, H:i" }} {% endif %}
             {% if poll.is_active %} Termina il {{ poll.end | date:"d/m/Y, H:i" }} {% endif %}
             {% if poll.is_ended %} Terminato il {{ poll.end | date:"d/m/Y, H:i" }} {% endif %}
         </p>
-        {% if poll.is_active %}
-        <a class="btn btn-block btn-primary mb-4" href={% url  'polls:vote' id=poll.id %}>
-            {% if poll.default_type == 1 %}
+
+        <div class="d-md-inline-flex d-grid gap-2 mt-2">
+            {% if poll.is_active %}
+            <a role="button" class="btn btn-block btn-primary" href={% url 'polls:vote' id=poll.id %}>
+                {% if poll.default_type == 1 %}
                 Giudica
-            {% elif poll.default_type == 3 %}
+                {% elif poll.default_type == 3 %}
                 Scegli
-            {% endif %}
-            {% if poll.authentication_type == 1 %} <!--free-->
+                {% endif %}
+                {% if poll.authentication_type == 1 %}
                 &nbsp<i class="bi bi-universal-access"></i>
-            {% elif poll.authentication_type == 2 %} <!--authenticated-->
+                {% elif poll.authentication_type == 2 %}
                 &nbsp<i class="bi bi-people-fill"></i>
-            {% elif poll.authentication_type == 3 %} <!--tokenized-->
+                {% elif poll.authentication_type == 3 %}
                 &nbsp<i class="bi bi-lock-fill"></i>
+                {% endif %}
+            </a>
             {% endif %}
-        </a>
-        {% endif %}
-        
-        {% if poll.is_active or poll.is_ended %}
-            <a class="btn btn-block btn-secondary mb-4" href={% url 'polls:result' id=poll.id %}>Risultati</a>      
-        {% endif %}
 
-        {% if poll.is_not_started and  user.is_authenticated  and user == poll.author %}
-        <a class="btn btn-block btn-warning mb-4" href={% url 'polls:edit_poll' id=poll.id %}>
-            Modifica
-        </a>
-        <button type="button" class="btn btn-block btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#modal-delete-confirm" 
-        data-bs-action="{% url 'polls:delete_poll' pk=poll.pk %}">
-            Cancella
-        </button>
-        {% endif %}
+            {% if poll.is_active %}
+                {% if poll.results_restriction == 1 %}
+                <a role="button" class="btn btn-block btn-secondary" href={% url 'polls:result' id=poll.id %}>Risultati</a>
+                {% endif %}
 
-        {% if not poll.is_ended and user.is_authenticated  and user == poll.author and poll.authentication_type == 3 %}
-            <a class="btn btn-block btn-primary mb-4" id="password" href={% url 'polls:tokens' id=poll.id %}>Password</a>
-        {% endif %}
+                {% if poll.results_restriction == 2 %}
+                    {% if user.is_authenticated and user == poll.author %}
+                    <a role="button" class="btn btn-block btn-secondary" href={% url 'polls:result' id=poll.id %}>Risultati</a>
+                    {% elif user != poll.author %}
+                    <a role="button" class="btn btn-block btn-secondary" href={% url 'polls:result' id=poll.id %}>Riepilogo</a>
+                    {% endif %}
+                {% endif %}
 
-        <a class="btn btn-block btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#modalPollSharing" data-bs-code="{{ poll.mapping }}" data-bs-public="{{ poll.is_public }}" data-bs-title="{{ poll.title }}" data-bs-end="{{ poll.end | date:"d/m/Y, H:i" }}"> 
-            <em class="feather mr-2 icon-share-2"></em>
-        </a>
+                {% if poll.results_restriction == 3%}
+                <a role="button" class="btn btn-block btn-secondary" href={% url 'polls:result' id=poll.id %}>Riepilogo</a>
+                {% endif %}
+            {% endif %}
+
+            {% if poll.is_ended %}
+            <a role="button" class="btn btn-block btn-secondary" href={% url 'polls:result' id=poll.id %}>Risultati</a>
+            {% endif %}
+            
+            <a role="button" class="btn btn-block btn-success" data-bs-toggle="modal" data-bs-target="#modalPollSharing"
+                data-bs-code="{{ poll.mapping }}" data-bs-public="{{ poll.is_public }}" data-bs-title="{{ poll.title }}"
+                data-bs-end="{{ poll.end | date:" d/m/Y, H:i" }}">
+                <span class="feather icon-share-2"></span>
+            </a>
+
+            {% if user.is_authenticated and user == poll.author and request.path != '/' %}
+                {% if not poll.is_ended %}
+                    <div class="btn-group" role="group">
+                        <a role="button" id="btnGroupDrop1" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            Gestisci
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                            {% if poll.is_not_started %}
+                            <li><a class="dropdown-item" href="{% url 'polls:edit_poll' id=poll.id %}">Modifica</a></li>
+                            <li><a class="dropdown-item" href='#' data-bs-toggle="modal" data-bs-target="#modal_start_confirm"
+                                data-bs-action="{% url 'polls:start_poll' id=poll.id %}">Avvia subito</a></li>
+                            <li><a class="dropdown-item" href='#' data-bs-toggle="modal" data-bs-target="#modal_delete_confirm"
+                                data-bs-action="{% url 'polls:delete_poll' pk=poll.pk %}">Elimina</a></li>
+                            {% endif %}
+
+                            {% if not poll.is_ended and poll.authentication_type == 3 %}
+                            <li><a class="dropdown-item" href={% url 'polls:tokens' id=poll.id %}>Password</a></li>
+                            {% endif %}
+
+                            {% if poll.results_restriction == 3 or poll.results_restriction == 1 %}
+                                {% if poll.is_active %}
+                                <li><a class="dropdown-item" href='#' data-bs-toggle="modal" data-bs-target="#modal_close_confirm"
+                                    data-bs-action="{% url 'polls:close_poll' id=poll.id %}">Chiudi</a></li>
+                                {% endif %}
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
     </div>
 </div>
-
-{% include 'polls/includes/modal_spiegazione_giudizio_maggioritario.html'%}

@@ -19,7 +19,9 @@
 		"vscode": {
 			"extensions": [
 				"AnbuselvanRocky.bootstrap5-vscode",
-				"matangover.mypy"
+				"matangover.mypy",
+				"ms-python.isort",
+				"almahdi.code-django"
 			]
 		}
 	}

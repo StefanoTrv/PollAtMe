@@ -44,6 +44,7 @@ class TestTokenizedPollsCreate(TestCase):
             'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
             'visibility': Poll.PollVisibility.PUBLIC.value,
             'authentication_type': Poll.PollAuthenticationType.TOKENIZED.value,
+            'results_restriction': Poll.PollResultsRestriction.ALL.value,
             'save': ''
         }
         response = self.client.post(reverse('polls:create_poll'), data=step_2_data)
@@ -107,6 +108,7 @@ class TestTokenizedPollsCreate(TestCase):
             'end': tp.end.strftime('%Y-%m-%d %H:%M:%S'),
             'visibility': Poll.PollVisibility.PUBLIC.value,
             'authentication_type': Poll.PollAuthenticationType.FREE.value,
+            'results_restriction': Poll.PollResultsRestriction.ALL.value,
             'save': ''
         }
 

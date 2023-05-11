@@ -1,11 +1,11 @@
 from typing import Any, Optional
 
-from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.urls import reverse_lazy
 from django.views.generic.edit import DeleteView
 
 from polls.models import Poll
+from polls.services import check
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -18,10 +18,8 @@ class PollDeleteView(LoginRequiredMixin, DeleteView):
     def get_object(self, queryset: Optional[models.query.QuerySet[Any]] = None) -> models.Model:
         poll: Poll = super().get_object(queryset)
 
-        if not poll.is_not_started():
-            raise PermissionDenied('Non è possibile eliminare un sondaggio dopo che la votazione è iniziata')
+        handler = check.CheckPollIsNotStarted(poll)
+        handler.set_next(check.CheckPollOwnership(poll, self.request.user))
+        passed = handler.handle()
 
-        if poll.author != self.request.user:
-            raise PermissionDenied('Non hai i permessi per cancellare questo sondaggio')
-
-        return poll
+        return passed if passed else poll

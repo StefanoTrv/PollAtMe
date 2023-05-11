@@ -1,3 +1,4 @@
+from typing import Any
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -23,6 +24,11 @@ class Poll(models.Model):
         AUTHENTICATED = 2, _("Solo autenticati")
         TOKENIZED = 3, _("Solo con password")
 
+    class PollResultsRestriction(models.IntegerChoices):
+        ALL = 1, _("Libero")
+        AUTHOR = 2, _("Solo creatore")
+        NOBODY = 3, _("Nessuno")
+
     title = models.CharField(max_length=100)
     text = models.TextField(default="")
     default_type = models.IntegerField(choices=PollType.choices, default=PollType.MAJORITY_JUDGMENT)
@@ -39,6 +45,8 @@ class Poll(models.Model):
     AUTH_VOTE_TYPE_FIELDNAME = 'authenticatedpoll'
     TOKEN_VOTE_TYPE_FIELDNAME = 'tokenizedpoll'
     authentication_type = models.IntegerField(choices=PollAuthenticationType.choices, default=PollAuthenticationType.FREE)
+
+    results_restriction = models.IntegerField(choices=PollResultsRestriction.choices, default=PollResultsRestriction.ALL)
 
     MAPPING_FIELDNAME = 'mapping'
     OPTIONS_FIELDNAME = 'polloptions'
@@ -84,8 +92,12 @@ class PollOptions(models.Model):
 class AuthenticatedPoll(Poll):
     users_that_have_voted = models.ManyToManyField(User)
 
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.authentication_type = Poll.PollAuthenticationType.AUTHENTICATED
+
     def clean(self) -> None:
-        if self.poll.authentication_type != Poll.PollAuthenticationType.AUTHENTICATED : # type: ignore
+        if self.authentication_type != Poll.PollAuthenticationType.AUTHENTICATED:
             raise ValidationError(_("AuthenticatedPoll is only for authenticated polls"))
     
     def failed_authentication(self, **kwargs) -> bool:
@@ -101,22 +113,28 @@ class AuthenticatedPoll(Poll):
             raise ValidationError(_("User has already voted"))
 
 class TokenizedPoll(Poll):
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.authentication_type = Poll.PollAuthenticationType.TOKENIZED
+
     def clean(self) -> None:
-        if self.poll.authentication_type != Poll.PollAuthenticationType.TOKENIZED : # type: ignore
+        if self.authentication_type != Poll.PollAuthenticationType.TOKENIZED :
             raise ValidationError(_("TokenizedPoll is only for polls with tokens"))
     
     def failed_authentication(self, **kwargs) -> bool:
-        return not Token.objects.filter(poll=self,token=kwargs['token'].lower()).exists()
+        return not Token.objects.filter(poll=self, token=kwargs['token'].lower()).exists()
 
     def user_has_already_voted(self, **kwargs) -> bool:
-        return Token.objects.get(token=kwargs['token'].lower(),poll=self).used
+        return Token.objects.get(poll=self, token=kwargs['token'].lower()).used
 
     def set_authentication_method_as_used(self, **kwargs) -> None:
         if self.failed_authentication(**kwargs):
             raise ValidationError(_("The token is not valid"))
-        elif self.user_has_already_voted(**kwargs):
+        
+        if self.user_has_already_voted(**kwargs):
             raise ValidationError(_("The token was already used"))
-        else:
-            token_object = Token.objects.get(token=kwargs['token'].lower(),poll=self)
-            token_object.used = True
-            token_object.save()
+        
+        token_object = Token.objects.get(poll=self, token=kwargs['token'].lower())
+        token_object.used = True
+        token_object.save()

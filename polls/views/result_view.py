@@ -1,19 +1,15 @@
 from typing import Any
 
-from django.db import models
 from django import http
-from django.views.generic.list import ListView
-from django.views.generic import TemplateView
-
-from polls.models import Preference, Poll
-from polls.services import SinglePreferencePollResultsService
-from polls.services import MajorityJudgementService
-from polls.services import SearchPollService
-
 from django.core.exceptions import ObjectDoesNotExist
-
+from django.db import models
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.views.generic import TemplateView
+
+from polls.models import Preference
+from polls.services import (MajorityJudgementService, SearchPollService,
+                            SinglePreferencePollResultsService)
 
 POLL_DOES_NOT_EXISTS_MSG = "Il sondaggio cercato non esiste"
 WRONG_POLL_TYPE_MSG = "Il sondaggio non è a preferenza singola, quindi non sono disponibili risultati di questo tipo."
