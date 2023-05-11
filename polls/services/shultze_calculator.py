@@ -1,4 +1,4 @@
-from polls.models.preference import ShultzePreference, ShultzeOpinionJudgement, Poll
+from polls.models.preference import ShultzePreference, Poll
 from collections import defaultdict
 from typing import Any
 
@@ -37,6 +37,7 @@ def calculate_rankings(p_mat: list[list], ) -> tuple:
     rankings.sort(key=lambda x: x[1])
 
     return tuple(rankings)
+
 # returns True if in given key the item in position fst precedes the item in position snd, False otherwise
 def precedes(alph: dict, key: tuple, fst: int, snd: int) -> bool:
     n = len(key)
