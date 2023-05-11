@@ -82,7 +82,11 @@ class GiudizioMaggioritarioTest(TestCase):
         self.assertEqual(classifica, expected_classifica)
 
     
-    ##testiamo che il risultato per il caso problematico mostrato dal prod adesso ritorni il risultato atteso
+    #testiamo che il risultato per il caso problematico mostrato dal prod adesso ritorni il risultato atteso
+    # O B B B B B S S  => (1, B-, 2)
+    # O O B B B B S P  => (2, B-, 2)
+    # Pareggio nei negativi 
+    # -> per la distribuzione dei voti ci aspettiamo vinca il secondo.
     def test_caso_problematico(self):
         prima_alternativa = {'choice_id' : 1, 'voti' : [5,4,4,4,4,4,3,3]}
         seconda_alternativa = {'choice_id' : 2, 'voti' : [5,5,4,4,4,4,3,1]}
@@ -131,6 +135,23 @@ class GiudizioMaggioritarioTest(TestCase):
                                                        settima_alternativa
                                                     ])
         
+        classifica = giudizioMaggioritario.get_classifica_id()
+
+        for element in classifica:
+            self.assertEqual(classifica_attesa[element['alternative'] - 1], element['place'])
+
+    def test_molti_voti_pareggio(self):
+        prima_alternativa =   {'choice_id' : 1, 'voti' : [5,5,5,5,5,5,5,4,4,4,3,3,3,3,3,3,3,2,2,2]} #1
+        seconda_alternativa = {'choice_id' : 2, 'voti' : [5,5,5,4,4,4,4,4,4,4,3,3,3,2,2,2,1,1,1,1]} #2
+        terza_alternativa =   {'choice_id' : 3, 'voti' : [5,5,5,3,3,3,3,3,3,3,3,3,3,2,2,2,1,1,1,1]} #3
+        quarta_alternativa =  {'choice_id' : 4, 'voti' : [5,5,5,5,5,5,4,4,4,3,2,2,2,2,2,2,1,1,1,1]} #5
+        quinta_alternativa =  {'choice_id' : 5, 'voti' : [5,5,5,4,4,4,2,2,2,2,2,2,2,1,1,1,1,1,1,1]} #6
+        sesta_alternativa =   {'choice_id' : 6, 'voti' : [5,5,5,3,3,3,3,3,3,3,3,3,3,2,2,2,1,1,1,1]} #3
+
+        classifica_attesa = [1,2,3,5,6,3]
+
+        giudizioMaggioritario = GiudizioMaggioritario([terza_alternativa, quinta_alternativa, seconda_alternativa, prima_alternativa, quarta_alternativa, sesta_alternativa])
+            
         classifica = giudizioMaggioritario.get_classifica_id()
 
         for element in classifica:
