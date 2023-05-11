@@ -1,14 +1,22 @@
 from django.test import TestCase
 
 from polls.models.preference import ShultzePreference
+from polls.services import shultze_calculator
 
 class TestShultze(TestCase):
     fixtures = ['test_shultze.json']
 
     def test_calculate_occurrences(self):
         p = ShultzePreference.objects.get(pk=2)
-        input = p.get_sequence()
-        assert input == (1, 2, 3, 4, 5)
+        seq_dict = shultze_calculator.calculate_sequences_from_db(p.poll)
+        self.assertEqual(seq_dict, {
+            (1, 2, 3, 4, 5): 2,
+            (1, 2, 3, 5, 4): 1,
+            (3, 5, 2, 1, 4): 1,
+            (4, 2, 3, 1, 5): 1,
+            (1, 2, 4, 5, 3): 1,
+            (3, 2, 5, 4, 1): 1
+        })
 
     def test_preference_matrix(self):
         input = {
