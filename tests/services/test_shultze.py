@@ -72,7 +72,9 @@ class TestShultze(TestCase):
             [25, 28, 28, 31, 0]
         ]
 
-        val = shultze_calculator.calculate_rankings(input)
+        val = shultze_calculator.calculate_rankings(input, ('A', 'B', 'C', 'D', 'E'))
 
         # Classifica
-        expected = ((4), (0), (2), (1), (3))
+        expected = (('E', 1), ('A', 2), ('C', 3), ('B', 4), ('D', 5))
+
+        self.assertEqual(val, expected)

@@ -12,7 +12,7 @@ def calculate_sequences_from_db(poll: Poll) -> dict[tuple, int]:
     
     return dict(sequences)
 
-def calculate_rankings(p_mat: list[list], ) -> tuple:
+def calculate_rankings(p_mat: list[list], candidates: tuple) -> tuple:
     """Calculates the rankings of the candidates based on the preference matrix.
 
     Args:
@@ -23,10 +23,12 @@ def calculate_rankings(p_mat: list[list], ) -> tuple:
     """
 
     n = len(p_mat)
+    assert n == len(candidates)
+
     rankings = []
 
-    for i in range(n):
-        rankings.append((i, 1))
+    for c in candidates:
+        rankings.append((c, 1))
     
     for i in range(n):
         for j in range(n):
