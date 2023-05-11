@@ -1,0 +1,123 @@
+{% extends 'layouts/base.html' %}
+{% load shuffle %}
+{% load static %}
+
+{% block title %} {{block.super}} | Il metodo Schulze! {% endblock title %}
+
+
+{% block content %}
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">Il voto a metodologia Schulze</h3>
+                        <p class="card-text">
+                            Il voto a metodologia Schulze è una possibilità di voto alternativa al metodo a preferenza singola che permette di ottenere un risultato che rispecchia
+                            più approfonditamente le preferenze dei votanti.
+                            In questo tipo di voto al votante non viene chiesto di fornire una preferenza o di giudicare delle alternative, bensì di ordinare queste in base alla propria preferenza.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Prova</h5>
+                        <p class="card-subtitle mb-2 text-muted">Ordina le alternative in base alle tue preferenze</p>
+                        <ol class="list-group list-group-numbered gap-2" id="items" data-gtm-form-interact-field-id="0">
+                            <li class="list-group-item d-flex justify-content-between align-items-start p-4 border border-primary" draggable="false" style="">
+                                <div class="ms-2 me-auto">
+                                    Mare
+                                    <input type="hidden" name="shultzeopinionjudgement_set-0-order" id="id_shultzeopinionjudgement_set-0-order" value="1">
+                                </div>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-start p-4 border border-primary" style="" draggable="false">
+                                <div class="ms-2 me-auto">
+                                    Città d'arte
+                                    <input type="hidden" name="shultzeopinionjudgement_set-2-order" id="id_shultzeopinionjudgement_set-2-order" value="2">
+                                </div>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-start p-4 border border-primary" draggable="false" style="">
+                                <div class="ms-2 me-auto">
+                                    Montagna
+                                    <input type="hidden" name="shultzeopinionjudgement_set-1-order" id="id_shultzeopinionjudgement_set-1-order" value="3">
+                                </div>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-start p-4 border border-primary" draggable="false" style="">
+                                <div class="ms-2 me-auto">
+                                    Crociera
+                                    <input type="hidden" name="shultzeopinionjudgement_set-3-order" id="id_shultzeopinionjudgement_set-3-order" value="4">
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Come si decide il vincitore?</h5>
+                        //TODO
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"> Esempio di calcolo dei risultati</h5>
+                        <p class="card-text">
+                            Prendiamo un caso di una scelta molto semplice con le quattro alternative mostrate in precedenza.
+                        </p>
+                        <p class="card-text">
+                            Alla scelta partecipano 5 persone dando a ciascuna alternativa un giudizio, mostrato nella tabella seguente.
+                        </p>
+                        <div class="table-responsive-md">
+                            <table class="table table-hover">
+                                <thead>
+                                    <th>Votante</th><th>Mare</th><th>Montagna</th><th>Città d'arte</th><th>Crociera</th>
+                                </thead>
+                                <tbody>
+                                    <tr><th>Stefano</th><td>1°</td><td>2°</td><td>4°</td><td>3°</td></tr>
+                                    <tr><th>Giuseppe</th><td>1°</td><td>3°</td><td>2°</td><td>4°</td></tr>
+                                    <tr><th>Carlo</th><td>2°</td><td>3°</td><td>1°</td><td>4°</td></tr>
+                                    <tr><th>Paolo</th><td>2°</td><td>1°</td><td>3°</td><td>4°</td></tr>
+                                    <tr><th>Agostino</th><td>1°</td><td>3°</td><td>2°</td><td>4°</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        //TODO
+            <div class="col-sm-12">
+                <button type="button" class="btn btn-primary" onclick="window.history.back()">Torna indietro</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block javascripts %}
+<script src="{% static 'js/plugins/Sortable.min.js' %}"></script>
+<script type="text/javascript">
+    const alternatives = document.getElementById('items');
+
+    // Set the index of each item
+    const setIndex = arr => arr.forEach((item, index) => {
+        const input = item.getElementsByTagName('input')[0];
+        input.value = index + 1;
+    })
+
+    // Set the index of each item on load
+    setIndex([...alternatives.children])
+    Sortable.create(alternatives, {
+        animation: 150,
+        ghostClass: 'blue-background-class',
+        chosenClass: 'blue-background-class',
+        dragClass: 'blue-background-class',
+
+        onEnd: (/**Event*/evt) => {
+            setIndex([...alternatives.children])
+        },
+    });
+</script>
+{% endblock javascripts %}

@@ -30,6 +30,7 @@ urlpatterns = [
     
     path('help/simulated_results/', views.HelpSimulatedResultsView.as_view(), name='help_simulated_results'),
     path('help/majorityjudgment/', views.ExplanationGMView.as_view(), name='explain_gm'),
+    path('help/schulze_method/', views.ExplanationSchView.as_view(), name='explain_sch'),
     path('help/options/', views.ExplanationCreationPollView.as_view(), name='explain_options'),
     
     path('personal/', views.PersonalPollsView.as_view(), name='personal_polls'),
