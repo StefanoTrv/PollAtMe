@@ -64,5 +64,7 @@ class TestShultze(TestCase):
             [25, 28, 28, 31, 0]
         ]
 
+        val = shultze_calculator.calculate_rankings(input)
+
         # Classifica
         expected = ((4), (0), (2), (1), (3))
