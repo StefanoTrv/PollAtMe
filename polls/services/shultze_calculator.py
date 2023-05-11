@@ -1,5 +1,6 @@
 from polls.models.preference import ShultzePreference, ShultzeOpinionJudgement, Poll
 from collections import defaultdict
+from typing import Any
 
 def calculate_sequences_from_db(poll: Poll) -> dict[tuple, int]:
     preferences = ShultzePreference.objects.filter(poll=poll)
@@ -22,16 +23,16 @@ def precedes(alph: dict, key: tuple, fst: int, snd: int) -> bool:
             return False
     return False
     
-# builds a dictionary by linking items of a given list and an incremental counter
-def alphabet(lst) -> dict:
+# builds a dictionary by linking items of a given tuple and an incremental counter
+def alphabet(tuple: tuple) -> dict[Any, int]:
     alph = {}
     ctr = 0
-    for ch in lst:
-        alph[ch] = ctr
+    for el in tuple:
+        alph[el] = ctr
         ctr += 1
     return alph
     
-def build_preference_matrix(sequences):
+def build_preference_matrix(sequences: dict[tuple, int]) -> list[list[int]]:
     keys = list(sequences.keys())
     dim = len(keys[0])
     alph = alphabet(keys[0])
