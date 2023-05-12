@@ -1,13 +1,39 @@
 from django.test import TestCase
-from polls.services.giudizio_maggioritario import GiudizioMaggioritario, VoteSequence
+from polls.services.giudizio_maggioritario import GiudizioMaggioritario, AlternativeJudgments
 from polls.services.giudizio_maggioritario import GiudizioMaggioritarioPoll
 
-class GiudizioMaggioritarioTest(TestCase):
+# test della classe che calcola i risultati delle nostre scelte (quindi dal database) in giudizio maggioritario
+class TestGiudizioMaggioritarioPoll(TestCase):
 
     fixtures: list[str] = ['test_giudizio_maggioritario.json']
 
+    def test_classifica(self):
+        #la classifica per il poll 1 dovrebbe essere {'C' : 1, 'B' : 3 'A' : 2}
+        giudizio_maggioritario = GiudizioMaggioritarioPoll(1)
+        classifica = giudizio_maggioritario.get_classifica()
+
+        expected_classifica = [{'alternative' : 'C', 'place' : 1},{'alternative' : 'A', 'place' : 2},{'alternative' : 'B', 'place' : 3}]
+        
+        self.assertEqual(classifica, expected_classifica)
+
+    ##testiamo che per il sondaggio numero 2 venga ritornata la classifica corretta anche se votata solamente da una persona
+    def test_one_preference(self):
+        giudizio_maggioritario = GiudizioMaggioritarioPoll(2)
+        classifica = giudizio_maggioritario.get_classifica()
+
+        expected_classifica = [{'alternative' : 'Bella', 'place' : 1}
+                              ,{'alternative' : 'Meno bella', 'place' : 2}
+                              ,{'alternative' : 'Ancora meno bella', 'place' : 3}
+                              ,{'alternative' : 'Brutta', 'place' : 4}]
+                              
+        self.assertEqual(classifica, expected_classifica)
+
+
+# test delle classi che calcolando i risultati con il metodo del giudizio maggioritario
+class TestGiudizioMaggioritario(TestCase):
+
     def test_vote_sequence(self):
-        sequence = VoteSequence(1, [5,4,4,4,4,4,3,3,1,1])
+        sequence = AlternativeJudgments(1, [5,4,4,4,4,4,3,3,1,1])
 
         ##corretto l'id
         self.assertEqual(1, sequence.get_choice_id())
@@ -44,8 +70,8 @@ class GiudizioMaggioritarioTest(TestCase):
 
     def test_vote_sequence_order(self):
 
-        first_sequence = VoteSequence(1, [5,4,4,4,4,3,3,1,1])
-        second_sequence = VoteSequence(1, [5,4,4,4,3,3,3,1,1])
+        first_sequence = AlternativeJudgments(1, [5,4,4,4,4,3,3,1,1])
+        second_sequence = AlternativeJudgments(1, [5,4,4,4,3,3,3,1,1])
 
         self.assertEqual(first_sequence,first_sequence)
         self.assertEqual(second_sequence,second_sequence)
@@ -59,28 +85,6 @@ class GiudizioMaggioritarioTest(TestCase):
         self.assertTrue(first_sequence >= first_sequence)
         self.assertFalse(first_sequence < first_sequence)
         self.assertTrue(first_sequence <= first_sequence)
-
-    def test_classifica(self):
-        #la classifica per il poll 1 dovrebbe essere {'C' : 1, 'B' : 3 'A' : 2}
-        giudizio_maggioritario = GiudizioMaggioritarioPoll(1)
-        classifica = giudizio_maggioritario.get_classifica()
-
-        expected_classifica = [{'alternative' : 'C', 'place' : 1},{'alternative' : 'A', 'place' : 2},{'alternative' : 'B', 'place' : 3}]
-        
-        self.assertEqual(classifica, expected_classifica)
-
-    ##testiamo che per il sondaggio numero 2 venga ritornata la classifica corretta anche se votata solamente da una persona
-    def test_one_preference(self):
-        giudizio_maggioritario = GiudizioMaggioritarioPoll(2)
-        classifica = giudizio_maggioritario.get_classifica()
-
-        expected_classifica = [{'alternative' : 'Bella', 'place' : 1}
-                              ,{'alternative' : 'Meno bella', 'place' : 2}
-                              ,{'alternative' : 'Ancora meno bella', 'place' : 3}
-                              ,{'alternative' : 'Brutta', 'place' : 4}]
-                              
-        self.assertEqual(classifica, expected_classifica)
-
     
     #testiamo che il risultato per il caso problematico mostrato dal prod adesso ritorni il risultato atteso
     # O B B B B B S S  => (1, B-, 2)
@@ -101,7 +105,6 @@ class GiudizioMaggioritarioTest(TestCase):
         self.assertEqual(classifica, expected_classifica)
 
 
-    
     def test_pareggio(self):
         prima_alternativa =   {'choice_id' : 1, 'voti' : [5,4,4,5,4,4,3,3]}
         seconda_alternativa = {'choice_id' : 2, 'voti' : [5,5,4,4,4,4,3,3]}
@@ -129,7 +132,6 @@ class GiudizioMaggioritarioTest(TestCase):
 
         classifica_attesa = [1,2,2,2,5,5,7]
 
-
         giudizioMaggioritario = GiudizioMaggioritario([prima_alternativa, seconda_alternativa, terza_alternativa, 
                                                        quarta_alternativa, quinta_alternativa, sesta_alternativa, 
                                                        settima_alternativa
@@ -139,6 +141,7 @@ class GiudizioMaggioritarioTest(TestCase):
 
         for element in classifica:
             self.assertEqual(classifica_attesa[element['alternative'] - 1], element['place'])
+
 
     def test_molti_voti_pareggio(self):
         prima_alternativa =   {'choice_id' : 1, 'voti' : [5,5,5,5,5,5,5,4,4,4,3,3,3,3,3,3,3,2,2,2]} #1

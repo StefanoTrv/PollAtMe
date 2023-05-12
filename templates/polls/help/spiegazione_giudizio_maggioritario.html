@@ -53,16 +53,16 @@
                                 Le alternative vengono ordinate secondo tale giudizio dal migliore al peggiore, che fornisce una prima classifica. 
                             </li>
                             <li>
-                                Nel caso ci siano alternative con lo stesso giudizio mediano bisogna procedere con lo spareggio:
+                                Per ogni gruppo di alternative con lo stesso giudizio mediano, se ce ne sono, bisogna procedere con lo spareggio:
                                 <ol>
                                     <li>
-                                        Rimuovo dalla lista di voti delle alternative che voglio spareggiare un voto pari al giudizio mediano
+                                        Rimuovo dalla lista dei voti di ogni alternativa che voglio spareggiare un voto pari al giudizio mediano
                                     </li>
                                     <li>
-                                        Ricalcolo il giudizio mediano sulle nuove liste di voti di queste alternative
+                                        Ricalcolo il giudizio mediano sulle nuove liste di voti
                                     </li>
                                     <li>
-                                        Ordino secondo il nuovo giudizio mediano, nel caso di nuovi pareggi ripeto questo procedimento. Se arrivo ad una lista vuota di voti allora ho un pareggio effettivo tra le due alternative.
+                                        Ordino secondo il nuovo giudizio mediano. Nel caso continuino ad esserci pareggi, ripeto questo procedimento. Se le liste di giudizi vengono svuotate completamente, allora c'è un pareggio reale tra le alternative.
                                     </li>
                                 </ol>
                             </li>
@@ -75,7 +75,7 @@
                     <div class="card-body">
                         <h5 class="card-title"> Esempio di calcolo dei risultati</h5>
                         <p class="card-text">
-                            Prendiamo un caso di una scelta molto semplice con solamente tre alternative, nella quale al votante viene richiesto di giudicare tre possibili mete per una vacanza, ovvero "Mare", "Montagna" e "Città d'arte".
+                            Prendiamo un caso di una scelta molto semplice con solamente tre alternative, nella quale al votante viene richiesto di giudicare tre possibili mete per una vacanza, ovvero <i>Mare</i>, <i>Montagna</i> e<i>Città d'arte</i>.
                         </p>
                         <p class="card-text">
                             Alla scelta partecipano 5 persone dando a ciascuna alternativa un giudizio, mostrato nella tabella seguente.
@@ -97,29 +97,47 @@
                         <p class="card-text">
                             Il primo passo consiste nell'ordinare i giudizi ricevuti in ordine decresente di importanza per ogni alternativa:
                         </p>
+                        <div class="table-responsive-md">
+                            <table class="table table-hover">
+                            <tbody>
+                            <tr>
+                            <th>Mare</th> <td >Ottimo</td> <td >Buono</td> <td >Buono</td> <td >Buono</td> <td >Scarso</td>
+                            </tr>
+                            <tr>
+                            <th>Montagna</th> <td>Buono</td> <td>Sufficiente</td> <td>Scarso</td> <td>Scarso</td> <td>Pessimo</td>
+                            </tr>
+                            <tr>
+                            <th>Città d'arte</th> <td>Buono</td> <td>Buono</td> <td>Scarso</td> <td>Pessimo</td> <td>Pessimo</td>
+                            </tr>
+                            </tbody>
+                            </table>
+                            </div>
+                        Per ciascuna alternativa, calcoliamo il relativo giudizio mediano:
                         <ul>
-                            <li>Mare: Ottimo, Buono, Buono, Buono, Scarso</li>
-                            <li>Montagna: Buono, Sufficiente, Scarso, Scarso, Pessimo</li>
-                            <li>Città d'arte: Buono, Buono, Scarso, Pessimo, Pessimo</li>
-                        </ul>
-                        Per ciascuna alternativa calcoliamo il relativo giudizio mediano.
-                        <ul>
-                            <li>Mare: Buono</li>
-                            <li>Montagna: Scarso</li>
-                            <li>Città d'arte: Scarso</li>
+                            <li><b>Mare</b>: Buono</li>
+                            <li><b>Montagna</b>: Scarso</li>
+                            <li><b>Città d'arte</b>: Scarso</li>
                         </ul>
 
-                        Mare è chiaramente il vincitore, per decidere chi è in seconda posizione e chi è in terza dobbiamo procedere con lo spareggio, dato che 
-                        Montagna e città d'arte condividono lo stesso giudizio mediano.
+                        <i>Mare</i> è chiaramente il vincitore; per decidere chi è in seconda posizione e chi è in terza dobbiamo procedere con lo spareggio, dato che 
+                        <i>Montagna</i> e <i>Città d'arte</i> condividono lo stesso giudizio mediano.
                         <br>
-                        Togliamo dai voti di Montagna e Città d'arte un giudizio "Scarso", ottenendo le seguenti liste di voti:
-                        <ul>
-                            <li>Montagna: Buono, Sufficiente, Scarso, Pessimo</li>
-                            <li>Città d'arte: Buono, Buono, Pessimo, Pessimo</li>
-                        </ul>
-                        Per Montagna il nuovo giudizio mediano, "Scarso", è migliore del nuovo giudizio mediano di Città d'arte, "Pessimo", per tale motivo Montagna batte Città d'arte
+                        Togliamo dai voti di <i>Montagna</i> e <i>Città d'arte</i> un giudizio "Scarso", ottenendo le seguenti liste di voti:
+                        <div class="table-responsive-md">
+                            <table class="table table-hover">
+                            <tbody>
+                            <tr>
+                            <th>Montagna</th> <td>Buono</td> <td>Sufficiente</td> <td>Scarso</td> <td>Pessimo</td>
+                            </tr>
+                            <tr>
+                            <th>Città d'arte</th> <td>Buono</td> <td>Buono</td> <td>Pessimo</td> <td>Pessimo</td>
+                            </tr>
+                            </tbody>
+                            </table>
+                            </div>
+                        Per <i>Montagna</i> il nuovo giudizio mediano, "Scarso", è migliore del nuovo giudizio mediano di <i>Città d'arte</i>, "Pessimo", per tale motivo <i>Montagna</i> batte <i>Città d'arte</i>.
                         <p class="card-text">
-                            Di conseguenza la classifica finale consiste in Mare al primo posto, seguito da Montagna ed infine Città d'arte
+                            Di conseguenza la classifica finale consiste in <i>Mare</i> al primo posto, seguito da <i>Montagna</i> ed infine <i>Città d'arte</i>.
                         </p>
                     </div>
                 </div>

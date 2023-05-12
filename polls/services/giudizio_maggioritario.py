@@ -1,16 +1,15 @@
 from polls.models import Poll, Alternative
 from polls.models.preference import MajorityOpinionJudgement, MajorityPreference
-import math
 from django.db.models import QuerySet
         
 """
-    Classe che incapsula il risultato di una scelta a giudizio maggioritario
+    Classe che incapsula i giudizi ottenuti per una alternativa con il giudizio maggioritario e i metodi per paragonarle fra loro
 """
-class VoteSequence:
+class AlternativeJudgments:
 
     """
         Constructor:
-        @param choice_id: an int that identifies ths sequence
+        @param choice_id: an int that identifies the sequence
         @param votes: lista di voti, maggiore è l'intero migliore è il giudizio
     """
     def __init__(self, choice_id: int, votes:list) -> None:
@@ -63,7 +62,7 @@ class VoteSequence:
 
         return giudizio_mediano
 
-    #Funzioni di ordinamento
+    '''Funzioni di ordinamento'''
 
     #self <= __o allora: o sono uguali o self < other
     def __le__(self, __o) -> bool:
@@ -113,7 +112,6 @@ class VoteSequence:
                     return True
                         
                 index += 1
-            
 
 
     def __eq__(self, __o) -> bool:
@@ -132,8 +130,9 @@ class VoteSequence:
 
 
 
-
-
+'''
+    Classe che incapsula il calcolo dei risultati con il giudizio maggioritario.
+'''
 class GiudizioMaggioritario:
     
     """
@@ -142,9 +141,8 @@ class GiudizioMaggioritario:
             "choice_id" : id
             "voti" : lista_voti
 
-        la lista dei voti deve essere una lista di interi, valori più alti
-        corrispondono ad un giudizio più alto
-
+        La lista dei voti deve essere una lista di interi, valori più alti
+        corrispondono ad un giudizio più alto.
     """
     def __init__(self, dict_voti) -> None:
         self.dict_voti = dict_voti
@@ -161,7 +159,7 @@ class GiudizioMaggioritario:
         return vote_tuple_list
     
     def _calculate_tuple_sequence(self):
-        if self.sequence_list is None:  ##evitiamo di rieseguire le query!
+        if self.sequence_list is None:
             self.__prepare_vote_sequence_list()
             self.sequence_list.sort(reverse = True)
         return self.sequence_list
@@ -169,13 +167,12 @@ class GiudizioMaggioritario:
     def __prepare_vote_sequence_list(self):
         seqence_list = []
         for element in self.dict_voti:
-            seqence_list.append(VoteSequence(element['choice_id'], element['voti']))
+            seqence_list.append(AlternativeJudgments(element['choice_id'], element['voti']))
 
         self.sequence_list = seqence_list
         
-    ##ritorna la classifica nella forma di una lista ordinata
     """
-        Ritorna una lista ordinata contenente dei dictionary nella forma:
+        Ritorna la classifica nella forma di una lista ordinata contenente dei dictionary nella forma:
         'alternative' : value   ##id dell'alternativa
         'place' : value         ##posizione nella classifica
     """
@@ -206,8 +203,7 @@ class GiudizioMaggioritario:
 
 
 
-
-#classe che incapsula la logica per il calcolo del risultato del giudizio maggioritario
+#classe che calcola i risultati del giudizio maggioritario dei nostri poll
 class GiudizioMaggioritarioPoll(GiudizioMaggioritario):
 
     ##istanziatore della classe 
@@ -252,7 +248,6 @@ class GiudizioMaggioritarioPoll(GiudizioMaggioritario):
             index += 1
 
         return classifica    
-
     
 
     #ritorna una lista di dict del tipo 
@@ -290,7 +285,7 @@ class GiudizioMaggioritarioPoll(GiudizioMaggioritario):
 
         return out_list
 
-##Servizio per ottenere il risultato dei giudizi maggioritari, per coerenza con il servizio a scelta singola
+##Servizio per ottenere il risultato del giudizi maggioritari dai nostri poll, per coerenza con il servizio a scelta singola
 class MajorityJudgementService:
 
     def __init__(self, poll: Poll, include_synthetic:bool=True) -> None:
