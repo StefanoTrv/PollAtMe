@@ -59,7 +59,42 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Come si decide il vincitore?</h5>
-                        //TODO
+                        <p>
+                            Il primo passo per calcolare la classifica consiste nella costruzione di una tabella, contenente, per ogni coppia di alternative A e B,
+                            quanti votanti preferiscono A a B. Denotiamo questa quantità con d[A,B].<br>
+                            Per il prossimo passo è necessario introdurre il concetto di <b>cammino</b>.
+                        </p>
+                        <h6 class="card-title">Cos'è un cammino?</h6>
+                        <p>
+                            Un cammino è una sequenza di alternative C1,...,Cn dove:
+                            <ul>
+                                <li>C1 = A e Cn = B</li>
+                                <li>Per ogni i = 1, ... , n-1 : d[Ci, Ci+1] > d[Ci+1, Ci]</li>
+                            </ul>
+
+                            Quindi, un cammino tra due alternative A e B è una sequenza di alternative che parte da A, termina in B e, ad ogni passo, l'alternativa di partenza
+                            è preferita a quella di arrivo.
+                        </p>
+                        <h6 class="card-title">Forza di un cammino</h6>
+                        <p>
+                            Dato un cammino possiamo poi calcolarne la <b>forza</b> p, come il più grande p tale che:
+                            <ul>
+                                <li>Per ogni i = 1, ... , n-1 : d[Ci, Ci+1] > p</li>
+                            </ul>
+
+                            Quindi, dobbiamo trovare il più grande valore di p tale che ad ogni passo del cammino, l'alternativa di partenza
+                            è preferita a quella di arrivo di almeno p voti.<br>
+                            Due alternative A e B possono avere più cammini che le collegano, diciamo che la forza del cammino più forte è uguale alla maggiore delle
+                            forze dei cammini che le collegano. Denotiamo questo valore con <p></p>[A,B].
+                        </p>
+
+                        <h6 class="card-title">Calcolo del vincitore</h6>
+                        <p>
+                            Date due alternative A e B, A è migliore di B se e solo se p[A,B] > p[B,A], se A è migliore di ogni altra alternativa
+                            allora A è il vincitore.
+
+                            <h3>//TODO</h3>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -73,7 +108,7 @@
                         <p class="card-text">
                             Alla scelta partecipano 5 persone dando a ciascuna alternativa un giudizio, mostrato nella tabella seguente.
                         </p>
-                        <div class="table-responsive-md">
+                        
                             <table class="table table-hover">
                                 <thead>
                                     <th>Votante</th><th>Mare</th><th>Montagna</th><th>Città d'arte</th><th>Crociera</th>
@@ -86,10 +121,128 @@
                                     <tr><th>Agostino</th><td>1°</td><td>3°</td><td>2°</td><td>4°</td></tr>
                                 </tbody>
                             </table>
+                        <br>
+                        <p>
+                            Come primo passo costruiamo la tabella delle preferenze.
+                        </p>
+
+                        <div class="table-responsive-md">
+                        <table class="table table-hover">
+                            <thead>
+                              <tr>
+                                <th>Da\A</th>
+                                <th>Mare</th>
+                                <th>Montagna</th>
+                                <th>Città d'arte</th>
+                                <th>Crociera</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>Mare</td>
+                                <td>/</td>
+                                <td>4</td>
+                                <td>4</td>
+                                <td>5</td>
+                              </tr>
+                              <tr>
+                                <td>Montagna</td>
+                                <td>1</td>
+                                <td>/</td>
+                                <td>2</td>
+                                <td>5</td>
+                              </tr>
+                              <tr>
+                                <td>Città d'arte</td>
+                                <td>1</td>
+                                <td>3</td>
+                                <td>/</td>
+                                <td>4</td>
+                              </tr>
+                              <tr>
+                                <td>Crociera</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>/</td>
+                              </tr>
+                            </tbody>
+                            </table>
                         </div>
-                        //TODO
-            <div class="col-sm-12">
-                <button type="button" class="btn btn-primary" onclick="window.history.back()">Torna indietro</button>
+
+                        <p>
+                            Per visualizzare i risultati della votazione possiamo utilizzare un grafo direzionato pesato, dove i nodi sono le alternative e, per
+                            ogni alternativa A e B è presente un arco da A a B se e solo se d[A,B] > d[B,A], il peso dell'arco è d[A,B].<br>
+                            Se a partire da un nodo A posso, seguendo le frecce che denotano gli archi e la direzione di percorrenza,  raggiungere un nodo B allora abbiamo trovato un cammino
+                            da A a B.<br>
+                        </p>
+
+                            <img src="{% static '/img/GrafoEsempioSchultze.svg' %}" alt="Grafo di esempio">
+
+                        <p>
+                            Seguendo la spiegazione precedente compiliamo una tabella p[A,B] per ogni coppia di A e B.
+                        </p>
+                        
+                        <div class="table-responsive-md">
+                        <table class="table table-hover">
+                            <thead>
+                              <tr>
+                                <th></th>
+                                <th>Mare</th>
+                                <th>Montagna</th>
+                                <th>Città d'arte</th>
+                                <th>Crociera</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>Mare</td>
+                                <td>/</td>
+                                <td>4</td>
+                                <td>4</td>
+                                <td>5</td>
+                              </tr>
+                              <tr>
+                                <td>Montagna</td>
+                                <td>n.a.</td>
+                                <td>/</td>
+                                <td>n.a.</td>
+                                <td>5</td>
+                              </tr>
+                              <tr>
+                                <td>Città d'arte</td>
+                                <td>n.a.</td>
+                                <td>3</td>
+                                <td>/</td>
+                                <td>3</td>
+                              </tr>
+                              <tr>
+                                <td>Crociera</td>
+                                <td>n.a.</td>
+                                <td>n.a.</td>
+                                <td>n.a.</td>
+                                <td>/</td>
+                              </tr>
+                            </tbody>
+                            </table>
+                        </div>
+
+                        <p>
+                            Calcoliamo la classifica:
+                            <ul>
+                                <li>"Mare" batte tutte le altre alternative, di conseguenza è il vincitore e lo rimuoviamo dalle alternative.</li>
+                                <li>"Montagna" batte solamente "Crociera", "Città d'arte" batte "Montagna" e  "Crociera" ed infine "Crociera" non batte nessuno. Visto che Mare è stato rimosso il secondo classificato è "Città d'arte"</li>
+                                <li>Rimangono solamente "Montagna" e "Crociera", dato che "Montagna" batte "Crociera" in terza posizione ci troviamo "Montagna"</li>
+                                <li>Rimanendo solamente "Crociera" questa finisce in ultima posizione</li>
+                            </ul>
+                            <br>
+                            Otteniamo dunque la seguente classifica: "Mare" in prima posizione, "Città d'arte" in seconda, "Montagna" in terza ed infine "Crociera" in quarta.
+                        </p>
+
+                    <div class="col-sm-12">
+                        <button type="button" class="btn btn-primary" onclick="window.history.back()">Torna indietro</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
