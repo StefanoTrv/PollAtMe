@@ -56,3 +56,33 @@ class TestShultze(TestCase):
         s = shultze_calculator.ShultzeCalculator(input)
         s.calculate()
         self.assertEqual(s.rankings, [('A', 1), ('B', 1), ('C', 1)])
+
+    def test_shultze_on_numbers(self):
+        input = {
+            ('1', '2', '3', '4', '5', '6'): 1,
+            ('5', '3', '4', '1', '2', '6'): 3,
+            ('3', '5', '2', '4', '6', '1'): 10,
+            ('3', '5', '2', '4', '1', '6'): 3,
+        }
+        s = shultze_calculator.ShultzeCalculator(input)
+        s.calculate()
+        self.assertEqual(s.rankings, [('3', 1), ('5', 2), ('2', 3), ('4', 4), ('6', 5), ('1', 6)])
+
+    def test_shultze_tie_and_losers(self):
+        input = {
+            ('A', 'B', 'C'): 1,
+            ('B', 'A', 'C'): 2,
+            ('A', 'C', 'B'): 1,
+        }
+        s = shultze_calculator.ShultzeCalculator(input)
+        s.calculate()
+        self.assertEqual(s.rankings, [('A', 1), ('B', 1), ('C', 3)])
+
+    def test_shultze_winner_and_tie(self):
+        input = {
+            ('A', 'B', 'C'): 1,
+            ('A' ,'C', 'B'): 1,
+        }
+        s = shultze_calculator.ShultzeCalculator(input)
+        s.calculate()
+        self.assertEqual(s.rankings, [('A', 1), ('B', 2), ('C', 2)])
