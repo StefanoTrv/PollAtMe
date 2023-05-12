@@ -2,6 +2,7 @@ from polls.models.preference import ShultzePreference, Poll
 from collections import defaultdict
 from typing import Any
 
+
 def calculate_sequences_from_db(poll: Poll) -> dict[tuple, int]:
     preferences = ShultzePreference.objects.filter(poll=poll)
     sequences: dict[tuple, int] = defaultdict(lambda: 0)
@@ -9,92 +10,71 @@ def calculate_sequences_from_db(poll: Poll) -> dict[tuple, int]:
     for preference in preferences:
         sequence = preference.get_sequence()
         sequences[sequence] += 1
-    
+
     return dict(sequences)
 
-def calculate_rankings(p_mat: list[list], candidates: tuple) -> tuple:
-    """Calculates the rankings of the candidates based on the preference matrix.
+class ShultzeCalculator:
+    sequence_votes: dict[tuple, int]
+    pairwise_preferences: list[list[int]]
+    strongest_paths_matrix: list[list[int]]
+    rankings: list[tuple]
 
-    Args:
-        p_mat (list[list]): The preference matrix.
+    candidates: tuple
 
-    Returns:
-        tuple[tuple]: The rankings of the candidates.
-    """
+    def __init__(self, orders: dict[tuple, int]):
+        self.sequence_votes = orders
+        self.candidates = list(orders.keys())[0]
 
-    n = len(p_mat)
-    assert n == len(candidates)
+        self.__dim = len(self.candidates)
+        self.pairwise_preferences = [
+            [0 for i in range(self.__dim)] for j in range(self.__dim)]
+        self.strongest_paths_matrix = [
+            [0 for i in range(self.__dim)] for j in range(self.__dim)]
 
-    rankings = []
+        self.rankings = []
+        for c in self.candidates:
+            self.rankings.append((c, 1))
 
-    for c in candidates:
-        rankings.append((c, 1))
-    
-    for i in range(n):
-        for j in range(n):
-            if i != j:
-                if p_mat[i][j] < p_mat[j][i]:
-                    rankings[i] = (rankings[i][0], rankings[i][1] + 1)
-    
-    rankings.sort(key=lambda x: x[1])
+    def calculate(self):
+        self.__build_preference_matrix()
+        self.__widest_paths()
+        self.__calculate_rankings()
 
-    return tuple(rankings)
+    def __build_preference_matrix(self):
+        all_sequences = list(self.sequence_votes.keys())
 
-# returns True if in given key the item in position fst precedes the item in position snd, False otherwise
-def precedes(alph: dict, key: tuple, fst: int, snd: int) -> bool:
-    n = len(key)
+        for row in range(self.__dim):
+            for col in range(self.__dim):
+                if row != col:
+                    for seq in all_sequences:
+                        if self.__precedes(seq, self.candidates[row], self.candidates[col]):
+                            self.pairwise_preferences[row][col] += self.sequence_votes[seq]
 
-    for el1 in range(n-1):
-        if list(alph.keys())[list(alph.values()).index(fst)] == key[el1]:
-            for el2 in range(el1 + 1, n):
-                if list(alph.keys())[list(alph.values()).index(snd)] == key[el2]:
-                    return True
-            return False
-    return False
-    
-# builds a dictionary by linking items of a given tuple and an incremental counter
-def alphabet(tuple: tuple) -> dict[Any, int]:
-    alph = {}
-    ctr = 0
+    def __precedes(self, seq: tuple, fst: Any, snd: Any) -> bool:
+        return seq.index(fst) < seq.index(snd)
 
-    for el in tuple:
-        alph[el] = ctr
-        ctr += 1
+    def __widest_paths(self):
+        for i in range(self.__dim):
+            for j in range(self.__dim):
+                if i != j:
+                    if self.pairwise_preferences[i][j] > self.pairwise_preferences[j][i]:
+                        self.strongest_paths_matrix[i][j] = self.pairwise_preferences[i][j]
+                    else:
+                        self.strongest_paths_matrix[i][j] = 0
 
-    return alph
-    
-def build_preference_matrix(sequences: dict[tuple, int]) -> list[list[int]]:
-    keys = list(sequences.keys())
-    dim = len(keys[0])
-    alph = alphabet(keys[0])
-    mat = [[0 for i in range(dim)] for j in range(dim)]
+        for i in range(self.__dim):
+            for j in range(self.__dim):
+                if i != j:
+                    for k in range(self.__dim):
+                        if i != k and j != k:
+                            self.strongest_paths_matrix[j][k] = max(self.strongest_paths_matrix[j][k], min(
+                                self.strongest_paths_matrix[j][i], self.strongest_paths_matrix[i][k]))
 
-    for row in range(dim):
-        for col in range(dim):
-            if row != col:
-                for key in keys:
-                    if precedes(alph, key, row, col):
-                        mat[row][col] += sequences[key]
+    def __calculate_rankings(self):
+        for i in range(self.__dim):
+            for j in range(self.__dim):
+                if i != j:
+                    if self.strongest_paths_matrix[i][j] < self.strongest_paths_matrix[j][i]:
+                        self.rankings[i] = (self.rankings[i][0], self.rankings[i][1] + 1)
 
-    return mat
-
-def widest_paths(pref_mat: list[list[int]]) -> list[list[int]]:
-    c = len(pref_mat)
-    w_paths = [[0 for i in range(c)] for j in range(c)]
-
-    for i in range(c):
-        for j in range(c):
-            if i != j:
-                if pref_mat[i][j] > pref_mat[j][i]:
-                    w_paths[i][j] = pref_mat[i][j]
-                else:
-                    w_paths[i][j] = 0
-
-    for i in range(c):
-        for j in range(c):
-            if i != j:
-                for k in range(c):
-                    if i != k and j != k:
-                        w_paths[j][k] = max(w_paths[j][k], min(w_paths[j][i], w_paths[i][k]))
-
-    return w_paths
+        self.rankings.sort(key=lambda x: x[1])
