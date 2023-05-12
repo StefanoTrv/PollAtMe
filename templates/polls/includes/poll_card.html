@@ -35,7 +35,7 @@
             {% if poll.is_ended %} Terminato il {{ poll.end | date:"d/m/Y, H:i" }} {% endif %}
         </p>
 
-        <div class="d-md-inline-flex d-grid gap-2 mt-2">
+        <div class="d-md-inline-block d-grid gap-2 mt-2">
             {% if poll.is_active %}
             <a role="button" class="btn btn-block btn-primary" href={% url 'polls:vote' id=poll.id %}>
                 {% if poll.default_type == 1 %}
@@ -43,10 +43,8 @@
                 {% elif poll.default_type == 3 %}
                 Scegli
                 {% endif %}
-                {% if poll.authentication_type == 1 %}
-                &nbsp<i class="bi bi-universal-access"></i>
-                {% elif poll.authentication_type == 2 %}
-                &nbsp<i class="bi bi-people-fill"></i>
+                {% if poll.authentication_type == 2 %}
+                &nbsp<i class="bi bi-google"></i>
                 {% elif poll.authentication_type == 3 %}
                 &nbsp<i class="bi bi-lock-fill"></i>
                 {% endif %}

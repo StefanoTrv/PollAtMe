@@ -32,7 +32,7 @@
     
     {% if poll.is_active %}
       {% if poll.results_restriction == 1 %}
-      <!-- {{poll.results_restriction}}-show -->>
+      <!-- {{poll.results_restriction}}-show -->
       {% include 'polls/includes/classifica_grafici_SP.html' %}
       {% endif %}
 
@@ -53,7 +53,7 @@
       {% endif %}
 
       {% if poll.results_restriction == 3%}
-      <!-- {{poll.results_restriction}}-lock -->>
+      <!-- {{poll.results_restriction}}-lock -->
       <div class="card text-center">
         <div class="card-body">
           <h5 class="mt-4">Potrai vedere i risultati della scelta solo quando saranno terminate le votazioni</h5>
