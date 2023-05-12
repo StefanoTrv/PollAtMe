@@ -18,10 +18,13 @@ WRONG_POLL_TYPE_MSG = "Il sondaggio non è a preferenza singola, quindi non sono
 def result_redirect_view(request, id):
     try:
         poll = SearchPollService().search_by_id(id)
-        if poll.get_type() == "Preferenza singola":
-            return redirect(reverse('polls:result_single_preference', args=[id]))
-        else:
-            return redirect(reverse('polls:result_MJ', args=[id]))
+        match poll.get_type():
+            case "Preferenza singola":
+                return redirect(reverse('polls:result_single_preference', args=[id]))
+            case "Giudizio maggioritario":
+                return redirect(reverse('polls:result_MJ', args=[id]))
+            case "Metodo Shultze":
+                return redirect(reverse('polls:result_shultze', args=[id]))
     except ObjectDoesNotExist:
         raise http.Http404(POLL_DOES_NOT_EXISTS_MSG)
 
