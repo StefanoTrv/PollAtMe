@@ -26,7 +26,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Prova</h5>
-                        <p class="card-subtitle mb-2 text-muted">Ordina le alternative in base alle tue preferenze</p>
+                        <p class="card-subtitle mb-2 text-muted">Ordina le alternative in base alle tue preferenze, posizionare un alternativa al di sopra di un altra significa che preferisci la prima alla seconda</p>
                         <ol class="list-group list-group-numbered gap-2" id="items" data-gtm-form-interact-field-id="0">
                             <li class="list-group-item d-flex justify-content-between align-items-start p-4 border border-primary" draggable="false" style="">
                                 <div class="ms-2 me-auto">
@@ -69,32 +69,33 @@
                         <p>
                             Un cammino è una sequenza di alternative C1,...,Cn dove:
                             <ul>
-                                <li>C1 = A e Cn = B</li>
-                                <li>Per ogni i = 1, ... , n-1 : d[Ci, Ci+1] > d[Ci+1, Ci]</li>
+                                <li>C<sub>1</sub> = A e C<sub>n</sub> = B</li>
+                                <li>Per ogni i = 1, ... , n-1 : d[C<sub>i</sub>, C<sub>i + 1</sub>] > d[C<sub>i+1</sub>, C<sub>i</sub>]</li>
                             </ul>
 
                             Quindi, un cammino tra due alternative A e B è una sequenza di alternative che parte da A, termina in B e, ad ogni passo, l'alternativa di partenza
                             è preferita a quella di arrivo.
                         </p>
-                        <h6 class="card-title">Forza di un cammino</h6>
+                        <h6 class="card-title">Robustezza di un cammino</h6>
                         <p>
-                            Dato un cammino possiamo poi calcolarne la <b>forza</b> p, come il più grande p tale che:
+                            Dato un cammino possiamo poi calcolarne la <b>Robustezza</b> <i>p</i>, come il più grande <i>p</i> tale che:
                             <ul>
-                                <li>Per ogni i = 1, ... , n-1 : d[Ci, Ci+1] > p</li>
+                                <li>Per ogni i = 1, ... , n-1 : d[C<sub>i</sub>, C<sub>i + 1</sub>] > p</li>
                             </ul>
 
-                            Quindi, dobbiamo trovare il più grande valore di p tale che ad ogni passo del cammino, l'alternativa di partenza
-                            è preferita a quella di arrivo di almeno p voti.<br>
-                            Due alternative A e B possono avere più cammini che le collegano, diciamo che la forza del cammino più forte è uguale alla maggiore delle
-                            forze dei cammini che le collegano. Denotiamo questo valore con <p></p>[A,B].
+                            Quindi, dobbiamo trovare il più grande valore di <i>p</i> tale che ad ogni passo del cammino, l'alternativa di partenza
+                            è preferita a quella di arrivo da almeno <i>p</i> votanti.<br>
+
+                        </p>
+                        <p>
+                            Due alternative A e B possono avere però più cammini che le collegano, diciamo che la robustezza del cammino più forte è uguale alla maggiore delle
+                            robustezza dei cammini che le collegano. Denotiamo questo valore con p[A,B].
                         </p>
 
                         <h6 class="card-title">Calcolo del vincitore</h6>
                         <p>
-                            Date due alternative A e B, A è migliore di B se e solo se p[A,B] > p[B,A], se A è migliore di ogni altra alternativa
-                            allora A è il vincitore.
-
-                            <h3>//TODO</h3>
+                            Date due alternative A e B, A è migliore di B se e solo se p[A,B] > p[B,A].<br>
+                            Per trovare il vincitore ci basta trovare quale alternativa è migliore di tutte le altre.
                         </p>
                     </div>
                 </div>
@@ -178,7 +179,7 @@
                             da A a B.<br>
                         </p>
 
-                            <img src="{% static '/img/GrafoEsempioSchultze.svg' %}" alt="Grafo di esempio">
+                            <img src="{% static '/img/GrafoEsempioSchultze.svg' %}" alt="Grafo di esempio" class="img-fluid">
 
                         <p>
                             Seguendo la spiegazione precedente compiliamo una tabella p[A,B] per ogni coppia di A e B.
