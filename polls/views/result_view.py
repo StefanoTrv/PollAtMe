@@ -7,9 +7,10 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import TemplateView
 
-from polls.models import Preference
+from polls.models import Preference, Poll, Alternative
 from polls.services import (MajorityJudgementService, SearchPollService,
                             SinglePreferencePollResultsService)
+from polls.services.shultze_calculator import ShultzeCalculator, calculate_sequences_from_db
 
 POLL_DOES_NOT_EXISTS_MSG = "Il sondaggio cercato non esiste"
 WRONG_POLL_TYPE_MSG = "Il sondaggio non è a preferenza singola, quindi non sono disponibili risultati di questo tipo."
@@ -18,13 +19,14 @@ WRONG_POLL_TYPE_MSG = "Il sondaggio non è a preferenza singola, quindi non sono
 def result_redirect_view(request, id):
     try:
         poll = SearchPollService().search_by_id(id)
-        match poll.get_type():
-            case "Preferenza singola":
+        match poll.default_type:
+            case Poll.PollType.SINGLE_PREFERENCE:
                 return redirect(reverse('polls:result_single_preference', args=[id]))
-            case "Giudizio maggioritario":
+            case Poll.PollType.MAJORITY_JUDGMENT:
                 return redirect(reverse('polls:result_MJ', args=[id]))
-            case "Metodo Shultze":
+            case Poll.PollType.SHULTZE_METHOD:
                 return redirect(reverse('polls:result_shultze', args=[id]))
+            
     except ObjectDoesNotExist:
         raise http.Http404(POLL_DOES_NOT_EXISTS_MSG)
 
@@ -55,8 +57,10 @@ class SinglePreferenceResultView(_ResultView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         poll = SearchPollService().search_by_id(self.kwargs['id'])
-        if(poll.get_type()!="Preferenza singola"): # 404 se il tipo del sondaggio non è preferenza singola
+        
+        if poll.default_type != Poll.PollType.SINGLE_PREFERENCE: # 404 se il tipo del sondaggio non è preferenza singola
             raise http.Http404(WRONG_POLL_TYPE_MSG)
+        
         results = SinglePreferencePollResultsService().set_poll(poll).as_list()
 
         tot_votes = sum([votes['count'] for votes in results])
@@ -80,14 +84,26 @@ class ShultzePreferenceResultView(_ResultView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.template_name = 'result_GM.html'
+        self.template_name = 'polls/results/result_SH.html'
         
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # TODO
+
+        poll = SearchPollService().search_by_id(self.kwargs['id'])
+        shultze_result = ShultzeCalculator(calculate_sequences_from_db(poll))
+        shultze_result.calculate()
+
+        alts = Alternative.objects.filter(id__in = [r[0] for r in shultze_result.rankings])
+        context['results'] = zip(alts, [r[1] for r in shultze_result.rankings])
+        
+        context['unique_winner'] = shultze_result.rankings[0][1] != shultze_result.rankings[1][1]
+        context['poll'] = poll
+        context['visibility'] = poll.get_visibility()
+        context['authentication_type'] = poll.get_authentication_type()
+        context['responses_count'] = poll.shultzepreference_set.count()
+
         return context
-    
 
 class MajorityJudgementResultView(_ResultView):
 

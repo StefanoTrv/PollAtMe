@@ -1,42 +1,29 @@
 <h5 class="mt-4">
     Classifica e giudizi per alternativa 
     <button type="button" class="btn  btn-icon btn-outline-info" data-bs-toggle="modal" data-bs-target="#modal-shultze-explanation">
-      <i class="feather icon-info"></i>
+      <i class="feather icon-info">
+      </i>
     </button>
   </h5>
   <hr>
   <div class="row row-cols-md-3 row-cols-sm-1 g-4">
-    {% for alternative in classifica %}
-    <!-- Commento per i test: {{ alternative.alternative}}-{{ alternative.place }} -->
-    {% if alternative.place == 1 and winners|length == 1 %}
+    {% for alt, pos in results %}
+    <!-- Commento per i test: {{ alt }}-{{ alt }} -->
+    {% if pos == 1 and unique_winner %}
     <div class="col-md-12">
       <div class="card bg-success">
         <div class="card-body text-white">
-          <h3 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.place }}° posizione</span></h3>
-          <h4 class="card-title text-white">{{ alternative.alternative|upper }}</h4>
-        </div>
-        <div class="card-footer">
-          <div class="row">
-            <div class="col-12 col-lg-4"><p class="text-lg-start text-white"><b>Voto</b>: {{ alternative.judgment.grade|stringformat:'s'}}</p></div>  
-            <div class="col-12 col-lg-4"><p class="text-lg-center text-white"><b>Migliori</b>: {{ alternative.judgment.giudizi_migliori|stringformat:'s'}}</p></div>
-            <div class="col-12 col-lg-4"><p class="text-lg-end text-white"><b>Peggiori</b>: {{ alternative.judgment.giudizi_peggiori|stringformat:'s'}}</p></div>  
-          </div>
+          <h3 class="text-end"><span class="badge badge-pill bg-secondary">{{ pos }}° posizione</span></h3>
+          <h4 class="card-title text-white">{{ alt|upper }}</h4>
         </div>
       </div>
     </div>
-    {% elif alternative.place == 1 and winners|length > 0 %}
+    {% elif pos == 1 and not unique_winner %}
     <div class="col">
       <div class="card bg-warning h-100">
         <div class="card-body">
-          <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.place }}° posizione</span></h4>
-          <h5 class="card-title">{{ alternative.alternative|upper }}</h5>
-        </div>
-        <div class="card-footer">
-          <div class="row">
-            <div class="col-12 col-lg-4"><p class="text-lg-start"><b>Voto</b>: {{ alternative.judgment.grade|stringformat:'s'}}</p></div>  
-            <div class="col-12 col-lg-4"><p class="text-lg-center"><b>Migliori</b>: {{ alternative.judgment.giudizi_migliori|stringformat:'s'}}</p></div>
-            <div class="col-12 col-lg-4"><p class="text-lg-end"><b>Peggiori</b>: {{ alternative.judgment.giudizi_peggiori|stringformat:'s'}}</p></div>  
-          </div>
+          <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ pos }}° posizione</span></h4>
+          <h5 class="card-title">{{ alt|upper }}</h5>
         </div>
       </div>
     </div>
@@ -44,15 +31,8 @@
     <div class="col">
       <div class="card h-100">
         <div class="card-body">
-          <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.place }}° posizione</span></h4>
-          <h5 class="card-title">{{ alternative.alternative|upper }}</h5>
-        </div>
-        <div class="card-footer">
-          <div class="row">
-            <div class="col-12 col-lg-4"><p class="text-lg-start"><b>Voto</b>: {{ alternative.judgment.grade|stringformat:'s'}}</p></div>  
-            <div class="col-12 col-lg-4"><p class="text-lg-center"><b>Migliori</b>: {{ alternative.judgment.giudizi_migliori|stringformat:'s'}}</p></div>
-            <div class="col-12 col-lg-4"><p class="text-lg-end"><b>Peggiori</b>: {{ alternative.judgment.giudizi_peggiori|stringformat:'s'}}</p></div>  
-          </div>
+          <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ pos }}° posizione</span></h4>
+          <h5 class="card-title">{{ alt|upper }}</h5>
         </div>
       </div>
     </div>

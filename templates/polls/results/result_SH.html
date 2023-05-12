@@ -1,0 +1,223 @@
+{% extends 'layouts/base.html' %}
+{% load lookup_filter %}
+{% load static %}
+
+{% block title %} {{block.super}} | Risultati {% endblock title %}
+
+{% block stylesheets %} 
+<style>
+  /* bootstrap hack: fix content width inside hidden tabs */
+  .tab-content > .tab-pane,
+  .pill-content > .pill-pane {
+  display: block;     /* undo display:none          */
+  height: 0;          /* height:0 is also invisible */ 
+  overflow-y: hidden; /* no-overflow                */
+  }
+  .tab-content > .active,
+  .pill-content > .active {
+  height: auto;       /* let the content decide it  */
+  } /* bootstrap hack end */
+
+  #textbox {
+    display: flex;
+    justify-content: space-between;
+  }
+
+</style>
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="pcoded-main-container">
+  <div class="pcoded-content">
+    <div class="page-header">
+      <div class="page-block">
+        <div class="row align-items-center">
+          <div class="col-md-12">
+            <div class="page-header-title">
+              <h5 class="m-b-10">Risultati scelta</h5>
+            </div>
+            <ul class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/"><em class="feather icon-home"></em></a></li>
+              <li class="breadcrumb-item">Risultati</li>
+              <li class="breadcrumb-item"><strong>{{ poll.title }}</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% include 'polls/includes/riepilogo.html'%}
+
+    {% if poll.is_active %}
+      {% if poll.results_restriction == 1 %}
+      <!-- {{poll.results_restriction}}-show -->
+      {% include 'polls/includes/classifica_grafici_SH.html' %}
+      {% endif %}
+
+      {% if poll.results_restriction == 2 %}
+          {% if user.is_authenticated and user == poll.author %}
+          <!-- {{poll.results_restriction}}-show -->
+            {% include 'polls/includes/classifica_grafici_SH.html' %}
+          {% elif user != poll.author %}
+          <!-- {{poll.results_restriction}}-lock -->
+          <div class="card text-center">
+            <div class="card-body">
+              <h5 class="mt-4">Potrai vedere i risultati della scelta solo quando saranno terminate le votazioni</h5>
+              <br>
+              <i class="fas fa-lock fa-10x"></i>
+            </div>
+          </div>
+          {%endif%}
+      {% endif %}
+
+      {% if poll.results_restriction == 3 %}
+          <!-- {{poll.results_restriction}}-lock -->
+          <div class="card text-center">
+            <div class="card-body">
+              <h5 class="mt-4">Potrai vedere i risultati della scelta solo quando saranno terminate le votazioni</h5>
+              <br>
+              <i class="fas fa-lock fa-10x"></i>
+            </div>
+          </div>
+      {% endif %}
+    {% endif %}
+
+    {% if poll.is_ended %}
+      {% include 'polls/includes/classifica_grafici_SH.html' %}
+    {% endif %}    
+
+    <hr>
+
+    <div class="row">
+      <div class="col text-center">
+        <a role="button" href={% url 'polls:index' %} class="btn btn-block btn-primary">Torna alla home</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% include 'polls/includes/modal_spiegazione_metodo_shultze.html'%}
+
+{% endblock content %}
+
+
+{% block javascripts %}
+<script src={% static 'js/plugins/apexcharts.min.js' %}></script>
+<script>
+
+  var options = {
+    series: [
+    {% for vote in ordered_votes %}
+    {
+    name: '{{vote}}',
+    data: [{% for alternativa in voti_alternativa %}
+              {{ alternativa.lista_voti|get_value:vote }},
+          {% endfor %}]
+    },
+    {% endfor %}
+  ],
+    chart: {
+    type: 'bar',
+    height: 275,
+    stacked: true,
+    stackType: '100%'
+  },
+  plotOptions: {
+    bar: {
+      horizontal: true,
+    },
+  },
+  stroke: {
+    width: 1,
+    colors: ['#fff']
+  },
+  xaxis: {
+    categories: [{% for alternativa in voti_alternativa %}
+                    '{{alternativa.alternativa}}',
+                  {% endfor %}]
+  },
+  tooltip: {
+    y: {
+      formatter: function (val) {
+        return val + " voti"
+      }
+    }
+  },
+  fill: {
+    opacity: 1
+  
+  },
+  legend: {
+    position: 'top',
+    horizontalAlign: 'center',
+    offsetX: 40
+  }
+  };
+
+  var chart = new ApexCharts(document.querySelector("#chart"), options);
+  chart.render();
+
+</script>
+
+{% for alternativa in voti_alternativa %}
+<script>
+
+    var options = {
+      series: [{
+        name: 'Preferenze {{alternativa.al}}',
+        data: [{% for voto, amount in alternativa.lista_voti.items%}
+                {
+                x: '{{voto}}',
+                y: {{amount}},
+                },
+              {%endfor%}]
+      }],
+    chart: {
+      type: 'bar',
+      redrawOnWindowResize: true
+    },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+          columnWidth: '55%',
+            endingShape: 'rounded'
+      },
+    },
+    dataLabels: {
+      enabled: true,
+          style: {
+            fontSize: '12px',
+            colors: ["#FFFFFF"]
+          }
+    },
+    stroke: {
+      show: true,
+        width: 2,
+          colors: ['transparent']
+    },
+    xaxis: {
+      type: 'category'
+    },
+    yaxis: {
+      title: {
+        text: 'numero di giudizi'
+      }
+    },
+    fill: {
+      opacity: 1
+    },
+    tooltip: {
+      y: {
+        formatter: function (val) {
+          return val
+        }
+      }
+    },
+    };
+
+    var chart = new ApexCharts(document.querySelector("#bar_{{forloop.counter}}"), options);
+    chart.render();
+</script>
+{% endfor %}
+
+{% endblock javascripts %}
