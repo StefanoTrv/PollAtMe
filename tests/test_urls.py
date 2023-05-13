@@ -35,6 +35,10 @@ class TestResultRedirect(TestCase):
         resp = self.client.get(reverse(self.URL,args=[2]))
         self.assertRedirects(resp, reverse('polls:result_MJ',args=[2]))
 
+    def test_redirect_to_shultze(self):
+        resp = self.client.get(reverse(self.URL,args=[7]))
+        self.assertRedirects(resp, reverse('polls:result_shultze',args=[7]))
+
 
 class TestVoteRedirect(TestCase):
     fixtures = ['polls.json']
