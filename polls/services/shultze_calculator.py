@@ -95,7 +95,7 @@ class ShultzeCalculator:
         """
         return a list of dictionaries where for each position return the number of times each candidate was ordered in that position
         """
-        summary: list[dict[Any, int]] = [defaultdict(lambda: 0) for _ in range(self.__dim)]
+        summary: list[dict[Any, int]] = [{c: 0 for c in self.candidates} for _ in range(self.__dim)]
 
         for seq, votes in self.sequence_votes.items():
             for i, candidate in enumerate(seq):
