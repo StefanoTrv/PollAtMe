@@ -94,8 +94,7 @@ class ShultzePreferenceResultView(_ResultView):
         shultze_result = ShultzeCalculator(calculate_sequences_from_db(poll))
         shultze_result.calculate()
 
-        alts = Alternative.objects.filter(id__in = [r[0] for r in shultze_result.rankings])
-        context['results'] = zip(alts, [r[1] for r in shultze_result.rankings])
+        context['results'] = shultze_result.rankings
         
         context['unique_winner'] = shultze_result.rankings[0][1] != shultze_result.rankings[1][1]
         context['poll'] = poll
@@ -103,10 +102,15 @@ class ShultzePreferenceResultView(_ResultView):
         context['authentication_type'] = poll.get_authentication_type()
         context['responses_count'] = poll.shultzepreference_set.count()
 
-        summary = shultze_result.get_summary()
-        alts = Alternative.objects.filter(id__in = [r for r in summary])
-        context['summary'] = list(zip(alts, [summary[r] for r in summary]))
+        context['summary'] = [
+            (alt.text, list_pos)
+            for alt, list_pos in shultze_result.get_summary().items()
+        ]
 
+        context['summary_transposed'] = [
+            [d[alt] for alt, _ in shultze_result.rankings]
+            for d in shultze_result.get_summary_transposed()
+        ]
         return context
 
 class MajorityJudgementResultView(_ResultView):

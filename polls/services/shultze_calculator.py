@@ -27,9 +27,9 @@ class ShultzeCalculator:
 
         self.__dim = len(self.candidates)
         self.pairwise_preferences = [
-            [0 for i in range(self.__dim)] for j in range(self.__dim)]
+            [0 for _ in range(self.__dim)] for _ in range(self.__dim)]
         self.strongest_paths_matrix = [
-            [0 for i in range(self.__dim)] for j in range(self.__dim)]
+            [0 for _ in range(self.__dim)] for _ in range(self.__dim)]
 
         self.rankings = []
         for c in self.candidates:
@@ -90,3 +90,15 @@ class ShultzeCalculator:
                 summary[candidate][i] += votes
 
         return dict(summary)
+
+    def get_summary_transposed(self) -> list[dict[Any, int]]:
+        """
+        return a list of dictionaries where for each position return the number of times each candidate was ordered in that position
+        """
+        summary: list[dict[Any, int]] = [defaultdict(lambda: 0) for _ in range(self.__dim)]
+
+        for seq, votes in self.sequence_votes.items():
+            for i, candidate in enumerate(seq):
+                summary[i][candidate] += votes
+
+        return summary

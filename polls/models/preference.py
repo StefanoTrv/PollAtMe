@@ -74,7 +74,7 @@ class ShultzePreference(Preference):
     
     def get_sequence(self):
         return tuple(
-            self.shultzeopinionjudgement_set.all().order_by('order').values_list('alternative', flat=True)
+            j.alternative for j in self.shultzeopinionjudgement_set.all().order_by('order')
         )
 
 class MajorityOpinionJudgement(models.Model):

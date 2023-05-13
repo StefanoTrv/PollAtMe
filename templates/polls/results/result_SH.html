@@ -107,14 +107,14 @@
 
   var options = {
     series: [
-      {% for alt, list_pos in summary %}
+      {% for list_pos in summary_transposed %}
       {
-        name: '{{ alt }}',
-        data: [{% for n in list_pos %}{{ n }}, {% endfor %}]
+        name: '{{ forloop.counter }}°',
+        data: [{% for n in list_pos %}{{ n }},{% endfor %}]
       },
       {% endfor %}
     ],
-    colors: ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0', '#1b6462', '#0ec50b', '#8f7635', '#e67f26', '#eb2f0d'],
+    colors: ['#020873',  '#5f0075', '#93006f', '#bd0063', '#de0054', '#f54142', '#ff6e2e', '#ff9814', '#ffc100', '#f2e926'],
     chart: {
     type: 'bar',
     height: 275,
@@ -131,9 +131,7 @@
     colors: ['#fff']
   },
   xaxis: {
-    categories: [{% for _, _ in summary %}
-                    '{{ forloop.counter }}° posizione',
-                  {% endfor %}]
+    categories: [{% for alt, _ in summary %}'{{ alt }}',{% endfor %}]
   },
   tooltip: {
     y: {
