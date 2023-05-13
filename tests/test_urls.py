@@ -1,6 +1,6 @@
 from django.test import SimpleTestCase, TestCase
 from django.urls import reverse, resolve
-from polls.views import IndexView, SinglePreferenceResultView, MajorityJudgementResultView, VoteSinglePreferenceView, VoteMajorityJudgmentView
+from polls.views import *
 
 class UrlsTest(SimpleTestCase): #usiamo SimpleTestCase perchè non facciamo riferimento al db
 
@@ -15,12 +15,18 @@ class UrlsTest(SimpleTestCase): #usiamo SimpleTestCase perchè non facciamo rife
         url = reverse('polls:vote_MJ', args = [1])
         self.assertEqual(resolve(url).func.view_class, VoteMajorityJudgmentView)
 
+        url = reverse('polls:vote_shultze', args = [1])
+        self.assertEqual(resolve(url).func.view_class, VoteShultzeView)
+
     def test_result_resolves(self):
         url = reverse('polls:result_single_preference', args = [1])
         self.assertEqual(resolve(url).func.view_class, SinglePreferenceResultView)
 
         url = reverse('polls:result_MJ', args = [1])
         self.assertEqual(resolve(url).func.view_class, MajorityJudgementResultView)
+
+        url = reverse('polls:result_shultze', args = [1])
+        self.assertEqual(resolve(url).func.view_class, ShultzePreferenceResultView)
         
 
 class TestResultRedirect(TestCase):
