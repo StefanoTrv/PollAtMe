@@ -107,15 +107,14 @@
 
   var options = {
     series: [
-    {% for vote in ordered_votes %}
-    {
-    name: '{{vote}}',
-    data: [{% for alternativa in voti_alternativa %}
-              {{ alternativa.lista_voti|get_value:vote }},
-          {% endfor %}]
-    },
-    {% endfor %}
-  ],
+      {% for alt, list_pos in summary %}
+      {
+        name: '{{ alt }}',
+        data: [{% for n in list_pos %}{{ n }}, {% endfor %}]
+      },
+      {% endfor %}
+    ],
+    colors: ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0', '#1b6462', '#0ec50b', '#8f7635', '#e67f26', '#eb2f0d'],
     chart: {
     type: 'bar',
     height: 275,
@@ -132,8 +131,8 @@
     colors: ['#fff']
   },
   xaxis: {
-    categories: [{% for alternativa in voti_alternativa %}
-                    '{{alternativa.alternativa}}',
+    categories: [{% for _, _ in summary %}
+                    '{{ forloop.counter }}° posizione',
                   {% endfor %}]
   },
   tooltip: {
@@ -159,18 +158,18 @@
 
 </script>
 
-{% for alternativa in voti_alternativa %}
+{% for alt, list_pos in summary %}
 <script>
 
     var options = {
       series: [{
-        name: 'Preferenze {{alternativa.al}}',
-        data: [{% for voto, amount in alternativa.lista_voti.items%}
+        name: 'Preferenze {{ alt }}',
+        data: [{% for n in list_pos %}
                 {
-                x: '{{voto}}',
-                y: {{amount}},
+                x: '{{ forloop.counter }}°',
+                y: {{ n }},
                 },
-              {%endfor%}]
+              {% endfor %}]
       }],
     chart: {
       type: 'bar',

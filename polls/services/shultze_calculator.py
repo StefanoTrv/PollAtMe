@@ -78,3 +78,15 @@ class ShultzeCalculator:
                         self.rankings[i] = (self.rankings[i][0], self.rankings[i][1] + 1)
 
         self.rankings.sort(key=lambda x: x[1])
+    
+    def get_summary(self) -> dict[Any, list[int]]:
+        """
+        return a dictionary where for each candidate return the number of times it was ordered in every position
+        """
+        summary: dict = defaultdict(lambda: [0 for _ in range(self.__dim)])
+
+        for seq, votes in self.sequence_votes.items():
+            for i, candidate in enumerate(seq):
+                summary[candidate][i] += votes
+
+        return dict(summary)

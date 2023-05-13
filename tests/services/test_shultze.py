@@ -86,3 +86,25 @@ class TestShultze(TestCase):
         s = shultze_calculator.ShultzeCalculator(input)
         s.calculate()
         self.assertEqual(s.rankings, [('A', 1), ('B', 2), ('C', 2)])
+    
+    def test_summary(self):
+        input = {
+            ('A', 'C', 'B', 'E', 'D'): 5,
+            ('A', 'D', 'E', 'C', 'B'): 5,
+            ('B', 'E', 'D', 'A', 'C'): 8,
+            ('C', 'A', 'B', 'E', 'D'): 3,
+            ('C', 'A', 'E', 'B', 'D'): 7,
+            ('C', 'B', 'A', 'D', 'E'): 2,
+            ('D', 'C', 'E', 'B', 'A'): 7,
+            ('E', 'B', 'A', 'D', 'C'): 8
+        }
+
+        s = shultze_calculator.ShultzeCalculator(input)
+
+        self.assertEqual(s.get_summary(), {
+            'A': [10, 10, 10, 8, 7],
+            'B': [8, 10, 8, 14, 5],
+            'C': [12, 12, 0, 5, 16],
+            'D': [7, 5, 8, 10, 15],
+            'E': [8, 8, 19, 8, 2]
+        })

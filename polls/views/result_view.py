@@ -103,6 +103,10 @@ class ShultzePreferenceResultView(_ResultView):
         context['authentication_type'] = poll.get_authentication_type()
         context['responses_count'] = poll.shultzepreference_set.count()
 
+        summary = shultze_result.get_summary()
+        alts = Alternative.objects.filter(id__in = [r for r in summary])
+        context['summary'] = list(zip(alts, [summary[r] for r in summary]))
+
         return context
 
 class MajorityJudgementResultView(_ResultView):
@@ -131,6 +135,6 @@ class MajorityJudgementResultView(_ResultView):
         context['poll'] = poll
         context['visibility'] = poll.get_visibility()
         context['authentication_type'] = poll.get_authentication_type()
-        context['responses_count']=result_service.get_numero_numero_preferenze()
-        context['include_synthetic']=include_synthetic
+        context['responses_count'] = result_service.get_numero_numero_preferenze()
+        context['include_synthetic'] = include_synthetic
         return context
