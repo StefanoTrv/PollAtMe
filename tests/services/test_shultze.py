@@ -42,7 +42,7 @@ class TestShultzeCalculator(TestCase):
             [23, 21, 27, 0, 31],
             [15, 28, 12, 14, 0]
         ])
-        self.assertEqual(s.strongest_paths_matrix, [
+        self.assertEqual(s.shultze_table, [
             [0, 28, 28, 24, 30],
             [25, 0, 29, 24, 29],
             [25, 28, 0, 24, 33],

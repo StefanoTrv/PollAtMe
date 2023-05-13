@@ -16,7 +16,7 @@ def calculate_sequences_from_db(poll: Poll) -> dict[tuple, int]:
 class ShultzeCalculator:
     sequence_votes: dict[tuple, int]
     pairwise_preferences: list[list[int]]
-    strongest_paths_matrix: list[list[int]]
+    shultze_table: list[list[int]]
     rankings: list[tuple]
 
     candidates: tuple
@@ -28,7 +28,7 @@ class ShultzeCalculator:
         self.__dim = len(self.candidates)
         self.pairwise_preferences = [
             [0 for _ in range(self.__dim)] for _ in range(self.__dim)]
-        self.strongest_paths_matrix = [
+        self.shultze_table = [
             [0 for _ in range(self.__dim)] for _ in range(self.__dim)]
 
         self.rankings = []
@@ -58,23 +58,23 @@ class ShultzeCalculator:
             for j in range(self.__dim):
                 if i != j:
                     if self.pairwise_preferences[i][j] > self.pairwise_preferences[j][i]:
-                        self.strongest_paths_matrix[i][j] = self.pairwise_preferences[i][j]
+                        self.shultze_table[i][j] = self.pairwise_preferences[i][j]
                     else:
-                        self.strongest_paths_matrix[i][j] = 0
+                        self.shultze_table[i][j] = 0
 
         for i in range(self.__dim):
             for j in range(self.__dim):
                 if i != j:
                     for k in range(self.__dim):
                         if i != k and j != k:
-                            self.strongest_paths_matrix[j][k] = max(self.strongest_paths_matrix[j][k], min(
-                                self.strongest_paths_matrix[j][i], self.strongest_paths_matrix[i][k]))
+                            self.shultze_table[j][k] = max(self.shultze_table[j][k], min(
+                                self.shultze_table[j][i], self.shultze_table[i][k]))
 
     def __calculate_rankings(self):
         for i in range(self.__dim):
             for j in range(self.__dim):
                 if i != j:
-                    if self.strongest_paths_matrix[i][j] < self.strongest_paths_matrix[j][i]:
+                    if self.shultze_table[i][j] < self.shultze_table[j][i]:
                         self.rankings[i] = (self.rankings[i][0], self.rankings[i][1] + 1)
 
         self.rankings.sort(key=lambda x: x[1])

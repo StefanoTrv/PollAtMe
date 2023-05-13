@@ -243,7 +243,7 @@
 <script>
   new ApexCharts(document.querySelector("#chart3"), {
     series: [
-      {% for c0, row in widest_path %}
+      {% for c0, row in shultze_table %}
       {
         name: '{{ c0 }}',
         data: [{% for c1, n in row %}

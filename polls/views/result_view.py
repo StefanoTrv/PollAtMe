@@ -126,9 +126,9 @@ class ShultzePreferenceResultView(_ResultView):
             (candidate_row, [(candidate_col, val) for candidate_col, val in zip(shultze_result.candidates, row)])
             for candidate_row, row in zip(shultze_result.candidates, shultze_result.pairwise_preferences)
         ]
-        context['widest_path'] = [
+        context['shultze_table'] = [
             (candidate_row, [(candidate_col, val) for candidate_col, val in zip(shultze_result.candidates, row)])
-            for candidate_row, row in zip(shultze_result.candidates, shultze_result.strongest_paths_matrix)
+            for candidate_row, row in zip(shultze_result.candidates, shultze_result.shultze_table)
         ]
         return context
 
