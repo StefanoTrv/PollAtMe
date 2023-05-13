@@ -106,10 +106,18 @@ class ShultzePreferenceResultView(_ResultView):
             (alt.text, list_pos)
             for alt, list_pos in shultze_result.get_summary().items()
         ]
-
         context['summary_transposed'] = [
             [d[alt] for alt, _ in shultze_result.rankings]
             for d in shultze_result.get_summary_transposed()
+        ]
+        context['pairwise_mat'] = [
+            (candidate_row, [(candidate_col, val) for candidate_col, val in zip(shultze_result.candidates, row)])
+            for candidate_row, row in zip(shultze_result.candidates, shultze_result.pairwise_preferences)
+        ]
+
+        context['widest_path'] = [
+            (candidate_row, [(candidate_col, val) for candidate_col, val in zip(shultze_result.candidates, row)])
+            for candidate_row, row in zip(shultze_result.candidates, shultze_result.strongest_paths_matrix)
         ]
         return context
 

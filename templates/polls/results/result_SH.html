@@ -104,7 +104,6 @@
 {% block javascripts %}
 <script src={% static 'js/plugins/apexcharts.min.js' %}></script>
 <script>
-
   var options = {
     series: [
       {% for list_pos in summary_transposed %}
@@ -153,12 +152,10 @@
 
   var chart = new ApexCharts(document.querySelector("#chart"), options);
   chart.render();
-
 </script>
 
 {% for alt, list_pos in summary %}
 <script>
-
     var options = {
       series: [{
         name: 'Preferenze {{ alt }}',
@@ -216,5 +213,57 @@
     chart.render();
 </script>
 {% endfor %}
+
+<script>
+  new ApexCharts(document.querySelector("#chart2"), {
+    series: [
+      {% for c0, row in pairwise_mat %}
+      {
+        name: '{{ c0 }}',
+        data: [{% for c1, n in row %}
+                {
+                x: '{{ c1 }}',
+                y: {{ n }},
+                },
+               {% endfor %}]
+      },
+      {% endfor %}
+    ],
+    chart: {
+      height: 350,
+      type: 'heatmap',
+    },
+    dataLabels: {
+      enabled: true
+    },
+    colors: ["#008FFB"],
+  }).render();
+</script>
+
+<script>
+  new ApexCharts(document.querySelector("#chart3"), {
+    series: [
+      {% for c0, row in widest_path %}
+      {
+        name: '{{ c0 }}',
+        data: [{% for c1, n in row %}
+                {
+                x: '{{ c1 }}',
+                y: {{ n }},
+                },
+               {% endfor %}]
+      },
+      {% endfor %}
+    ],
+    chart: {
+      height: 350,
+      type: 'heatmap',
+    },
+    dataLabels: {
+      enabled: true
+    },
+    colors: ["#f30000"],
+  }).render();
+</script>
 
 {% endblock javascripts %}
