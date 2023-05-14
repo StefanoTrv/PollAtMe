@@ -108,28 +108,28 @@ class ShultzePreferenceResultView(_ResultView):
                 [d[alt] for alt, _ in shultze_result.rankings]
                 for d in shultze_result.get_summary_transposed()
             ]
+            context['summary'] = [
+            (alt.text, list_pos)
+            for alt, list_pos in shultze_result.get_summary().items()
+            ]
+            context['summary_transposed'] = [
+                [d[alt] for alt, _ in shultze_result.rankings]
+                for d in shultze_result.get_summary_transposed()
+            ]
+            context['pairwise_mat'] = [
+                (candidate_row, [(candidate_col, val) for candidate_col, val in zip(shultze_result.candidates, row)])
+                for candidate_row, row in zip(shultze_result.candidates, shultze_result.pairwise_preferences)
+            ]
+            context['shultze_table'] = [
+                (candidate_row, [(candidate_col, val) for candidate_col, val in zip(shultze_result.candidates, row)])
+                for candidate_row, row in zip(shultze_result.candidates, shultze_result.shultze_table)
+            ]
 
         context['poll'] = poll
         context['visibility'] = poll.get_visibility()
         context['authentication_type'] = poll.get_authentication_type()
         context['responses_count'] = poll.shultzepreference_set.count()
 
-        context['summary'] = [
-            (alt.text, list_pos)
-            for alt, list_pos in shultze_result.get_summary().items()
-        ]
-        context['summary_transposed'] = [
-            [d[alt] for alt, _ in shultze_result.rankings]
-            for d in shultze_result.get_summary_transposed()
-        ]
-        context['pairwise_mat'] = [
-            (candidate_row, [(candidate_col, val) for candidate_col, val in zip(shultze_result.candidates, row)])
-            for candidate_row, row in zip(shultze_result.candidates, shultze_result.pairwise_preferences)
-        ]
-        context['shultze_table'] = [
-            (candidate_row, [(candidate_col, val) for candidate_col, val in zip(shultze_result.candidates, row)])
-            for candidate_row, row in zip(shultze_result.candidates, shultze_result.shultze_table)
-        ]
         return context
 
 class MajorityJudgementResultView(_ResultView):
