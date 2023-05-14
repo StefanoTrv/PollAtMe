@@ -1,0 +1,133 @@
+<h5 class="mt-4">
+    Classifica e giudizi per alternativa 
+    <button type="button" class="btn  btn-icon btn-outline-info" data-bs-toggle="modal" data-bs-target="#modal-shultze-explanation">
+      <i class="feather icon-info">
+      </i>
+    </button>
+  </h5>
+  <hr>
+  <div class="row row-cols-md-3 row-cols-sm-1 g-4">
+    {% for alt, pos in results %}
+    <!-- Commento per i test: {{ alt }}-{{ pos }} -->
+    {% if pos == 1 and unique_winner %}
+    <div class="col-md-12">
+      <div class="card bg-success">
+        <div class="card-body text-white">
+          <h3 class="text-end"><span class="badge badge-pill bg-secondary">{{ pos }}° posizione</span></h3>
+          <h4 class="card-title text-white">{{ alt|upper }}</h4>
+        </div>
+      </div>
+    </div>
+    {% elif pos == 1 and not unique_winner %}
+    <div class="col">
+      <div class="card bg-warning h-100">
+        <div class="card-body">
+          <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ pos }}° posizione</span></h4>
+          <h5 class="card-title">{{ alt|upper }}</h5>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-body">
+          <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ pos }}° posizione</span></h4>
+          <h5 class="card-title">{{ alt|upper }}</h5>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+  
+  <h5 class="mt-4">Grafici</h5>
+  <hr>
+  <div class="row row-cols-md-2 row-cols-sm-1 g-4">
+    <div class="col-md-6 h-100">
+      <div class="card">
+        <div class="card-header">
+          <h5>Distribuzione delle posizioni per alternativa (in percentuale) </h5>
+        </div>
+        <div class="card-body">
+          <div id="chart"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 h-100">
+      <div class="card">
+        <div class="card-header">
+          <h5>Istogramma delle posizioni per alternativa </h5>
+        </div>
+        <div class="card-body">
+          <ul class="nav nav-tabs" id="myTab" role="tablist">
+            {% for alt, _ in summary %}
+                {% if forloop.first %}
+                  <li class="nav-item" role="presentation">
+                    <a class="nav-link active" id='{{ alt }}' data-bs-toggle="tab" data-bs-target="#tab_{{ forloop.counter }}" type="button" role="tab">{{ alt |upper }}</a>
+                  </li>
+                {% else %}
+                  <li class="nav-item" role="presentation">
+                    <a class="nav-link" id='{{ alt }}' data-bs-toggle="tab" data-bs-target="#tab_{{ forloop.counter }}" type="button" role="tab">{{ alt|upper }}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+          </ul>
+          <div class="tab-content" id='tab1content'>
+            {% for _, _ in summary %}
+              {% if forloop.first %}
+              <div class="tab-pane show active" id="tab_{{ forloop.counter }}" role="tabpanel">
+                  <div id="bar_{{ forloop.counter }}"></div>
+              </div>
+              {% else %}
+              <div class="tab-pane" id="tab_{{ forloop.counter }}" role="tabpanel">
+                <div id="bar_{{ forloop.counter }}"></div> 
+              </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <a class="" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample" onclick="if(document.getElementById('chev-down').style.display=='none'){
+                                                                                                                                                document.getElementById('chev-down').style.display='inline';
+                                                                                                                                                document.getElementById('chev-up').style.display='none';
+                                                                                                                                              }else{
+                                                                                                                                                document.getElementById('chev-up').style.display='inline';
+                                                                                                                                                document.getElementById('chev-down').style.display='none';
+                                                                                                                                              }">
+    <h5 class="text-primary p-2" onMouseOver="this.style.background = 'white';"  onMouseOut="this.style.backgroundColor = 'transparent'">Tabelle <i class="bi bi-chevron-down" id="chev-down"></i>
+                                                                                                                                                 <i class="bi bi-chevron-up" id="chev-up" style="display: none;"></i></h5>
+  </a>
+  <hr>
+  <div class="collapse" id="collapseExample">
+    <div class="card">
+      <div class="card-body">
+        <p>Per capire di più sul significato e sulla costruzione delle seguenti tabelle, clicca <a href={% url 'polls:explain_gm' %} class='alert-link'>qui</a>.</p>
+      </div>
+    </div>
+    <div class="row row-cols-md-2 row-cols-sm-1 g-4">
+      <div class="col-md-6 h-100">
+        <div class="card">
+          <div class="card-header">
+            <h5>Tabella delle preferenze</h5>
+          </div>
+          <div class="card-body">
+            <div id="chart2"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 h-100">
+        <div class="card">
+          <div class="card-header">
+            <h5>Tabella di Shultze</h5>
+          </div>
+          <div class="card-body">
+            <div id="chart3"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>

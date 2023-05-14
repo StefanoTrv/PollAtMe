@@ -55,6 +55,28 @@ class MajorityPreference(Preference):
             j.preference = self
         MajorityOpinionJudgement.objects.bulk_create(judgments)
 
+class ShultzePreference(Preference):
+    responses = models.ManyToManyField(Alternative, through="ShultzeOpinionJudgement")
+
+    def __str__(self) -> str:
+        opinion_list=[]
+        for opinion in self.shultzeopinionjudgement_set.all():
+            opinion_list.append(str(opinion))
+        return self.poll.title +'\n\t'+'\n\t'.join(opinion_list) +'\n'
+
+    def save_shulze_judgements(self, judgements):
+        if self.pk:
+            self.shultzeopinionjudgement_set.all().delete()
+
+        for j in judgements:
+            j.preference = self
+        ShultzeOpinionJudgement.objects.bulk_create(judgements)
+    
+    def get_sequence(self):
+        return tuple(
+            j.alternative for j in self.shultzeopinionjudgement_set.all().order_by('order')
+        )
+
 class MajorityOpinionJudgement(models.Model):
     class JudgementType(models.IntegerChoices):
         """
@@ -72,3 +94,11 @@ class MajorityOpinionJudgement(models.Model):
 
     def __str__(self) -> str:
         return self.alternative.text + ' -> ' + str(self.grade)
+
+class ShultzeOpinionJudgement(models.Model):
+    order = models.IntegerField()
+    alternative = models.ForeignKey(Alternative, on_delete=models.CASCADE)
+    preference = models.ForeignKey(ShultzePreference, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return self.alternative.text + ' -> ' + str(self.order)

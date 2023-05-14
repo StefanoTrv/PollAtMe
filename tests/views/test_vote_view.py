@@ -196,10 +196,10 @@ class TestVoteMajorityPreferenceView(TestCase):
     def test_show_majority_preference_poll_form_random_order(self):
         is_randomized = False
         models.PollOptions.objects.create(poll=self.poll, random_order=True)
-        for i in range(0,2):
+        for _ in range(2):
             resp = self.client.get(self.poll_url)
             resp1 = self.client.get(self.poll_url)
-            is_randomized = is_randomized or remove_csfr_token(resp1)!=remove_csfr_token(resp)
+            is_randomized = is_randomized or remove_csfr_token(resp1) != remove_csfr_token(resp)
         assert_that(is_randomized).is_true
 
     def test_show_majority_preference_poll_form_fixed_order(self):
@@ -234,3 +234,69 @@ class TestVoteMajorityPreferenceView(TestCase):
         judgement: models.MajorityOpinionJudgement
         for judgement in last_vote.majorityopinionjudgement_set.all():
             self.assertEqual(judgement.grade, 1)
+
+class TestVoteShultzePreferenceView(TestCase):
+    fixtures = ['test_shultze.json']
+    url = 'polls:vote_shultze'
+
+    def setUp(self) -> None:
+        self.poll = models.Poll.objects.first()
+        if self.poll is None:
+            raise Exception('No poll found')
+        
+        self.poll_url = reverse(self.url, args=[self.poll.pk])
+        self.formset_class = pollforms.ShultzePreferenceFormSet.get_formset_class(self.poll.alternative_set.count())
+        self.form = self.formset_class(queryset=self.poll.alternative_set.all())
+    
+    def test_show_shultze_poll_form(self):
+        resp = self.client.get(self.poll_url)
+        assert_that(resp.context['form'].forms).is_length(len(self.form.forms))
+        assert_that(resp.status_code).is_equal_to(200)
+        self.assertContains(
+            response=resp,
+            text=str(self.form.management_form)
+        )
+        self.assertContains(
+            response=resp,
+            text=self.poll.title
+        )
+        self.assertContains(
+            response=resp,
+            text=self.poll.text
+        )
+
+        f: pollforms.ShultzePreferenceFormSet
+        for f in self.form:
+            self.assertContains(
+                response=resp,
+                text=f.fields['order'].label
+            )
+        
+    def test_submit_and_save_in_db(self):
+        resp = self.client.post(self.poll_url, {
+            'shultzeopinionjudgement_set-TOTAL_FORMS': 5,
+            'shultzeopinionjudgement_set-INITIAL_FORMS': 0,
+            'shultzeopinionjudgement_set-MIN_NUM_FORMS': 5,
+            'shultzeopinionjudgement_set-MAX_NUM_FORMS': 5,
+            'shultzeopinionjudgement_set-0-order': 4,
+            'shultzeopinionjudgement_set-1-order': 1,
+            'shultzeopinionjudgement_set-2-order': 5,
+            'shultzeopinionjudgement_set-3-order': 3,
+            'shultzeopinionjudgement_set-4-order': 2,
+        })
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(
+            response=resp,
+            template_name='polls/vote_success.html'
+        )
+
+        last_vote = models.preference.ShultzePreference.objects.last()
+        self.assertEqual(last_vote.shultzeopinionjudgement_set.count(), 5)
+
+        self.assertEqual(last_vote.shultzeopinionjudgement_set.get(alternative__text='Lorem').order, 4)
+        self.assertEqual(last_vote.shultzeopinionjudgement_set.get(alternative__text='Ipsum').order, 1)
+        self.assertEqual(last_vote.shultzeopinionjudgement_set.get(alternative__text='dolor sit amet').order, 5)
+        self.assertEqual(last_vote.shultzeopinionjudgement_set.get(alternative__text='consectetur adipiscing elit').order, 3)
+        self.assertEqual(last_vote.shultzeopinionjudgement_set.get(alternative__text='Integer tristique').order, 2)
+        

@@ -25,11 +25,111 @@ class CreatePollViewTest(TestCase):
         assert_that(response).contains_form(PollFormMain)
         assert_that(response).contains_formset(BaseAlternativeFormSet.get_formset_class())
         
-    def test_aggiunta_poll(self):
+    def test_aggiunta_poll_MJ(self):
         step_1_data = {
             'title': 'Lorem ipsum',
             'text': 'dolor sit amet',
             'default_type': 1,
+            'form-TOTAL_FORMS': 2,
+            'form-INITIAL_FORMS': 0,
+            'form-MIN_NUM_FORMS': 2,
+            'form-MAX_NUM_FORMS': 10,
+            'form-0-text': 'lorem',
+            'form-0-id': '',
+            'form-0-DELETE': '',
+            'form-1-text': 'ipsum',
+            'form-1-id': '',
+            'form-1-DELETE': '',
+            'summary': ''
+        }
+
+        now = timezone.localtime(timezone.now())
+        step_2_data = {
+            'title': step_1_data['title'],
+            'text': step_1_data['text'],
+            'default_type': step_1_data['default_type'],
+            'start': (now + timedelta(minutes=20)).strftime('%Y-%m-%d %H:%M:%S'),
+            'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
+            'visibility': Poll.PollVisibility.HIDDEN.value,
+            'authentication_type': Poll.PollAuthenticationType.FREE.value,
+            'results_restriction': Poll.PollResultsRestriction.ALL.value,
+            'random_order': False,
+            'save': ''
+        }
+
+        response = self.client.post(self.url, data=step_1_data)
+        assert_that(response.status_code).is_equal_to(200)
+        self.assertTemplateUsed(response, 'polls/create_poll/summary_and_options_create.html')
+
+        # Verifichiamo che ci siano tutti i campi del form
+        assert_that(response).contains_form(PollForm)
+        assert_that(response).contains_form(PollMappingForm)
+        assert_that(response).contains_form(PollOptionsForm)
+
+        response = self.client.post(self.url, data=step_2_data)
+        assert_that(response.status_code).is_equal_to(302)
+        assert_that(response.url).is_equal_to(reverse('polls:poll_created_success'))
+
+        assert_that(Poll.objects.count()).is_equal_to(1)
+        assert_that(Alternative.objects.count()).is_equal_to(2)
+        assert_that(Mapping.objects.count()).is_equal_to(1)
+        assert_that(PollOptions.objects.count()).is_equal_to(1)
+
+    def test_aggiunta_poll_Shultze(self):
+        step_1_data = {
+            'title': 'Lorem ipsum',
+            'text': 'dolor sit amet',
+            'default_type': 2,
+            'form-TOTAL_FORMS': 2,
+            'form-INITIAL_FORMS': 0,
+            'form-MIN_NUM_FORMS': 2,
+            'form-MAX_NUM_FORMS': 10,
+            'form-0-text': 'lorem',
+            'form-0-id': '',
+            'form-0-DELETE': '',
+            'form-1-text': 'ipsum',
+            'form-1-id': '',
+            'form-1-DELETE': '',
+            'summary': ''
+        }
+
+        now = timezone.localtime(timezone.now())
+        step_2_data = {
+            'title': step_1_data['title'],
+            'text': step_1_data['text'],
+            'default_type': step_1_data['default_type'],
+            'start': (now + timedelta(minutes=20)).strftime('%Y-%m-%d %H:%M:%S'),
+            'end': (now + timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S'),
+            'visibility': Poll.PollVisibility.HIDDEN.value,
+            'authentication_type': Poll.PollAuthenticationType.FREE.value,
+            'results_restriction': Poll.PollResultsRestriction.ALL.value,
+            'random_order': False,
+            'save': ''
+        }
+
+        response = self.client.post(self.url, data=step_1_data)
+        assert_that(response.status_code).is_equal_to(200)
+        self.assertTemplateUsed(response, 'polls/create_poll/summary_and_options_create.html')
+
+        # Verifichiamo che ci siano tutti i campi del form
+        assert_that(response).contains_form(PollForm)
+        assert_that(response).contains_form(PollMappingForm)
+        assert_that(response).contains_form(PollOptionsForm)
+
+        response = self.client.post(self.url, data=step_2_data)
+        assert_that(response.status_code).is_equal_to(302)
+        assert_that(response.url).is_equal_to(reverse('polls:poll_created_success'))
+
+        assert_that(Poll.objects.count()).is_equal_to(1)
+        assert_that(Alternative.objects.count()).is_equal_to(2)
+        assert_that(Mapping.objects.count()).is_equal_to(1)
+        assert_that(PollOptions.objects.count()).is_equal_to(1)
+
+    def test_aggiunta_poll_SP(self):
+        step_1_data = {
+            'title': 'Lorem ipsum',
+            'text': 'dolor sit amet',
+            'default_type': 3,
             'form-TOTAL_FORMS': 2,
             'form-INITIAL_FORMS': 0,
             'form-MIN_NUM_FORMS': 2,

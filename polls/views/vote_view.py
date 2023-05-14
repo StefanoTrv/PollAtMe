@@ -1,19 +1,19 @@
 from typing import Any, Optional, Type
 
 from django import forms, http
+from django.contrib.auth.views import redirect_to_login
 from django.db.models.query import QuerySet
+from django.forms.models import BaseModelForm
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.views import View
 from django.views.generic.edit import CreateView
 
 from polls.exceptions import PollWithoutAlternativesException
-from polls.forms import MajorityPreferenceFormSet, SinglePreferenceForm
-from polls.models import MajorityPreference, Poll
-from polls.models.preference import SinglePreference
-from polls.services import SearchPollService
-from polls.services import check
-from django.contrib.auth.views import redirect_to_login
+from polls import forms as pf
+from polls.models import Poll
+from polls.models import preference as pref
+from polls.services import SearchPollService, check
 
 
 # se si accede alla pagina di voto generica, si viene reindirizzati alla pagina di voto del metodo principale
@@ -29,6 +29,9 @@ def vote_redirect_view(request, id, token=None):
 
     if poll.default_type == Poll.PollType.MAJORITY_JUDGMENT:
         return redirect(reverse('polls:vote_MJ', args=args))
+    
+    if poll.default_type == Poll.PollType.SHULTZE_METHOD:
+        return redirect(reverse('polls:vote_shultze', args=args))
 
 
 class _VoteView(CreateView):
@@ -61,10 +64,10 @@ class _VoteView(CreateView):
             return None
 
         if self.pollType == "Preferenza singola":
-            vote_class = SinglePreference
+            vote_class = pref.SinglePreference
 
         if self.pollType == "Giudizio maggioritario":
-            vote_class = MajorityPreference
+            vote_class = pref.MajorityPreference
 
         return vote_class.objects.get(id=id)
 
@@ -78,11 +81,12 @@ class _VoteView(CreateView):
 
     def __get_authorization_checker(self, request: http.HttpRequest, syntethic_preference):
         handler = check.CheckPollActiveness(self.poll)
-        handler.set_next(check.CheckAuthentication(
-            self.poll, 
-            request.user.is_authenticated, 
-            self.token, 
-            self.__failed_authentication)) \
+        handler \
+            .set_next(check.CheckAuthentication(
+                self.poll, 
+                request.user.is_authenticated, 
+                self.token, 
+                self.__failed_authentication)) \
             .set_next(check.CheckUserHasVoted(
                 self.poll, 
                 request.user, 
@@ -104,7 +108,7 @@ class _VoteView(CreateView):
 
 class VoteSinglePreferenceView(_VoteView):
 
-    form_class: Optional[Type[forms.BaseForm]] = SinglePreferenceForm
+    form_class: Optional[Type[forms.BaseForm]] = pf.SinglePreferenceForm
     template_name: str = 'polls/vote/vote_SP.html'
 
     def __init__(self, **kwargs: Any) -> None:
@@ -128,7 +132,7 @@ class VoteSinglePreferenceView(_VoteView):
         new_preference = form.save()
 
         if self.poll.get_type() == self.pollType:
-            synthetic_preference = MajorityPreference.save_mj_from_sp(
+            synthetic_preference = pref.MajorityPreference.save_mj_from_sp(
                 new_preference)
             self.request.session['preference_id'] = synthetic_preference.id
             self.request.session['alternative_sp'] = new_preference.alternative.text
@@ -154,9 +158,9 @@ class VoteMajorityJudgmentView(_VoteView):
                 user=self.request.user, token=self.token)
 
         if synthetic_id:
-            preference = MajorityPreference.objects.get(id=synthetic_id)
+            preference = pref.MajorityPreference.objects.get(id=synthetic_id)
         else:
-            preference = MajorityPreference()
+            preference = pref.MajorityPreference()
             preference.poll = self.poll
 
         preference.synthetic = False
@@ -172,10 +176,36 @@ class VoteMajorityJudgmentView(_VoteView):
 
     def get_form_class(self) -> Type:
         num_judges = self.alternatives.count()
-        return MajorityPreferenceFormSet.get_formset_class(num_judges)
+        return pf.MajorityPreferenceFormSet.get_formset_class(num_judges)
 
 
-class VoteShultzeView(View):
+class VoteShultzeView(_VoteView):
     """
     Class view per l'inserimento delle risposte ai sondaggi con metodo Shultze
     """
+    template_name: str = 'polls/vote/vote_SHULTZE.html'
+
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.pollType = Poll.PollType.SHULTZE_METHOD.label
+    
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        self.poll.set_authentication_method_as_used(
+            user=self.request.user, token=self.token)
+    
+        preference = pref.ShultzePreference()
+        preference.poll = self.poll
+        preference.save()
+        preference.save_shulze_judgements(form.save(commit=False))
+
+        return render(self.request, 'polls/vote_success.html', {'poll': self.poll})
+
+    def get_form_kwargs(self) -> dict[str, Any]:
+        kwargs = super().get_form_kwargs()
+        kwargs['queryset'] = self.alternatives
+        return kwargs
+    
+    def get_form_class(self) -> Type[BaseModelForm]:
+        num_judges = self.alternatives.count()
+        return pf.ShultzePreferenceFormSet.get_formset_class(num_judges)

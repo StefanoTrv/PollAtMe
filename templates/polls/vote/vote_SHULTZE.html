@@ -1,0 +1,87 @@
+{% extends 'layouts/base.html' %}
+{% load django_bootstrap5 %}
+{% load shuffle %}
+{% load static %}
+
+{% block title %} {{block.super}} | {{ poll.title }} {% endblock title %}
+
+{% block content %}
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">{{ poll.title }}</h5>
+                            {{ poll.text }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+        <!-- [ Main Content ] start -->
+        <div class="row">
+            <!-- [ sample-page ] start -->
+            <div class="col-sm-12">
+                {% bootstrap_alert "Ordina le alternative in base alle tue preferenze dalla migliore (1) alla peggiore. Clicca <a class='alert-link' data-bs-toggle='modal' data-bs-target='#modal-shultze-explanation' href='#'>qui</a> per ulteriori informazioni." %}
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.management_form }}
+                    <div class="card">
+                        <div class="card-body">
+                            <ol class="list-group list-group-numbered gap-2" id="items">
+                            {% for f in form|shuffle:poll.polloptions.random_order %}
+                                <li class="list-group-item d-flex justify-content-between align-items-start p-4 border border-primary">
+                                    <div class="ms-2 me-auto">
+                                        {{ f.order.label }}
+                                        {{ f.order }}
+                                    </div>
+                                </li>
+                            {% endfor %}
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <button type="submit" class="btn btn-primary">Salva</button>
+                    </div>
+                </form>
+            </div>
+            <!-- [ sample-page ] end -->
+        </div>
+        <!-- [ Main Content ] end -->
+    </div>
+</div>
+
+{% include 'polls/includes/modal_spiegazione_metodo_shultze.html'%}
+
+{% endblock content %}
+
+
+{% block javascripts %}
+<script src="{% static 'js/plugins/Sortable.min.js' %}"></script>
+<script type="text/javascript">
+    const alternatives = document.getElementById('items');
+
+    // Set the index of each item
+    const setIndex = arr => arr.forEach((item, index) => {
+        const input = item.getElementsByTagName('input')[0];
+        input.value = index + 1;
+    })
+
+    // Set the index of each item on load
+    setIndex([...alternatives.children])
+    Sortable.create(alternatives, {
+        animation: 150,
+        ghostClass: 'blue-background-class',
+        chosenClass: 'blue-background-class',
+        dragClass: 'blue-background-class',
+
+        onEnd: (/**Event*/evt) => {
+            setIndex([...alternatives.children])
+        },
+    });
+</script>
+{% endblock javascripts %}
