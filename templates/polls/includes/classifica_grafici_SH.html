@@ -89,24 +89,35 @@
       </div>
     </div>
   </div>
-  <div class="row row-cols-md-2 row-cols-sm-1 g-4">
-    <div class="col">
-      <div class="card">
-        <div class="card-header">
-          <h5>Tabella delle preferenze</h5>
-        </div>
-        <div class="card-body">
-          <div id="chart2"></div>
+  <div style="text-align:center">
+    <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+      Mostra altro
+    </a>
+  </div>
+  <br>
+  <div class="collapse" id="collapseExample">
+    <div class="card card-header">
+      <p>Per capirne di più sulla costruzione e sul significato delle tabelle seguenti, clicca <a href={% url 'polls:explain_gm' %} class='alert-link'>qui</a>.</p>
+    </div>
+    <div class="row row-cols-md-2 row-cols-sm-1 g-4">
+      <div class="col">
+        <div class="card">
+          <div class="card-header">
+            <h5>Tabella delle preferenze</h5>
+          </div>
+          <div class="card-body">
+            <div id="chart2"></div>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="col">
-      <div class="card">
-        <div class="card-header">
-          <h5>Tabella di Shultze</h5>
-        </div>
-        <div class="card-body">
-          <div id="chart3"></div>
+      <div class="col">
+        <div class="card">
+          <div class="card-header">
+            <h5>Tabella di Shultze</h5>
+          </div>
+          <div class="card-body">
+            <div id="chart3"></div>
+          </div>
         </div>
       </div>
     </div>
