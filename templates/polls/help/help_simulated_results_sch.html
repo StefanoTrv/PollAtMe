@@ -132,12 +132,18 @@
                         </p>
                         <br>
                         <p class="card-text">
+
                             <h6>Caso 3: numero di alternative maggiore al numero di giudizi</h6> 
                             Il caso più interessante è quando il numero di alternative da ordinare con il metodo Schulze è maggiore al numero di alternative del giudizio 
-                            maggioritario. Il meccanismo è il seguente: si considera resto della divisione tra il numero di alternative Schulze per il numero di giudizi (5).
-                            Il risultato è il numero di alternative per cui verrà creato un giudizio uguale a un'altra alternativa, partendo sempre dal giudizio centrale. 
-                            Se tale valore è pari, si segue la logica del caso 2, dove alle alternative "in eccesso" viene assegnato un giudizio negativo. Se invece è dispari,
-                            il problema non si pone, come nel caso 2. Ad esempio, se le alternative da ordinare sono "<i>blu</i>", "<i>verde</i>", "<i>rosso</i>", "<i>giallo</i>", "<i>arancione</i>", 
+                            maggioritario. Il meccanismo è il seguente:
+                            <ul>
+                                <li>Si considera resto della divisione tra il numero di alternative Schulze per il numero di giudizi (5)</li>
+                                <li>Il risultato è il numero di alternative per cui verrà creato un giudizio uguale a un'altra alternativa</li>
+                                <li>Partendo dal centro si distribuiscono "gli slot" di giudizi duplicati, la logica è la stessa del caso 2, dove la priorià viene data ai giudizi negativi. 
+                                    In particolare, se il resto è pari si avrà un numero di alternative con giudizi duplicati peggiori di quello centrale maggiore di quelle con giudizi migliore</li>
+                              </ul>
+                            
+                            Per esempio, se le alternative da ordinare sono "<i>blu</i>", "<i>verde</i>", "<i>rosso</i>", "<i>giallo</i>", "<i>arancione</i>", 
                             "<i>viola</i>", "<i>nero</i>" e l'utente ha espresso l'ordinamento riassunto nella tabella sottostante (dal migliore/in alto al peggiore/in basso), per ogni alternativa 
                             verrà creato il corrispondente voto sintetico a fianco:
                         </p>
