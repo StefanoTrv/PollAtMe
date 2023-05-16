@@ -1,3 +1,4 @@
+from math import ceil, floor
 from django.db import models
 
 from .alternative import Alternative
@@ -16,6 +17,36 @@ class SinglePreference(Preference):
 
     def __str__(self) -> str:
         return self.poll.title + ' -> ' + self.alternative.text + ' (' + ('SINTETICO' if self.synthetic else 'REALE') + ')'
+
+class ShultzePreference(Preference):
+    responses = models.ManyToManyField(Alternative, through="ShultzeOpinionJudgement")
+
+    def __str__(self) -> str:
+        opinion_list=[]
+        for opinion in self.shultzeopinionjudgement_set.all():
+            opinion_list.append(str(opinion))
+        return self.poll.title +'\n\t'+'\n\t'.join(opinion_list) +'\n'
+
+    def save_shulze_judgements(self, judgements):
+        if self.pk:
+            self.shultzeopinionjudgement_set.all().delete()
+
+        for j in judgements:
+            j.preference = self
+        ShultzeOpinionJudgement.objects.bulk_create(judgements)
+    
+    def get_sequence(self):
+        return tuple(
+            j.alternative for j in self.shultzeopinionjudgement_set.all().order_by('order')
+        )
+
+class ShultzeOpinionJudgement(models.Model):
+    order = models.IntegerField()
+    alternative = models.ForeignKey(Alternative, on_delete=models.CASCADE)
+    preference = models.ForeignKey(ShultzePreference, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return self.alternative.text + ' -> ' + str(self.order)
 
 class MajorityPreference(Preference):
     # Tra le preferenze e le risposte c'è una relazione many to many mediata
@@ -47,6 +78,35 @@ class MajorityPreference(Preference):
         
         return synthetic_preference
     
+    @staticmethod
+    def save_mj_from_shultze(vote: ShultzePreference):
+        synthetic_preference = MajorityPreference()
+        synthetic_preference.poll = vote.poll
+        synthetic_preference.synthetic = True
+        synthetic_preference.save()
+
+        n = vote.poll.alternative_set.count()
+        m = len(MajorityOpinionJudgement.JudgementType.values)
+        d = int(floor(n / m))
+        r = n % m
+        median_judgement = MajorityOpinionJudgement.JudgementType.values[int(m/2)]
+        judgements: list = []
+        for j in MajorityOpinionJudgement.JudgementType.values:
+            judgements.append(*([j] * ceil(d)))
+            if j == median_judgement and r > 0 and d >= 1:
+                judgements.append(*([j] * r))
+
+        mojs: list = [
+            MajorityOpinionJudgement(**{
+                'alternative': j.alternative,
+                'grade': g
+            })
+            for g, j in zip(judgements, vote.shultzeopinionjudgement_set.order_by('order').all())
+        ]
+        synthetic_preference.save_mj_judgements(mojs)
+
+        return synthetic_preference
+
     def save_mj_judgements(self, judgments):
         if self.pk:
             self.majorityopinionjudgement_set.all().delete()
@@ -54,28 +114,6 @@ class MajorityPreference(Preference):
         for j in judgments:
             j.preference = self
         MajorityOpinionJudgement.objects.bulk_create(judgments)
-
-class ShultzePreference(Preference):
-    responses = models.ManyToManyField(Alternative, through="ShultzeOpinionJudgement")
-
-    def __str__(self) -> str:
-        opinion_list=[]
-        for opinion in self.shultzeopinionjudgement_set.all():
-            opinion_list.append(str(opinion))
-        return self.poll.title +'\n\t'+'\n\t'.join(opinion_list) +'\n'
-
-    def save_shulze_judgements(self, judgements):
-        if self.pk:
-            self.shultzeopinionjudgement_set.all().delete()
-
-        for j in judgements:
-            j.preference = self
-        ShultzeOpinionJudgement.objects.bulk_create(judgements)
-    
-    def get_sequence(self):
-        return tuple(
-            j.alternative for j in self.shultzeopinionjudgement_set.all().order_by('order')
-        )
 
 class MajorityOpinionJudgement(models.Model):
     class JudgementType(models.IntegerChoices):
@@ -95,10 +133,3 @@ class MajorityOpinionJudgement(models.Model):
     def __str__(self) -> str:
         return self.alternative.text + ' -> ' + str(self.grade)
 
-class ShultzeOpinionJudgement(models.Model):
-    order = models.IntegerField()
-    alternative = models.ForeignKey(Alternative, on_delete=models.CASCADE)
-    preference = models.ForeignKey(ShultzePreference, on_delete=models.CASCADE)
-
-    def __str__(self) -> str:
-        return self.alternative.text + ' -> ' + str(self.order)

@@ -199,6 +199,12 @@ class VoteShultzeView(_VoteView):
         preference.save()
         preference.save_shulze_judgements(form.save(commit=False))
 
+        if self.poll.get_type() == self.pollType:
+            syntethic_preference = pref.MajorityPreference.save_mj_from_shultze(preference)
+            self.request.session['preference_id'] = syntethic_preference.id
+            self.request.session['sequence_shultze'] = [alt.alternative.text for alt in preference.shultzeopinionjudgement_set.order_by('order').all()]
+            return render(self.request, 'polls/vote_success.html', {'poll': self.poll, 'revote': True, 'token': self.token})
+
         return render(self.request, 'polls/vote_success.html', {'poll': self.poll})
 
     def get_form_kwargs(self) -> dict[str, Any]:

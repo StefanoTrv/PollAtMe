@@ -80,7 +80,7 @@
 <script>
     var form = document.getElementById('vote-form');
     var modal = new bootstrap.Modal(document.getElementById('modalAlertPollRevote'));
-    alternative_sp = '{{request.session.alternative_sp}}';
+    alternative_sp = '{{ request.session.alternative_sp }}';
     if (alternative_sp != '') {
         form.addEventListener('submit', event => {
             event.preventDefault()
@@ -93,7 +93,7 @@
                     form.submit()
                 }
             }
-            var card= document.querySelectorAll('#card')
+            var card = document.querySelectorAll('#card')
             for (element of card) {
                 var gradeLabel = element.firstElementChild.innerText
                 element.lastElementChild.childNodes.forEach(function(field){
