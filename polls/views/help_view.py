@@ -10,4 +10,4 @@ class HelpSimulatedResultsView(TemplateView):
     template_name: str = 'polls/help/help_simulated_results.html'
 
 class ExplanationCreationPollView(TemplateView):
-    template_name: str = 'polls/help/help_visibility_and_vote_mode.html'
+    template_name: str = 'polls/help/help_advanced_options.html'
