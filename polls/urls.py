@@ -29,7 +29,8 @@ urlpatterns = [
     path('start/<int:id>/', views.poll_list.StartPollView.as_view(), name='start_poll'),
     path('search/', views.SearchView.as_view(), name='search_poll'),
     
-    path('help/simulated_results/', views.HelpSimulatedResultsView.as_view(), name='help_simulated_results'),
+    path('help/simulated_results_sp/', views.HelpSimulatedResultsSpView.as_view(), name='help_simulated_results_sp'),
+    path('help/simulated_results_sch/', views.HelpSimulatedResultsSchView.as_view(), name='help_simulated_results_sch'),
     path('help/majorityjudgment/', views.ExplanationGMView.as_view(), name='explain_gm'),
     path('help/options/', views.ExplanationCreationPollView.as_view(), name='explain_options'),
     
