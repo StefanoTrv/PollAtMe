@@ -4,6 +4,7 @@ from polls.models import Poll, Alternative
 from django.urls import reverse
 from polls.services.preferenza_singola import SinglePreferencePollResultsService
 from polls.services.giudizio_maggioritario import MajorityJudgementService
+from polls.services.shultze_calculator import ShultzeCalculator, calculate_sequences_from_db
 
 class ResultsViewTest(TestCase):
     
@@ -33,4 +34,18 @@ class ResultsViewTest(TestCase):
         for alternative in poll.alternative_set.all():
             self.assertContains(resp, alternative.text.upper())
             self.assertContains(resp, alternative.text+'-'+str(results[alternative.text]))
-            
+    
+class ResultViewShultze(TestCase):
+    fixtures: list[str] = ['test_shultze.json']
+
+    def test_shultze_mostra_alternative_in_classifica(self):
+        url = reverse('polls:result_shultze', args=[1])
+        resp = self.client.get(url)
+        assert_that(resp.status_code).is_equal_to(200)
+        poll = Poll.objects.get(id=1)
+        calculator = ShultzeCalculator(calculate_sequences_from_db(poll))
+        calculator.calculate()
+
+        for alternative, pos in calculator.rankings:
+            self.assertContains(resp, alternative.text.upper())
+            self.assertContains(resp, f"{alternative.text}-{pos}")

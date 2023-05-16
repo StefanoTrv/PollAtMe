@@ -1,8 +1,7 @@
 <h5 class="mt-4">
     Classifica e giudizi per alternativa 
-    <button type="button" class="btn  btn-icon btn-outline-info" data-bs-toggle="modal" data-bs-target="#modal-majority-explanation" href="spiegazione_giudizio_maggioritario.html">
-      <i class="feather icon-info">
-      </i>
+    <button type="button" class="btn  btn-icon btn-outline-info" data-bs-toggle="modal" data-bs-target="#modal-shultze-explanation">
+      <i class="feather icon-info"></i>
     </button>
   </h5>
   <hr>
@@ -16,13 +15,6 @@
           <h3 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.place }}° posizione</span></h3>
           <h4 class="card-title text-white">{{ alternative.alternative|upper }}</h4>
         </div>
-        <div class="card-footer">
-          <div class="row">
-            <div class="col-12 col-lg-4"><p class="text-lg-start text-white"><b>Voto</b>: {{ alternative.judgment.grade|stringformat:'s'}}</p></div>  
-            <div class="col-12 col-lg-4"><p class="text-lg-center text-white"><b>Migliori</b>: {{ alternative.judgment.giudizi_migliori|stringformat:'s'}}</p></div>
-            <div class="col-12 col-lg-4"><p class="text-lg-end text-white"><b>Peggiori</b>: {{ alternative.judgment.giudizi_peggiori|stringformat:'s'}}</p></div>  
-          </div>
-        </div>
       </div>
     </div>
     {% elif alternative.place == 1 and winners|length > 0 %}
@@ -32,13 +24,6 @@
           <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.place }}° posizione</span></h4>
           <h5 class="card-title">{{ alternative.alternative|upper }}</h5>
         </div>
-        <div class="card-footer">
-          <div class="row">
-            <div class="col-12 col-lg-4"><p class="text-lg-start"><b>Voto</b>: {{ alternative.judgment.grade|stringformat:'s'}}</p></div>  
-            <div class="col-12 col-lg-4"><p class="text-lg-center"><b>Migliori</b>: {{ alternative.judgment.giudizi_migliori|stringformat:'s'}}</p></div>
-            <div class="col-12 col-lg-4"><p class="text-lg-end"><b>Peggiori</b>: {{ alternative.judgment.giudizi_peggiori|stringformat:'s'}}</p></div>  
-          </div>
-        </div>
       </div>
     </div>
     {% else %}
@@ -47,13 +32,6 @@
         <div class="card-body">
           <h4 class="text-end"><span class="badge badge-pill bg-secondary">{{ alternative.place }}° posizione</span></h4>
           <h5 class="card-title">{{ alternative.alternative|upper }}</h5>
-        </div>
-        <div class="card-footer">
-          <div class="row">
-            <div class="col-12 col-lg-4"><p class="text-lg-start"><b>Voto</b>: {{ alternative.judgment.grade|stringformat:'s'}}</p></div>  
-            <div class="col-12 col-lg-4"><p class="text-lg-center"><b>Migliori</b>: {{ alternative.judgment.giudizi_migliori|stringformat:'s'}}</p></div>
-            <div class="col-12 col-lg-4"><p class="text-lg-end"><b>Peggiori</b>: {{ alternative.judgment.giudizi_peggiori|stringformat:'s'}}</p></div>  
-          </div>
         </div>
       </div>
     </div>
@@ -81,30 +59,30 @@
         </div>
         <div class="card-body">
           <ul class="nav nav-tabs" id="myTab" role="tablist">
-            {%for alternativa in voti_alternativa%}
-                {%if forloop.first%}
+            {% for alternativa in voti_alternativa %}
+                {% if forloop.first %}
                   <li class="nav-item" role="presentation">
                     <a class="nav-link active" id='{{alternativa.alternativa}}' data-bs-toggle="tab" data-bs-target="#tab_{{forloop.counter}}" type="button" role="tab">{{alternativa.alternativa|upper}}</a>
                   </li>
-                {%else%}
+                {% else %}
                   <li class="nav-item" role="presentation">
                     <a class="nav-link" id='{{alternativa.alternativa}}' data-bs-toggle="tab" data-bs-target="#tab_{{forloop.counter}}" type="button" role="tab">{{alternativa.alternativa|upper}}</a>
                   </li>
-                {%endif%}
-              {%endfor%}
+                {% endif %}
+              {% endfor %}
           </ul>
           <div class="tab-content" id='tab1content'>
-            {%for alternativa in voti_alternativa%}
+            {% for alternativa in voti_alternativa %}
               {% if forloop.first %}
               <div class="tab-pane show active" id="tab_{{forloop.counter}}" role="tabpanel">
                   <div id="bar_{{forloop.counter}}"></div>
               </div>
-              {%else%}
+              {% else %}
               <div class="tab-pane" id="tab_{{forloop.counter}}" role="tabpanel">
                 <div id="bar_{{forloop.counter}}"></div> 
               </div>
-              {%endif%}
-            {%endfor%}
+              {% endif %}
+            {% endfor %}
           </div>
         </div>
       </div>

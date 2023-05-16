@@ -12,7 +12,7 @@ User = get_user_model()
 class Poll(models.Model):
     class PollType(models.IntegerChoices):
         MAJORITY_JUDGMENT = 1, _("Giudizio maggioritario")
-        SHULTZE_METHOD = 2, _("Metodo Shultze")
+        SHULTZE_METHOD = 2, _("Metodo Schulze")
         SINGLE_PREFERENCE = 3, _("Preferenza singola")
 
     class PollVisibility(models.IntegerChoices):

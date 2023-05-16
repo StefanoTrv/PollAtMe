@@ -1,7 +1,6 @@
 from django.test import SimpleTestCase, TestCase
 from django.urls import reverse, resolve
-from polls.views import IndexView, SinglePreferenceResultView, MajorityJudgementResultView, VoteSinglePreferenceView, VoteMajorityJudgmentView
-from polls.views.help_view import ExplanationGMView, ExplanationSchView
+from polls.views import *
 
 class UrlsTest(SimpleTestCase): #usiamo SimpleTestCase perchè non facciamo riferimento al db
 
@@ -16,12 +15,18 @@ class UrlsTest(SimpleTestCase): #usiamo SimpleTestCase perchè non facciamo rife
         url = reverse('polls:vote_MJ', args = [1])
         self.assertEqual(resolve(url).func.view_class, VoteMajorityJudgmentView)
 
+        url = reverse('polls:vote_shultze', args = [1])
+        self.assertEqual(resolve(url).func.view_class, VoteShultzeView)
+
     def test_result_resolves(self):
         url = reverse('polls:result_single_preference', args = [1])
         self.assertEqual(resolve(url).func.view_class, SinglePreferenceResultView)
 
         url = reverse('polls:result_MJ', args = [1])
         self.assertEqual(resolve(url).func.view_class, MajorityJudgementResultView)
+
+        url = reverse('polls:result_shultze', args = [1])
+        self.assertEqual(resolve(url).func.view_class, ShultzePreferenceResultView)
         
 
 class TestResultRedirect(TestCase):
@@ -35,6 +40,10 @@ class TestResultRedirect(TestCase):
     def test_redirect_to_majority_judgment(self):
         resp = self.client.get(reverse(self.URL,args=[2]))
         self.assertRedirects(resp, reverse('polls:result_MJ',args=[2]))
+
+    def test_redirect_to_shultze(self):
+        resp = self.client.get(reverse(self.URL,args=[7]))
+        self.assertRedirects(resp, reverse('polls:result_shultze',args=[7]))
 
 
 class TestVoteRedirect(TestCase):

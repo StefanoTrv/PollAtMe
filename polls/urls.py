@@ -12,12 +12,13 @@ urlpatterns = [
     path('vote/singlepreference/<int:id>/<str:token>', views.VoteSinglePreferenceView.as_view(), name = 'vote_single_preference'),
     path('vote/majorityjudgment/<int:id>/', views.VoteMajorityJudgmentView.as_view(), name = 'vote_MJ'),
     path('vote/majorityjudgment/<int:id>/<str:token>', views.VoteMajorityJudgmentView.as_view(), name = 'vote_MJ'),
-    path('vote/shultze/<int:id>/', views.VoteShultzeView.as_view(), name = 'vote_shultze'),
-    path('vote/shultze/<int:id>/<str:token>', views.VoteShultzeView.as_view(), name = 'vote_shultze'),
+    path('vote/schulze/<int:id>/', views.VoteShultzeView.as_view(), name = 'vote_shultze'),
+    path('vote/schulze/<int:id>/<str:token>', views.VoteShultzeView.as_view(), name = 'vote_shultze'),
 
     path('result/<int:id>/', views.result_redirect_view, name='result'),
     path('result/singlepreference/<int:id>/', views.SinglePreferenceResultView.as_view(), name = 'result_single_preference'),
     path('result/majorityjudgment/<int:id>/', views.MajorityJudgementResultView.as_view(), name = 'result_MJ'),
+    path('result/schulze/<int:id>/', views.ShultzePreferenceResultView.as_view(), name = 'result_shultze'),
     path('result/majorityjudgment/<int:id>/<str:include_synthetic>', views.MajorityJudgementResultView.as_view(), name = 'result_MJ_realonly'),
     
     path('new/', views.CreatePollView.as_view(), name='create_poll'),

@@ -98,7 +98,7 @@ class Modeltest(TestCase):
             author=self.u)
         poll.save()
         
-        self.assertEqual(poll.get_type(), 'Metodo Shultze')
+        self.assertEqual(poll.get_type(), 'Metodo Schulze')
 
     def test_choice_fk(self):
         poll = Poll.objects.get(text=self.poll_text)

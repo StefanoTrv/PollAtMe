@@ -135,12 +135,15 @@
 
 <script>
     const menu = document.querySelector('#id_default_type')
-    const text_schultze_info = `<br> Non sai che cos' è il metodo Shultze? Clicca <a href={% url 'polls:explain_sch' %} class='alert-link'>qui</a>`
+    const text_schultze_info = `<br> Non sai che cos' è il metodo Schulze? Clicca <a href={% url 'polls:explain_sch' %} class='alert-link'>qui</a>`
     const text_mj_info = 
         `Vuoi ottenere più informazioni sul giudizio maggioritario? Clicca <a href={% url 'polls:explain_gm' %} class='alert-link'>qui</a>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`
     const text_mj_suggestion = 
         `Vuoi provare un metodo alternativo? Prova il <a href={% url 'polls:explain_gm' %} class='alert-link'>giudizio maggioritario</a>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`
+    const text_mj_suggestion_2 = 
+        `Vuoi ottenere più informazioni dalla tua scelta? Prova il <a href={% url 'polls:explain_gm' %} class='alert-link'>giudizio maggioritario</a>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`
     menu.addEventListener("change", () => {
         const index = menu.selectedIndex
@@ -153,7 +156,7 @@
                 alert.innerHTML = text_mj_suggestion + text_schultze_info
                 break;
             case 2:
-                alert.innerHTML = text_mj_info
+                alert.innerHTML = text_mj_suggestion_2
                 break;
         }
     });
@@ -162,16 +165,16 @@
         alert = document.querySelector('#alert-default-type')
         switch(index) {
             case 0:
-                console.log('mj')
+                //console.log('mj')
                 alert.innerHTML = text_mj_info
                 break;
             case 1: 
-                console.log(index)
+                //console.log(index)
                 alert.innerHTML = text_mj_suggestion + text_schultze_info
                 break;
             case 2: 
-                console.log(index)
-                alert.innerHTML = text_mj_suggestion
+                //console.log(index)
+                alert.innerHTML = text_mj_suggestion_2
                 break;
         }
     });

@@ -105,6 +105,39 @@
     }
   },
   {
+    "model": "polls.poll",
+    "pk": 7,
+    "fields": {
+      "title": "Test metodo shultze",
+      "text": "",
+      "default_type": 2,
+      "author": 1,
+      "start": "2023-05-10T20:43:50.423Z",
+      "end": "2025-05-17T20:53:00Z",
+      "creation_date": "2023-05-10T20:43:50.426Z",
+      "last_update": "2023-05-10T20:44:39.325Z",
+      "visibility": 2,
+      "authentication_type": 1,
+      "results_restriction": 1
+    }
+  },
+  {
+    "model": "polls.polloptions",
+    "pk": 1,
+    "fields": {
+      "poll": 7,
+      "random_order": true
+    }
+  },
+  {
+    "model": "polls.mapping",
+    "pk": 1,
+    "fields": {
+      "poll": 7,
+      "code": "4dcFIv"
+    }
+  },
+  {
     "model": "polls.alternative",
     "pk": 1,
     "fields": {
@@ -270,6 +303,46 @@
     "fields": {
       "poll": 6,
       "text": "Ipsum"
+    }
+  },
+  {
+    "model": "polls.alternative",
+    "pk": 22,
+    "fields": {
+      "poll": 7,
+      "text": "Lorem"
+    }
+  },
+  {
+    "model": "polls.alternative",
+    "pk": 23,
+    "fields": {
+      "poll": 7,
+      "text": "Ipsum"
+    }
+  },
+  {
+    "model": "polls.alternative",
+    "pk": 24,
+    "fields": {
+      "poll": 7,
+      "text": "dolor sit amet"
+    }
+  },
+  {
+    "model": "polls.alternative",
+    "pk": 25,
+    "fields": {
+      "poll": 7,
+      "text": "consectetur adipiscing elit"
+    }
+  },
+  {
+    "model": "polls.alternative",
+    "pk": 26,
+    "fields": {
+      "poll": 7,
+      "text": "Integer tristique"
     }
   },
   {
@@ -476,6 +549,62 @@
     "pk": 10,
     "fields": {
       "poll": 3
+    }
+  },
+  {
+    "model": "polls.shultzepreference",
+    "pk": 1,
+    "fields": {
+      "poll": 7,
+      "synthetic": false
+    }
+  },
+  {
+    "model": "polls.shultzepreference",
+    "pk": 2,
+    "fields": {
+      "poll": 7,
+      "synthetic": false
+    }
+  },
+  {
+    "model": "polls.shultzepreference",
+    "pk": 3,
+    "fields": {
+      "poll": 7,
+      "synthetic": false
+    }
+  },
+  {
+    "model": "polls.shultzepreference",
+    "pk": 4,
+    "fields": {
+      "poll": 7,
+      "synthetic": false
+    }
+  },
+  {
+    "model": "polls.shultzepreference",
+    "pk": 5,
+    "fields": {
+      "poll": 7,
+      "synthetic": false
+    }
+  },
+  {
+    "model": "polls.shultzepreference",
+    "pk": 6,
+    "fields": {
+      "poll": 7,
+      "synthetic": false
+    }
+  },
+  {
+    "model": "polls.shultzepreference",
+    "pk": 7,
+    "fields": {
+      "poll": 7,
+      "synthetic": false
     }
   },
   {
@@ -881,6 +1010,321 @@
       "grade": 3,
       "alternative": 13,
       "preference": 10
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 1,
+    "fields": {
+      "order": 1,
+      "alternative": 1,
+      "preference": 1
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 2,
+    "fields": {
+      "order": 2,
+      "alternative": 2,
+      "preference": 1
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 3,
+    "fields": {
+      "order": 3,
+      "alternative": 3,
+      "preference": 1
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 4,
+    "fields": {
+      "order": 4,
+      "alternative": 4,
+      "preference": 1
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 5,
+    "fields": {
+      "order": 5,
+      "alternative": 5,
+      "preference": 1
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 6,
+    "fields": {
+      "order": 1,
+      "alternative": 1,
+      "preference": 2
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 7,
+    "fields": {
+      "order": 2,
+      "alternative": 2,
+      "preference": 2
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 8,
+    "fields": {
+      "order": 3,
+      "alternative": 3,
+      "preference": 2
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 9,
+    "fields": {
+      "order": 5,
+      "alternative": 4,
+      "preference": 2
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 10,
+    "fields": {
+      "order": 4,
+      "alternative": 5,
+      "preference": 2
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 11,
+    "fields": {
+      "order": 4,
+      "alternative": 1,
+      "preference": 3
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 12,
+    "fields": {
+      "order": 3,
+      "alternative": 2,
+      "preference": 3
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 13,
+    "fields": {
+      "order": 1,
+      "alternative": 3,
+      "preference": 3
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 14,
+    "fields": {
+      "order": 5,
+      "alternative": 4,
+      "preference": 3
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 15,
+    "fields": {
+      "order": 2,
+      "alternative": 5,
+      "preference": 3
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 16,
+    "fields": {
+      "order": 4,
+      "alternative": 1,
+      "preference": 4
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 17,
+    "fields": {
+      "order": 2,
+      "alternative": 2,
+      "preference": 4
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 18,
+    "fields": {
+      "order": 3,
+      "alternative": 3,
+      "preference": 4
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 19,
+    "fields": {
+      "order": 1,
+      "alternative": 4,
+      "preference": 4
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 20,
+    "fields": {
+      "order": 5,
+      "alternative": 5,
+      "preference": 4
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 21,
+    "fields": {
+      "order": 1,
+      "alternative": 1,
+      "preference": 5
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 22,
+    "fields": {
+      "order": 2,
+      "alternative": 2,
+      "preference": 5
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 23,
+    "fields": {
+      "order": 5,
+      "alternative": 3,
+      "preference": 5
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 24,
+    "fields": {
+      "order": 3,
+      "alternative": 4,
+      "preference": 5
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 25,
+    "fields": {
+      "order": 4,
+      "alternative": 5,
+      "preference": 5
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 26,
+    "fields": {
+      "order": 5,
+      "alternative": 1,
+      "preference": 6
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 27,
+    "fields": {
+      "order": 2,
+      "alternative": 2,
+      "preference": 6
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 28,
+    "fields": {
+      "order": 1,
+      "alternative": 3,
+      "preference": 6
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 29,
+    "fields": {
+      "order": 4,
+      "alternative": 4,
+      "preference": 6
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 30,
+    "fields": {
+      "order": 3,
+      "alternative": 5,
+      "preference": 6
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 31,
+    "fields": {
+      "order": 1,
+      "alternative": 1,
+      "preference": 7
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 32,
+    "fields": {
+      "order": 2,
+      "alternative": 2,
+      "preference": 7
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 33,
+    "fields": {
+      "order": 3,
+      "alternative": 3,
+      "preference": 7
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 34,
+    "fields": {
+      "order": 4,
+      "alternative": 4,
+      "preference": 7
+    }
+  },
+  {
+    "model": "polls.shultzeopinionjudgement",
+    "pk": 35,
+    "fields": {
+      "order": 5,
+      "alternative": 5,
+      "preference": 7
     }
   }
 ]
