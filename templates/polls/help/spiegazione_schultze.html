@@ -13,12 +13,16 @@
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-body">
-                        <h3 class="card-title">Il voto a metodologia Schulze</h3>
+                        <h3 class="card-title">Il voto con metodologia Schulze</h3>
                         <p class="card-text">
-                            Il voto a metodologia Schulze è una possibilità di voto alternativa al metodo a preferenza singola che permette di ottenere un risultato che rispecchia
+                            La metodologia Schulze è un metodo di voto che, rispetto al voto con preferenza singola, permette di ottenere un risultato che rispecchia
                             più approfonditamente le preferenze dei votanti.
-                            In questo tipo di voto al votante non viene chiesto di fornire una preferenza o di giudicare delle alternative, bensì di ordinare queste in base alla propria preferenza.
-                            <br>Nota che, a differenza della preferenza singola e del giudizio maggioritario, non è ammesso il pareggio a livello di preferenza.
+                            Al votante non viene chiesto di esprimere una sola preferenza o di dare dei giudizi alle alternative, bensì di ordinare le alternative dalla migliore alla peggiore.
+                            <br>
+                            Il risultato della votazione sarà una classifica delle alternative, calcolata a partire dalle classifiche espresse dai singoli votanti.
+                            In particolare, il risultato viene ottenuto considerando globalmente quanti votanti preferiscono ogni singola alternativa rispetto ad ogni altra singola alternativa.
+                            <br>
+                            Mentre nel risultato finale ci potranno essere dei pareggi, non è possibile per i singoli votanti esprimere dei pareggi nel loro voto.
                         </p>
                     </div>
                 </div>
@@ -27,7 +31,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Prova</h5>
-                        <p class="card-subtitle mb-2 text-muted">Ordina le alternative in base alle tue preferenze, posizionare un alternativa al di sopra di un altra significa che preferisci la prima alla seconda</p>
+                        <p class="card-subtitle mb-2 text-muted">Trascina le alternative per ordinarle in base alle tue preferenze, da quella che ti piace di più a quella che ti piace di meno.</p>
                         <ol class="list-group list-group-numbered gap-2" id="items" data-gtm-form-interact-field-id="0">
                             <li class="list-group-item d-flex justify-content-between align-items-start p-4 border border-primary" draggable="false" style="">
                                 <div class="ms-2 me-auto">
@@ -62,20 +66,22 @@
                     <div class="card-body">
                         <h5 class="card-title">Come si decide il vincitore?</h5>
                         <p>
-                            Il primo passo per calcolare la classifica consiste nella costruzione di una tabella, contenente, per ogni coppia di alternative A e B,
+                            Il primo passo per calcolare la classifica consiste nel costruire una tabella contenente, per ogni coppia di alternative A e B,
                             quanti votanti preferiscono A a B. Denotiamo questa quantità con d[A,B].<br>
                             Per il prossimo passo è necessario introdurre il concetto di <b>cammino</b>.
                         </p>
                         <h6 class="card-title">Cos'è un cammino?</h6>
                         <p>
-                            Un cammino è una sequenza di alternative C1,...,Cn dove:
+                            Un cammino tra due alternative A e B è una sequenza di alternative che parte da A, termina in B e, ad ogni passo, l'alternativa di partenza
+                            è preferita a quella di arrivo.
+                            <br>
+                            Più in dettaglio, un cammino è una sequenza di alternative C1,...,Cn dove:
                             <ul>
                                 <li>C<sub>1</sub> = A e C<sub>n</sub> = B</li>
                                 <li>Per ogni i = 1, ... , n-1 : d[C<sub>i</sub>, C<sub>i + 1</sub>] > d[C<sub>i+1</sub>, C<sub>i</sub>]</li>
                             </ul>
 
-                            Quindi, un cammino tra due alternative A e B è una sequenza di alternative che parte da A, termina in B e, ad ogni passo, l'alternativa di partenza
-                            è preferita a quella di arrivo.
+                            
                         </p>
                         <h6 class="card-title">Robustezza di un cammino</h6>
                         <p>
@@ -84,19 +90,19 @@
                                 <li>Per ogni i = 1, ... , n-1 : d[C<sub>i</sub>, C<sub>i + 1</sub>] > p</li>
                             </ul>
 
-                            Quindi, dobbiamo trovare il più grande valore di <i>p</i> tale che ad ogni passo del cammino, l'alternativa di partenza
+                            Quindi, dobbiamo trovare il più grande valore di <i>p</i> tale che ad ogni passo del cammino l'alternativa di partenza
                             è preferita a quella di arrivo da almeno <i>p</i> votanti.<br>
 
                         </p>
                         <p>
-                            Due alternative A e B possono avere però più cammini che le collegano, diciamo che la robustezza del cammino più forte è uguale alla maggiore delle
-                            robustezza dei cammini che le collegano. Denotiamo questo valore con p[A,B].
+                            Due alternative possono però essere collegate da più di un cammino; diciamo dunque che il cammino più forte tra A e B è quello
+                            con la robustezza più grande. Denotiamo con p[A,B] la robustezza del cammino più forte tra A e B.
                         </p>
 
                         <h6 class="card-title">Calcolo del vincitore</h6>
                         <p>
                             Date due alternative A e B, A è migliore di B se e solo se p[A,B] > p[B,A].<br>
-                            Per trovare il vincitore ci basta trovare quale alternativa è migliore di tutte le altre.
+                            Il vincitore è l'alternativa migliore di tutte le altre.
                         </p>
                     </div>
                 </div>
@@ -106,10 +112,10 @@
                     <div class="card-body">
                         <h5 class="card-title"> Esempio di calcolo dei risultati</h5>
                         <p class="card-text">
-                            Prendiamo un caso di una scelta molto semplice con le quattro alternative mostrate in precedenza.
+                            Prendiamo come esempio una scelta molto semplice, con le quattro alternative mostrate sopra.
                         </p>
                         <p class="card-text">
-                            Alla scelta partecipano 5 persone dando a ciascuna alternativa un giudizio, mostrato nella tabella seguente.
+                            Alla scelta partecipano 5 persone, ognuna delle quali esprime la propria classifica delle preferenze, mostrate nella tabella seguente.
                         </p>
                         
                             <table class="table table-hover">
@@ -175,8 +181,8 @@
 
                         <p>
                             Per visualizzare i risultati della votazione possiamo utilizzare un grafo direzionato pesato, dove i nodi sono le alternative e, per
-                            ogni alternativa A e B è presente un arco da A a B se e solo se d[A,B] > d[B,A], il peso dell'arco è d[A,B].<br>
-                            Se a partire da un nodo A posso, seguendo le frecce che denotano gli archi e la direzione di percorrenza,  raggiungere un nodo B allora abbiamo trovato un cammino
+                            ogni alternativa A e B è presente un arco da A a B se e solo se d[A,B] > d[B,A]; il peso dell'arco è d[A,B].<br>
+                            Se a partire da un nodo A posso, seguendo le frecce che denotano gli archi e la direzione di percorrenza,  raggiungere un nodo B, allora abbiamo trovato un cammino
                             da A a B.<br>
                         </p>
 
@@ -184,6 +190,8 @@
 
                         <p>
                             Seguendo la spiegazione precedente compiliamo una tabella p[A,B] per ogni coppia di A e B.
+                            Riempiamo le caselle in cui l'alternativa di partenza è preferita a quella di arrivo,
+                            mentre lasciamo vuote quelle in cui l'alternativa di arrivo è preferita a quella di partenza.
                         </p>
                         
                         <div class="table-responsive-md">
@@ -234,9 +242,9 @@
                             Calcoliamo la classifica:
                             <ul>
                                 <li>"Mare" batte tutte le altre alternative, di conseguenza è il vincitore e lo rimuoviamo dalle alternative.</li>
-                                <li>"Montagna" batte solamente "Crociera", "Città d'arte" batte "Montagna" e  "Crociera" ed infine "Crociera" non batte nessuno. Visto che Mare è stato rimosso il secondo classificato è "Città d'arte"</li>
-                                <li>Rimangono solamente "Montagna" e "Crociera", dato che "Montagna" batte "Crociera" in terza posizione ci troviamo "Montagna"</li>
-                                <li>Rimanendo solamente "Crociera" questa finisce in ultima posizione</li>
+                                <li>"Montagna" batte solamente "Crociera", "Città d'arte" batte "Montagna" e  "Crociera" ed infine "Crociera" non batte nessuno. Visto che Mare è stato rimosso, il secondo classificato è "Città d'arte".</li>
+                                <li>Rimangono solamente "Montagna" e "Crociera": dato che "Montagna" batte "Crociera" in terza posizione troviamo "Montagna".</li>
+                                <li>Rimanendo solamente "Crociera", questa finisce in ultima posizione.</li>
                             </ul>
                             <br>
                             Otteniamo dunque la seguente classifica: "Mare" in prima posizione, "Città d'arte" in seconda, "Montagna" in terza ed infine "Crociera" in quarta.
