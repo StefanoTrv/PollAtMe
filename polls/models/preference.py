@@ -87,14 +87,15 @@ class MajorityPreference(Preference):
 
         n = vote.poll.alternative_set.count()
         m = len(MajorityOpinionJudgement.JudgementType.values)
-        d = int(floor(n / m))
-        r = n % m
-        median_judgement = MajorityOpinionJudgement.JudgementType.values[int(m/2)]
-        judgements: list = []
-        for j in MajorityOpinionJudgement.JudgementType.values:
-            judgements.append(*([j] * ceil(d)))
-            if j == median_judgement and r > 0 and d >= 1:
-                judgements.append(*([j] * r))
+        s = int(floor(n / m))
+        j_count = [s] * m
+        i = int(ceil((m - (n % m))/2))
+        for j in range(n % m):
+            j_count[i+j] += 1
+        
+        judgements = []
+        for i, j in zip(j_count, sorted(MajorityOpinionJudgement.JudgementType.values, reverse=True)):
+            judgements.extend([j] * i)
 
         mojs: list = [
             MajorityOpinionJudgement(**{

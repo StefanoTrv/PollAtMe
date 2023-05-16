@@ -5,6 +5,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 from polls.models import Alternative, Poll, SinglePreference, PollOptions, Mapping
+from polls.models import preference
 
 from django.db import IntegrityError
 
@@ -188,3 +189,95 @@ class TestPollOptions(TestCase):
         options.save()
 
         self.assertTrue(options.random_order)
+
+class TestShultzePreference(TestCase):
+    def setUp(self) -> None:
+        self.p1 = Poll()
+        self.p1.title = "Test1"
+        self.p1.author = User.objects.create_user(username='test1')
+        self.p1.start = timezone.now()
+        self.p1.end = timezone.now() + timedelta(weeks=1)
+        self.p1.default_type = Poll.PollType.SHULTZE_METHOD
+        self.p1.save()
+
+        self.p1.alternative_set.create(text="Alternative 1")
+        self.p1.alternative_set.create(text="Alternative 2")
+        self.p1.alternative_set.create(text="Alternative 3")
+        self.p1.alternative_set.create(text="Alternative 4")
+
+        self.p2 = Poll()
+        self.p2.title = "Test2"
+        self.p2.author = User.objects.create_user(username='test2')
+        self.p2.start = timezone.now()
+        self.p2.end = timezone.now() + timedelta(weeks=1)
+        self.p2.default_type = Poll.PollType.SHULTZE_METHOD
+        self.p2.save()
+
+        self.p2.alternative_set.create(text="Alternative 1")
+        self.p2.alternative_set.create(text="Alternative 2")
+        self.p2.alternative_set.create(text="Alternative 3")
+        self.p2.alternative_set.create(text="Alternative 4")
+        self.p2.alternative_set.create(text="Alternative 5")
+        self.p2.alternative_set.create(text="Alternative 6")
+        self.p2.alternative_set.create(text="Alternative 7")
+        self.p2.alternative_set.create(text="Alternative 8")
+        self.p2.alternative_set.create(text="Alternative 9")
+
+
+    def test_create_synthetic_preference_alternatives_less_than_judgments(self):
+        pref = preference.ShultzePreference.objects.create(poll = self.p1)
+        p1_alternatives = list(self.p1.alternative_set.all())
+        
+        # 2 > 0 > 1 > 3
+        pref.save_shulze_judgements([
+            preference.ShultzeOpinionJudgement(alternative = p1_alternatives[0], order=2),
+            preference.ShultzeOpinionJudgement(alternative = p1_alternatives[1], order=3),
+            preference.ShultzeOpinionJudgement(alternative = p1_alternatives[2], order=1),
+            preference.ShultzeOpinionJudgement(alternative = p1_alternatives[3], order=4)
+        ])
+
+        self.assertEqual(pref.shultzeopinionjudgement_set.count(), 4)
+        
+        preference.MajorityPreference.save_mj_from_shultze(pref)
+        mj_pref = preference.MajorityPreference.objects.last()
+        self.assertIsNotNone(mj_pref)
+        self.assertEqual(mj_pref.majorityopinionjudgement_set.count(), 4)
+        
+        mj_judgements = list(mj_pref.majorityopinionjudgement_set.order_by('-grade').all())
+        self.assertEqual(mj_judgements[0].grade, preference.MajorityOpinionJudgement.JudgementType.BUONO)
+        self.assertEqual(mj_judgements[1].grade, preference.MajorityOpinionJudgement.JudgementType.SUFFICIENTE)
+        self.assertEqual(mj_judgements[2].grade, preference.MajorityOpinionJudgement.JudgementType.SCARSO)
+        self.assertEqual(mj_judgements[3].grade, preference.MajorityOpinionJudgement.JudgementType.PESSIMO)
+    
+    def test_create_synthetic_preference_alternatives_more_than_judgments(self):
+        pref = preference.ShultzePreference.objects.create(poll = self.p2)
+        p2_alternatives = list(self.p2.alternative_set.all())
+
+        # 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8 > 9
+        pref.save_shulze_judgements([
+            preference.ShultzeOpinionJudgement(alternative = p2_alternatives[0], order=1),
+            preference.ShultzeOpinionJudgement(alternative = p2_alternatives[1], order=2),
+            preference.ShultzeOpinionJudgement(alternative = p2_alternatives[2], order=3),
+            preference.ShultzeOpinionJudgement(alternative = p2_alternatives[3], order=4),
+            preference.ShultzeOpinionJudgement(alternative = p2_alternatives[4], order=5),
+            preference.ShultzeOpinionJudgement(alternative = p2_alternatives[5], order=6),
+            preference.ShultzeOpinionJudgement(alternative = p2_alternatives[6], order=7),
+            preference.ShultzeOpinionJudgement(alternative = p2_alternatives[7], order=8),
+            preference.ShultzeOpinionJudgement(alternative = p2_alternatives[8], order=9),
+        ])
+
+        self.assertEqual(pref.shultzeopinionjudgement_set.count(), 9)
+        preference.MajorityPreference.save_mj_from_shultze(pref)
+        mj_pref = preference.MajorityPreference.objects.last()
+        self.assertIsNotNone(mj_pref)
+        self.assertEqual(mj_pref.majorityopinionjudgement_set.count(), 9)
+        mj_judgements = list(mj_pref.majorityopinionjudgement_set.order_by('-grade').all())
+        self.assertEqual(mj_judgements[0].grade, preference.MajorityOpinionJudgement.JudgementType.OTTIMO)
+        self.assertEqual(mj_judgements[1].grade, preference.MajorityOpinionJudgement.JudgementType.BUONO)
+        self.assertEqual(mj_judgements[2].grade, preference.MajorityOpinionJudgement.JudgementType.BUONO)
+        self.assertEqual(mj_judgements[3].grade, preference.MajorityOpinionJudgement.JudgementType.SUFFICIENTE)
+        self.assertEqual(mj_judgements[4].grade, preference.MajorityOpinionJudgement.JudgementType.SUFFICIENTE)
+        self.assertEqual(mj_judgements[5].grade, preference.MajorityOpinionJudgement.JudgementType.SCARSO)
+        self.assertEqual(mj_judgements[6].grade, preference.MajorityOpinionJudgement.JudgementType.SCARSO)
+        self.assertEqual(mj_judgements[7].grade, preference.MajorityOpinionJudgement.JudgementType.PESSIMO)
+        self.assertEqual(mj_judgements[8].grade, preference.MajorityOpinionJudgement.JudgementType.PESSIMO)
