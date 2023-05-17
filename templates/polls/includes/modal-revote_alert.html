@@ -26,33 +26,67 @@
       })
     } else {
       var modalbody = document.getElementById('modal-body')
+      var giudizi = {'1': 'Pessimo', '2': 'Scarso', '3': 'Sufficiente', '4': 'Buono', '5': 'Ottimo'}
       alertModal.addEventListener('show.bs.modal', event => {
         p.innerHTML = "È stata rilevata un'incongruenza, evidenziata nella tabella sottostante, tra l'ordinamento dato con il metodo Schulze e quello che è possibile desumere dai giudizi. Vuoi cambiare giudizi?";
+        
+        //table creation
         var tbl = document.createElement("table")
-        tbl.setAttribute('style', 'width:75%')
-        tbl.setAttribute("class", "table table-striped center")
+        tbl.setAttribute('style', 'width:100%; margin: 0 auto')
+        tbl.setAttribute("class", "table table-striped")
 
         //head table
         var thead = document.createElement("thead")
-        thead.appendChild(document.createElement("th")).appendChild(document.createTextNode("Ordinamento Schulze"))
+        var tr = document.createElement("tr")
+        var td1 = document.createElement("td")
+        var td2 = document.createElement("td")
+        td1.appendChild(document.createTextNode("Ordinamento Schulze"))
+        td2.appendChild(document.createTextNode("Giudizi"))
+        tr.appendChild(td1)
+        tr.appendChild(td2)
+        thead.appendChild(tr)
         tbl.appendChild(thead)
         
         //body
         var tblBody = document.createElement("tbody");
         var sequence_shultze = `{{sequence_shultze|safe}}`.replaceAll('\'', '').slice(1, -1).split(', ')
         var tbl_length = sequence_shultze.length
+        var inconsistency1 = localStorage.key(0)
+        var inconsistency2 = localStorage.key(1)
+        console.log(inconsistency1 + " " + inconsistency2)
         for (var j = 0; j < tbl_length; j++) {
           var row = document.createElement("tr")
-          var number = parseInt(localStorage.getItem(localStorage.key(0))-1)
-          if (j == number || j == number+1) {
-            row.style.backgroundColor = "#D66F59"
+          row.setAttribute("id", sequence_shultze[j])
+          var row_id = row.getAttribute("id")
+
+          var cell1 = document.createElement("td");
+          var cellText1 = document.createTextNode(sequence_shultze[j]);
+
+          if (row_id == inconsistency1){
+            row.style.backgroundColor = "#F58770"
+            var cell2 = document.createElement("td");
+            var cellText2 = document.createTextNode(giudizi[localStorage.getItem(inconsistency1)]);
+            cell1.appendChild(cellText1)
+            cell2.appendChild(cellText2);
+            row.appendChild(cell1);
+            row.appendChild(cell2);
+          } else if (row_id == inconsistency2){
+            console.log(row_id + " " + inconsistency2 + " " + j)
+            row.style.backgroundColor = "#F58770"
+            var cell2 = document.createElement("td");
+            var cellText2 = document.createTextNode(giudizi[localStorage.getItem(inconsistency2)]);
+            cell1.appendChild(cellText1)
+            cell2.appendChild(cellText2);
+            row.appendChild(cell1);
+            row.appendChild(cell2);
+          } else {
+            cell1.appendChild(cellText1)
+            row.appendChild(cell1);
+            var cell2 = document.createElement("td");
+            var cellText2 = document.createTextNode(". . .");
+            cell2.appendChild(cellText2);
+            row.appendChild(cell2);
           }
-
-          var cell = document.createElement("td");
-          var cellText = document.createTextNode(sequence_shultze[j]);
-
-          cell.appendChild(cellText);
-          row.appendChild(cell);
           tblBody.appendChild(row);
         }
         

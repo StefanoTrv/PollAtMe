@@ -113,9 +113,8 @@
             var schulze_votes_ordered = `{{request.session.sequence_shultze|safe}}`.replaceAll('\'', '').slice(1, -1).split(', ')
             for (var i = 0; i < schulze_votes_ordered.length-1; i++) {
                 if (dict[schulze_votes_ordered[i]] < dict[schulze_votes_ordered[i+1]]) {
-                    console.log(dict[schulze_votes_ordered[i]])
-                    console.log(dict[schulze_votes_ordered[i+1]])
                     localStorage.setItem(schulze_votes_ordered[i], dict[schulze_votes_ordered[i]]);
+                    localStorage.setItem(schulze_votes_ordered[i+1], dict[schulze_votes_ordered[i+1]]);
                     tmp = true
                     break
                 }
