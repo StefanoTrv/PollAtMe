@@ -5,7 +5,7 @@
           <h5 class="modal-title" id="exampleModalLabel">Sei sicuro?</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body" id="modal-body">
             <p id="text"></p>
         </div>
         <div class="modal-footer">
@@ -20,12 +20,51 @@
 <script>
     var alertModal = document.getElementById('modalAlertPollRevote');
     var p = document.getElementById('text');
-    alertModal.addEventListener('show.bs.modal', event => {
-        p.innerHTML = "Prima hai scelto <b>{{ request.session.alternative_sp }}</b> e ora hai dato ad almeno un'altra alternativa un giudizio migliore rispetto a <b>{{ request.session.alternative_sp }}</b>. Vuoi confermare comunque il rivoto?";
-    })
-    alertModal.addEventListener('hide.bs.modal', event => {
-        p.innerHTML = ""
-    })
+    if ('{{revote_type}}' == 'single_preference') {
+        alertModal.addEventListener('show.bs.modal', event => {
+          p.innerHTML = "Prima hai scelto <b>{{ request.session.alternative_sp }}</b> e ora hai dato ad almeno un'altra alternativa un giudizio migliore rispetto a <b>{{ request.session.alternative_sp }}</b>. Vuoi confermare comunque il rivoto?";
+      })
+    } else {
+      var modalbody = document.getElementById('modal-body')
+      alertModal.addEventListener('show.bs.modal', event => {
+        p.innerHTML = "È stata rilevata un'incongruenza, evidenziata nella tabella sottostante, tra l'ordinamento dato con il metodo Schulze e quello che è possibile desumere dai giudizi. Vuoi cambiare giudizi?";
+        var tbl = document.createElement("table")
+        tbl.setAttribute('style', 'width:75%')
+        tbl.setAttribute("class", "table table-striped center")
+
+        //head table
+        var thead = document.createElement("thead")
+        thead.appendChild(document.createElement("th")).appendChild(document.createTextNode("Ordinamento Schulze"))
+        tbl.appendChild(thead)
+        
+        //body
+        var tblBody = document.createElement("tbody");
+        var sequence_shultze = `{{sequence_shultze|safe}}`.replaceAll('\'', '').slice(1, -1).split(', ')
+        var tbl_length = sequence_shultze.length
+        for (var j = 0; j < tbl_length; j++) {
+          var row = document.createElement("tr")
+          var number = parseInt(localStorage.getItem(localStorage.key(0))-1)
+          if (j == number || j == number+1) {
+            row.style.backgroundColor = "#D66F59"
+          }
+
+          var cell = document.createElement("td");
+          var cellText = document.createTextNode(sequence_shultze[j]);
+
+          cell.appendChild(cellText);
+          row.appendChild(cell);
+          tblBody.appendChild(row);
+        }
+        
+        tbl.appendChild(tblBody)
+        tbl.setAttribute("border", "2");
+        modalbody.appendChild(tbl)
+      })
+      alertModal.addEventListener('hide.bs.modal', event => {
+        localStorage.clear()
+        modalbody.removeChild(modalbody.lastChild)
+      })
+    }
     var saveModal = document.getElementById('saveModal');
     saveModal.addEventListener('click', event => {
       document.getElementById('vote-form').submit()
