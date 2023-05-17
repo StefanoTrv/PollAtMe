@@ -41,8 +41,14 @@
         const tblBody = createTableBody(sequence_shultze, localStorage.key(0), localStorage.key(1))
         tbl.appendChild(tblBody)
 
-        //adding table to modal body
-        modalbody.appendChild(tbl)
+        const responsive_wrapper = document.createElement("div")
+        responsive_wrapper.setAttribute("class", "table-responsive-md")
+        responsive_wrapper.setAttribute("align", "center")
+
+        responsive_wrapper.appendChild(tbl)
+
+        //adding responsive_wrapper to modal body
+        modalbody.appendChild(responsive_wrapper)
       })
       alertModal.addEventListener('hide.bs.modal', event => {
         localStorage.clear()
@@ -57,7 +63,7 @@
 
     function createTable() {
       const tbl = document.createElement("table")
-      tbl.setAttribute('style', 'width:90%; margin: 0 auto')
+      tbl.setAttribute('style', 'width:90%')
       tbl.setAttribute("class", "table table-striped")
       tbl.setAttribute("border", "3");
       return tbl
