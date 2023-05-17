@@ -15,7 +15,6 @@
                         <div class="page-header-title">
                             <h5 class="m-b-10">{{ poll.title }}</h5>
                             {{ poll.text }}
-                            {{request.session.sequence_shultze}}
                         </div>
                     </div>
                 </div>
@@ -83,7 +82,6 @@
     form.addEventListener('submit', event => {
         event.preventDefault()
         var numberFields = parseInt(form.querySelector('input[name="majorityopinionjudgement_set-TOTAL_FORMS"]').value)
-        var dict = {}
         const formLabels = document.getElementsByName('option');
         //controllo se uno o più campi non sono stati compilati e nel caso lascio al server segnalare gli avvisi
         for (let i = 0; i < numberFields; i++) {
@@ -91,6 +89,8 @@
                 form.submit()
             }
         }
+        //costruisco il dizionario composto da alternativa-giudizio selezionato sotto forma di intero
+        var dict = {}
         var card = document.querySelectorAll('#card')
         for (element of card) {
                 var gradeLabel = element.firstElementChild.innerText
@@ -101,12 +101,12 @@
                     }
                 })
             }
-        var tmp = false
+        var inconsistency = false
         if ('{{request.session.revote_type}}' == 'single_preference') {
             var items = Object.keys(dict).forEach(function(key) {
                 alternative_sp = '{{ request.session.alternative_sp }}';
                 if (key != alternative_sp && dict[key] > dict[alternative_sp]) {
-                    tmp = true
+                    inconsistency = true
                 }
             })
         } else if ('{{request.session.revote_type}}' == 'schulze_method') {
@@ -115,12 +115,12 @@
                 if (dict[schulze_votes_ordered[i]] < dict[schulze_votes_ordered[i+1]]) {
                     localStorage.setItem(schulze_votes_ordered[i], dict[schulze_votes_ordered[i]]);
                     localStorage.setItem(schulze_votes_ordered[i+1], dict[schulze_votes_ordered[i+1]]);
-                    tmp = true
+                    inconsistency = true
                     break
                 }
             }
         }
-        if (tmp) {
+        if (inconsistency) {
                 modal.show()
         } else {
             form.submit()
