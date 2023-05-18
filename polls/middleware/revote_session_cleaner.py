@@ -30,4 +30,7 @@ class RevoteSessionCleaner:
         if 'sequence_shultze' in request.session and delete_vote_from_session:
             del request.session['sequence_shultze']
 
+        if 'revote_type' in request.session and delete_vote_from_session:
+            del request.session['revote_type']
+
         return self.get_response(request)
