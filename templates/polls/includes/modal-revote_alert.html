@@ -38,7 +38,9 @@
         
         //table body
         var sequence_shultze = `{{sequence_shultze|safe}}`.replaceAll('\'', '').slice(1, -1).split(', ')
-        const tblBody = createTableBody(sequence_shultze, localStorage.key(0), localStorage.key(1))
+        var grades = JSON.parse(localStorage.getItem("grades"))
+        var pairs = JSON.parse(localStorage.getItem("pairs"))
+        const tblBody = createTableBody(sequence_shultze, grades, pairs)
         tbl.appendChild(tblBody)
 
         const responsive_wrapper = document.createElement("div")
@@ -82,33 +84,24 @@
       tbl.appendChild(thead)
     }
 
-    function createTableBody(sequence_shultze, inconsistency1, inconsistency2) {
+    function createTableBody(sequence_shultze, grades, pairs) {
       const tblBody = document.createElement("tbody");
       for (var i = 0; i < sequence_shultze.length; i++) {
         const row = document.createElement("tr")
+
         const cell1 = document.createElement("td");
         const cellText1 = document.createTextNode(sequence_shultze[i]);
         cell1.appendChild(cellText1)
         row.appendChild(cell1)
 
-        if (sequence_shultze[i] != inconsistency1 && sequence_shultze[i] != inconsistency2){
-          const cell2 = document.createElement("td")
-          const cellText2 = document.createTextNode(". . .")
-          cell2.appendChild(cellText2)
-          row.appendChild(cell2)
-        } else {
-          row.style.backgroundColor = "#F58770"
-          const cell2 = document.createElement("td");
-          if (sequence_shultze[i] == inconsistency1) {
-            const cellText2 = document.createTextNode(giudizi[localStorage.getItem(inconsistency1)])
-            cell2.appendChild(cellText2)
-          } else if (sequence_shultze[i] == inconsistency2) {
-            const cellText2 = document.createTextNode(giudizi[localStorage.getItem(inconsistency2)])
-            cell2.appendChild(cellText2)
-          }
-          row.appendChild(cell2)
-        }
+        const cell2 = document.createElement("td")
+        const cellText2 = document.createTextNode(giudizi[grades[i]])
+        cell2.appendChild(cellText2)
+        row.appendChild(cell2)
 
+        if (pairs[i] != null){
+          row.style.backgroundColor = "#F58770"
+        }
         tblBody.appendChild(row)
       }
       return tblBody
