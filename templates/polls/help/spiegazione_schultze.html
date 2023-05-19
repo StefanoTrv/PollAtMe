@@ -1,0 +1,287 @@
+<!--TAG TEST explain_SCH-->
+{% extends 'layouts/base.html' %}
+{% load shuffle %}
+{% load static %}
+
+{% block title %} {{block.super}} | Il metodo Schulze! {% endblock title %}
+
+
+{% block content %}
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">Il voto con metodologia Schulze</h3>
+                        <p class="card-text">
+                            La metodologia Schulze è un metodo di voto che, rispetto al voto con preferenza singola, permette di ottenere un risultato che rispecchia
+                            più approfonditamente le preferenze dei votanti.
+                            Al votante non viene chiesto di esprimere una sola preferenza o di dare dei giudizi alle alternative, bensì di ordinare le alternative dalla migliore alla peggiore.
+                            <br>
+                            Il risultato della votazione sarà una classifica delle alternative, calcolata a partire dalle classifiche espresse dai singoli votanti.
+                            In particolare, il risultato viene ottenuto considerando globalmente quanti votanti preferiscono ogni singola alternativa rispetto ad ogni altra singola alternativa.
+                            <br>
+                            Mentre nel risultato finale ci potranno essere dei pareggi, non è possibile per i singoli votanti esprimere dei pareggi nel loro voto.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Prova</h5>
+                        <p class="card-subtitle mb-2 text-muted">Trascina le alternative per ordinarle in base alle tue preferenze, da quella che ti piace di più a quella che ti piace di meno.</p>
+                        <ol class="list-group list-group-numbered gap-2" id="items" data-gtm-form-interact-field-id="0">
+                            <li class="list-group-item d-flex justify-content-between align-items-start p-4 border border-primary" draggable="false" style="">
+                                <div class="ms-2 me-auto">
+                                    Mare
+                                    <input type="hidden" name="shultzeopinionjudgement_set-0-order" id="id_shultzeopinionjudgement_set-0-order" value="1">
+                                </div>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-start p-4 border border-primary" style="" draggable="false">
+                                <div class="ms-2 me-auto">
+                                    Città d'arte
+                                    <input type="hidden" name="shultzeopinionjudgement_set-2-order" id="id_shultzeopinionjudgement_set-2-order" value="2">
+                                </div>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-start p-4 border border-primary" draggable="false" style="">
+                                <div class="ms-2 me-auto">
+                                    Montagna
+                                    <input type="hidden" name="shultzeopinionjudgement_set-1-order" id="id_shultzeopinionjudgement_set-1-order" value="3">
+                                </div>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-start p-4 border border-primary" draggable="false" style="">
+                                <div class="ms-2 me-auto">
+                                    Crociera
+                                    <input type="hidden" name="shultzeopinionjudgement_set-3-order" id="id_shultzeopinionjudgement_set-3-order" value="4">
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Come si decide il vincitore?</h5>
+                        <p>
+                            Il primo passo per calcolare la classifica consiste nel costruire una tabella contenente, per ogni coppia di alternative A e B,
+                            quanti votanti preferiscono A a B. Denotiamo questa quantità con d[A,B].<br>
+                            Per il prossimo passo è necessario introdurre il concetto di <b>cammino</b>.
+                        </p>
+                        <h6 class="card-title">Cos'è un cammino?</h6>
+                        <p>
+                            Un cammino tra due alternative A e B è una sequenza di alternative che parte da A, termina in B e, ad ogni passo, l'alternativa di partenza
+                            è preferita a quella di arrivo.
+                            <br>
+                            Più in dettaglio, un cammino è una sequenza di alternative C1,...,Cn dove:
+                            <ul>
+                                <li>C<sub>1</sub> = A e C<sub>n</sub> = B</li>
+                                <li>Per ogni i = 1, ... , n-1 : d[C<sub>i</sub>, C<sub>i + 1</sub>] > d[C<sub>i+1</sub>, C<sub>i</sub>]</li>
+                            </ul>
+
+                            
+                        </p>
+                        <h6 class="card-title">Robustezza di un cammino</h6>
+                        <p>
+                            Dato un cammino possiamo poi calcolarne la <b>Robustezza</b> <i>p</i>, come il più grande <i>p</i> tale che:
+                            <ul>
+                                <li>Per ogni i = 1, ... , n-1 : d[C<sub>i</sub>, C<sub>i + 1</sub>] > p</li>
+                            </ul>
+
+                            Quindi, dobbiamo trovare il più grande valore di <i>p</i> tale che ad ogni passo del cammino l'alternativa di partenza
+                            è preferita a quella di arrivo da almeno <i>p</i> votanti.<br>
+
+                        </p>
+                        <p>
+                            Due alternative possono però essere collegate da più di un cammino; diciamo dunque che il cammino più forte tra A e B è quello
+                            con la robustezza più grande. Denotiamo con p[A,B] la robustezza del cammino più forte tra A e B.
+                        </p>
+
+                        <h6 class="card-title">Calcolo del vincitore</h6>
+                        <p>
+                            Date due alternative A e B, A è migliore di B se e solo se p[A,B] > p[B,A].<br>
+                            Il vincitore è l'alternativa migliore di tutte le altre.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"> Esempio di calcolo dei risultati</h5>
+                        <p class="card-text">
+                            Prendiamo come esempio una scelta molto semplice, con le quattro alternative mostrate sopra.
+                        </p>
+                        <p class="card-text">
+                            Alla scelta partecipano 5 persone, ognuna delle quali esprime la propria classifica delle preferenze, mostrate nella tabella seguente.
+                        </p>
+                        
+                            <table class="table table-hover">
+                                <thead>
+                                    <th>Votante</th><th>Mare</th><th>Montagna</th><th>Città d'arte</th><th>Crociera</th>
+                                </thead>
+                                <tbody>
+                                    <tr><th>Stefano</th><td>1°</td><td>2°</td><td>4°</td><td>3°</td></tr>
+                                    <tr><th>Giuseppe</th><td>1°</td><td>3°</td><td>2°</td><td>4°</td></tr>
+                                    <tr><th>Carlo</th><td>2°</td><td>3°</td><td>1°</td><td>4°</td></tr>
+                                    <tr><th>Paolo</th><td>2°</td><td>1°</td><td>3°</td><td>4°</td></tr>
+                                    <tr><th>Agostino</th><td>1°</td><td>3°</td><td>2°</td><td>4°</td></tr>
+                                </tbody>
+                            </table>
+                        <br>
+                        <p>
+                            Come primo passo costruiamo la tabella delle preferenze.
+                        </p>
+
+                        <div class="table-responsive-md">
+                        <table class="table table-hover">
+                            <thead>
+                              <tr>
+                                <th>Da\A</th>
+                                <th>Mare</th>
+                                <th>Montagna</th>
+                                <th>Città d'arte</th>
+                                <th>Crociera</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>Mare</td>
+                                <td>/</td>
+                                <td>4</td>
+                                <td>4</td>
+                                <td>5</td>
+                              </tr>
+                              <tr>
+                                <td>Montagna</td>
+                                <td>1</td>
+                                <td>/</td>
+                                <td>2</td>
+                                <td>5</td>
+                              </tr>
+                              <tr>
+                                <td>Città d'arte</td>
+                                <td>1</td>
+                                <td>3</td>
+                                <td>/</td>
+                                <td>4</td>
+                              </tr>
+                              <tr>
+                                <td>Crociera</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>/</td>
+                              </tr>
+                            </tbody>
+                            </table>
+                        </div>
+
+                        <p>
+                            Per visualizzare i risultati della votazione possiamo utilizzare un grafo direzionato pesato, dove i nodi sono le alternative e, per
+                            ogni alternativa A e B è presente un arco da A a B se e solo se d[A,B] > d[B,A]; il peso dell'arco è d[A,B].<br>
+                            Se a partire da un nodo A posso, seguendo le frecce che denotano gli archi e la direzione di percorrenza,  raggiungere un nodo B, allora abbiamo trovato un cammino
+                            da A a B.<br>
+                        </p>
+
+                            <img src="{% static '/img/GrafoEsempioSchultze.svg' %}" alt="Grafo di esempio" class="img-fluid">
+
+                        <p>
+                            Seguendo la spiegazione precedente compiliamo una tabella p[A,B] per ogni coppia di A e B.
+                            Riempiamo le caselle in cui l'alternativa di partenza è preferita a quella di arrivo,
+                            mentre lasciamo vuote quelle in cui l'alternativa di arrivo è preferita a quella di partenza.
+                        </p>
+                        
+                        <div class="table-responsive-md">
+                        <table class="table table-hover">
+                            <thead>
+                              <tr>
+                                <th></th>
+                                <th>Mare</th>
+                                <th>Montagna</th>
+                                <th>Città d'arte</th>
+                                <th>Crociera</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>Mare</td>
+                                <td>/</td>
+                                <td>4</td>
+                                <td>4</td>
+                                <td>5</td>
+                              </tr>
+                              <tr>
+                                <td>Montagna</td>
+                                <td>n.a.</td>
+                                <td>/</td>
+                                <td>n.a.</td>
+                                <td>5</td>
+                              </tr>
+                              <tr>
+                                <td>Città d'arte</td>
+                                <td>n.a.</td>
+                                <td>3</td>
+                                <td>/</td>
+                                <td>3</td>
+                              </tr>
+                              <tr>
+                                <td>Crociera</td>
+                                <td>n.a.</td>
+                                <td>n.a.</td>
+                                <td>n.a.</td>
+                                <td>/</td>
+                              </tr>
+                            </tbody>
+                            </table>
+                        </div>
+
+                        <p>
+                            Calcoliamo la classifica:
+                            <ul>
+                                <li>"Mare" batte tutte le altre alternative, di conseguenza è il vincitore e lo rimuoviamo dalle alternative.</li>
+                                <li>"Montagna" batte solamente "Crociera", "Città d'arte" batte "Montagna" e  "Crociera" ed infine "Crociera" non batte nessuno. Visto che Mare è stato rimosso, il secondo classificato è "Città d'arte".</li>
+                                <li>Rimangono solamente "Montagna" e "Crociera": dato che "Montagna" batte "Crociera" in terza posizione troviamo "Montagna".</li>
+                                <li>Rimanendo solamente "Crociera", questa finisce in ultima posizione.</li>
+                            </ul>
+                            <br>
+                            Otteniamo dunque la seguente classifica: "Mare" in prima posizione, "Città d'arte" in seconda, "Montagna" in terza ed infine "Crociera" in quarta.
+                        </p>
+
+                    <div class="col-sm-12">
+                        <button type="button" class="btn btn-primary" onclick="window.history.back()">Torna indietro</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block javascripts %}
+<script src="{% static 'js/plugins/Sortable.min.js' %}"></script>
+<script type="text/javascript">
+    const alternatives = document.getElementById('items');
+
+    // Set the index of each item
+    const setIndex = arr => arr.forEach((item, index) => {
+        const input = item.getElementsByTagName('input')[0];
+        input.value = index + 1;
+    })
+
+    // Set the index of each item on load
+    setIndex([...alternatives.children])
+    Sortable.create(alternatives, {
+        animation: 150,
+        ghostClass: 'blue-background-class',
+        chosenClass: 'blue-background-class',
+        dragClass: 'blue-background-class',
+
+        onEnd: (/**Event*/evt) => {
+            setIndex([...alternatives.children])
+        },
+    });
+</script>
+{% endblock javascripts %}

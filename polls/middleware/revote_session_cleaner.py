@@ -15,13 +15,14 @@ class RevoteSessionCleaner:
         if 'preference_id' in request.session and self.__prefixs_not_in_path(request, [
             'vote', 
             'help/majorityjudgment',
-            'help/shultze'
+            'help/schulze_method/'
             ]):
             del request.session['preference_id']
 
         delete_vote_from_session = self.__prefixs_not_in_path(request, [
             'vote/majorityjudgment', 
-            'help/majorityjudgment'
+            'help/majorityjudgment',
+            'help/schulze_method/'
         ])
 
         if 'alternative_sp' in request.session and delete_vote_from_session:

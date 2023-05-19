@@ -61,3 +61,26 @@ class TestVoteRedirect(TestCase):
     def test_redirect_to_shultze(self):
         resp = self.client.get(reverse(self.URL,args=[6]))
         self.assertRedirects(resp, reverse('polls:vote_shultze',args=[6]))
+
+
+class TestHelpPages(TestCase):
+
+    URL_GM = 'polls:explain_gm'
+    URL_SCH = 'polls:explain_sch'
+
+
+    def test_HelpGiudizioMaggioritario(self):
+
+        self.assertEqual(resolve(reverse(self.URL_GM)).func.view_class, ExplanationGMView)
+        resp = self.client.get(reverse(self.URL_GM))
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, '<!--TAG TEST explain_GM-->')
+
+
+
+    def test_HelpSchultze(self):
+
+        self.assertEqual(resolve(reverse(self.URL_SCH)).func.view_class, ExplanationSchView)
+        resp = self.client.get(reverse(self.URL_SCH))
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, '<!--TAG TEST explain_SCH-->')

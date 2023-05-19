@@ -12,13 +12,13 @@ urlpatterns = [
     path('vote/singlepreference/<int:id>/<str:token>', views.VoteSinglePreferenceView.as_view(), name = 'vote_single_preference'),
     path('vote/majorityjudgment/<int:id>/', views.VoteMajorityJudgmentView.as_view(), name = 'vote_MJ'),
     path('vote/majorityjudgment/<int:id>/<str:token>', views.VoteMajorityJudgmentView.as_view(), name = 'vote_MJ'),
-    path('vote/shultze/<int:id>/', views.VoteShultzeView.as_view(), name = 'vote_shultze'),
-    path('vote/shultze/<int:id>/<str:token>', views.VoteShultzeView.as_view(), name = 'vote_shultze'),
+    path('vote/schulze/<int:id>/', views.VoteShultzeView.as_view(), name = 'vote_shultze'),
+    path('vote/schulze/<int:id>/<str:token>', views.VoteShultzeView.as_view(), name = 'vote_shultze'),
 
     path('result/<int:id>/', views.result_redirect_view, name='result'),
     path('result/singlepreference/<int:id>/', views.SinglePreferenceResultView.as_view(), name = 'result_single_preference'),
     path('result/majorityjudgment/<int:id>/', views.MajorityJudgementResultView.as_view(), name = 'result_MJ'),
-    path('result/shultze/<int:id>/', views.ShultzePreferenceResultView.as_view(), name = 'result_shultze'),
+    path('result/schulze/<int:id>/', views.ShultzePreferenceResultView.as_view(), name = 'result_shultze'),
     path('result/majorityjudgment/<int:id>/<str:include_synthetic>', views.MajorityJudgementResultView.as_view(), name = 'result_MJ_realonly'),
     
     path('new/', views.CreatePollView.as_view(), name='create_poll'),
@@ -32,6 +32,7 @@ urlpatterns = [
     path('help/simulated_results_sp/', views.HelpSimulatedResultsSpView.as_view(), name='help_simulated_results_sp'),
     path('help/simulated_results_sch/', views.HelpSimulatedResultsSchView.as_view(), name='help_simulated_results_sch'),
     path('help/majorityjudgment/', views.ExplanationGMView.as_view(), name='explain_gm'),
+    path('help/schulze_method/', views.ExplanationSchView.as_view(), name='explain_sch'),
     path('help/options/', views.ExplanationCreationPollView.as_view(), name='explain_options'),
     
     path('personal/', views.PersonalPollsView.as_view(), name='personal_polls'),
