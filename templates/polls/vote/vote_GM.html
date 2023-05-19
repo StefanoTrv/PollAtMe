@@ -89,6 +89,7 @@
                 form.submit()
             }
         }
+        //costruisco il dizionario composto da alternativa-giudizio selezionato sotto forma di intero
         var dict = {}
         var card = document.querySelectorAll('#card')
         for (element of card) {
@@ -110,20 +111,14 @@
             })
         } else if ('{{request.session.revote_type}}' == 'schulze_method') {
             var schulze_votes_ordered = `{{request.session.sequence_shultze|safe}}`.replaceAll('\'', '').slice(1, -1).split(', ')
-            var grades = []
-            var pairs = []
-            for (var i = 0; i < schulze_votes_ordered.length; i++) {
+            for (var i = 0; i < schulze_votes_ordered.length-1; i++) {
                 if (dict[schulze_votes_ordered[i]] < dict[schulze_votes_ordered[i+1]]) {
-                    pairs[i] = dict[schulze_votes_ordered[i]]
-                    pairs[i+1] = dict[schulze_votes_ordered[i+1]]
+                    localStorage.setItem(schulze_votes_ordered[i], dict[schulze_votes_ordered[i]]);
+                    localStorage.setItem(schulze_votes_ordered[i+1], dict[schulze_votes_ordered[i+1]]);
+                    inconsistency = true
+                    break
                 }
-                grades[i] = dict[schulze_votes_ordered[i]]
             }
-            if (pairs.length != 0) {
-                inconsistency = true
-            }
-            localStorage.setItem("grades", JSON.stringify(grades));
-            localStorage.setItem("pairs", JSON.stringify(pairs));
         }
         if (inconsistency) {
                 modal.show()
