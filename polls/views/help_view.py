@@ -6,11 +6,8 @@ class ExplanationGMView(TemplateView):
 class ExplanationSchView(TemplateView):
     template_name = "polls/help/spiegazione_schultze.html"
 
-class HelpSimulatedResultsSpView(TemplateView):
-    template_name: str = 'polls/help/help_simulated_results_sp.html'
-
-class HelpSimulatedResultsSchView(TemplateView):
-    template_name: str = 'polls/help/help_simulated_results_sch.html'
+class HelpSimulatedResultsView(TemplateView):
+    template_name: str = 'polls/help/help_simulated_results.html'
 
 class ExplanationCreationPollView(TemplateView):
     template_name: str = 'polls/help/help_advanced_options.html'

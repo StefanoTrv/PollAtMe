@@ -1,0 +1,404 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} {{block.super}} | Il calcolo dei risultati simulati {% endblock title %}
+
+{% block content %}
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">Il calcolo dei risultati simulati</h4>
+                            <p class="card-text">
+                                Quando si visualizzano i risultati di una scelta, si può visualizzare anche una
+                                simulazione dei risultati che si sarebbero ottenuti usando un metodo di voto diverso da
+                                quello scelto dal creatore della scelta. <br>
+                                Ad esempio, se il metodo di voto principale della scelta è la preferenza singola, è
+                                possibile vedere quali sarebbero potuti essere i risultati se si avesse votato con il
+                                giudizio maggioritario. <br>
+                                In questa pagina viene spiegato come viene calcolata questa simulazione.
+                            </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Voti reali e voti sintetici</h5>
+                        <p class="card-text">
+                            Dopo aver votato con il metodo di voto principale, all'utente viene
+                            proposto di votare nuovamente con un metodo alternativo.
+                            Se l'utente vota con un metodo alternativo, la sua preferenza viene registrata come un
+                            <b>voto reale</b> per il nuovo metodo.
+                            In caso contrario, il sistema genera un <b>voto sintetico</b> per il metodo alternativo
+                            basandosi sulla preferenza che l'utente ha espresso usando il metodo principale. <br>
+                            Quando si visualizzano i risultati di una scelta secondo un metodo alternativo, è
+                            possibile scegliere se includere nel calcolo dei risultati solo i voti reali (cioè le
+                            preferenze espresse esplicitamente dagli utenti) o anche i voti sintentici (cioè quelli
+                            generati dal sistema quando l'utente non rivota con un altro metodo).
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Dalla preferenza singola al giudizio maggioritario</h4>
+                        <p class="card-text">
+                            Per creare un voto sintetico per il giudizio maggioritario a partire da un voto espresso con
+                            la preferenza singola, all'alternativa scelta con la preferenza singola viene dato il
+                            giudizio migliore, mentre alle altre viene dato il giudizio peggiore.
+                        </p>
+                        <p class="card-text">
+                            Ad esempio, se la scelta "<i>Qual è il colore più bello?</i>" ha le alternative
+                            "<i>blu</i>", "<i>verde</i>" e "<i>rosso</i>" e l'utente ha votato per "<i>verde</i>" con il
+                            metodo a preferenza singola, verrà creato il seguente voto sintetico:
+                        </p>
+                        <div class="table-responsive-md">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Alternativa</th>
+                                        <th>Giudizio</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>blu</td>
+                                        <td>Pessimo</td>
+                                    </tr>
+                                    <tr>
+                                        <td>verde<br></td>
+                                        <td>Ottimo</td>
+                                    </tr>
+                                    <tr>
+                                        <td>rosso<br></td>
+                                        <td>Pessimo</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Dal metodo Schulze al giudizio maggioritario</h4>
+                        <p class="card-text">
+                            L'idea fondamentale è di calcolare, per ogni giudizio, il numero di alternative che saranno valutate con esso. In un secondo momento si potrà usare
+                            questa informazione per associare ad ogni alternativa un giudizio sintetico, dando i giudizi migliori alle alternative più in alto nella classifica.
+                            Il procedimento che si segue è il seguente:
+                            <ol>
+                                <li>Si calcola il risultato della divisione intera tra il numero di alternative e il numero di giudizi (5):
+                                    ogni singolo grado di giudizio sarà dato ad almeno questo numero di alternative.</li>
+                                <li>Si calcola il resto della divisione precedente e lo si distribuisce sui giudizi a partire da quello centrale ("<i>sufficiente</i>"), andando
+                                    verso i due estremi: si aumenta di 1 il numero del giudizio centrale, poi si aumentano di 1 i giudizi adiacenti ad esso, andando in
+                                    modo alternato verso il basso e verso l'alto, fino a quando non è stato distribuito tutto il resto della divisione.</li>
+                                <li>Ora che si conoscono tutti i giudizi che verranno assegnati, si scorre la classifica di Schulze in ordine, associando ad ogni alternativa il giudizio
+                                    sintetico migliore che è ancora disponibile.</li>
+                              </ol>
+
+                            Vediamo qualche esempio, usando la scelta la scelta "<i>Qual è il colore più bello?</i>".
+                        </p>
+                        <p class="card-text">
+                            <h6>Esempio 1: numero di alternative uguale al numero di giudizi</h6> 
+                            Il caso più semplice si ha quando il numero di alternative da ordinare con il metodo Schulze è lo stesso del numero di giudizi 
+                            del giudizio maggioritario, ovvero 5 ("<i>ottimo</i>", "<i>buono</i>", "<i>sufficiente</i>", "<i>scarso</i>" e "<i>pessimo</i>"). Supponiamo quindi che 
+                            le alternative della scelta sono "<i>blu</i>", "<i>verde</i>", "<i>rosso</i>", "<i>giallo</i>" e "<i>arancione</i>" e che l'utente ha espresso l'ordinamento
+                            "<i>blu</i>", "<i>verde</i>", "<i>rosso</i>", "<i>giallo</i>" e "<i>arancione</i>".
+                            <br>
+                            I primi due passi del procedimento calcolano questi valori.
+                        </p>
+                        <style type="text/css">
+                            .tg  {border:none;border-collapse:collapse;border-color:#ccc;border-spacing:0;}
+                            .tg td{background-color:#fff;border-color:#ccc;border-style:solid;border-width:0px;color:#333;
+                              font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;}
+                            .tg th{background-color:#f0f0f0;border-color:#ccc;border-style:solid;border-width:0px;color:#333;
+                              font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+                            .tg .tg-aa13{background-color:#f9f9f9;border-color:#000000;text-align:center;vertical-align:top}
+                            .tg .tg-18eh{border-color:#000000;font-weight:bold;text-align:center;vertical-align:middle}
+                            .tg .tg-b9bt{background-color:#f9f9f9;border-color:#000000;text-align:center;vertical-align:middle}
+                            .tg .tg-wp8o{border-color:#000000;text-align:center;vertical-align:top}
+                            .tg .tg-mqa1{border-color:#000000;font-weight:bold;text-align:center;vertical-align:top}
+                            .tg .tg-xwyw{border-color:#000000;text-align:center;vertical-align:middle}
+                            </style>
+                            <table class="tg">
+                            <thead>
+                              <tr>
+                                <th class="tg-18eh">GIUDIZIO</th>
+                                <th class="tg-18eh">PASSO 1</th>
+                                <th class="tg-mqa1">PASSO 2</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td class="tg-aa13">Ottimo</td>
+                                <td class="tg-b9bt">1</td>
+                                <td class="tg-aa13">1</td>
+                              </tr>
+                              <tr>
+                                <td class="tg-wp8o">Buono</td>
+                                <td class="tg-xwyw">1</td>
+                                <td class="tg-wp8o">1</td>
+                              </tr>
+                              <tr>
+                                <td class="tg-aa13">Sufficiente</td>
+                                <td class="tg-b9bt">1</td>
+                                <td class="tg-aa13">1</td>
+                              </tr>
+                              <tr>
+                                <td class="tg-wp8o">Scarso</td>
+                                <td class="tg-xwyw">1</td>
+                                <td class="tg-wp8o">1</td>
+                              </tr>
+                              <tr>
+                                <td class="tg-aa13">Pessimo</td>
+                                <td class="tg-b9bt">1</td>
+                                <td class="tg-aa13">1</td>
+                              </tr>
+                            </tbody>
+                            </table>
+                        <br>
+                        <p class="card-text">
+                            Ad ogni alternativa vengono dunque associati i seguenti giudizi sintetici.
+                        </p>
+                        <div class="table-responsive-md">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Alternativa</th>
+                                        <th>Giudizio sintetico</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>blu</td>
+                                        <td>Ottimo</td>
+                                    </tr>
+                                    <tr>
+                                        <td>verde<br></td>
+                                        <td>Buono</td>
+                                    </tr>
+                                    <tr>
+                                        <td>rosso<br></td>
+                                        <td>Sufficiente</td>
+                                    </tr>
+                                    <tr>
+                                        <td>giallo<br></td>
+                                        <td>Scarso</td>
+                                    </tr>
+                                    <tr>
+                                        <td>arancione<br></td>
+                                        <td>Pessimo</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <br>
+                        <p class="card-text">
+                            <h6>Esempio 2: numero di alternative inferiore al numero di giudizi</h6> 
+                            Vediamo il caso in cui il numero delle alternative della scelta è minore del numero di giudizi del giudizio maggioritario.
+                            <br>
+                            Ipotizziamo quindi che le alternative siano 4, ovvero "<i>blu</i>", "<i>verde</i>", "<i>rosso</i>", "<i>giallo</i>", e che l'utente abbiamo votato l'ordinamento
+                            "<i>blu</i>", "<i>verde</i>", "<i>rosso</i>", "<i>giallo</i>".
+                            <br>
+                            I primi due passi del procedimento calcolano questi valori.
+                        </p>
+                        <style type="text/css">
+                            .tg  {border:none;border-collapse:collapse;border-color:#ccc;border-spacing:0;}
+                            .tg td{background-color:#fff;border-color:#ccc;border-style:solid;border-width:0px;color:#333;
+                              font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;}
+                            .tg th{background-color:#f0f0f0;border-color:#ccc;border-style:solid;border-width:0px;color:#333;
+                              font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+                            .tg .tg-aa13{background-color:#f9f9f9;border-color:#000000;text-align:center;vertical-align:top}
+                            .tg .tg-18eh{border-color:#000000;font-weight:bold;text-align:center;vertical-align:middle}
+                            .tg .tg-b9bt{background-color:#f9f9f9;border-color:#000000;text-align:center;vertical-align:middle}
+                            .tg .tg-wp8o{border-color:#000000;text-align:center;vertical-align:top}
+                            .tg .tg-mqa1{border-color:#000000;font-weight:bold;text-align:center;vertical-align:top}
+                            .tg .tg-xwyw{border-color:#000000;text-align:center;vertical-align:middle}
+                            </style>
+                            <table class="tg">
+                            <thead>
+                              <tr>
+                                <th class="tg-18eh">GIUDIZIO</th>
+                                <th class="tg-18eh">PASSO 1</th>
+                                <th class="tg-mqa1">PASSO 2</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td class="tg-aa13">Ottimo</td>
+                                <td class="tg-b9bt">0</td>
+                                <td class="tg-aa13">0</td>
+                              </tr>
+                              <tr>
+                                <td class="tg-wp8o">Buono</td>
+                                <td class="tg-xwyw">0</td>
+                                <td class="tg-wp8o">1</td>
+                              </tr>
+                              <tr>
+                                <td class="tg-aa13">Sufficiente</td>
+                                <td class="tg-b9bt">0</td>
+                                <td class="tg-aa13">1</td>
+                              </tr>
+                              <tr>
+                                <td class="tg-wp8o">Scarso</td>
+                                <td class="tg-xwyw">0</td>
+                                <td class="tg-wp8o">1</td>
+                              </tr>
+                              <tr>
+                                <td class="tg-aa13">Pessimo</td>
+                                <td class="tg-b9bt">0</td>
+                                <td class="tg-aa13">1</td>
+                              </tr>
+                            </tbody>
+                            </table>
+                        <br>
+                        <p class="card-text">
+                            Ad ogni alternativa vengono dunque associati i seguenti giudizi sintetici.
+                        </p>
+                        <div class="table-responsive-md">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Alternativa</th>
+                                        <th>Giudizio sintetico</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>blu</td>
+                                        <td>Buono</td>
+                                    </tr>
+                                    <tr>
+                                        <td>verde<br></td>
+                                        <td>Sufficiente</td>
+                                    </tr>
+                                    <tr>
+                                        <td>rosso<br></td>
+                                        <td>Scarso</td>
+                                    </tr>
+                                    <tr>
+                                        <td>giallo<br></td>
+                                        <td>Scarso</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="card-text">
+
+                            <h6>Esempio 3: numero di alternative maggiore al numero di giudizi</h6> 
+                            Nell'ultimo esempio, considerdiamo un esempio in cui il numero di alternative è maggiore al numero di giudizi del giudizio 
+                            maggioritario.
+                            <br>
+                            Ipotizziamo dunque di avere 7 alternative, "<i>blu</i>", "<i>verde</i>", "<i>rosso</i>", "<i>giallo</i>", "<i>arancione</i>", 
+                            "<i>viola</i>", "<i>nero</i>" e che l'utente ha espresso l'ordinamento "<i>blu</i>", "<i>verde</i>", "<i>rosso</i>", "<i>giallo</i>",
+                            "<i>arancione</i>", "<i>viola</i>".
+                            <br>
+                            I primi due passi del procedimento calcolano questi valori.
+                        </p>
+                        <style type="text/css">
+                            .tg  {border:none;border-collapse:collapse;border-color:#ccc;border-spacing:0;}
+                            .tg td{background-color:#fff;border-color:#ccc;border-style:solid;border-width:0px;color:#333;
+                              font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;}
+                            .tg th{background-color:#f0f0f0;border-color:#ccc;border-style:solid;border-width:0px;color:#333;
+                              font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+                            .tg .tg-aa13{background-color:#f9f9f9;border-color:#000000;text-align:center;vertical-align:top}
+                            .tg .tg-18eh{border-color:#000000;font-weight:bold;text-align:center;vertical-align:middle}
+                            .tg .tg-b9bt{background-color:#f9f9f9;border-color:#000000;text-align:center;vertical-align:middle}
+                            .tg .tg-wp8o{border-color:#000000;text-align:center;vertical-align:top}
+                            .tg .tg-mqa1{border-color:#000000;font-weight:bold;text-align:center;vertical-align:top}
+                            .tg .tg-xwyw{border-color:#000000;text-align:center;vertical-align:middle}
+                            </style>
+                            <table class="tg">
+                            <thead>
+                              <tr>
+                                <th class="tg-18eh">GIUDIZIO</th>
+                                <th class="tg-18eh">PASSO 1</th>
+                                <th class="tg-mqa1">PASSO 2</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td class="tg-aa13">Ottimo</td>
+                                <td class="tg-b9bt">1</td>
+                                <td class="tg-aa13">1</td>
+                              </tr>
+                              <tr>
+                                <td class="tg-wp8o">Buono</td>
+                                <td class="tg-xwyw">1</td>
+                                <td class="tg-wp8o">1</td>
+                              </tr>
+                              <tr>
+                                <td class="tg-aa13">Sufficiente</td>
+                                <td class="tg-b9bt">1</td>
+                                <td class="tg-aa13">2</td>
+                              </tr>
+                              <tr>
+                                <td class="tg-wp8o">Scarso</td>
+                                <td class="tg-xwyw">1</td>
+                                <td class="tg-wp8o">2</td>
+                              </tr>
+                              <tr>
+                                <td class="tg-aa13">Pessimo</td>
+                                <td class="tg-b9bt">1</td>
+                                <td class="tg-aa13">1</td>
+                              </tr>
+                            </tbody>
+                            </table>
+                        <br>
+                        <p class="card-text">
+                            Ad ogni alternativa vengono dunque associati i seguenti giudizi sintetici.
+                        </p>
+                        <div class="table-responsive-md">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Alternativa</th>
+                                        <th>Giudizio sintetico</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>blu</td>
+                                        <td>Ottimo</td>
+                                    </tr>
+                                    <tr>
+                                        <td>verde<br></td>
+                                        <td>Buono</td>
+                                    </tr>
+                                    <tr>
+                                        <td>rosso<br></td>
+                                        <td>Sufficiente</td>
+                                    </tr>
+                                    <tr>
+                                        <td>giallo<br></td>
+                                        <td>Sufficiente</td>
+                                    </tr>
+                                    <tr>
+                                        <td>arancione<br></td>
+                                        <td>Scarso</td>
+                                    </tr>
+                                    <tr>
+                                        <td>viola<br></td>
+                                        <td>Scarso</td>
+                                    </tr>
+                                    <tr>
+                                        <td>nero<br></td>
+                                        <td>Pessimo</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <button type="button" class="btn btn-primary" onclick="window.history.back()">Torna indietro</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
