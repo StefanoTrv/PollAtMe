@@ -144,8 +144,8 @@ class MajorityJudgementResultView(_ResultView):
         poll = SearchPollService().search_by_id(self.kwargs['id'])
         include_synthetic=True
         if('include_synthetic' in self.kwargs):
-            include_synthetic= self.kwargs['include_synthetic']!="realonly"
-        result_service = MajorityJudgementService(poll,include_synthetic=include_synthetic)
+            include_synthetic = self.kwargs['include_synthetic'] != "realonly"
+        result_service = MajorityJudgementService(poll, include_synthetic=include_synthetic)
 
         classifica = result_service.get_classifica()
         winners = result_service.get_winners()

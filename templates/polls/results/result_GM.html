@@ -49,7 +49,7 @@
 
 
     <!-- [ Riepilogo ] start -->
-    {% if poll.get_type == "Preferenza singola" %}
+    {% if poll.get_type != "Giudizio maggioritario" %}
     <div class="card bg-white">
       <div class="card-body">
         <h5 class="card-header text-warning">Stai vedendo una simulazione dei risultati</h5>
