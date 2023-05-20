@@ -299,4 +299,53 @@ class TestVoteShultzePreferenceView(TestCase):
         self.assertEqual(last_vote.shultzeopinionjudgement_set.get(alternative__text='dolor sit amet').order, 5)
         self.assertEqual(last_vote.shultzeopinionjudgement_set.get(alternative__text='consectetur adipiscing elit').order, 3)
         self.assertEqual(last_vote.shultzeopinionjudgement_set.get(alternative__text='Integer tristique').order, 2)
+
+    def test_if_syntethic_vote_is_saved(self):
+        resp = self.client.post(self.poll_url, {
+            'shultzeopinionjudgement_set-TOTAL_FORMS': 5,
+            'shultzeopinionjudgement_set-INITIAL_FORMS': 0,
+            'shultzeopinionjudgement_set-MIN_NUM_FORMS': 5,
+            'shultzeopinionjudgement_set-MAX_NUM_FORMS': 5,
+            'shultzeopinionjudgement_set-0-order': 4,
+            'shultzeopinionjudgement_set-1-order': 1,
+            'shultzeopinionjudgement_set-2-order': 5,
+            'shultzeopinionjudgement_set-3-order': 3,
+            'shultzeopinionjudgement_set-4-order': 2,
+        })
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(
+            response=resp,
+            template_name='polls/vote_success.html'
+        )
+
+        syntethic_vote = models.preference.MajorityPreference.objects.last()
+        self.assertEqual(resp.client.session.get('preference_id'), syntethic_vote.id)
+    
+    def test_revote(self):
+        self.test_if_syntethic_vote_is_saved()
+        old_judgements = list(models.preference.MajorityPreference.objects.last().majorityopinionjudgement_set.all())
+
+        resp = self.client.post(reverse('polls:vote_MJ', args=[1]), {
+            'majorityopinionjudgement_set-TOTAL_FORMS': 5,
+            'majorityopinionjudgement_set-INITIAL_FORMS': 0,
+            'majorityopinionjudgement_set-MIN_NUM_FORMS': 5,
+            'majorityopinionjudgement_set-MAX_NUM_FORMS': 5,
+            'majorityopinionjudgement_set-0-grade': 1,
+            'majorityopinionjudgement_set-1-grade': 1,
+            'majorityopinionjudgement_set-2-grade': 1,
+            'majorityopinionjudgement_set-3-grade': 1,
+            'majorityopinionjudgement_set-4-grade': 1,
+        })
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(
+            response=resp,
+            template_name='polls/vote_success.html'
+        )
+
+        new_judgements = list(models.preference.MajorityPreference.objects.last().majorityopinionjudgement_set.all())
+        self.assertNotEqual(old_judgements, new_judgements)
+        for j in new_judgements:
+            self.assertEqual(j.grade, 1)
         

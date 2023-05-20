@@ -55,7 +55,7 @@
         <h5 class="card-header text-warning">Stai vedendo una simulazione dei risultati</h5>
         <div class="card-body">
           <p>Questa pagina simula i risultati che si sarebbero potuti ottenere usando un metodo di voto diverso, il <b>giudizio maggioritario</b>.</br>
-            Per visualizzare i risultati reali, <a href="{% url 'polls:result_single_preference' id=poll.id %}" class="link-warning">premi su questo collegamento</a>.</br></p>
+            Per visualizzare i risultati reali, <a href="{% url 'polls:result' id=poll.id %}" class="link-warning">premi su questo collegamento</a>.</br></p>
             {% if include_synthetic %}
             <a href="{% url 'polls:result_MJ_realonly' id=poll.id include_synthetic="realonly" %}" class="lead">
               <i class="bi bi-check-square-fill link-warning"></i>
