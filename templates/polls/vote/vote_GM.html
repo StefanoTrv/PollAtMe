@@ -80,50 +80,49 @@
     var form = document.getElementById('vote-form');
     var modal = new bootstrap.Modal(document.getElementById('modalAlertPollRevote'));
     form.addEventListener('submit', event => {
-        event.preventDefault()
-        var numberFields = parseInt(form.querySelector('input[name="majorityopinionjudgement_set-TOTAL_FORMS"]').value)
+        event.preventDefault();
+        var numberFields = parseInt(form.querySelector('input[name="majorityopinionjudgement_set-TOTAL_FORMS"]').value);
         const formLabels = document.getElementsByName('option');
         //controllo se uno o più campi non sono stati compilati e nel caso lascio al server segnalare gli avvisi
         for (let i = 0; i < numberFields; i++) {
             if (document.querySelector(`input[name="majorityopinionjudgement_set-${i}-grade"]:checked`) == null) {
-                form.submit()
+                form.submit();
             }
         }
         //costruisco il dizionario composto da alternativa-giudizio selezionato sotto forma di intero
-        var dict = {}
-        var card = document.querySelectorAll('#card')
+        var alternative_judgment_dict = {};
+        var card = document.querySelectorAll('#card');
         for (element of card) {
-                var gradeLabel = element.firstElementChild.innerText
+                var gradeLabel = element.firstElementChild.innerText;
                 element.lastElementChild.childNodes.forEach(function(field){
                     if (field.checked) {
-                        var grade = field.value
-                        dict[gradeLabel] = grade
+                        var grade = field.value;
+                        alternative_judgment_dict[gradeLabel] = grade;
                     }
-                })
+                });
             }
         var inconsistency = false
         if ('{{request.session.revote_type}}' == 'single_preference') {
-            var items = Object.keys(dict).forEach(function(key) {
+            var items = Object.keys(alternative_judgment_dict).forEach(function(key) {
                 alternative_sp = '{{ request.session.alternative_sp }}';
-                if (key != alternative_sp && dict[key] > dict[alternative_sp]) {
-                    inconsistency = true
+                if (key != alternative_sp && alternative_judgment_dict[key] > alternative_judgment_dict[alternative_sp]) {
+                    inconsistency = true;
                 }
             })
         } else if ('{{request.session.revote_type}}' == 'schulze_method') {
             var schulze_votes_ordered = `{{request.session.sequence_shultze|safe}}`.replaceAll('\'', '').slice(1, -1).split(', ')
             for (var i = 0; i < schulze_votes_ordered.length-1; i++) {
-                if (dict[schulze_votes_ordered[i]] < dict[schulze_votes_ordered[i+1]]) {
-                    localStorage.setItem(schulze_votes_ordered[i], dict[schulze_votes_ordered[i]]);
-                    localStorage.setItem(schulze_votes_ordered[i+1], dict[schulze_votes_ordered[i+1]]);
-                    inconsistency = true
-                    break
+                if (alternative_judgment_dict[schulze_votes_ordered[i]] < alternative_judgment_dict[schulze_votes_ordered[i+1]]) {
+                    localStorage.setItem("alternative_judgment_dict", JSON.stringify(alternative_judgment_dict));
+                    inconsistency = true;
+                    break;
                 }
             }
         }
         if (inconsistency) {
-                modal.show()
+                modal.show();
         } else {
-            form.submit()
+            form.submit();
         }
     })
 </script>

@@ -28,31 +28,31 @@
       const modalbody = document.getElementById('modal-body')
       var giudizi = {'1': 'Pessimo', '2': 'Scarso', '3': 'Sufficiente', '4': 'Buono', '5': 'Ottimo'}
       alertModal.addEventListener('show.bs.modal', event => {
-        p.innerHTML = "È stata rilevata un'incongruenza, evidenziata nella tabella sottostante, tra l'ordinamento dato con il metodo Schulze e quello che è possibile desumere dai giudizi. Vuoi cambiare giudizi?";
+        p.innerHTML = "Sono state rilevate delle incongruenze, evidenziate nella tabella sottostante, tra l'ordinamento scelto con il metodo Schulze e i giudizi dati alle alternative. Puoi confermare il voto o tornare indietro e cambiare giudizi.";
 
         //table creation
-        const tbl = createTable()
+        const tbl = createTable();
 
         //table head
-        createTableHead(tbl, "Ordinamento Schulze", "Giudizi")
+        createTableHead(tbl, "Ordinamento Schulze", "Giudizi");
         
         //table body
-        var sequence_shultze = `{{sequence_shultze|safe}}`.replaceAll('\'', '').slice(1, -1).split(', ')
-        const tblBody = createTableBody(sequence_shultze, localStorage.key(0), localStorage.key(1))
-        tbl.appendChild(tblBody)
+        var sequence_shultze = `{{sequence_shultze|safe}}`.replaceAll('\'', '').slice(1, -1).split(', ');
+        const tblBody = createTableBody(sequence_shultze, JSON.parse(localStorage.getItem("alternative_judgment_dict")));
+        tbl.appendChild(tblBody);
 
-        const responsive_wrapper = document.createElement("div")
-        responsive_wrapper.setAttribute("class", "table-responsive-md")
-        responsive_wrapper.setAttribute("align", "center")
+        const responsive_wrapper = document.createElement("div");
+        responsive_wrapper.setAttribute("class", "table-responsive-md");
+        responsive_wrapper.setAttribute("align", "center");
 
-        responsive_wrapper.appendChild(tbl)
+        responsive_wrapper.appendChild(tbl);
 
         //adding responsive_wrapper to modal body
-        modalbody.appendChild(responsive_wrapper)
+        modalbody.appendChild(responsive_wrapper);
       })
       alertModal.addEventListener('hide.bs.modal', event => {
-        localStorage.clear()
-        modalbody.removeChild(modalbody.lastChild)
+        localStorage.clear();
+        modalbody.removeChild(modalbody.lastChild);
       })
     }
     const saveModal = document.getElementById('saveModal');
@@ -62,55 +62,75 @@
 
 
     function createTable() {
-      const tbl = document.createElement("table")
-      tbl.setAttribute('style', 'width:90%')
-      tbl.setAttribute("class", "table table-striped")
+      const tbl = document.createElement("table");
+      tbl.setAttribute('style', 'width:90%');
+      tbl.setAttribute("class", "table table-striped");
       tbl.setAttribute("border", "3");
-      return tbl
+      return tbl;
     }
 
     function createTableHead(tbl, text1, text2) {
-      const thead = document.createElement("thead")
-      const tr = document.createElement("tr")
-      const td1 = document.createElement("th")
-      const td2 = document.createElement("th")
-      td1.appendChild(document.createTextNode(text1))
-      td2.appendChild(document.createTextNode(text2))
-      tr.appendChild(td1)
-      tr.appendChild(td2)
-      thead.appendChild(tr)
-      tbl.appendChild(thead)
+      const thead = document.createElement("thead");
+      const tr = document.createElement("tr");
+      const td1 = document.createElement("th");
+      const td2 = document.createElement("th");
+      td1.appendChild(document.createTextNode(text1));
+      td2.appendChild(document.createTextNode(text2));
+      tr.appendChild(td1);
+      tr.appendChild(td2);
+      thead.appendChild(tr);
+      tbl.appendChild(thead);
     }
 
-    function createTableBody(sequence_shultze, inconsistency1, inconsistency2) {
+    function createTableBody(sequence_shultze, alternative_judgment_dict) {
       const tblBody = document.createElement("tbody");
+      var mustBeRed = false
       for (var i = 0; i < sequence_shultze.length; i++) {
-        const row = document.createElement("tr")
+        var alternative = sequence_shultze[i];
+        const row = document.createElement("tr");
         const cell1 = document.createElement("td");
         const cellText1 = document.createTextNode(sequence_shultze[i]);
-        cell1.appendChild(cellText1)
-        row.appendChild(cell1)
+        cell1.appendChild(cellText1);
+        row.appendChild(cell1);
 
-        if (sequence_shultze[i] != inconsistency1 && sequence_shultze[i] != inconsistency2){
-          const cell2 = document.createElement("td")
-          const cellText2 = document.createTextNode(". . .")
-          cell2.appendChild(cellText2)
-          row.appendChild(cell2)
-        } else {
-          row.style.backgroundColor = "#F58770"
-          const cell2 = document.createElement("td");
-          if (sequence_shultze[i] == inconsistency1) {
-            const cellText2 = document.createTextNode(giudizi[localStorage.getItem(inconsistency1)])
-            cell2.appendChild(cellText2)
-          } else if (sequence_shultze[i] == inconsistency2) {
-            const cellText2 = document.createTextNode(giudizi[localStorage.getItem(inconsistency2)])
-            cell2.appendChild(cellText2)
-          }
-          row.appendChild(cell2)
+        const cell2 = document.createElement("td");
+        const cellText2 = document.createTextNode(giudizi[alternative_judgment_dict[alternative]]);
+
+        if (mustBeRed) {
+          mustBeRed=false;
+          row.style.backgroundColor = "#F58770";
         }
 
-        tblBody.appendChild(row)
+        if (i<sequence_shultze.length-1 && alternative_judgment_dict[alternative]<alternative_judgment_dict[sequence_shultze[i+1]]){
+          mustBeRed=true;
+          row.style.backgroundColor = "#F58770";
+        }
+
+
+        /*if (sequence_shultze[i] != inconsistency1 && sequence_shultze[i] != inconsistency2){
+          const cell2 = document.createElement("td");
+          const cellText2 = document.createTextNode(". . .");
+          cell2.appendChild(cellText2);
+          row.appendChild(cell2);
+        } else {
+          row.style.backgroundColor = "#F58770";
+          const cell2 = document.createElement("td");
+          if (sequence_shultze[i] == inconsistency1) {
+            const cellText2 = document.createTextNode(giudizi[localStorage.getItem(inconsistency1)]);
+            cell2.appendChild(cellText2);
+          } else if (sequence_shultze[i] == inconsistency2) {
+            const cellText2 = document.createTextNode(giudizi[localStorage.getItem(inconsistency2)]);
+            cell2.appendChild(cellText2);
+          }
+          row.appendChild(cell2);
+        }*/
+        
+        cell2.appendChild(cellText2);
+        row.appendChild(cell2);
+
+        tblBody.appendChild(row);
+
       }
-      return tblBody
+      return tblBody;
     }
 </script>
