@@ -16,9 +16,7 @@
                             <p class="mb-2 text-muted"> Accesso negato </p>
                             <p class="text-danger mb-2"> {{ exception }} </p>
                             <br>
-                            <form action="/">
-                                <button class="btn btn-block btn-primary mb-4"> HOME </button>
-                            </form>
+                            <a href="{% url 'polls:index' %}" role="button" class="btn btn-block btn-primary mb-4"> HOME </a>
                         </div>
                     </div>
                 </div>

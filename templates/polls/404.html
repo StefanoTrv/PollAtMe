@@ -14,11 +14,8 @@
                             <img src="/static/img/vote.png" alt="" class="logo">
                             <h4 class="mb-3 f-w-400"> Error 404 </h4>
                             <p class="mb-2 text-muted"> Oops! Pagina non trovata! </p>
-                            <p class="text-danger mb-2"> {{ exception }} </p>
                             <br>
-                            <form action="/">
-                                <button class="btn btn-block btn-primary mb-4"> HOME </button>
-                            </form
+                            <a href="{% url 'polls:index' %}" role="button" class="btn btn-block btn-primary mb-4"> HOME </a>
                         </div>
                     </div>
                 </div>
