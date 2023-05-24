@@ -32,7 +32,7 @@
         <img class="img-fluid card-img-top" src="/assets/img/patterns/pattern7.png" alt="Card Image cap">
     {% elif poll.id|modulo:9 == 8 %}
         <img class="img-fluid card-img-top" src="/assets/img/patterns/pattern8.png" alt="Card Image cap">
-    {% elif poll.id|modulo:9 == 9 %}
+    {% elif poll.id|modulo:9 == 0 %}
         <img class="img-fluid card-img-top" src="/assets/img/patterns/pattern9.png" alt="Card Image cap">
     {% endif %}
 
