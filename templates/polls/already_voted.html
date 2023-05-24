@@ -10,18 +10,18 @@
                 <div class="container">
                     <div class="row align-items-center text-center">
                         <div class="col-md-12">
-                            <h1>Hai già votato!</h1>
+                            <h3>Hai già votato!</h3>
                             <br>
                             {% if poll.get_authentication_type == "Solo autenticati" %}
-                            <h5>Non puoi votare perché è già presente un voto per questo account. Se vuoi, puoi vedere i risultati
+                            <p>Non puoi votare perché è già presente un voto per questo account. Se vuoi, puoi vedere i risultati
                                 della scelta.<br>
                                 Ricorda: quando voti una scelta protetta da autenticazione, al fine di garantire la tua anonimità nella risposta, il voto non sarà modificabile.
-                            </h5>
+                            </p>
                             {% else  %}
-                            <h5>Non puoi votare perché è già presente un voto per questa password. Se vuoi, puoi vedere i risultati
+                            <p>Non puoi votare perché è già presente un voto per questa password. Se vuoi, puoi vedere i risultati
                                 della scelta.<br>
                                 Ricorda: le password possono essere utilizzate una volta sola ed una volta salvato il voto questo non può essere più modificato, questo per garantire la tua anonimità nella risposta <br>
-                            </h5>
+                            </p>
                             {% endif %}
                         </div>
 

@@ -11,13 +11,14 @@
                     <div class="row align-items-center text-center">
                         <div class="col-md-12">
                             <div class="card-body">
-                                <h1>Inserisci la password per votare</h1>
+                                <h3>Inserisci la password per votare</h3>
+                                <br>
                                 Questa scelta è protetta da password: inserisci la password univoca che ti è stata fornita per votare.
                                 <br>
                                 Se non ha ricevuto una password e ritieni che dovresti essere in grado di votare, contatta il creatore di questa scelta.
                                 <br>
                                 La password è composta da quattro parole italiane, come per esempio "<i>negozio salsiccia albero acqua</i>".
-                                <br>
+                                <br><br>
                                 <div class="d-grid gap-2 d-sm-flex justify-content-sm-center flex-sm-fill">
                                     <input class="form-control m-2 {% if token != '' %}border-danger{% endif %}" type="text" id="password1" name="password1" onkeypress="keyPressInPassword(event,1)" placeholder="Prima parola">
                                     <input class="form-control m-2 {% if token != '' %}border-danger{% endif %}" type="text" id="password2" name="password2" onkeypress="keyPressInPassword(event,2)" placeholder="Seconda parola">
