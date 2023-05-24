@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %} {{block.super}} | Ricerca {% endblock title %}
+{% block title %} {{block.super}} | Cerca scelte {% endblock title %}
 
 {% block stylesheets %}
 {{ form.media.css }}
@@ -15,9 +15,11 @@
                     <div class="col-md-12">
                         <div class="page-header-title">
                             <h3 class="m-b-10">Cerca scelte</h3>
+                            <p>In questa sezione puoi cercare velocemente una scelta.</p>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/"><em class="feather icon-home"></em></a></li>
+                            <li class="breadcrumb-item"><em class="feather icon-home"></em></li>
+                            <li class="breadcrumb-item"> Cerca scelte </li>
                         </ul>
                     </div>
                 </div>

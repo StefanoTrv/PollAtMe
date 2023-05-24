@@ -68,7 +68,7 @@ class SearchPollForm(forms.Form):
             ('', "-------"),
             ('NOT_STARTED', 'In attesa'),
             ('ACTIVE', 'In corso'),
-            ('ENDED', 'Concluso'),
+            ('ENDED', 'Conclusa'),
         ]
     )
     type = forms.TypedChoiceField(

@@ -1,3 +1,5 @@
+{% load modulo %}
+
 <div class="card h-100 text-center">
 
     {% if poll.is_active %}
@@ -14,8 +16,26 @@
     </span>
     {% endif %}
 
-    <img class="img-fluid card-img-top" src="https://appsrv1-147a1.kxcdn.com/gradient/images/slider/img-slide-3.jpg"
-        alt="Card Image cap">
+    {% if poll.id|modulo:9 == 1 %}
+        <img class="img-fluid card-img-top" src="/assets/img/patterns/pattern1.png" alt="Card Image cap">
+    {% elif poll.id|modulo:9 == 2 %}
+        <img class="img-fluid card-img-top" src="/assets/img/patterns/pattern2.png" alt="Card Image cap">
+    {% elif poll.id|modulo:9 == 3 %}
+        <img class="img-fluid card-img-top" src="/assets/img/patterns/pattern3.png" alt="Card Image cap">
+    {% elif poll.id|modulo:9 == 4 %}
+        <img class="img-fluid card-img-top" src="/assets/img/patterns/pattern4.png" alt="Card Image cap">
+    {% elif poll.id|modulo:9 == 5 %}
+        <img class="img-fluid card-img-top" src="/assets/img/patterns/pattern5.png" alt="Card Image cap">
+    {% elif poll.id|modulo:9 == 6 %}
+        <img class="img-fluid card-img-top" src="/assets/img/patterns/pattern6.png" alt="Card Image cap">
+    {% elif poll.id|modulo:9 == 7 %}
+        <img class="img-fluid card-img-top" src="/assets/img/patterns/pattern7.png" alt="Card Image cap">
+    {% elif poll.id|modulo:9 == 8 %}
+        <img class="img-fluid card-img-top" src="/assets/img/patterns/pattern8.png" alt="Card Image cap">
+    {% elif poll.id|modulo:9 == 9 %}
+        <img class="img-fluid card-img-top" src="/assets/img/patterns/pattern9.png" alt="Card Image cap">
+    {% endif %}
+
 
     <div class="card-body">
         <h5 class="card-title"> {{ poll.title }} </h5>
