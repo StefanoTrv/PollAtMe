@@ -15,7 +15,7 @@
                     <div class="col-md-12">
                         <div class="page-header-title">
                             <h3 class="m-b-10">Cerca scelte</h3>
-                            <p>In questa sezione puoi cercare velocemente una scelta.</p>
+                            <p>In questa sezione puoi cercare velocemente una scelta tra quelle pubbliche.</p>
                         </div>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><em class="feather icon-home"></em></li>
@@ -63,15 +63,20 @@
 
         if (html.includes('form')) {
             document.querySelector('#search-accordion-body').innerHTML = html
-            document.querySelector('#results').innerHTML = ""
         } else {
             bsCollapse.hide()
             document.querySelectorAll('.is-invalid').forEach(x => {
                 x.classList.remove("is-invalid");
             })
             document.querySelector('#results').innerHTML = html
-        }
-            
+            if (!document.querySelector('#results').firstElementChild.firstElementChild) {
+                const alrt = document.querySelector('#results').firstElementChild
+                alrt.setAttribute("class", "alert alert-info alert-dismissible fade show")
+                alrt.setAttribute("role", "alert")
+                alrt.innerHTML = "La ricerca non ha prodotto risultati."
+                document.querySelector('#results').firstElementChild.appendChild(alrt)
+            }
+        }  
     }
 
     search = form => {
