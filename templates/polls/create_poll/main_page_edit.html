@@ -1,5 +1,5 @@
-{% with 'Modifica sondaggio' as page_title %}
-    {% with 'Modifica il sondaggio' as header %}
-        {% include 'polls/create_poll/main_page.html' with action='modifica' %}
+{% with 'Modifica scelta' as page_title %}
+    {% with 'Modifica la scelta' as header %}
+        {% include 'polls/create_poll/main_page.html' with action='modifica' msg='In questa sezione puoi modificare una scelta che hai già creato in precedenza.'%}
     {% endwith %}
 {% endwith %}
