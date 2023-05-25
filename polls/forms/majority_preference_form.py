@@ -4,7 +4,7 @@ from django import forms
 from django.db import models
 from django.forms import inlineformset_factory
 
-import polls.models as pm
+import polls.models as poll_model
 
 class PreferenceFormSet(forms.BaseInlineFormSet):
     def __init__(self, *args, **kwargs) -> None:
@@ -20,8 +20,8 @@ class MajorityPreferenceFormSet(PreferenceFormSet):
     @staticmethod
     def get_formset_class(num_judges: int):
         return inlineformset_factory(
-            pm.Alternative,
-            pm.MajorityPreference.responses.through,
+            poll_model.Alternative,
+            poll_model.MajorityPreference.responses.through,
             form=MajorityOpinionForm,
             formset=MajorityPreferenceFormSet,
             can_delete=False,
@@ -35,8 +35,8 @@ class ShultzePreferenceFormSet(PreferenceFormSet):
     @staticmethod
     def get_formset_class(num_judges: int):
         return inlineformset_factory(
-            pm.Alternative,
-            pm.preference.ShultzePreference.responses.through,
+            poll_model.Alternative,
+            poll_model.preference.ShultzePreference.responses.through,
             form=ShultzeOpinionForm,
             formset=ShultzePreferenceFormSet,
             can_delete=False,
@@ -50,7 +50,7 @@ class ShultzePreferenceFormSet(PreferenceFormSet):
 class MajorityOpinionForm(forms.ModelForm):
 
     class Meta:
-        model: type[models.Model] = pm.MajorityOpinionJudgement
+        model: type[models.Model] = poll_model.MajorityOpinionJudgement
         fields: list[str] = ['grade']
         widgets: dict = {
             'grade': forms.RadioSelect(attrs={
@@ -64,7 +64,7 @@ class MajorityOpinionForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        self.alternative: pm.Alternative = kwargs.pop('alternative', None)
+        self.alternative: poll_model.Alternative = kwargs.pop('alternative', None)
         super().__init__(*args, **kwargs)
         self.fields['grade'].label = self.alternative.text
         self.fields['grade'].blank = False
@@ -78,14 +78,14 @@ class MajorityOpinionForm(forms.ModelForm):
 class ShultzeOpinionForm(forms.ModelForm):
 
     class Meta:
-        model: type[models.Model] = pm.preference.ShultzeOpinionJudgement
+        model: type[models.Model] = poll_model.preference.ShultzeOpinionJudgement
         fields: list[str] = ['order']
         widgets: dict = {
             'order': forms.HiddenInput()
         }
 
     def __init__(self, *args, **kwargs):
-        self.alternative: pm.Alternative = kwargs.pop('alternative', None)
+        self.alternative: poll_model.Alternative = kwargs.pop('alternative', None)
         super().__init__(*args, **kwargs)
         self.fields['order'].label = self.alternative.text
     

@@ -103,6 +103,7 @@ class _VoteView(CreateView):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context['poll'] = self.poll
+        context['schulze_order'] = self.request.session.get('sequence_shultze',None)
         return context
 
 
