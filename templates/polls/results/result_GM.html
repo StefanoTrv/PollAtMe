@@ -132,122 +132,22 @@
 
 
 {% block javascripts %}
-<script src={% static 'js/plugins/apexcharts.min.js' %}></script>
-<script>
 
-  var options = {
-    series: [
-    {% for vote in ordered_votes %}
-    {
-    name: '{{vote}}',
-    data: [{% for alternativa in voti_alternativa %}
-              {{ alternativa.lista_voti|get_value:vote }},
-          {% endfor %}]
-    },
-    {%endfor%}
-  ],
-    chart: {
-    type: 'bar',
-    height: 275,
-    stacked: true,
-    stackType: '100%'
-  },
-  plotOptions: {
-    bar: {
-      horizontal: true,
-    },
-  },
-  stroke: {
-    width: 1,
-    colors: ['#fff']
-  },
-  xaxis: {
-    categories: [{% for alternativa in voti_alternativa %}
-                    '{{alternativa.alternativa}}',
-                  {% endfor %}]
-  },
-  tooltip: {
-    y: {
-      formatter: function (val) {
-        return val + " voti"
-      }
-    }
-  },
-  fill: {
-    opacity: 1
-  
-  },
-  legend: {
-    position: 'top',
-    horizontalAlign: 'center',
-    offsetX: 40
-  }
-  };
+{% if poll.is_active %}
+    {% if poll.results_restriction == 1 %}
+    <!-- {{poll.results_restriction}}-show -->
+      {% include 'polls/results/script_GM.html' %}
+    {% endif %}
 
-  var chart = new ApexCharts(document.querySelector("#chart"), options);
-  chart.render();
-
-</script>
-
-{%for alternativa in voti_alternativa%}
-<script>
-
-    var options = {
-      series: [{
-        name: 'Preferenze {{alternativa.al}}',
-        data: [{% for voto, amount in alternativa.lista_voti.items%}
-                {
-                x: '{{voto}}',
-                y: {{amount}},
-                },
-              {%endfor%}]
-      }],
-    chart: {
-      type: 'bar',
-      redrawOnWindowResize: true
-    },
-    plotOptions: {
-      bar: {
-        horizontal: false,
-          columnWidth: '55%',
-            endingShape: 'rounded'
-      },
-    },
-    dataLabels: {
-      enabled: true,
-          style: {
-            fontSize: '12px',
-            colors: ["#FFFFFF"]
-          }
-    },
-    stroke: {
-      show: true,
-        width: 2,
-          colors: ['transparent']
-    },
-    xaxis: {
-      type: 'category'
-    },
-    yaxis: {
-      title: {
-        text: 'numero di giudizi'
-      }
-    },
-    fill: {
-      opacity: 1
-    },
-    tooltip: {
-      y: {
-        formatter: function (val) {
-          return val
-        }
-      }
-    },
-    };
-
-    var chart = new ApexCharts(document.querySelector("#bar_{{forloop.counter}}"), options);
-    chart.render();
-</script>
-{% endfor %}
+    {% if poll.results_restriction == 2 %}
+        {% if user.is_authenticated and user == poll.author %}
+        <!-- {{poll.results_restriction}}-show -->
+          {% include 'polls/results/script_GM.html' %}
+        {%endif%}
+    {% endif %}
+{% endif %}
+{% if not poll.is_active %}
+  {% include 'polls/results/script_GM.html' %}
+{% endif %}
 
 {% endblock javascripts %}

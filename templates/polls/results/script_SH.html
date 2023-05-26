@@ -1,0 +1,165 @@
+{% load static %}
+
+<script src={% static 'js/plugins/apexcharts.min.js' %}></script>
+<script>
+  var options = {
+    series: [
+      {% for list_pos in summary_transposed %}
+      {
+        name: '{{ forloop.counter }}°',
+        data: [{% for n in list_pos %}{{ n }},{% endfor %}]
+      },
+      {% endfor %}
+    ],
+    colors: ['#020873',  '#5f0075', '#93006f', '#bd0063', '#de0054', '#f54142', '#ff6e2e', '#ff9814', '#ffc100', '#f2e926'],
+    chart: {
+    type: 'bar',
+    height: 275,
+    stacked: true,
+    stackType: '100%'
+  },
+  plotOptions: {
+    bar: {
+      horizontal: true,
+    },
+  },
+  stroke: {
+    width: 1,
+    colors: ['#fff']
+  },
+  xaxis: {
+    categories: [{% for alt, _ in summary %}'{{ alt }}',{% endfor %}]
+  },
+  tooltip: {
+    y: {
+      formatter: function (val) {
+        return val + " voti"
+      }
+    }
+  },
+  fill: {
+    opacity: 1
+  
+  },
+  legend: {
+    position: 'top',
+    horizontalAlign: 'center',
+    offsetX: 40
+  }
+  };
+
+  var chart = new ApexCharts(document.querySelector("#chart"), options);
+  chart.render();
+</script>
+
+{% for alt, list_pos in summary %}
+<script>
+    var options = {
+      series: [{
+        name: 'Preferenze {{ alt }}',
+        data: [{% for n in list_pos %}
+                {
+                x: '{{ forloop.counter }}°',
+                y: {{ n }},
+                },
+              {% endfor %}]
+      }],
+    chart: {
+      type: 'bar',
+      redrawOnWindowResize: true
+    },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+          columnWidth: '55%',
+            endingShape: 'rounded'
+      },
+    },
+    dataLabels: {
+      enabled: true,
+          style: {
+            fontSize: '12px',
+            colors: ["#FFFFFF"]
+          }
+    },
+    stroke: {
+      show: true,
+        width: 2,
+          colors: ['transparent']
+    },
+    xaxis: {
+      type: 'category'
+    },
+    yaxis: {
+      title: {
+        text: 'numero di giudizi'
+      }
+    },
+    fill: {
+      opacity: 1
+    },
+    tooltip: {
+      y: {
+        formatter: function (val) {
+          return val
+        }
+      }
+    },
+    };
+
+    var chart = new ApexCharts(document.querySelector("#bar_{{forloop.counter}}"), options);
+    chart.render();
+</script>
+{% endfor %}
+
+<script>
+  new ApexCharts(document.querySelector("#chart2"), {
+    series: [
+      {% for c0, row in pairwise_mat %}
+      {
+        name: '{{ c0 }}',
+        data: [{% for c1, n in row %}
+                {
+                x: '{{ c1 }}',
+                y: {{ n }},
+                },
+               {% endfor %}]
+      },
+      {% endfor %}
+    ],
+    chart: {
+      height: 350,
+      type: 'heatmap',
+    },
+    dataLabels: {
+      enabled: true
+    },
+    colors: ["#008FFB"],
+  }).render();
+</script>
+
+<script>
+  new ApexCharts(document.querySelector("#chart3"), {
+    series: [
+      {% for c0, row in shultze_table %}
+      {
+        name: '{{ c0 }}',
+        data: [{% for c1, n in row %}
+                {
+                x: '{{ c1 }}',
+                y: {{ n }},
+                },
+               {% endfor %}]
+      },
+      {% endfor %}
+    ],
+    chart: {
+      height: 350,
+      type: 'heatmap',
+    },
+    dataLabels: {
+      enabled: true
+    },
+    colors: ["#f30000"],
+  }).render();
+</script>
