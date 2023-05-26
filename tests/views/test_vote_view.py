@@ -349,3 +349,31 @@ class TestVoteShultzePreferenceView(TestCase):
         for j in new_judgements:
             self.assertEqual(j.grade, 1)
         
+    def test_fixed_positions_in_revote(self):
+        resp = self.client.post(self.poll_url, {
+            'shultzeopinionjudgement_set-TOTAL_FORMS': 5,
+            'shultzeopinionjudgement_set-INITIAL_FORMS': 0,
+            'shultzeopinionjudgement_set-MIN_NUM_FORMS': 5,
+            'shultzeopinionjudgement_set-MAX_NUM_FORMS': 5,
+            'shultzeopinionjudgement_set-0-order': 5,
+            'shultzeopinionjudgement_set-1-order': 4,
+            'shultzeopinionjudgement_set-2-order': 3,
+            'shultzeopinionjudgement_set-3-order': 2,
+            'shultzeopinionjudgement_set-4-order': 1,
+        })
+
+        self.assertEqual(resp.status_code, 200)
+        
+        resp = self.client.get(reverse('polls:vote_MJ', args=[1]))
+        self.assertEqual(resp.status_code, 200)
+
+        content = resp.content.decode()
+        content = content.split("<script>")[0] #rimuovo la parte di script, che contiene i nomi delle alternative (in realtà non dovrebbe essere necessario)
+
+        alternatives = ["Lorem", "Ipsum", "dolor sit amet", "consectetur adipiscing elit", "Integer tristique"]
+        alternatives.reverse()
+
+        for alternative in alternatives:
+            assert_that(content).contains(alternative)
+            content = content.split(alternative)[1]
+        
