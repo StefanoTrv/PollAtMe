@@ -58,10 +58,14 @@
                     {%if poll.default_type == 1 %}
                         {% include "polls/includes/alert-non-modify.html"%}
                     {% endif %}
+                    
 
-                    <div class="col-sm-12">
-                        <button type="submit" class="btn btn-primary">Salva</button>
-                    </div>
+                    <button type="submit" class="btn btn-primary m-1">Salva</button>
+
+                    {%if request.session.from_code %}
+                        {% include "polls/includes/result-button-vote-page.html"%}
+                    {%endif %}
+
                 </form>
             </div>
             <!-- [ sample-page ] end -->

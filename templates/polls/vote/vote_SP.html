@@ -39,7 +39,11 @@
 
                     {% include "polls/includes/alert-non-modify.html"%}
 
-                    <button type="submit" class="btn btn-primary">Salva</button>
+                    <button type="submit" class="btn btn-primary m-1">Salva</button>
+
+                    {%if request.session.from_code %}
+                        {% include "polls/includes/result-button-vote-page.html"%}
+                    {%endif %}
                 </form>
             </div>
             <!-- [ sample-page ] end -->

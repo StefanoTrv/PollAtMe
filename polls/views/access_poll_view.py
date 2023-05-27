@@ -11,6 +11,8 @@ class AccessPollView(RedirectView):
 
         mapping = get_object_or_404(Mapping, code=kwargs['code'])
         
+        self.request.session['from_code'] = True
+
         poll = mapping.poll
 
         if poll.is_ended():

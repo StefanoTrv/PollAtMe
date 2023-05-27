@@ -62,6 +62,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "polls.middleware.NewPollSessionCleaner",
     "polls.middleware.RevoteSessionCleaner",
+    "polls.middleware.RevoteSessionCleaner",
+    "polls.middleware.FromCodeSessionCleaner"
 ]
 
 ROOT_URLCONF = "pollatme.urls"
