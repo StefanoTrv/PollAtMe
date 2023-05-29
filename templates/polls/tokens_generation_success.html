@@ -11,7 +11,7 @@
                     <div class="row align-items-center text-center">
                         <div class="col-md-12">
                             <div class="card-body">
-                                <h5>Hai generato correttamente le password!</h5>
+                                <h3>Hai generato correttamente le password!</h3>
                                 <br>
                                 <a class="btn btn-block btn-secondary mb-4" href="{% url 'polls:index' %}">Torna alla home</a>
                                 <a class="btn btn-block btn-primary mb-4" href="{% url 'polls:tokens' id=id %}">Pagina password</a>
@@ -49,4 +49,5 @@
             </div>
         </div>
     </div>
+    {% include 'polls/includes/footer.html' %}
 {% endblock content %}

@@ -44,6 +44,9 @@
                             </ol>
                         </div>
                     </div>
+
+                    {% include "polls/includes/alert-non-modify.html"%}
+                    
                     <div class="col-sm-12">
                         <button type="submit" class="btn btn-primary">Salva</button>
                     </div>
@@ -53,6 +56,7 @@
         </div>
         <!-- [ Main Content ] end -->
     </div>
+    {% include 'polls/includes/footer.html' %}
 </div>
 
 {% include 'polls/includes/modal_spiegazione_metodo_shultze.html'%}

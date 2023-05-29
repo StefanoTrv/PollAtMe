@@ -1,3 +1,5 @@
+{% load modulo %}
+
 <div class="card h-100 text-center">
 
     {% if poll.is_active %}
@@ -14,8 +16,7 @@
     </span>
     {% endif %}
 
-    <img class="img-fluid card-img-top" src="https://appsrv1-147a1.kxcdn.com/gradient/images/slider/img-slide-3.jpg"
-        alt="Card Image cap">
+    <img class="img-fluid card-img-top" src="/assets/img/patterns/pattern{{ poll.id|modulo:9 }}.png" alt="Card Image cap {{ poll.id|modulo:9 }}">
 
     <div class="card-body">
         <h5 class="card-title"> {{ poll.title }} </h5>

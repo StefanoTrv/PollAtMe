@@ -1,7 +1,7 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
 
-{% block title %} {{block.super}} | Risultati SP {% endblock title %}
+{% block title %} {{block.super}} | Risultati {% endblock title %}
 
 {% block content %}
 <!-- [ Main Content ] start -->
@@ -13,7 +13,7 @@
         <div class="row align-items-center">
           <div class="col-md-12">
             <div class="page-header-title">
-              <h5 class="m-b-10">Risultati scelta</h5>
+              <h3 class="m-b-10">Risultati scelta</h3>
             </div>
             <ul class="breadcrumb">
               <li class="breadcrumb-item"><a href="/"><em class="feather icon-home"></em></a></li>
@@ -76,121 +76,28 @@
       </div>
     </div>
   </div>
+  {% include 'polls/includes/footer.html' %}
 </div>
 <!-- [ Main Content ] end -->
 {% endblock content %}
 
 {% block javascripts %}
-<script src={% static 'js/plugins/apexcharts.min.js' %}></script>
-<script>
-  var options = {
-    series: [{
-      name: 'Preferenze',
-      data: [
-        {% for vote in results %}
-        {
-          x: "{{ vote.text|safe }}",
-          y: {{ vote.count }},
-        },
-        {% endfor %}
-      ]
-    }],
-  chart: {
-    height: 350,
-    type: 'bar',
-    zoom: {
-      enabled: true
-    }
-  },
-  responsive: [{
-    breakpoint: 480,
-    options: {
-      legend: {
-        position: 'bottom',
-        offsetX: -10,
-        offsetY: 0
-      }
-    }
-  }],
-  plotOptions: {
-    bar: {
-      horizontal: false,
-        columnWidth: '55%',
-          endingShape: 'rounded'
-    },
-  },
-  dataLabels: {
-    enabled: true,
-        style: {
-          fontSize: '12px',
-          colors: ["#FFFFFF"]
-        }
-  },
-  stroke: {
-    show: true,
-      width: 2,
-        colors: ['transparent']
-  },
-  xaxis: {
-    type: 'category'
-  },
-  yaxis: {
-    title: {
-      text: 'numero di preferenze'
-    }
-  },
-  fill: {
-    opacity: 1
-  },
-  tooltip: {
-    y: {
-      formatter: function (val) {
-        return val
-      }
-    }
-  }
-  };
 
-  var chart = new ApexCharts(document.querySelector("#bar-chart"), options);
-  chart.render();
-</script>
+{% if poll.is_active %}
+    {% if poll.results_restriction == 1 %}
+    <!-- {{poll.results_restriction}}-show -->
+      {% include 'polls/results/script_SP.html' %}
+    {% endif %}
 
-<script>
-  var options = {
-    chart: {
-      height: 350,
-      type: 'pie',
-    },
-    series: [{% for vote in results %}{{ vote.count }}, {% endfor %}],
-    labels: [{% for vote in results %}"{{ vote.text|safe }}", {% endfor %}],
-    legend: {
-      show: true,
-      position: 'bottom',
-    },
-    fill: {
-      type: 'gradient',
-      gradient: {
-          shade: 'light',
-          inverseColors: true,
-      }
-    },
-    dataLabels: {
-      enabled: true,
-      dropShadow: {
-          enabled: false,
-      }
-    },
-    responsive: [{
-      breakpoint: 480,
-      options: {
-          legend: {
-              position: 'bottom'
-          }
-      }
-    }]
-  };
+    {% if poll.results_restriction == 2 %}
+        {% if user.is_authenticated and user == poll.author %}
+        <!-- {{poll.results_restriction}}-show -->
+          {% include 'polls/results/script_SP.html' %}
+        {%endif%}
+    {% endif %}
+{% endif %}
+{% if not poll.is_active %}
+  {% include 'polls/results/script_SP.html' %}
+{% endif %}
 
-  var chart = new ApexCharts(document.querySelector("#pie-chart"), options);
-  chart.render();
-</script>
 {% endblock javascripts %}
