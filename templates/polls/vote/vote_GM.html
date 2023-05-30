@@ -59,12 +59,15 @@
                         {% include "polls/includes/alert-non-modify.html"%}
                     {% endif %}
                     
+                    <div class="d-md-inline-block d-grid gap-2 mt-2">
 
-                    <button type="submit" class="btn btn-primary m-1">Salva</button>
+                        <button type="submit" class="btn btn-primary m-1">Salva</button>
 
-                    {%if request.session.from_code %}
-                        {% include "polls/includes/result-button-vote-page.html"%}
-                    {%endif %}
+                        {%if request.session.from_code %}
+                            {% include "polls/includes/result-button-vote-page.html"%}
+                        {%endif %}
+
+                    </div>
 
                 </form>
             </div>
