@@ -30,9 +30,12 @@
     <!-- Cookie-banner -->
     {% cookiebanner_modal 'cookiebanner' %}
     {% cookie_accepted 'analytics' as cookie_analytics %}
+    
     {% if cookie_analytics %}
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JW556FCGFS"></script>
+
+    <!-- Setup per passare dati da scegli meglio a google tag manager (analytics), sfruttando il data layer-->
     <script>
         var host = window.location.hostname;
         if(!(host == "localhost" || host == "127.0.0.1")) {

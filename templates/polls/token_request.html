@@ -54,6 +54,7 @@
         prefillTextInputs();
     }
 
+    //riempie i 4 campi con ciò che l'utente inserisce
     function prefillTextInputs(){
         token = "{{ token }}".split(" ");
         if(token.length>0 && token[0]!=""){ 
@@ -70,6 +71,7 @@
         }
     }
 
+    //costruisce il link completo che porta al voto
     function submitPassword(){
         currentUrlCleaned = window.location.href.split("/").slice(0,-1).join("/")+"/";
 
@@ -94,7 +96,6 @@
         if (event.key == "Enter") {
             submitPassword();
         } else if (event.code == "Space"){
-            console.log(field)
             if (field==1){
                 document.getElementById("password2").focus();
                 setTimeout(() => {  document.getElementById("password1").value=document.getElementById("password1").value.replaceAll(" ",""); }, 100);//rimuovi lo spazio che è stato aggiunto

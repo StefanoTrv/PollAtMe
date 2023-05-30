@@ -52,6 +52,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.slim.min.js"></script>
 {{ form.media.js }}
 
+<!-- La ricerca recupera html (card di scelte) se ha prodotto risultati, altrimenti viene restituito un alert di avviso -->
 <script>
     const accordion = document.querySelector('#search-accordion-body')
     var bsCollapse = new bootstrap.Collapse(accordion, {
