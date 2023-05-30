@@ -9,7 +9,7 @@ f = open(os.path.normpath('polls/fixtures/word_dictionary.txt'), 'r')
 __word_dictionary_list = f.read().split('\n')
 f.close()
 
-# Generates n token for the given poll
+# Generates n tokens for the given poll
 def generate_tokens(poll : TokenizedPoll, n = 0):
     new_tokens_list: List[str] = []
     # Get the list of existing tokens for the given poll
