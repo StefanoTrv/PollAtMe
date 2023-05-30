@@ -14,12 +14,8 @@
                                 <h2>Grazie!</h2>
                                 <h5>La tua risposta è stata registrata!</h5>
                                 <br>
-                                <form action="/">
-                                    <button class="btn btn-block btn-primary mb-4"> Torna alla HOME </button>
-                                </form>
-                                <form action={% url 'polls:result' id=poll.id %}>
-                                    <button class="btn btn-block btn-primary mb-4"> Risultati scelta </button>
-                                </form>
+                                <a href="{% url 'polls:index' %}" role="button" class="btn btn-block btn-primary mb-4"> Torna alla HOME </a>
+                                <a href="{% url 'polls:result' id=poll.id %}" role="button" class="btn btn-block btn-primary mb-4"> Risultati scelta </a>
                             </div>
                         </div>
                     </div>
