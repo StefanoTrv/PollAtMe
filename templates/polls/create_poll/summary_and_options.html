@@ -19,7 +19,7 @@
                         </div>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><i class="feather icon-home"></i></li>
-                            <li class="breadcrumb-item"> Crea una scelta </li>
+                            <li class="breadcrumb-item"> {{ page_title }} </li>
                         </ul>
                     </div>
                 </div>
@@ -178,7 +178,13 @@
                     class="btn btn-primary m-1" />
                 <button type="button" class="btn btn-block btn-secondary m-1" data-bs-toggle="modal"
                     data-bs-target="#exampleModal">Torna alla home</button>
-                <input type="submit" form="additional-options" name="save" class="btn btn-primary m-1" value="Crea la nuova scelta" />
+                <input type="submit" form="additional-options" name="save" class="btn btn-primary m-1" value=
+                {% if action == "creazione"%}
+                    "Crea la nuova scelta"
+                {% else %}
+                    "Salva le modifiche"
+                {% endif %}
+                 />
             </div>
         </div>
         {% include 'polls/includes/footer.html' %}
