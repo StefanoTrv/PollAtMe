@@ -114,7 +114,7 @@ class PollFormMain(forms.ModelForm):
 class PollForm(forms.ModelForm):
     
     start_now = forms.BooleanField(
-        label="Inizia subito (Attenzione: non potrai più modificare o eliminare il sondaggio!)",
+        label="Inizia subito (Attenzione: non potrai più modificare o eliminare la scelta!)",
         required=False
     )
 
@@ -199,7 +199,7 @@ class PollForm(forms.ModelForm):
             # se l'utente non ha scelto di iniziare il sondaggio subito
             # la data di inizio deve essere impostata
             if start is None:
-                self.add_error('start', 'Devi impostare la data di inizio del sondaggio')
+                self.add_error('start', 'Devi impostare la data di inizio della scelta')
 
         if start < now - delta:
             self.add_error('start', 'La data di inizio è precedente a quella attuale')

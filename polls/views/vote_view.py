@@ -47,7 +47,7 @@ class _VoteView(CreateView):
             self.poll = SearchPollService().search_by_id(kwargs['id'])
         except PollWithoutAlternativesException:
             raise http.Http404(
-                "Il sondaggio ricercato non ha opzioni di risposta")
+                "La scelta cercata non ha opzioni di risposta")
         syntethic_preference = self.__get_syntethic_preference(
             request.session.get('preference_id', None))
         self.alternatives = self.poll.alternative_set.all()

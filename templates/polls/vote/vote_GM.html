@@ -25,7 +25,7 @@
         <div class="row">
             <!-- [ sample-page ] start -->
             <div class="col-sm-12">
-                {% bootstrap_alert "Non sai come funziona questa modalità di voto? Clicca <a class='alert-link' data-bs-toggle='modal' data-bs-target='#modal-majority-explanation' href='#'>qui</a> per ulteriori informazioni." %}
+                {% bootstrap_alert "Dai ad ogni alternativa un giudizio da \"Pessimo\" a \"Ottimo\". Clicca <a class='alert-link' data-bs-toggle='modal' data-bs-target='#modal-majority-explanation' href='#'>qui</a> per ulteriori informazioni su questa modalità di voto" %}
                 <form id="vote-form" method="post">
                     {% csrf_token %}
                     {{ form.management_form }}

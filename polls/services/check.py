@@ -49,7 +49,7 @@ class CheckPollActiveness(AbstractHandler):
                 raise PermissionDenied(f'Le votazioni inizieranno il {start.strftime("%d/%m/%Y")} alle {start.strftime("%H:%M")}')
             else:
                 end = timezone.localtime(self.poll.end)
-                raise PermissionDenied(f'Il sondaggio è terminato il {end.strftime("%d/%m/%Y")} alle {end.strftime("%H:%M")}')
+                raise PermissionDenied(f'La scelta è terminata il {end.strftime("%d/%m/%Y")} alle {end.strftime("%H:%M")}')
         
         return super().handle()
 
@@ -149,7 +149,7 @@ class CheckPollOwnership(AbstractHandler):
     
     def handle(self):
         if self.poll.author != self.user:
-            raise PermissionDenied('Non hai i permessi per cancellare questo sondaggio')
+            raise PermissionDenied('Non hai i permessi per cancellare questa scelta')
         
         return super().handle()
 

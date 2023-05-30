@@ -101,7 +101,7 @@ class SearchPollService:
             if poll.alternative_set.count() == 0:
                 raise PollWithoutAlternativesException
         except Poll.DoesNotExist:
-            raise Http404("Il sondaggio ricercato non esiste")
+            raise Http404("La scelta cercata non esiste")
         
         if hasattr(poll, Poll.AUTH_VOTE_TYPE_FIELDNAME):
             poll = getattr(poll, Poll.AUTH_VOTE_TYPE_FIELDNAME)

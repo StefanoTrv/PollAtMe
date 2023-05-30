@@ -9,8 +9,8 @@
             <p id="text"></p>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Indietro</button>
-            <button id="saveModal" type="click" class="btn btn-primary">Conferma</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Torna indietro</button>
+            <button id="saveModal" type="click" class="btn btn-primary">Conferma il voto</button>
         </div>
       </div>
     </div>
@@ -22,13 +22,13 @@
     var p = document.getElementById('text');
     if ('{{revote_type}}' == 'single_preference') {
         alertModal.addEventListener('show.bs.modal', event => {
-          p.innerHTML = "Prima hai scelto <b>{{ request.session.alternative_sp }}</b> e ora hai dato ad almeno un'altra alternativa un giudizio migliore rispetto a <b>{{ request.session.alternative_sp }}</b>. Vuoi confermare comunque il rivoto?";
+          p.innerHTML = "Prima hai scelto <b>{{ request.session.alternative_sp }}</b> e ora hai dato ad almeno un'altra alternativa un giudizio migliore rispetto a <b>{{ request.session.alternative_sp }}</b>. Puoi confermare lo stesso il voto o tornare indietro e cambiare i giudizi.";
       })
     } else {
       const modalbody = document.getElementById('modal-body')
       var giudizi = {'1': 'Pessimo', '2': 'Scarso', '3': 'Sufficiente', '4': 'Buono', '5': 'Ottimo'}
       alertModal.addEventListener('show.bs.modal', event => {
-        p.innerHTML = "Sono state rilevate delle incongruenze, evidenziate nella tabella sottostante, tra l'ordinamento scelto con il metodo Schulze e i giudizi dati alle alternative. Puoi confermare il voto o tornare indietro e cambiare giudizi.";
+        p.innerHTML = "Sono state rilevate delle incongruenze, evidenziate nella tabella sottostante, tra l'ordinamento scelto con il metodo Schulze e i giudizi dati alle alternative. Puoi confermare il voto o tornare indietro e cambiare i giudizi.";
 
         //table creation
         const tbl = createTable();
@@ -105,25 +105,6 @@
           mustBeRed=true;
           row.style.backgroundColor = "#F58770";
         }
-
-
-        /*if (sequence_shultze[i] != inconsistency1 && sequence_shultze[i] != inconsistency2){
-          const cell2 = document.createElement("td");
-          const cellText2 = document.createTextNode(". . .");
-          cell2.appendChild(cellText2);
-          row.appendChild(cell2);
-        } else {
-          row.style.backgroundColor = "#F58770";
-          const cell2 = document.createElement("td");
-          if (sequence_shultze[i] == inconsistency1) {
-            const cellText2 = document.createTextNode(giudizi[localStorage.getItem(inconsistency1)]);
-            cell2.appendChild(cellText2);
-          } else if (sequence_shultze[i] == inconsistency2) {
-            const cellText2 = document.createTextNode(giudizi[localStorage.getItem(inconsistency2)]);
-            cell2.appendChild(cellText2);
-          }
-          row.appendChild(cell2);
-        }*/
         
         cell2.appendChild(cellText2);
         row.appendChild(cell2);

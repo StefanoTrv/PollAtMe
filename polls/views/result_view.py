@@ -12,8 +12,8 @@ from polls.services import (MajorityJudgementService, SearchPollService,
                             SinglePreferencePollResultsService)
 from polls.services.shultze_calculator import ShultzeCalculator, calculate_sequences_from_db
 
-POLL_DOES_NOT_EXISTS_MSG = "Il sondaggio cercato non esiste"
-WRONG_POLL_TYPE_MSG = "Il sondaggio non è a preferenza singola, quindi non sono disponibili risultati di questo tipo."
+POLL_DOES_NOT_EXISTS_MSG = "La scelta cercata non esiste"
+WRONG_POLL_TYPE_MSG = "La scelta non è a preferenza singola, quindi non sono disponibili risultati di questo tipo."
 
 # se si accede alla pagina dei risultati generica, si viene reindirizzati alla pagina dei risultati del metodo principale
 def result_redirect_view(request, id):

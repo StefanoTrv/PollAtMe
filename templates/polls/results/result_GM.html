@@ -119,7 +119,10 @@
 
     <div class="row">
       <div class="col text-center">
-        <a role="button" href={% url 'polls:index' %} class="btn btn-block btn-primary">Torna alla home</a>
+        {% if poll.get_type != "Giudizio maggioritario" %}
+        <a role="button" href="{% url 'polls:result' id=poll.id %}" class="btn btn-block btn-primary">Torna ai risultati reali</a>
+        {% endif %}
+        <a role="button" href={% url 'polls:index' %} class="btn btn-block btn-secondary">Torna alla home</a>
       </div>
     </div>
   </div>

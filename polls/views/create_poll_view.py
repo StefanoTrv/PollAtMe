@@ -131,15 +131,15 @@ class EditPollView(LoginRequiredMixin, TemplateView):
 
         if self.__poll.is_active():
             raise PermissionDenied(
-                "Non è possibile modificare il sondaggio perché è in corso la votazione")
+                "Non è possibile modificare la scelta perché è in corso la votazione")
 
         if self.__poll.is_ended():
             raise PermissionDenied(
-                "Questo sondaggio è concluso e non può essere modificato")
+                "Questa scelta è conclusa e non può essere modificata")
 
         if not self.__poll.author.__eq__(request.user):
             raise PermissionDenied(
-                "Non hai i permessi per modificare questo sondaggio")
+                "Non hai i permessi per modificare questa scelta")
 
         return super().dispatch(request, *args, **kwargs)
 
