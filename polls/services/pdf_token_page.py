@@ -9,7 +9,9 @@ from reportlab_qrcode import QRCodeImage  # type: ignore
 
 from polls.models import Token, TokenizedPoll
 
-
+""" The TicketGenerator class takes a TokenizedPoll instance, scheme (e.g., http or https), and host as input.
+    It uses the reportlab library to generate a PDF document containing multiple tickets.
+    It generates printable tickets for a TokenizedPoll, including QR codes and instructions for voting."""
 class TicketGenerator:
     width, height = A4
 
@@ -27,6 +29,8 @@ class TicketGenerator:
         self.TICKET_WIDTH = self.width / self.TICKETS_PER_ROW
         self.TICKET_HEIGHT = self.height / self.TICKETS_PER_COLUMN
     
+    """ Prints a single ticket on the PDF canvas.
+        It includes a QR code, instructions, and other details specific to each ticket."""
     def print_ticket(self, token: Token, offset_x, offset_y) -> None:
         link = f"{self.base_url}/{token.get_password_for_url()}"
         qr = QRCodeImage(link, size=3.5 * cm, border=1)
@@ -55,12 +59,16 @@ class TicketGenerator:
         self.p.drawString(start_x, start_y-(7*spacing + 10), "Potrai votare fino al")
         self.p.drawString(start_x, start_y-(8*spacing + 10), self.poll.end.astimezone().strftime('%d/%m/%Y %H:%M'))
     
+    """Draws grid lines on the PDF page to separate individual tickets."""
     def print_grid_on_page(self) -> None:
         self.p.grid(
             [ i * self.TICKET_WIDTH for i in range(self.TICKETS_PER_ROW + 1) ], 
             [ i * self.TICKET_HEIGHT for i in range(self.TICKETS_PER_COLUMN + 1) ]
         )
 
+
+    """ Generates the PDF by iterating over the tokens, organizing them into pages and rows, and calling the print_ticket method for each token.
+        The generated PDF is returned as an HTTP response."""
     def render(self) -> http.FileResponse:
         paginator = Paginator(self.tokens, self.TICKETS_PER_PAGE)
 

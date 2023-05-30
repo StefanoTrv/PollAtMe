@@ -2,7 +2,19 @@ from __future__ import annotations
 from polls.models import Poll, AuthenticatedPoll, Mapping, PollOptions, TokenizedPoll
 from django.contrib.auth.base_user import AbstractBaseUser
 
+"""
+    Creates and saves a poll based on the authentication type specified in the form.
 
+    Args:
+        user: The user associated with the poll.
+        form_poll: Form data for the poll.
+        form_mapping: Form data for the mapping (the shortened urls).
+        form_options: Form data for the poll options.
+        formset_alternatives: Formset data for the alternatives.
+
+    Returns:
+        The created poll object.
+    """
 def create_poll_service(user: AbstractBaseUser, form_poll, form_mapping, form_options, formset_alternatives):
     if form_poll.cleaned_data['authentication_type'] == Poll.PollAuthenticationType.AUTHENTICATED:
         return AuthenticatedPollFactory().save_poll(user, form_poll, form_mapping, form_options, formset_alternatives)
@@ -13,7 +25,19 @@ def create_poll_service(user: AbstractBaseUser, form_poll, form_mapping, form_op
     return PollFactory().save_poll(user, form_poll, form_mapping, form_options, formset_alternatives)
 
 
+"""
+Factory class for creating a generic Poll object.
+"""
 class PollFactory():
+
+
+    """
+    Save the alternatives related to the poll.
+
+    Args:
+        formset_alternatives: Formset data for the alternatives.
+        saved_poll: The saved poll object.
+    """
     def __save_alternatives(self, formset_alternatives, saved_poll):
         formset_alternatives.save(commit=False)
         for alt in formset_alternatives.new_objects:
@@ -26,6 +50,20 @@ class PollFactory():
         for alt in formset_alternatives.deleted_objects:
             alt.delete()
 
+
+    """
+    Save the poll object.
+
+    Args:
+        user: The user associated with the poll.
+        form_poll: Form data for the poll.
+        form_mapping: Form data for the mapping (the shortened urls).
+        form_options: Form data for the poll options.
+        formset_alternatives: Formset data for the alternatives.
+
+    Returns:
+        The saved poll object.
+    """
     def save_poll(self, user: AbstractBaseUser, form_poll, form_mapping, form_options, formset_alternatives) -> Poll:
         saved_poll: Poll = form_poll.save(commit=False)
         saved_poll.author = user  # type: ignore
@@ -49,7 +87,24 @@ class PollFactory():
         return saved_poll
 
 
+"""
+Factory class for creating AuthenticatedPoll objects.
+"""
 class AuthenticatedPollFactory(PollFactory):
+
+    """
+    Save the AuthenticatedPoll object.
+
+    Args:
+        user: The user associated with the poll.
+        form_poll: Form data for the poll.
+        form_mapping: Form data for the mapping (the shortened urls).
+        form_options: Form data for the poll options.
+        formset_alternatives: Formset data for the alternatives.
+
+    Returns:
+        The saved AuthenticatedPoll object.
+    """
     def save_poll(self, user: AbstractBaseUser, form_poll, form_mapping, form_options, formset_alternatives) -> Poll:
         base_poll: Poll = super().save_poll(user, form_poll, form_mapping,
                                             form_options, formset_alternatives)
@@ -59,7 +114,24 @@ class AuthenticatedPollFactory(PollFactory):
         return AuthenticatedPoll.objects.get(pk=base_poll.pk)
 
 
+"""
+Factory class for creating TokenizedPoll objects.
+"""
 class TokenizedPollFactory(PollFactory):
+
+    """
+    Save the TokenizedPoll object.
+
+    Args:
+        user: The user associated with the poll.
+        form_poll: Form data for the poll.
+        form_mapping: Form data for the mapping (the shortened urls).
+        form_options: Form data for the poll options.
+        formset_alternatives: Formset data for the alternatives.
+
+    Returns:
+        The saved TokenizedPoll object.
+    """
     def save_poll(self, user: AbstractBaseUser, form_poll, form_mapping, form_options, formset_alternatives) -> Poll:
         base_poll: Poll = super().save_poll(user, form_poll, form_mapping,
                                             form_options, formset_alternatives)

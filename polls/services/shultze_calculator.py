@@ -4,6 +4,15 @@ from typing import Any
 
 
 def calculate_sequences_from_db(poll: Poll) -> dict[tuple, int]:
+    """
+    Calculates the sequences and their vote counts for a given poll.
+
+    Args:
+        poll: The poll object.
+
+    Returns:
+        A dictionary mapping sequences to their vote counts.
+    """
     preferences = ShultzePreference.objects.filter(poll=poll)
     sequences: dict[tuple, int] = defaultdict(lambda: 0)
 
@@ -14,6 +23,9 @@ def calculate_sequences_from_db(poll: Poll) -> dict[tuple, int]:
     return dict(sequences)
 
 class ShultzeCalculator:
+    """
+    A calculator for determining rankings using the Schulze method.
+    """
     sequence_votes: dict[tuple, int]
     pairwise_preferences: list[list[int]]
     shultze_table: list[list[int]]
@@ -22,6 +34,12 @@ class ShultzeCalculator:
     candidates: tuple
 
     def __init__(self, orders: dict[tuple, int]):
+        """
+        Initializes the ShultzeCalculator.
+
+        Args:
+            orders: A dictionary mapping sequences to their vote counts.
+        """
         self.sequence_votes = orders
         self.candidates = list(orders.keys())[0]
 
@@ -36,11 +54,17 @@ class ShultzeCalculator:
             self.rankings.append((c, 1))
 
     def calculate(self):
+        """
+        Performs the Schulze calculation to determine rankings.
+        """
         self.__build_preference_matrix()
         self.__widest_paths()
         self.__calculate_rankings()
 
     def __build_preference_matrix(self):
+        """
+        Builds the pairwise preference matrix based on the given sequences and vote counts.
+        """
         all_sequences = list(self.sequence_votes.keys())
 
         for row in range(self.__dim):
@@ -51,9 +75,23 @@ class ShultzeCalculator:
                             self.pairwise_preferences[row][col] += self.sequence_votes[seq]
 
     def __precedes(self, seq: tuple, fst: Any, snd: Any) -> bool:
+        """
+        Checks if the first candidate precedes the second candidate in the given sequence.
+
+        Args:
+            seq: The sequence of candidates.
+            fst: The first candidate.
+            snd: The second candidate.
+
+        Returns:
+            True if the first candidate precedes the second candidate, False otherwise.
+        """
         return seq.index(fst) < seq.index(snd)
 
     def __widest_paths(self):
+        """
+        Calculates the widest paths between candidates using the pairwise preference matrix.
+        """
         for i in range(self.__dim):
             for j in range(self.__dim):
                 if i != j:
@@ -71,6 +109,9 @@ class ShultzeCalculator:
                                 self.shultze_table[j][i], self.shultze_table[i][k]))
 
     def __calculate_rankings(self):
+        """
+        Calculates the final rankings based on the widest paths table.
+        """
         for i in range(self.__dim):
             for j in range(self.__dim):
                 if i != j:
@@ -81,7 +122,10 @@ class ShultzeCalculator:
     
     def get_summary(self) -> dict[Any, list[int]]:
         """
-        return a dictionary where for each candidate return the number of times it was ordered in every position
+        Returns a dictionary where each candidate is mapped to a list of the number of times it was ordered in each position.
+
+        Returns:
+            A dictionary mapping candidates to their position-wise vote counts.
         """
         summary: dict = defaultdict(lambda: [0 for _ in range(self.__dim)])
 
@@ -93,7 +137,10 @@ class ShultzeCalculator:
 
     def get_summary_transposed(self) -> list[dict[Any, int]]:
         """
-        return a list of dictionaries where for each position return the number of times each candidate was ordered in that position
+        Returns a list of dictionaries where each position is mapped to the number of times each candidate was ordered in that position.
+
+        Returns:
+            A list of dictionaries mapping positions to candidate-wise vote counts.
         """
         summary: list[dict[Any, int]] = [{c: 0 for c in self.candidates} for _ in range(self.__dim)]
 

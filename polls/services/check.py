@@ -166,6 +166,9 @@ class CheckPollAuthenticationType(AbstractHandler):
         return super().handle()
 
 class CheckTokenNotUsed(AbstractHandler):
+    """
+    This class checks if the token has been used. If the token has been used, it raises a PermissionDenied exception.
+    """
     def __init__(self, token: Token, msg: str) -> None:
         self.token = token
         self.msg = msg
