@@ -49,8 +49,8 @@ class ShultzeOpinionJudgement(models.Model):
         return self.alternative.text + ' -> ' + str(self.order)
 
 class MajorityPreference(Preference):
-    # Tra le preferenze e le risposte c'è una relazione many to many mediata
-    # dall'indicazione del giudizio
+    """There is a relation many to many between preferences and responses managed by the judgement"""
+
     responses = models.ManyToManyField(Alternative, through="MajorityOpinionJudgement")
 
     def __str__(self) -> str:
@@ -118,9 +118,8 @@ class MajorityPreference(Preference):
 
 class MajorityOpinionJudgement(models.Model):
     class JudgementType(models.IntegerChoices):
-        """
-        Possibili valori per grade
-        """
+        """Possible integer values for each grade"""
+        
         PESSIMO = 1
         SCARSO = 2
         SUFFICIENTE = 3
