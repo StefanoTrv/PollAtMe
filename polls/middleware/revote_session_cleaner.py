@@ -1,7 +1,8 @@
-#Pulisce la sessione relativa al rivoto quando l'utente esce dalle pagine di voto
 from django.http import HttpRequest
 
 class RevoteSessionCleaner:
+    """Cleans the session when a user goes out from a vote page"""
+
     def __init__(self, get_response):
         self.get_response = get_response
 

@@ -1,4 +1,3 @@
-#Pulisce la sessione quando l'utente esce dalla pagina di creazione di un nuovo sondaggio
 from django.http import HttpRequest, HttpResponseRedirect
 from django.urls import reverse
 
@@ -6,6 +5,8 @@ NEW_PREFIX = "new"
 EDIT_PREFIX = "edit"
 
 class NewPollSessionCleaner:
+    """Cleans the session when a user goes out from the creation page of a poll"""
+    
     def __init__(self, get_response):
         self.get_response = get_response
 
