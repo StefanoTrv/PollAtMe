@@ -3,7 +3,7 @@ from polls.models.preference import MajorityOpinionJudgement, MajorityPreference
 from django.db.models import QuerySet
         
 """
-    Classe che incapsula i giudizi ottenuti per una alternativa con il giudizio maggioritario e i metodi per paragonarle fra loro
+    Class that incapsulates the judgments obtained by an alternative using majority judgment. 
 """
 class AlternativeJudgments:
 
@@ -17,15 +17,21 @@ class AlternativeJudgments:
         self.__choice_id = choice_id
         self.__medians: list = []
 
+    """
+        Returns the id of the alternative
+    """
     def get_choice_id(self) -> int: 
         return self.__choice_id
 
+    """
+        Returns the median grade of the set of the alternatives
+    """
     def get_median_grade(self) -> int:
         return self.__calculate_median_grade(self.__votes)
 
     """
         get the Ith majority grade
-          if index == 0 returnse the first majority grade
+          if index == 0 returns the first majority grade
           if index > len(votes) raise exception
     """
     def get_ith_median_grade(self, index) -> int:
@@ -62,9 +68,11 @@ class AlternativeJudgments:
 
         return giudizio_mediano
 
-    '''Funzioni di ordinamento'''
+    '''
+        Ordering functions, allow comparation between vote sequences
+    '''
 
-    #self <= __o allora: o sono uguali o self < other
+    #self <= __o allora: are equal or self < other
     def __le__(self, __o) -> bool:
         if self.__eq__(__o):
             return True
@@ -88,7 +96,7 @@ class AlternativeJudgments:
                 
                 index += 1
     
-    #self => __o allora o sono uguali o self > __o
+    #self => __o are equal or o self > __o
     def __ge__(self, __o) -> bool:
         if self.__eq__(__o):
             return True
@@ -131,29 +139,38 @@ class AlternativeJudgments:
 
 
 '''
-    Classe che incapsula il calcolo dei risultati con il giudizio maggioritario.
+    Class that incapsulates the Majority Judgment results calculation.
+    Allow comparation between arbitrary alternatives and do not depend on the dadabase.
 '''
 class GiudizioMaggioritario:
     
     """
-        L'input deve essere nella forma di una lista di dictionary
-        dove ogni dictionary è nella forma:
+        Constructor:
+        @param dict_voti: a list representing the votes.
+
+        Input has to be a list of dictionaries, with each one in the form:
             "choice_id" : id
             "voti" : lista_voti
+        Where choice_id is an integer that idendifies the alternative and
+        lista_voti is the list of votes.
+        Each vote must be an integer, a bigger integer is a better vote.
 
-        La lista dei voti deve essere una lista di interi, valori più alti
-        corrispondono ad un giudizio più alto.
     """
     def __init__(self, dict_voti) -> None:
         self.dict_voti = dict_voti
         self.sequence_list = None
 
-    ##ritorna l'id del vincitore secondo il giudizio maggioritario
+    """
+        Returns the id of the winner, calculated using the majority judgement
+        algorithm
+    """
     def get_winner_id(self) -> int:
         vote_tuple_list = self._calculate_tuple_sequence()
         return vote_tuple_list[0].choice_id()
     
-    ##ritorna la lista ordinata secondo il giudizio maggioritario
+    """
+        Returns a list ordered from the winner to the loser
+    """
     def get_tuple_list(self) -> list:
         vote_tuple_list = self._calculate_tuple_sequence()
         return vote_tuple_list
@@ -172,9 +189,10 @@ class GiudizioMaggioritario:
         self.sequence_list = seqence_list
         
     """
-        Ritorna la classifica nella forma di una lista ordinata contenente dei dictionary nella forma:
-        'alternative' : value   ##id dell'alternativa
-        'place' : value         ##posizione nella classifica
+        Returns the results, as a list of couples alternative-id,place.
+        The results is in the form of a list of dictionaries, where each dictionary is in the form:
+            'alternative' : value   ##alternative id
+            'place' : value         ##place in the standings
     """
     def get_classifica_id(self) -> list:
         
@@ -203,38 +221,51 @@ class GiudizioMaggioritario:
 
 
 
-#classe che calcola i risultati del giudizio maggioritario dei nostri poll
+'''
+    Class that incapsulates the Majority Judgment results calculation for
+    a specific poll in the database.
+'''
 class GiudizioMaggioritarioPoll(GiudizioMaggioritario):
 
-    ##istanziatore della classe 
+    """
+        Constructor:
+        @param id: the id of the poll to calculate the results of
+        @param include_syntetic: if true it will use syntetic_votes.
+    """
     def __init__(self, id:int, include_synthetic:bool=True) -> None:
 
         self._question_id = id
         self._include_synthetic=include_synthetic
 
         result_list = []
-        #dobbiamo prendiamo tutte le alternative per la domanda corrente
+        #getting the alternatives for the current question
         alternative_all : QuerySet[Alternative] = Alternative.objects.filter(poll = self._question_id)
         for alternative_key in alternative_all.values_list('pk', flat=True):
-            #dobbiamo andare a prendere i giudizi
+            #getting the judgements for a specific alternative
             giudizi = MajorityOpinionJudgement.objects.filter(alternative = alternative_key)
             if (not self._include_synthetic):
                 giudizi=giudizi.filter(preference__synthetic=False)
-            #abbiamo i giudizi per questa alternativa, dobbiamo costruire la lista
+            #constructing the list
             lista_giudizi = []
             for giudizio in giudizi:
                 lista_giudizi.append(giudizio.grade)
 
-            #alla lista associamo l'id dell'alternativa
+            #associating the list to the id of the alternative
             result_list.append({'choice_id': alternative_key, 'voti': lista_giudizi})
 
         super(GiudizioMaggioritarioPoll, self).__init__(result_list)
     
-    ##ritorna il nome dell'alternativa vincitrice
+    """
+        Returns the name of the alternative
+    """
     def get_winner_name(self) -> str:
         winner = Alternative.objects.get(id = self.get_winner_id())
         return winner.text
     
+    """
+        Returns the result, it differs from the parent class result because it uses the
+        alternatives name instead of the ids
+    """
     def get_classifica(self) -> list:
         
         classifica = super().get_classifica_id()
@@ -250,32 +281,39 @@ class GiudizioMaggioritarioPoll(GiudizioMaggioritario):
         return classifica    
     
 
-    #ritorna una lista di dict del tipo 
-    #{'alternativa' : alternativa, 'lista_voti' : lista_voti} dove lista voti è una lista di dict della forma {'voto':voto, 'amount' : numero}
-    #la lista è ordinata in ordine di posizione nella classifica
+    """
+       Returns a list of dictionaries in the form:
+            'alternativa' : alternativa   ##alternative's name
+            'lista_voti' : lista_voti
+        Where lista_voti is a list of dictionaries in the form:
+            'voto' : amount
+        i.e. "buono" : 10
+
+        Useful to see the number of specific judgements an alternative has received
+    """
     def get_vote_list(self):
 
         results_list = super()._get_result_list()
         
-        tuple_list = self._calculate_tuple_sequence() #utilizziamo questo ordine per salvarci la lista di voti
+        tuple_list = self._calculate_tuple_sequence() #using the order to save the list of votes
 
         out_list = [None] * len(tuple_list)
-        #iteriamo per ottenere il risultato desiderato
+
         for result in results_list:
             alternativa = Alternative.objects.get(id = result['choice_id']).text
             votes = result['voti']
             different_votes = [e.value for e in MajorityOpinionJudgement.JudgementType]
-            different_votes.sort(reverse=True) #abbiamo i voti in ordine di valore
+            different_votes.sort(reverse=True)
 
             lista_voti = {}
-            #produciamo le tuple
+            
             for i in range(0, len(different_votes), 1):
                 amount = votes.count(different_votes[i])
                 vote_name = MajorityOpinionJudgement.JudgementType(different_votes[i])
                 vote_name = vote_name.name
                 lista_voti.update({vote_name : amount})
 
-            #salviamola nella corretta posizione della lista
+            #saving in the correct position of the list
             position = None
             for i in range(0,len(tuple_list), 1):
                 if tuple_list[i].get_choice_id() == result['choice_id']:
@@ -285,23 +323,32 @@ class GiudizioMaggioritarioPoll(GiudizioMaggioritario):
 
         return out_list
 
-##Servizio per ottenere il risultato del giudizi maggioritari dai nostri poll, per coerenza con il servizio a scelta singola
+
+"""
+    Class that incapsulates the service for accessing the results of a majority judgement poll
+"""
 class MajorityJudgementService:
+
+
+    """
+        Constructor:
+        @param poll: the poll to calculate the results of
+        @param include_syntetic: if true it will use syntetic_votes.
+
+    """
 
     def __init__(self, poll: Poll, include_synthetic:bool=True) -> None:
         self.__poll = poll
         self.include_synthetic=include_synthetic
         self.giudizio_maggioritario = GiudizioMaggioritarioPoll(self.__poll.id,include_synthetic=self.include_synthetic)
-    
-    """
-    Metodi per ottenere informazioni sul risultato del sondaggio a giudizio
-    maggioritario ritornano sempre un dizionario della forma {'label': valore}
 
-    La view può chiamare quelli che vuole ed aggiungerli al suo contesto
     """
-
-    #ritorna un dict {'classifica' : classifica}, dove classifica è una lista di dict
-    #{'alternative': alternativa, 'place' : posizione. 'vote' : voto}
+        Returns a dictionary in the form:
+            'classifica' : classifica
+        Where classifica is a list of dict in the form:
+            'alternative' : value   ##alternative's name
+            'place' : value         ##place in the standings
+    """
     def get_classifica(self):
         classifica = self.__get_classifica()
         context = {'classifica' : classifica}    
@@ -311,8 +358,11 @@ class MajorityJudgementService:
         classifica  = self.giudizio_maggioritario.get_classifica()            
         return classifica
 
-    #ritorna un dict {'winners' : vincitori} dove vincitori è una lista di
-    #alternative, in genere è 1 ma può essere superiore in caso di pareggio
+    """
+        Returns a dictionary in the form:
+            'winners' : winners
+        Where winners is a list of the winners's names
+    """
     def get_winners(self):
         winners = self.__get_winners()
         context = {'winners' : winners} 
@@ -329,10 +379,17 @@ class MajorityJudgementService:
 
         return winners
 
-
-    #ritorna un dict {'voti_alternativa' : voti_alternativa, 'ordered_votes' : lista_voti}, dove voti_alternativa è una lista di dict
-    #{'alternativa' alternativa, 'lista_voti' : lista_voti} 
-    # dove lista_voti è un dict della forma {'voto' : numero} e lista_voti è una lista ordinata dei voti possibili
+    """
+        Returns a dict of the form:
+            'voti_alternativa' : voti_alternativa
+            'ordered_votes' : lista_voti
+        Where voti alternativa is a list of dictionaries in the form:
+            'alternativa' : alternativa
+            'lista_voti' : lista_voti
+        Where lista_voti is a list of dictionaries in the form:
+            'voto' : amount
+        ordered_votes is the ordered list of the passible judgements
+    """
     def get_voti_alternativa(self) :
         voti_alternativa = self.__get_voti_alternativa()
         ordered_votes = self.__get_all_votes()
@@ -353,14 +410,19 @@ class MajorityJudgementService:
 
         return ordered_votes
 
-    #ritorna un dict {'numero_alternative' : numero_alternative}, dove numero_alternative è un intero
-    # che indica il numero di alternative disponibili per questa domanda
+    """
+        Returns a dict of the form:
+            'numero_alternative' : numero_alternative
+        Where numero_alternative is the number of the possible alternatives for this poll
+    """
     def get_numero_alternative(self) :
         alternative = Alternative.objects.filter(poll = self.__poll.id)
         context = {'numero_alternative' : len(alternative)} 
         return context
 
-    #ritorna il numero di preferenze date per questa domanda
+    """
+        Returns the number of preferences for this poll
+    """
     def get_numero_numero_preferenze(self) :
         preferenze = MajorityPreference.objects.filter(poll = self.__poll.id)
         if(not self.include_synthetic):
