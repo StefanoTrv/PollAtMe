@@ -9,8 +9,10 @@ from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 
 from polls.models import Poll, Mapping, Alternative, PollOptions
 
-# Form per la pagina principale della pagina di creazione di nuovi sondaggi, contenente i dati principali
+
 class BaseAlternativeFormSet(forms.BaseModelFormSet):
+    """Form for the first creation page of a new poll, which contains primary data"""
+
     deletion_widget = forms.HiddenInput
     
     def get_not_empty_alternatives(self):
@@ -110,8 +112,9 @@ class PollFormMain(forms.ModelForm):
         
         return self.save(commit=False)
 
-# Form per la seconda pagina della creazione di nuovi sondaggi
+
 class PollForm(forms.ModelForm):
+    """Form for the second creation page of a new poll"""
     
     start_now = forms.BooleanField(
         label="Inizia subito (Attenzione: non potrai più modificare o eliminare il sondaggio!)",
@@ -191,13 +194,12 @@ class PollForm(forms.ModelForm):
         now = timezone.localtime(timezone.now())
         delta = timedelta(minutes=5)
 
-        # se l'utente ha scelto di iniziare il sondaggio subito
+        # if user choosed to instantly start a poll
         if start_now:
             cleaned_data['start'] = now
             start = cleaned_data['start']
         else:
-            # se l'utente non ha scelto di iniziare il sondaggio subito
-            # la data di inizio deve essere impostata
+            # if not, starting date must be set
             if start is None:
                 self.add_error('start', 'Devi impostare la data di inizio del sondaggio')
 
@@ -207,7 +209,7 @@ class PollForm(forms.ModelForm):
         if end - start < timedelta(0):
             self.add_error('end', 'La data di fine è precedente alla data di inizio')
 
-        # il sondaggio deve durare almeno 15 minuti
+        # the poll must last at least 15 minutes
         if end - start < timedelta(minutes=15):
             self.add_error('end', 'La scelta deve durare almeno 15 minuti')
 
@@ -237,11 +239,11 @@ class PollMappingForm(forms.ModelForm):
     def clean_code(self):
         form_code = self.cleaned_data['code']
 
-        #controlliamo se il codice rispetta il vincolo sulla forma
+        # checking if code is well formed
         if not self._code_is_valid(self.cleaned_data['code']):
             self.add_error('code', 'Questo codice non è valido')
 
-        #se nullo generiamo un codice
+        # if null we generate a code
         if form_code == '':
             form_code = Mapping.generate_code()
 

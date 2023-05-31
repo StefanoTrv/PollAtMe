@@ -6,6 +6,7 @@ from django.forms import inlineformset_factory
 
 import polls.models as poll_model
 
+
 class PreferenceFormSet(forms.BaseInlineFormSet):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)

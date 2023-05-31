@@ -6,7 +6,6 @@ from polls.models import SinglePreference, Poll
 
 class SinglePreferenceForm(forms.ModelForm):
     class Meta:
-        # il modello che vogliamo creare, vogliamo creare una preferenza
         model: type[models.Model] = SinglePreference
         fields: list[str] = ['alternative']
 
@@ -19,6 +18,6 @@ class SinglePreferenceForm(forms.ModelForm):
                 queryset=poll.alternative_set.all(),
                 widget=forms.RadioSelect(attrs={
                     'class': 'btn-check'
-                }),  # specifichiamo che vogliamo un radio button
+                }),
                 label=''
             )
