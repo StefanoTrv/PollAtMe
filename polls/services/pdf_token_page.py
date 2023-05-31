@@ -74,7 +74,7 @@ class TicketGenerator:
 
         for page in paginator.page_range:
             self.print_grid_on_page()
-            # L'origine è in basso a sinistra, i ticket vanno stampati dall'alto verso il basso
+            # The origin is bottom left. The tickets must be printed starting from the top to bottom
             offset_y = (self.TICKETS_PER_COLUMN - 1) * self.TICKET_HEIGHT
             rows = Paginator(paginator.page(page).object_list, 2)
             for row in rows.page_range:

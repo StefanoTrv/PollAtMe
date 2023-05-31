@@ -10,9 +10,7 @@ from polls.models import Poll, Preference, Token
 
 
 class Handler(ABC):
-    """
-    Chain responsibility rule per i controlli sullo stato, ownership, ecc. di una scelta
-    """
+    """Chain responsibility rule for ownership, state, etc. checks of a poll"""
 
     @abstractmethod
     def set_next(self, handler: Handler) -> Handler:
@@ -37,9 +35,7 @@ class AbstractHandler(Handler):
         return None
 
 class CheckPollActiveness(AbstractHandler):
-    """
-    Questa classe controlla se il sondaggio è attivo, in caso di sondaggio non attivo viene sollevata una eccezione 403
-    """
+    """Checks if poll is active. If not, a 403 exception is raised"""
 
     def __init__(self, poll: Poll) -> None:
         self.poll = poll
@@ -82,8 +78,8 @@ class CheckPollIsNotEnded(AbstractHandler):
 
 class CheckAuthentication(AbstractHandler):
     """
-    Questa classe controlla se l'utente è autenticato, in caso di utente non autenticato 
-    viene eseguita la funzione failed_authentication passata come parametro
+    Checks if the user is authenticated. If not, the failed_authentication function,
+    which is passed as a parameter, is executed
     """
 
     def __init__(self, poll: Poll, is_authenticated: bool, token, failed_authentication) -> None:
@@ -101,7 +97,8 @@ class CheckAuthentication(AbstractHandler):
 
 class CheckUserHasVoted(AbstractHandler):
     """
-    Questa classe controlla se l'utente ha già votato, in caso di utente che ha già votato viene eseguita la funzione has_voted passata come parametro
+    Checks if the user has already voted. If yes, the has_voted function,  
+    which is passed as a parameter, is executed
     """
 
     def __init__(self, poll: Poll, user, token, syntethic_preference, has_voted) -> None:
@@ -119,9 +116,7 @@ class CheckUserHasVoted(AbstractHandler):
         return super().handle()
 
 class CheckRevoteSession(AbstractHandler):
-    """
-    Questa classe controlla se siamo in fase di rivoto e la correttezza delle informazioni in sessione per quest'ultima
-    """
+    """Checks if the user is revoting and the correctness of the data in session"""
 
     def __init__(self, poll: Poll, session_vote_type, is_preference_in_session, syntethic_preference: Preference) -> None:
         self.poll = poll
@@ -169,9 +164,8 @@ class CheckPollAuthenticationType(AbstractHandler):
         return super().handle()
 
 class CheckTokenNotUsed(AbstractHandler):
-    """
-    This class checks if the token has been used. If the token has been used, it raises a PermissionDenied exception.
-    """
+    """Checks if the token has been used. If yes, it raises a PermissionDenied exception"""
+    
     def __init__(self, token: Token, msg: str) -> None:
         self.token = token
         self.msg = msg
