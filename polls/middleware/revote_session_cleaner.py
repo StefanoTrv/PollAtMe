@@ -1,7 +1,7 @@
 from django.http import HttpRequest
 
 class RevoteSessionCleaner:
-    """Cleans the session when a user goes out from a vote page"""
+    """Cleans the session when a user leaves a vote page"""
 
     def __init__(self, get_response):
         self.get_response = get_response

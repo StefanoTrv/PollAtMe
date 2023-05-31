@@ -226,7 +226,7 @@ class PollMappingForm(forms.ModelForm):
 
         error_messages = {
             'code': {
-                'unique': 'Questo codice è già stato utilizzato, prova un altro'
+                'unique': 'Questo codice è già stato utilizzato, provane un altro'
             }
         }
 

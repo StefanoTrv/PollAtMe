@@ -5,7 +5,7 @@ NEW_PREFIX = "new"
 EDIT_PREFIX = "edit"
 
 class NewPollSessionCleaner:
-    """Cleans the session when a user goes out from the creation page of a poll"""
+    """Cleans the session when a user leaves the creation page of a poll"""
     
     def __init__(self, get_response):
         self.get_response = get_response

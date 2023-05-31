@@ -36,7 +36,7 @@ def vote_redirect_view(request, id, token=None):
 
 class _VoteView(CreateView):
     """
-    Class view (de facto astratta) che incorpora ciò che hanno in comune le diverse pagine di voto
+    Class view (de facto abstract) that includes what the different vote pages have in common
     """
     poll: Poll
     pollType: str
@@ -108,6 +108,9 @@ class _VoteView(CreateView):
 
 
 class VoteSinglePreferenceView(_VoteView):
+    """
+    Class view for voting using the Single Preference method
+    """
 
     form_class: Optional[Type[forms.BaseForm]] = pf.SinglePreferenceForm
     template_name: str = 'polls/vote/vote_SP.html'
@@ -145,8 +148,9 @@ class VoteSinglePreferenceView(_VoteView):
 
 class VoteMajorityJudgmentView(_VoteView):
     """
-    Class view per l'inserimento delle risposte ai sondaggi a risposta singola
+    Class view for voting using the Majority Judgment method
     """
+    
     template_name: str = 'polls/vote/vote_GM.html'
 
     def __init__(self, **kwargs: Any) -> None:
@@ -183,7 +187,7 @@ class VoteMajorityJudgmentView(_VoteView):
 
 class VoteShultzeView(_VoteView):
     """
-    Class view per l'inserimento delle risposte ai sondaggi con metodo Shultze
+    Class view for voting using the Schulze method
     """
     template_name: str = 'polls/vote/vote_SHULTZE.html'
 

@@ -34,13 +34,12 @@ class _ResultView(TemplateView):
     model: type[models.Model] = Preference
     template_name: str = ''
     """
-    Class view (de facto astratta) che incorpora ciò che hanno in comune le diverse pagine dei risultati
+    Class view (de facto abstract) that includes what the different result pages have in common
     """
 
     def dispatch(self, request, *args, **kwargs):
         """
-        Questo metodo viene invocato quando viene fatta una richiesta
-        HTTP (di qualunque tipo).
+        This method is invoked whenever an HTTP request of any kind is done.
         """
         try:
             SearchPollService().search_by_id(kwargs['id']) #per assicurarsi che il sondaggio esista

@@ -14,6 +14,11 @@ ERROR_MESSAGES = {
 FORMAT = "DD/MM/YYYY"
 
 class SearchPollForm(forms.Form):
+    """
+    A form class for searching polls.
+
+    This form allows users to search for polls based on various criteria.
+    """
     
     title = forms.CharField(
         label='Titolo',
@@ -82,9 +87,21 @@ class SearchPollForm(forms.Form):
         super().__init__(*args, **kwargs)
 
     def range_group(self):
+        """
+        Returns a list of form fields that are part of the date range group.
+
+        Returns:
+            A list of form fields that are part of the date range group.
+        """
         return [self[name] for name in filter(lambda x: x.startswith('range'), self.fields)]
 
     def clean(self) -> Dict[str, Any]:
+        """
+        Cleans and validates the form data (adds errors if the ranges are not consistent).
+
+        Returns:
+            A dictionary containing the cleaned form data.
+        """
         form_data: dict = self.cleaned_data
 
         range_start_a = form_data.get('range_start_a', None)
@@ -100,6 +117,12 @@ class SearchPollForm(forms.Form):
         return form_data
     
     def to_query(self) -> SearchPollQueryBuilder:
+        """
+        Create a SearchPollQueryBuilder containing the polls that fit the parameters of this search form.
+        
+        Returns:
+            A SearchPollQueryBuilder containing the polls that fit the parameters of this search form.
+        """
         builder = SearchPollQueryBuilder()
 
         builder.public_filter()
@@ -135,6 +158,3 @@ class SearchPollForm(forms.Form):
             builder.end_range_filter(**end_range)
 
         return builder
-    
-    
-    
