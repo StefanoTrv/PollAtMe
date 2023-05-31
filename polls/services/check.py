@@ -10,6 +10,9 @@ from polls.models import Poll, Preference, Token
 
 
 class Handler(ABC):
+    """
+    Chain responsibility rule per i controlli sullo stato, ownership, ecc. di una scelta
+    """
 
     @abstractmethod
     def set_next(self, handler: Handler) -> Handler:
