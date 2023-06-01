@@ -15,7 +15,7 @@ from polls.services.shultze_calculator import ShultzeCalculator, calculate_seque
 POLL_DOES_NOT_EXISTS_MSG = "Il sondaggio cercato non esiste"
 WRONG_POLL_TYPE_MSG = "Il sondaggio non è a preferenza singola, quindi non sono disponibili risultati di questo tipo."
 
-# se si accede alla pagina dei risultati generica, si viene reindirizzati alla pagina dei risultati del metodo principale
+# Redirect to specific result page if a user accesses to the generic result page
 def result_redirect_view(request, id):
     try:
         poll = SearchPollService().search_by_id(id)
@@ -42,7 +42,7 @@ class _ResultView(TemplateView):
         This method is invoked whenever an HTTP request of any kind is done.
         """
         try:
-            SearchPollService().search_by_id(kwargs['id']) #per assicurarsi che il sondaggio esista
+            SearchPollService().search_by_id(kwargs['id']) # to ensure that the poll exists
             return super().dispatch(request, *args, **kwargs)
         except ObjectDoesNotExist:
             raise http.Http404(POLL_DOES_NOT_EXISTS_MSG)
@@ -57,7 +57,7 @@ class SinglePreferenceResultView(_ResultView):
         context = super().get_context_data(**kwargs)
         poll = SearchPollService().search_by_id(self.kwargs['id'])
         
-        if poll.default_type != Poll.PollType.SINGLE_PREFERENCE: # 404 se il tipo del sondaggio non è preferenza singola
+        if poll.default_type != Poll.PollType.SINGLE_PREFERENCE: # 404 if poll type isn't single preference
             raise http.Http404(WRONG_POLL_TYPE_MSG)
         
         results = SinglePreferencePollResultsService().set_poll(poll).as_list()

@@ -15,8 +15,7 @@ from polls.models import Poll
 from polls.models import preference as pref
 from polls.services import SearchPollService, check
 
-
-# se si accede alla pagina di voto generica, si viene reindirizzati alla pagina di voto del metodo principale
+# # Redirect to specific vote page if a user accesses to the generic vote page
 def vote_redirect_view(request, id, token=None):
     poll = SearchPollService().search_by_id(id)
     if token is None:
@@ -121,8 +120,8 @@ class VoteSinglePreferenceView(_VoteView):
 
     def get_form_kwargs(self) -> dict[str, Any]:
         """
-        Inizializzo gli argomenti per il form, in questo caso la poll
-        da cui estrarre le opzioni
+        Initializing form arguments, the poll in this case from which
+        we exctract the options
         """
         kwargs = super().get_form_kwargs()
         kwargs['poll'] = self.poll
