@@ -36,9 +36,7 @@
                     <div class="row align-items-center text-center">
                         <div class="col-md-12">
                             <div class="card-body">
-                                <form action="/">
-                                    <button class="btn btn-block btn-secondary m-4"> Annulla e torna alla HOME </button>
-                                </form>
+                                <a href="{% url 'polls:index' %}" role="button" class="btn btn-block btn-secondary mb-4"> Annulla e torna alla HOME </a>
                             </div>
                         </div>
                     </div>
@@ -56,6 +54,7 @@
         prefillTextInputs();
     }
 
+    //fills 4 fields with user input
     function prefillTextInputs(){
         token = "{{ token }}".split(" ");
         if(token.length>0 && token[0]!=""){ 
@@ -72,6 +71,7 @@
         }
     }
 
+    //build full link
     function submitPassword(){
         currentUrlCleaned = window.location.href.split("/").slice(0,-1).join("/")+"/";
 
@@ -81,7 +81,7 @@
             + document.getElementById("password3").value.replaceAll(" ","") + "-"
             + document.getElementById("password4").value.replaceAll(" ","");
 
-            //Rimuove eventuali trailing "-"
+            //Remove optional trailings "-"
             i = targetUrl.length - 1;
             while(i >= 0 && targetUrl[i]=="-"){
                 targetUrl = targetUrl.slice(0,-1);
@@ -96,7 +96,6 @@
         if (event.key == "Enter") {
             submitPassword();
         } else if (event.code == "Space"){
-            console.log(field)
             if (field==1){
                 document.getElementById("password2").focus();
                 setTimeout(() => {  document.getElementById("password1").value=document.getElementById("password1").value.replaceAll(" ",""); }, 100);//rimuovi lo spazio che è stato aggiunto

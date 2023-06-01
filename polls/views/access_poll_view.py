@@ -6,6 +6,7 @@ from polls.models.mapping import Mapping
 
 
 class AccessPollView(RedirectView):
+    """Redirects to vote or result pages, based on poll state"""
 
     def get_redirect_url(self, *args, **kwargs):
 

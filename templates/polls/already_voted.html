@@ -26,16 +26,13 @@
                         </div>
 
                         <div class="col m-4">
-                            <button class="btn btn-block btn-secondary" onclick="javascript:history.back()"> Torna
-                                indietro </button>
-
+                            <button class="btn btn-block btn-secondary" onclick="javascript:history.back()"> Torna indietro </button>
                         </div>
 
                         <div class="col m-4">
                             <form action={% url 'polls:result' id=poll.id %}>
                                 <button class="btn btn-block btn-primary"> Risultati scelta </button>
                             </form>
-
                         </div>
 
                         <div class="col m-4">

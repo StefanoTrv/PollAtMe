@@ -12,6 +12,7 @@ class PollsListService:
     """Service to get all active polls from database"""
 
     def __init__(self) -> None:
+        # Get all polls from the database that have at least one alternative
         self.__polls = Poll.objects.filter(id__in=[
             poll.id
             for poll in Poll.objects.all()
@@ -19,6 +20,10 @@ class PollsListService:
         ])
 
     def get_my_polls(self, author, by_field: str = 'last_update', desc: bool = True):
+        """
+        Get the polls created by a specific author, sorted by a specified field
+        Default: sort by 'last_update' field in descending order
+        """
 
         return self.__polls.filter(author = author).order_by(by_field if not desc else f'-{by_field}')
 
@@ -39,16 +44,22 @@ class PollsListService:
 
 
 class SearchPollQueryBuilder:
+    """Builder class for constructing a search query for polls"""
 
     def __init__(self) -> None:
         self.__status_filter = lambda p: True
         self.__query_filter: Q = Q()
 
     def title_filter(self, title: str):
+        """Filter the search query by title"""
         self.__query_filter = self.__query_filter & Q(title__icontains=title)
         return self
 
     def status_filter(self, state: str):
+        """
+        Filter the search query by status
+        Possible states: 'NOT_STARTED', 'ACTIVE', 'ENDED'
+        """
         action: dict[str, Callable[[Poll], bool]] = {
             'NOT_STARTED': lambda p: p.is_not_started(),
             'ACTIVE': lambda p: p.is_active(),
@@ -59,10 +70,15 @@ class SearchPollQueryBuilder:
         return self
 
     def type_filter(self, type: int):
+        """Filter the search query by poll type"""
         self.__query_filter = self.__query_filter & Q(default_type=type)
         return self
 
     def start_range_filter(self, start=None, end=None):
+        """
+        Filter the search query by start date range
+        Default: no start date range
+        """
         start = datetime.min.replace(
             tzinfo=timezone.utc) if start is None else start
         end = datetime.max.replace(tzinfo=timezone.utc) if end is None else end
@@ -71,6 +87,10 @@ class SearchPollQueryBuilder:
         return self
 
     def end_range_filter(self, start=None, end=None):
+        """
+        Filter the search query by end date range
+        Default: no end date range
+        """
         start = datetime.min.replace(
             tzinfo=timezone.utc) if start is None else start
         end = datetime.max.replace(tzinfo=timezone.utc) if end is None else end
@@ -78,11 +98,16 @@ class SearchPollQueryBuilder:
         return self
 
     def public_filter(self, only_public = True):
+        """
+        Filter the search query to include only public polls
+        Default: only include public polls
+        """
         if only_public:
             self.__query_filter = self.__query_filter & Q(visibility=Poll.PollVisibility.PUBLIC)
 
 
     def search(self) -> list[Poll]:
+        """Execute the search query and return the matching polls"""
         q = Poll.objects.filter(self.__query_filter)
 
         l =  [
@@ -95,7 +120,13 @@ class SearchPollQueryBuilder:
 
 
 class SearchPollService:
+    """Service for searching polls"""
+
     def search_by_id(self, id: int) -> Poll:
+        """
+        Search for a poll by its ID and return it
+        Raise an exception if the poll does not exist or has no alternatives
+        """
         try:
             poll = Poll.objects.get(id=id)
             if poll.alternative_set.count() == 0:

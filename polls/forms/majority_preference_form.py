@@ -6,6 +6,7 @@ from django.forms import inlineformset_factory
 
 import polls.models as poll_model
 
+
 class PreferenceFormSet(forms.BaseInlineFormSet):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -15,6 +16,7 @@ class PreferenceFormSet(forms.BaseInlineFormSet):
         kwargs = super().get_form_kwargs(index)
         kwargs['alternative'] = self.alternatives[index]
         return kwargs
+
 
 class MajorityPreferenceFormSet(PreferenceFormSet):
     @staticmethod
@@ -30,22 +32,6 @@ class MajorityPreferenceFormSet(PreferenceFormSet):
             min_num=num_judges,
             validate_max=True,
             validate_min=True)
-
-class ShultzePreferenceFormSet(PreferenceFormSet):
-    @staticmethod
-    def get_formset_class(num_judges: int):
-        return inlineformset_factory(
-            poll_model.Alternative,
-            poll_model.preference.ShultzePreference.responses.through,
-            form=ShultzeOpinionForm,
-            formset=ShultzePreferenceFormSet,
-            can_delete=False,
-            extra=num_judges,
-            max_num=num_judges,
-            min_num=num_judges,
-            validate_max=True,
-            validate_min=True)
-
 
 class MajorityOpinionForm(forms.ModelForm):
 
@@ -74,6 +60,22 @@ class MajorityOpinionForm(forms.ModelForm):
     def save(self, commit: bool = ...) -> Any:  # type: ignore
         self.instance.alternative = self.alternative
         return super().save(commit)
+
+
+class ShultzePreferenceFormSet(PreferenceFormSet):
+    @staticmethod
+    def get_formset_class(num_judges: int):
+        return inlineformset_factory(
+            poll_model.Alternative,
+            poll_model.preference.ShultzePreference.responses.through,
+            form=ShultzeOpinionForm,
+            formset=ShultzePreferenceFormSet,
+            can_delete=False,
+            extra=num_judges,
+            max_num=num_judges,
+            min_num=num_judges,
+            validate_max=True,
+            validate_min=True)
 
 class ShultzeOpinionForm(forms.ModelForm):
 

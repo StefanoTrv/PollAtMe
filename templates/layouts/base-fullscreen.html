@@ -1,31 +1,29 @@
 <!DOCTYPE html>
-<html lang="it">
+
 {% load static %}
-<head>
 
-    <title> {% block title %} ScegliMeglio |  {% endblock title %} </title>
+<html lang="it">
+	<head>
+		<title> {% block title %} ScegliMeglio |  {% endblock title %} </title>
 
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<meta name="description" content="" />
-	<meta name="keywords" content="">
-	<meta name="author" content="CodedThemes, AppSeed" />
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="">
+		<meta name="author" content="CodedThemes, AppSeed" />
 
-	<link rel="stylesheet" href="{% static 'css/style.css' %}">
+		<link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-    {% block stylesheets %}{% endblock stylesheets %}
+		{% block stylesheets %}{% endblock stylesheets %}
+	</head>
+	<body>
+		{% block content %}{% endblock content %}
 
-</head>
-<body class="">
+		<script src="{% static 'js/plugins/popper.min.js' %}"></script>
+		<script src="{% static 'js/plugins/bootstrap.min.js' %}"></script>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
-    {% block content %}{% endblock content %}
-
-    <script src="{% static 'js/plugins/popper.min.js' %}"></script>
-    <script src="{% static 'js/plugins/bootstrap.min.js' %}"></script>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-
-    {% block javascripts %}{% endblock javascripts %}
-
-</body>
+		{% block javascripts %}{% endblock javascripts %}
+	</body>
 </html>

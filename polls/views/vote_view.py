@@ -15,8 +15,7 @@ from polls.models import Poll
 from polls.models import preference as pref
 from polls.services import SearchPollService, check
 
-
-# se si accede alla pagina di voto generica, si viene reindirizzati alla pagina di voto del metodo principale
+# Redirect to specific vote page if a user accesses to the generic vote page
 def vote_redirect_view(request, id, token=None):
     poll = SearchPollService().search_by_id(id)
     if token is None:
@@ -36,7 +35,7 @@ def vote_redirect_view(request, id, token=None):
 
 class _VoteView(CreateView):
     """
-    Class view (de facto astratta) che incorpora ciò che hanno in comune le diverse pagine di voto
+    Class view (de facto abstract) that includes what the different vote pages have in common
     """
     poll: Poll
     pollType: str
@@ -108,6 +107,9 @@ class _VoteView(CreateView):
 
 
 class VoteSinglePreferenceView(_VoteView):
+    """
+    Class view for voting using the Single Preference method
+    """
 
     form_class: Optional[Type[forms.BaseForm]] = pf.SinglePreferenceForm
     template_name: str = 'polls/vote/vote_SP.html'
@@ -118,8 +120,8 @@ class VoteSinglePreferenceView(_VoteView):
 
     def get_form_kwargs(self) -> dict[str, Any]:
         """
-        Inizializzo gli argomenti per il form, in questo caso la poll
-        da cui estrarre le opzioni
+        Initializing form arguments, the poll in this case from which
+        we exctract the options
         """
         kwargs = super().get_form_kwargs()
         kwargs['poll'] = self.poll
@@ -145,8 +147,9 @@ class VoteSinglePreferenceView(_VoteView):
 
 class VoteMajorityJudgmentView(_VoteView):
     """
-    Class view per l'inserimento delle risposte ai sondaggi a risposta singola
+    Class view for voting using the Majority Judgment method
     """
+    
     template_name: str = 'polls/vote/vote_GM.html'
 
     def __init__(self, **kwargs: Any) -> None:
@@ -183,7 +186,7 @@ class VoteMajorityJudgmentView(_VoteView):
 
 class VoteShultzeView(_VoteView):
     """
-    Class view per l'inserimento delle risposte ai sondaggi con metodo Shultze
+    Class view for voting using the Schulze method
     """
     template_name: str = 'polls/vote/vote_SHULTZE.html'
 

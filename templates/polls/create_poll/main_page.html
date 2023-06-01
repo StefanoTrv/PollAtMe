@@ -134,6 +134,7 @@
     create_alert()
 </script>
 
+<!-- Script to handle text change in the alert based on selected poll type in the dropdown menu -->
 <script>
     const menu = document.querySelector('#id_default_type')
     const text_schultze_info = `<br> Non sai che cos' è il metodo Schulze? Clicca <a href={% url 'polls:explain_sch' %} class='alert-link'>qui</a>`
@@ -166,15 +167,12 @@
         alert = document.querySelector('#alert-default-type')
         switch(index) {
             case 0:
-                //console.log('mj')
                 alert.innerHTML = text_mj_info
                 break;
-            case 1: 
-                //console.log(index)
+            case 1:
                 alert.innerHTML = text_mj_suggestion + text_schultze_info
                 break;
-            case 2: 
-                //console.log(index)
+            case 2:
                 alert.innerHTML = text_mj_suggestion_2
                 break;
         }
