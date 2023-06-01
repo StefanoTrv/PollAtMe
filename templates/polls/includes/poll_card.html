@@ -1,4 +1,6 @@
-{% load modulo %}
+{% load imagePath %}
+{% load modulo%}
+{% load static %}
 
 <div class="card h-100 text-center">
 
@@ -16,7 +18,7 @@
     </span>
     {% endif %}
 
-    <img class="img-fluid card-img-top" src="/assets/img/patterns/pattern{{ poll.id|modulo:9 }}.png" alt="Card Image cap {{ poll.id|modulo:9 }}">
+    <img class="img-fluid card-img-top" src="{% static poll.id|imagePath:9  %}" alt="Card Image cap {{ poll.id|modulo:9 }}">
 
     <div class="card-body">
         <h5 class="card-title"> {{ poll.title }} </h5>
