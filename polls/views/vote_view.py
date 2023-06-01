@@ -15,7 +15,7 @@ from polls.models import Poll
 from polls.models import preference as pref
 from polls.services import SearchPollService, check
 
-# # Redirect to specific vote page if a user accesses to the generic vote page
+# Redirect to specific vote page if a user accesses to the generic vote page
 def vote_redirect_view(request, id, token=None):
     poll = SearchPollService().search_by_id(id)
     if token is None:
