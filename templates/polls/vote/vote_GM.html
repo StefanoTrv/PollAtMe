@@ -77,7 +77,7 @@
 
 
 {% block javascripts %}
-<!-- Script che controlla le inconsistenze nel caso di rivoto -->
+<!-- Script to handle inconsistencies in case of revote che -->
 <script>
     var form = document.getElementById('vote-form');
     var modal = new bootstrap.Modal(document.getElementById('modalAlertPollRevote'));
@@ -85,13 +85,13 @@
         event.preventDefault();
         var numberFields = parseInt(form.querySelector('input[name="majorityopinionjudgement_set-TOTAL_FORMS"]').value);
         const formLabels = document.getElementsByName('option');
-        //controllo se uno o più campi non sono stati compilati e nel caso lascio al server segnalare gli avvisi
+        //check if one or more fields are not compiled and in that case we leave the server to raise notifications 
         for (let i = 0; i < numberFields; i++) {
             if (document.querySelector(`input[name="majorityopinionjudgement_set-${i}-grade"]:checked`) == null) {
                 form.submit();
             }
         }
-        //costruisco il dizionario composto da alternativa-giudizio selezionato sotto forma di intero
+        //builiding dictionary composed by alterantive-grade (selected as an integer)
         var alternative_judgment_dict = {};
         var card = document.querySelectorAll('#card');
         for (element of card) {

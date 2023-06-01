@@ -54,7 +54,7 @@
         prefillTextInputs();
     }
 
-    //riempie i 4 campi con ciò che l'utente inserisce
+    //fills 4 fields with user input
     function prefillTextInputs(){
         token = "{{ token }}".split(" ");
         if(token.length>0 && token[0]!=""){ 
@@ -71,7 +71,7 @@
         }
     }
 
-    //costruisce il link completo che porta al voto
+    //build full link
     function submitPassword(){
         currentUrlCleaned = window.location.href.split("/").slice(0,-1).join("/")+"/";
 
@@ -81,7 +81,7 @@
             + document.getElementById("password3").value.replaceAll(" ","") + "-"
             + document.getElementById("password4").value.replaceAll(" ","");
 
-            //Rimuove eventuali trailing "-"
+            //Remove optional trailings "-"
             i = targetUrl.length - 1;
             while(i >= 0 && targetUrl[i]=="-"){
                 targetUrl = targetUrl.slice(0,-1);
