@@ -5,17 +5,17 @@ from django.db.models import QuerySet, Count
 
 class SinglePreferencePollResultsService():
     """
-    Classe per il calcolo dei risultati dei sondaggi a preferenza singola
+    Class for calculating results of single preference polls
     """
 
     def set_poll(self, poll: Poll) -> SinglePreferencePollResultsService:
         """
-        Imposta il sondaggio da cui ottenere i risultati
-        Torna l'oggetto corrente per utilizzare il method chaining
-        Va chiamato per primo
+        Set the poll from which we obtain results. 
+        It returns the current object to use with chaining method
+        It must be called as first
 
             Parameters:
-                poll (Poll): il sondaggio
+                poll (Poll): the poll
             Returns:
                 self
         """
@@ -24,16 +24,16 @@ class SinglePreferencePollResultsService():
 
     def as_list(self, desc=True,include_synthetic=True) -> list[dict]:
         """
-        Ritorna i risultati del sondaggio come lista di dictionary
+        Returns poll results as list of dictionary
 
             Parameters:
-                desc (bool): Se le risposte devono essere ordinare in maniera decrescente o no (default: True)
+                desc (bool): If responses must be ordered in an ascendant or descendant way (default: True)
             Returns:
-                lista ordinata in base al valore di count di dictionary con la seguente struttura:
+                ordered list based on count value of dictionary, having the following structure:
                 {
-                    'text': Testo dell'alternativa,
-                    'count': Numero di preferenze,
-                    'positition': posizione in classifica (rispetto all'ordine richiesto)
+                    'text': alternative text,
+                    'count': number of preferences,
+                    'positition': ranking order (with regard to required order)
                 }
         """
         results_as_dict = dict(sorted(self.__get_results(include_synthetic=include_synthetic).items(), reverse=desc))
@@ -50,25 +50,24 @@ class SinglePreferencePollResultsService():
         
         return results_as_list
 
-
-    # privato, deve costruire gli oggetti da ritornare
+    # private, it must build the objects which are returned
     def __get_results(self,include_synthetic=True):
-        # prendiamo le preferenze dal database e facciamo l'aggregazione
+        # we take preferences from database e we aggregate them
         if(include_synthetic):
             preferences: QuerySet[SinglePreference] = SinglePreference.objects.filter(poll=self.__poll).values(
-                'alternative').annotate(count=Count('alternative')).order_by('-count')  # preferenze per la scelta
+                'alternative').annotate(count=Count('alternative')).order_by('-count')  # poll preferences
         else:
             preferences: QuerySet[SinglePreference] = SinglePreference.objects.filter(poll=self.__poll).filter(synthetic=False).values(
-                'alternative').annotate(count=Count('alternative')).order_by('-count')  # preferenze per la scelta
+                'alternative').annotate(count=Count('alternative')).order_by('-count')  # poll preferences 
         
         all_alternatives: QuerySet[Alternative] = Alternative.objects.filter(
-            poll=self.__poll)  # tutte le scelte possibili
+            poll=self.__poll)  # all possible choices
         
         context: dict[int, list] = {}
         for alternative_key in all_alternatives.values_list('pk', flat=True):
             count = 0
-            # se l'alternativa è stata votata allora aggiorniamo il conto
-            # se è stata votata è in preferences
+            # if alternative has been voted we then updated the count
+            # if was voted, it is in preferences
             if alternative_key in preferences.values_list('alternative', flat=True):
                 count: int = preferences.get(alternative=alternative_key)['count']
             if context.get(count) is None:

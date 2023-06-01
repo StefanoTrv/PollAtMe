@@ -23,7 +23,7 @@ class Mapping(models.Model):
                 string.digits,
                 k=6))
             
-            #we return the code if yet it isn't been used
+            #we return the code if it isn't been used yet
             if not Mapping.objects.filter(code=new_code).count() > 0:
                 return new_code
 

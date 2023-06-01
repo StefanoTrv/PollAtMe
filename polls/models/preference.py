@@ -49,7 +49,7 @@ class ShultzeOpinionJudgement(models.Model):
         return self.alternative.text + ' -> ' + str(self.order)
 
 class MajorityPreference(Preference):
-    """There is a relation many to many between preferences and responses managed by the judgement"""
+    """There is a many to many relation between preferences and responses managed by the judgement"""
 
     responses = models.ManyToManyField(Alternative, through="MajorityOpinionJudgement")
 
