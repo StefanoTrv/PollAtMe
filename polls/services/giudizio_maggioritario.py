@@ -3,14 +3,14 @@ from polls.models.preference import MajorityOpinionJudgement, MajorityPreference
 from django.db.models import QuerySet
         
 """
-    Class that incapsulates the judgments obtained by an alternative using majority judgment. 
+    A class that encapsulates the judgments obtained through majority judgment for an alternative. 
 """
 class AlternativeJudgments:
 
     """
         Constructor:
         @param choice_id: an int that identifies the sequence
-        @param votes: lista di voti, maggiore è l'intero migliore è il giudizio
+        @param votes: list of votes, the bigger the vote the better the judgement
     """
     def __init__(self, choice_id: int, votes:list) -> None:
         self.__votes = votes
@@ -189,7 +189,7 @@ class GiudizioMaggioritario:
         self.sequence_list = seqence_list
         
     """
-        Returns the results, as a list of couples alternative-id,place.
+        Returns the results as a list of couples alternative-id - place.
         The results is in the form of a list of dictionaries, where each dictionary is in the form:
             'alternative' : value   ##alternative id
             'place' : value         ##place in the standings
