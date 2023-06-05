@@ -1,5 +1,6 @@
 import random
 from django import template
+from django.utils.html import escape
 register = template.Library()
 
 """
@@ -28,7 +29,7 @@ def shuffle2(value_on, schulze_order=None):
         for alternative in schulze_order:
           for field in value:
             # Checks if the field is about that alternative and if the field has not been used before
-            if "<th><label>"+alternative+":</label></th>" in str(field) and field not in used_fields:
+            if "<th><label>"+escape(alternative)+":</label></th>" in str(field) and field not in used_fields:
                 result.append(field)
                 used_fields.append(field)
                 break
