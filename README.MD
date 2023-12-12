@@ -1,4 +1,8 @@
 # Poll@Me
+##Importante
+Questo progetto è stato sviluppato con Azure DevOps. Il seguente readme è composto da tutti i file di documentazioni presenti nella repository originale. I testi si riferiscono all'ambiente di sviluppo originale, quindi potrebbero risultare fuori contesto in questa repository copia.
+
+#ReadMe
 ## Sistema online per le scelte sociali
 
 Si richiede di costruire una web app che permetta di definire sondaggi a scelta multipla e raccogliere le
@@ -78,3 +82,4 @@ e riavvia VS Code
 
 [devcontainer]: https://containers.dev/
 [marketplace]: https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers
+
